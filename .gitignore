@@ -3,7 +3,6 @@
 /public/storage
 /storage/*.key
 vender
-/public
 /public/*.csv
 /vendor
 /vendor/*
