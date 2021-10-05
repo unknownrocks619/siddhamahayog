@@ -154,6 +154,45 @@ class CourseController extends Controller
         $funds = EventFundDetail::with(["user_detail","sibir"])->where('status','pending')->latest()->get();
         return view("admin.finance.courses.payment_verification",compact("funds"));
     }
+    
+    public function change_payment_status(Request $request,EventFundDetail $transaction){
+        return view('admin.finance.courses.payment_status_change',compact('transaction'));
+    }
+
+    public function store_change_payment_status(Request $request,EventFundDetail $transaction) {
+        $transaction->status = ($request->approve) ? "Verified" : "Rejected";
+        $transaction->admin_remarks = $request->admin_remarks;
+
+
+        if ( strtolower($transaction->status) == "rejected") {
+            // deduct amount from main transaction.
+            $event_fund = EventFund::findOrFail($transaction->event_fund_id);
+            $event_fund->fund_amount = $event_fund->fund_amount - $transaction->amount;
+        }
+
+        try {
+            $transaction->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            $request->session()->flash("message","Error: ". $th->getMessage());
+            return back();
+        }
+        $notification = new UserNotification;
+        $notification->notification_to = $transaction->user_detail_id;
+        $notification->notification_from = 0;
+        $notification->notification_type = "Payment Notification";
+        $notification->message =  $transaction->approve ? "Your payment has been verified." : "Your Payment has been rejecected.";
+        if ($request->admin_remarks) {
+            $notification->message .= "<br />";
+            $notification->message .= "<strong>Admin Remark</strong>: ". $request->admin_remarks;
+        }
+        $notification->addressable = "\App\Models\userDetail";
+        $notification->seen = false;
+        $notification->save();
+
+        $request->session()->flash('success',"Transaction status updated.");
+        return back();
+    }
 
     public function add_payment() {
         //available courses.
@@ -257,5 +296,54 @@ class CourseController extends Controller
         return back();
     }
 
+    public function overdue_view() {
+        $courses = Courses::get();
+        return view('admin.finance.courses.overdue_view',compact('courses'));
+    }
+
+    public function overdue_report(Request $request) {
+        if ( ! $request->record_type )
+        {
+            $select_month = ($request->month) ? $request->month : date("m");
+            // now let's construct query.
+            if ( $request->sadhak ) {
+                $is_email = filter_var($request->sadhak,FILTER_VALIDATE_EMAIL);
+                if ($is_email) {
+                    $user_login_instance = userLogin::where('email',$request->sadhak)->first();
+                    if ( ! $user_login_instance ) {
+                        dd("`{$request->sadhak}` email doesn't exists.");
+                        return;
+                    }
+                    $user_detail = $user_login_instance->userdetail;
+                } else {
+                    $user_detail = userDetail::where('phone_number',$request->sadhak);
+                    if (! $user_detail ) {
+                        dd("`{$request->sadhak}` Phone Number doesn't exists.");
+                        return;
+                    }
+                    $user_login_instance = $user_detail->user_login;
+                    dd($user_detail);
+                }
+                $query = EventFundDetail::where('user_detail_id',$user_detail->id)
+                                        ->where('created_at','like',$request->year.'-'.$select_month.'%')
+                                        ->latest()
+                                        ->get();
+            } else {
+                $result = \DB::table("user_sadhak_registrations")
+                            ->select("user_detail_id")
+                            ->where('sibir_record_id',$request->course)
+                            ->whereExists( function ($query) use($request,$select_month) {
+                                $query->select(\DB::raw(1))->from('event_fund_details')
+                                    ->whereRaw('user_sadhak_registrations.user_detail_id = event_fund_details.user_detail_id')
+                                    ->where('event_fund_details.created_at','like','%'.$request->year.'-'.$select_month.'%');
+                            })
+                        ->get();
+                $query = userDetail::whereIn('id',$result->pluck('user_detail_id'))->get();
+                
+                }
+            }
+
+            return view('admin.finance.courses.overdue_result',compact("query"));
+    }
 
  }

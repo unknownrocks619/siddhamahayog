@@ -667,4 +667,72 @@ class ZoomController extends Controller
         }
         return $this->register_participants($request,$request->merge_to);
     }
+
+    public function add_user_to_meeting(Request $request) {
+        $zoom = ZoomSetting::findOrFail($request->current_meeting);
+
+        $is_email = filter_var($request->search,FILTER_VALIDATE_EMAIL);
+        
+        if ($is_email) {
+            $user_login = userLogin::where('email',$request->search)->first();
+            if (! $user_login ) {
+                return response ([
+                    "success" => false,
+                    "message" => "User Record Not Found."
+                ]);
+            }
+
+            $user_detail = $user_login->userdetail;
+
+            $user_detail_id = $user_login->user_detail_id;
+        } else {
+            $user_detail = userDetail::where('phone_number',$request->search)->first();
+            if ( ! $user_detail ) {
+                return response ([
+                    "success" => false,
+                    "message" => "User Phone Number Record Not Found."
+                ]);                
+            } 
+            $user_detail_id = $user_detail->id;
+        }
+
+        $first_name = ($user_detail->middle_name) ? $user_detail->first_name. " ".$user_detail->middle_name : $user_detail->first_name;
+        $data = [
+            "first_name" => ucwords(strtolower($first_name)),
+            "last_name" => ($user_detail->last_name) ?  ucwords(strtolower($user_detail->last_name)) : "L",
+            "email" => "_test_{$user_detail_id}@siddhamahayog.org",
+            // "email" => ($register_user->userDetail->userlogin && $register_user->userDetail->userlogin->email) ? $register_user->userDetail->userlogin->email : "anoemailg_{$register_user->user_detail_id}@gmail.com"
+        ];
+        $zoom_response = zoom_registration_link($data,$zoom->meeting_id,$zoom->signature);
+        $bulk_record = [];
+        if ( $zoom_response ) {
+            $innerArray = [
+                'join_link' => $zoom_response->join_url,
+                'registration_id' => $zoom_response->registrant_id,
+                'user_detail_id' => $user_detail_id,
+                'have_joined' => false,
+                'joined_at' => true,
+                'sibir_record_id'=> $zoom->sibir_record_id,
+                'meeting_id' => $zoom->meeting_id,
+                "created_at" => \Carbon\Carbon::now()
+            ];
+            $bulk_record[] = $innerArray;
+            // $offlimitcontd = $user_detail->id;    
+        }
+
+        try {
+            SadhakUniqueZoomRegistration::insert($bulk_record);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response([
+                'success' => false,
+                "message" => "Error, unable to register user. Error: ". $th->getMessage()
+            ]);
+        }
+        return response([
+            'success' => true,
+            "message" => "`{$user_detail->first_name}" . "` has been registered successfully." 
+        ]);
+
+    }
 }

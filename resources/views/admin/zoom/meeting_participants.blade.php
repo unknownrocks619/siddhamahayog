@@ -79,9 +79,11 @@
                     <div style="display:none" id="alert_message">
                     </div>               
                     <x-alert></x-alert>
-                    <form class='mb-2'>
+                    <form class='mb-2' method="post" action="{{ route('events.admin_add_user_to_meeting') }}">
+                        @csrf
+                        <input type="hidden" name="current_meeting" value="{{$zoom->id}}" />
                         <input type="search" class="form-control" name="search" placeholder="Search by loginID or Email" />
-                        <input type="button" class='btn btn-primary mt-2' value="Search" />
+                        <input type="submit" class='btn btn-primary mt-2' value="Search and Add" />
                     </form>
                     <div id="search_filter_result"></div>
                     <table class='table table-bordered table-hover'>
@@ -213,5 +215,23 @@
             });
             return false;
         });
+
+        $("form").submit(function(event) {
+            event.preventDefault();
+            $.ajax({
+                method : $(this).attr("method"),
+                url : $(this).attr('action'),
+                data: $(this).serializeArray(),
+                success: function (response) {
+                    if (response.success == true){
+                            $("#alert_message").attr("class",'alert alert-success')
+                        } else {
+                            $("#alert_message").attr("class",'alert alert-danger')
+                        }
+                    $("#alert_message").html(response.message);
+                    $("#alert_message").fadeIn('medium');
+                }
+            })
+        })
    </script>
 @endSection()

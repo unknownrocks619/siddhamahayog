@@ -243,7 +243,8 @@
                                                                   'courses.admin_course_list',
                                                                   'courses.admin_course_add',
                                                                   'courses.admin_payment_verification',
-                                                                  'courses.admin_add_payment_detail'
+                                                                  'courses.admin_add_payment_detail',
+                                                                  'courses.admin_payment_overdue'
                                                                 ],'open') }}">
                 <a href="#">
                   <span class="menu-title text-truncate" data-i18n="Dashboard">Finance</span>
@@ -274,18 +275,10 @@
                     </a>
                   </li>
                   <li>
-                    <a class="d-flex align-items-center {{ isActive('questions.admin_eval_selection') }} {{ isActive('questions.admin_manual_evaluate') }}" href="{{ route('questions.admin_eval_selection') }}">
+                    <a class="d-flex align-items-center {{ isActive('courses.admin_payment_overdue') }}" href="{{ route('courses.admin_payment_overdue') }}">
                       <i class="bx bx-right-arrow-alt"></i>
                       <span class="menu-item text-truncate" data-i18n="Analytics">
-                        Evaluate Exam
-                      </span>
-                    </a>
-                  </li>
-                  <li>
-                    <a class="d-flex align-items-center" href="#">
-                      <i class="bx bx-right-arrow-alt"></i>
-                      <span class="menu-item text-truncate" data-i18n="Analytics">
-                        Report
+                        Overdue Check
                       </span>
                     </a>
                   </li>

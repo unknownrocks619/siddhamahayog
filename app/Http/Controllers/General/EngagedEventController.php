@@ -150,7 +150,7 @@ class EngagedEventController extends Controller
             $event_fund->user_detail_id = auth()->user()->user_detail_id;
             $event_fund->fund_amount = $request->amount;
         } else {
-            $event_fund->amount = $request->amount + $event_fund->amount;
+            $event_fund->amount = $request->amount + $event_fund->fund_amount;
         }
 
         // now lets add fund transaction;

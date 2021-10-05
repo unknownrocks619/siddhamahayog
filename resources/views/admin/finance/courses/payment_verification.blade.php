@@ -10,6 +10,10 @@
                     <x-alert></x-alert>
                 </div>
                 <div class='card-body'>
+                    @if( ! $funds->count() ) 
+                        <p class='text-danger'>No Pending Transaction.</p>
+                    @else
+                    
                     <table class='table table-bordered table-hover'>
                         <thead>
                             <tr>
@@ -45,13 +49,13 @@
                                         {{ $fund->owner_remarks }}
                                     </td>
                                     <td>
-                                        <a href="" class='text-success'>Verify</a>
-                                        <a href="" class='text-danger'>Reject</a>
+                                        <a href="{{ route('courses.admin_change_payment_status',[$fund->id]) }}" class='text-success'>View Detail</a>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    @endif
                 </div>
             </div>
         </div>
