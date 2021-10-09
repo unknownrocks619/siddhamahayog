@@ -81,6 +81,8 @@
                                             @elseif($zoom_setting->is_used && $zoom_setting->is_active)
                                                 <br />
                                                 <span class='text-success'>Live</span>
+                                                <br />
+                                                <a href="{{ route('events.admin_get_participants_list',[$zoom_setting->id]) }}">View Registered</a>
                                             @elseif($zoom_setting->meeting_id)
                                                 <br />
                                                 <a href="{{ route('events.admin_get_participants_list',[$zoom_setting->id]) }}">View Registered</a>

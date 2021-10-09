@@ -514,7 +514,6 @@ class ZoomController extends Controller
         //                                             }])
         //                                             ->get();
         // country total available users.
-        
         if ($zoom->is_global) {
             // count all sadhak registered in this program
             $total_sadhak = UserSadhakRegistration::where('sibir_record_id',$zoom->sibir_record_id)->count();

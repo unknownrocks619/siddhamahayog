@@ -104,8 +104,11 @@
                                             return $query->where('country',$zoom->country_id);
                                         },"zoom_registration"]);
                                 }
-
-                                $sadhaks= $registered_user->paginate(20);
+                                if ($zoom->is_global) {
+                                    $sadhaks = $registered_user->paginate(20);
+                                } else {
+                                    $sadhaks = $registered_user->get();
+                                }
                             @endphp
                             @forelse ($sadhaks as $participant)
                                 @if($participant->userdetail)
@@ -155,7 +158,9 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3">
-                                    {{ $sadhaks->links() }}
+                                    @if($zoom->is_global)
+                                        {{ $sadhaks->links() }}
+                                    @endif
                                 </td>
                             </tr>
                         </tfoot>
