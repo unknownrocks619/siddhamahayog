@@ -121,15 +121,15 @@ class CourseController extends Controller
             if ($request->sadhak) {
                 $transactions->where('user_detail_id',$user_detail->id);
             }
-            $funds = $transactions->with(["user_detail"])->paginate(30);
+            $funds = $transactions->with(["user_detail"])->get();
 
         }
 
-        if ($request->record_type == "overview") {
+        if ($request->record_type == "all") {
             if ($request->sadhak) {
-                $transactions = EventFund::with(["user_detail"])->where('user_detail_id',$user_detail->id)->paginate(50);
+                $transactions = EventFund::with(["user_detail"])->where('user_detail_id',$user_detail->id)->get();
             } else {
-                $transactions = EventFund::with(["user_detail"])->where('sibir_record_id',$course->sibir_record_id)->paginate(50);
+                $transactions = EventFund::with(["user_detail"])->where('sibir_record_id',$course->sibir_record_id)->get();
             }
             $funds = $transactions;
         }
@@ -331,19 +331,29 @@ class CourseController extends Controller
             } else {
                 $result = \DB::table("user_sadhak_registrations")
                             ->select("user_detail_id")
-                            ->where('sibir_record_id',$request->course)
+                            ->where('sibir_record_id',$request->courses)
                             ->whereExists( function ($query) use($request,$select_month) {
                                 $query->select(\DB::raw(1))->from('event_fund_details')
                                     ->whereRaw('user_sadhak_registrations.user_detail_id = event_fund_details.user_detail_id')
                                     ->where('event_fund_details.created_at','like','%'.$request->year.'-'.$select_month.'%');
                             })
                         ->get();
+                
                 $query = userDetail::whereIn('id',$result->pluck('user_detail_id'))->get();
                 
                 }
             }
 
             return view('admin.finance.courses.overdue_result',compact("query"));
+    }
+
+    public function transaction_detail(Request $request, EventFund $transaction) {
+        
+        if ( ! isAdmin() ) {
+            return 404;
+        }
+
+        return view('admin.finance.courses.transaction_detail',compact("transaction"));
     }
 
  }

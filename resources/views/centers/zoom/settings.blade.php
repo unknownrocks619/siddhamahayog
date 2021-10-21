@@ -51,6 +51,14 @@
                                         @endif
                                     </td>
                                     <td>
+                                    <br />
+                                        @if($zoom_setting->is_used && $zoom_setting->is_active)
+                                            <span class='text-success'>Live</span>
+                                            <br />
+                                        @endif
+                                            <a href="{{ route('event.center_get_participants_list',[$zoom_setting->id]) }}">View Registered</a>
+                                    </td>
+                                    <td>
                                         @if( ! $zoom_setting->is_used && !$zoom_setting->is_active)
                                             <form target="_blank" method="post" action="{{ route('event.center_start_zonal_setting',[$zoom_setting->id]) }}">
                                                 @csrf

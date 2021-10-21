@@ -229,7 +229,7 @@ Route::prefix("event")
             Route::get('/zoom/new/settings',[ZoomController::class,'create_settings'])->name('admin_zoom_settings_add');
             Route::post('/zoom/save/settings',[ZoomController::class,'store_zoom_settings'])->name('admin_store_zoom_setting');
             Route::get('/zoom/zonal-create-meeting/global',[ZoomController::class,'create_global_meeting'])->name('admin_create_global_meeting');
-            Route::get("/zoom/participants/{zoom}",[ZoomCOntroller::class,"display_participants"])->name('admin_get_participants_list');
+            Route::get("/zoom/participants/{zoom}",[ZoomController::class,"display_participants"])->name('admin_get_participants_list');
             Route::get('/zoom/zonal-create-meeting/{country}',[ZoomController::class,'create_zonal_meeting'])->name('admin_create_zonal_meeting');
             Route::get("/zoom/zonal-registration/{zoom}",[ZoomController::class,"register_participants"])->name('admin_create_zonal_registration');
             Route::get("/zoom/revoke/{zoom}",[ZoomController::class,"revoke_access"])->name("admin_revoke_zoom_access");
@@ -315,6 +315,7 @@ Route::prefix("course")
                 Route::post("/payment/status/{transaction}",[CourseController::class,"store_change_payment_status"])->name('admin_store_change_payment_status');
                 Route::get("/payment/overdue",[CourseController::class,"overdue_view"])->name('admin_payment_overdue');
                 Route::post("/payment/overdue/report",[CourseController::class,"overdue_report"])->name('admin_payment_overdue_report');
+                Route::get("/paymnet/transaction/report/view/{transaction}",[CourseController::class,'transaction_detail'])->name("admin_view_transaction_detail");
                 Route::get("/payment/add",[CourseController::class,"add_payment"])->name('admin_add_payment_detail');
                 Route::post("/payment/add",[CourseController::class,"store_payment"])->name("admin_save_payment_detail");
                 Route::get("/report/generate/{course}",[CourseController::class,"generate_report"])->name('admin_course_generate_report');

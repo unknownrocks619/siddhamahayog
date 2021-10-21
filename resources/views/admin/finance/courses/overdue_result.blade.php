@@ -1,7 +1,7 @@
 @if( ! $query->count() )
     <h4>Result Not Found</h4>
 @else
-    <table class='table table-bordered table-hover'>
+    <table class='table table-bordered table-hover table-responsive'>
         <thead>
             <tr>
                 <td>S.No</td>

@@ -78,10 +78,10 @@ class ZoomController extends Controller
             $time = date("h:i:s",strtotime($meeting_setting->start_time));
             $meeting_data = json_encode([
                 "type" => 2,
-                "topic" => "Testing--".$meeting_setting->sibir->sibir_title,
+                "topic" =>$meeting_setting->sibir->sibir_title . " Zone " . address($country,"country"),
                 "start_time" => date('Y-m-dT'.$time),
                 "timezone" => $meeting_setting->timezone,
-                "duration" => 120,
+                "duration" => 300,
                 "settings" => [
                                 "approval_type"=>0,
                                 "allow_multiple_devices"=>0,
@@ -297,6 +297,136 @@ class ZoomController extends Controller
                 }
             }
         }
+        $binod_giri = [
+            "first_name" => "Ram",
+            "last_name" => "Das (B)",
+            "email" => "_guest_89_@siddhamahayog.org",
+        ];
+        $binod_zoom_link = zoom_registration_link($binod_giri,$meeting_setting->meeting_id,$meeting_setting->signature);
+        if ($zoom_response) {
+            $innerArray = [];
+            $innerArray["join_link"] = $binod_zoom_link->join_url;
+            $innerArray["registration_id"] = $binod_zoom_link->registrant_id;    
+            $innerArray["user_detail_id"] = 89;
+            $innerArray["have_joined"] = false;
+            $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+            $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+            $innerArray["created_at"] = \Carbon\Carbon::now();
+            $innerArray["updated_at"] = \Carbon\Carbon::now();
+            $register_participants[] = $innerArray;
+        };
+
+        $prakash_gauli = [
+            "first_name" => "Ram",
+            "last_name" => "Das",
+            "email" => "_guest_114@siddhamahayog.org"
+        ];
+        $prakash_zoom_link = zoom_registration_link($prakash_gauli,$meeting_setting->meeting_id,$meeting_setting->signature);
+        if ($zoom_response) {
+            $innerArray = [];
+            $innerArray["join_link"] = $prakash_zoom_link->join_url;
+            $innerArray["registration_id"] = $prakash_zoom_link->registrant_id;    
+            $innerArray["user_detail_id"] = 114;
+            $innerArray["have_joined"] = false;
+            $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+            $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+            $innerArray["created_at"] = \Carbon\Carbon::now();
+            $innerArray["updated_at"] = \Carbon\Carbon::now();
+            $register_participants[] = $innerArray;
+        };
+
+        $prashant_join = [
+            "first_name" => "Ram Das",
+            "last_name" => "(C)",
+            "email" => "_guest_98_@siddhamahayog.org",
+        ];
+        $prashant_join_link = zoom_registration_link($prashant_join,$meeting_setting->meeting_id,$meeting_setting->signature);
+        if ($zoom_response) {
+            $innerArray = [];
+            $innerArray["join_link"] = $prashant_join_link->join_url;
+            $innerArray["registration_id"] = $prashant_join_link->registrant_id;    
+            $innerArray["user_detail_id"] = 98;
+            $innerArray["have_joined"] = false;
+            $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+            $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+            $innerArray["created_at"] = \Carbon\Carbon::now();
+            $innerArray["updated_at"] = \Carbon\Carbon::now();
+            $register_participants[] = $innerArray;
+        };
+        $gurudev_join = [
+            "first_name" => "Jagadguru Mahayogi",
+            "last_name" => "Siddhababa",
+            "email" => "_guest_1300_@siddhamahayog.org"
+        ];
+        $gurudev_join_link =  zoom_registration_link($gurudev_join,$meeting_setting->meeting_id,$meeting_setting->signature);
+        if ($zoom_response) {
+            $innerArray = [];
+            $innerArray["join_link"] = $gurudev_join_link->join_url;
+            $innerArray["registration_id"] = $gurudev_join_link->registrant_id;    
+            $innerArray["user_detail_id"] = 1300;
+            $innerArray["have_joined"] = false;
+            $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+            $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+            $innerArray["created_at"] = \Carbon\Carbon::now();
+            $innerArray["updated_at"] = \Carbon\Carbon::now();
+            $register_participants[] = $innerArray;
+        };
+        
+        $banshi_join = [
+            "first_name" => "Ram",
+            "last_name" => "Das(D)",
+            "email" => "_guest_91_@siddhamahayog.org"
+        ];
+        $banshi_join_link =  zoom_registration_link($banshi_join,$meeting_setting->meeting_id,$meeting_setting->signature);
+        if ($zoom_response) {
+            $innerArray = [];
+            $innerArray["join_link"] = $banshi_join_link->join_url;
+            $innerArray["registration_id"] = $banshi_join_link->registrant_id;    
+            $innerArray["user_detail_id"] = 91;
+            $innerArray["have_joined"] = false;
+            $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+            $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+            $innerArray["created_at"] = \Carbon\Carbon::now();
+            $innerArray["updated_at"] = \Carbon\Carbon::now();
+            $register_participants[] = $innerArray;
+        };
+        $shipa_dee = [
+            "first_name" => "Ram",
+            "last_name" => "Das (E)",
+            "email" => "_guest_1101_@siddhamahayog.org"
+        ];
+        $shipa_dee_link = zoom_registration_link($shipa_dee,$meeting_setting->meeting_id,$meeting_setting->signature);
+            if ($zoom_response) {
+                $innerArray = [];
+                $innerArray["join_link"] = $shipa_dee_link->join_url;
+                $innerArray["registration_id"] = $shipa_dee_link->registrant_id;    
+                $innerArray["user_detail_id"] = 1101;
+                $innerArray["have_joined"] = false;
+                $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+                $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+                $innerArray["created_at"] = \Carbon\Carbon::now();
+                $innerArray["updated_at"] = \Carbon\Carbon::now();
+                $register_participants[] = $innerArray;
+            }
+            
+        $ananda_dee = [
+            "first_name" => "Ram",
+            "last_name" => "Das (F)",
+            "email" => "_guest_1258_@siddhamahayog.org"
+        ];
+        $ananda_dee_link = zoom_registration_link($ananda_dee,$meeting_setting->meeting_id,$meeting_setting->signature);
+            if ($zoom_response) {
+                $innerArray = [];
+                $innerArray["join_link"] = $ananda_dee_link->join_url;
+                $innerArray["registration_id"] = $ananda_dee_link->registrant_id;    
+                $innerArray["user_detail_id"] = 1258;
+                $innerArray["have_joined"] = false;
+                $innerArray["sibir_record_id"] = $meeting_setting->sibir_record_id;
+                $innerArray["meeting_id"] = $meeting_setting->meeting_id;
+                $innerArray["created_at"] = \Carbon\Carbon::now();
+                $innerArray["updated_at"] = \Carbon\Carbon::now();
+                $register_participants[] = $innerArray;
+            }
         try {
             SadhakUniqueZoomRegistration::insert($register_participants);
         } catch (\Throwable $th) {
@@ -504,25 +634,30 @@ class ZoomController extends Controller
         return back();
     }
     public function display_participants(Request $request, ZoomSetting $zoom) {
-        // $participants = SadhakUniqueZoomRegistration::where('sibir_record_id',$zoom->sibir_record_id)
-        //                 ->where('meeting_id',$zoom->meeting_id)
-        //                 ->with(["user","sibir"])
-        //                 ->paginate(10);
-        
-        // $participants = SadhakUniqueZoomRegistration::where('meeting_id',$zoom->meeting_id)
-        //                                             ->with(["user"=>function(){
-        //                                             }])
-        //                                             ->get();
-        // country total available users.
-        if ($zoom->is_global) {
-            // count all sadhak registered in this program
-            $total_sadhak = UserSadhakRegistration::where('sibir_record_id',$zoom->sibir_record_id)->count();
-        } else{
+        if (isAdmin()):
+            // $participants = SadhakUniqueZoomRegistration::where('sibir_record_id',$zoom->sibir_record_id)
+            //                 ->where('meeting_id',$zoom->meeting_id)
+            //                 ->with(["user","sibir"])
+            //                 ->paginate(10);
+            
+            // $participants = SadhakUniqueZoomRegistration::where('meeting_id',$zoom->meeting_id)
+            //                                             ->with(["user"=>function(){
+            //                                             }])
+            //                                             ->get();
+            // country total available users.
+            if ($zoom->is_global) {
+                // count all sadhak registered in this program
+                $total_sadhak = UserSadhakRegistration::where('sibir_record_id',$zoom->sibir_record_id)->count();
+            } else{
+                $total_sadhak = UserDetail::where('country',$zoom->country_id)->count();
+            }
+
+            return view("admin.zoom.meeting_participants",compact("total_sadhak","zoom"));
+        elseif(isCenter()):
             $total_sadhak = UserDetail::where('country',$zoom->country_id)->count();
-        }
+            return view("centers.zoom.meeting_participants",compact("total_sadhak","zoom"));
 
-        return view("admin.zoom.meeting_participants",compact("total_sadhak","zoom"));
-
+        endif;
     }
 
     public function global_sadhak_register(Request $request, ZoomSetting $zoom) {

@@ -81,7 +81,7 @@
                         <div class='row'>
                             <div class='col-md-12'>
                                 <h4>Filter Result</h4>
-                                <form>
+                                <form method="get" action="{{ route('courses.admin_course_generate_report',[$course->id]) }}">
                                     <div class='row form-group'>
                                         <div class='col-md-2'>
                                             <label class='label-control'>
@@ -157,9 +157,9 @@
         $("form").submit(function(event) {
             event.preventDefault();
             $.ajax({
-                type : "GET",
+                type : $(this).attr("method"),
                 data : $(this).serialize(),
-                url : "{{ route('courses.admin_course_generate_report',[$course->id]) }}",
+                url : $(this).attr('action'),
                 success : function (response) {
                     // console.log(response);
                     $("#filter_content").html(response);

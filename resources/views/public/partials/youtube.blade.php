@@ -8,7 +8,6 @@
     $userAuth = \App\Models\UserSadhakRegistration::where('user_detail_id',auth()->user()->user_detail_id)
                                                     ->where('sibir_record_id',$record->event_id)
                                                     ->first();
-    dd($userAuth);
     if ($attendance && $userAuth) {
         $attendance->total_watch = $attendance->total_watch + 1;
         $attendance->start_time = \Carbon\Carbon::now();
@@ -26,8 +25,10 @@
         $attendance->start_time = \Carbon\Carbon::now();
         $attendance->save();
     }
-    dd($attendance);
 @endphp
+<div class="modal-header">
+    <button type="button" data-dismiss="modal" aria-label="Close" class='btn btn-danger'>Close</button>
+</div>
 <div class='modal-body'>
     @if( ! $userAuth )
         <p class='text-danger'>
@@ -51,7 +52,7 @@
         </video>
         @elseif($record->source == "VIMEO")
         <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/{{ $record->youtube_id }}?title=0&byline=0&portrait=0&badge=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
-            <p><a href="#">{{ $record->event_source->sibir_title }}| </a> <a href="#">{{ config('app.name') }}</a> on <a href="#">Siddhamahayog.org</a>.</p>
+            <p><a href="#">{{ $record->event_source->sibir_title }}| </a> on <a href="#">Siddhamahayog.org</a>.</p>
 
         @elseif($record->source=="YOUTUBE")
         <iframe

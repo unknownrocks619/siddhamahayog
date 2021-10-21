@@ -74,9 +74,12 @@ class ModalController extends Controller
                 if ($request->user_detail_id){
                     $user_detail = userDetail::findOrFail($request->user_detail_id);
                     $data['user_detail'] = $user_detail;    
-                }    
-            
-
+                }
+            if ($this->access == "admin" || $this->access == "centers") {
+                if ($this->modal_access[$request->modal][0] == "public") {
+                    $this->access = "public";
+                }
+            }
             if ($request->reference && $request->reference_id ){
                 
                 switch ($request->reference) {
@@ -122,12 +125,16 @@ class ModalController extends Controller
                 $data["record"] = $modalRecord;
             }
         }
+
         if ( ! array_key_exists($request->modal,$this->modals) )
         {
             abort(404);
         }
-        if ($this->is_allowed($request->modal) ) {
-            
+        if ( $this->is_allowed($request->modal) ) {
+            if (in_array("public",$this->modal_access[$request->modal]) ) {
+                return view("public.".$this->modals[$request->modal],$data);
+
+            }
             return view($this->access.".".$this->modals[$request->modal],$data);
         }
         // return view($this->access.".".$this->modals[$request->modal],$data);

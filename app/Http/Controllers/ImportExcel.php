@@ -347,25 +347,32 @@ class ImportExcel extends Controller
                     if ( $user_detail ) {
                         // check for previous record.
                         $fund_exists = $event_fund->where("user_detail_id",$user_detail->id)->first();
-    
                         $total_amount = (float) $data[2];
                         $monthly_fee = 3500;
                         $remaining_fee  =  $total_amount - $admission_fee;
-    
-                        $event_fund = new EventFund;
-                        $event_fund->sibir_record_id = 1;
-                        $event_fund->user_detail_id = $user_detail->id;
-                        $event_fund->user_login_id = $user_detail->userlogin->id;
-                        $event_fund->fund_amount = (float) $data[2];
-                        // $event_fund->created_at = date("Y-m-d H:i:s",strtotime($data[0]));
-                        // $event_fund->updated_at = date("Y-m-d H:i:s",strtotime($data[0]));
-                        $event_fund->scholarship = false;
-                        try {
-                            $event_fund->save();
-                        } catch (\Throwable $th) {
-                            //throw $th;
-                            dd($th->getMessage());
+                    
+                        if ($fund_exists) {
+
+                            $fund_exists->fund_amount = $fund_exists->fund_amount + (float) $data[2];
+                            $fund_exists->save();
+                            $event_fund = $fund_exists;
+                        } else {        
+                            $event_fund = new EventFund;
+                            $event_fund->sibir_record_id = 1;
+                            $event_fund->user_detail_id = $user_detail->id;
+                            $event_fund->user_login_id = $user_detail->userlogin->id;
+                            $event_fund->fund_amount = (float) $data[2];
+                            // $event_fund->created_at = date("Y-m-d H:i:s",strtotime($data[0]));
+                            // $event_fund->updated_at = date("Y-m-d H:i:s",strtotime($data[0]));
+                            $event_fund->scholarship = false;
+                            try {
+                                $event_fund->save();
+                            } catch (\Throwable $th) {
+                                //throw $th;
+                                dd($th->getMessage());
+                            }
                         }
+
                         $admission_transaction = new EventFundDetail;
                         $admission_transaction->user_detail_id = $user_detail->id;
                         $admission_transaction->user_login_id = $user_detail->userlogin->id;

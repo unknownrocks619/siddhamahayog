@@ -48,7 +48,8 @@ Route::prefix('event')
             Route::get("/zoom/zonal-registration/{zoom}",[ZoomController::class,"register_participants"])->name('center_create_zonal_registration');
             Route::post('/zoom/zonal_session_start/{zoom}',[ZoomController::class,"start_zonal_session"])->name("center_start_zonal_setting");
             Route::post('/zoom/end_zonal_session/{zoom}',[ZoomController::class,"end_zonal_session"])->name("center_end_zonal_setting");
-
+            Route::get("/zoom/participants/{zoom}",[ZoomController::class,"display_participants"])->name('center_get_participants_list');
+            Route::get("/zoom/revoke/{zoom}",[ZoomController::class,"revoke_access"])->name("center_revoke_zoom_access");
 
         });
 

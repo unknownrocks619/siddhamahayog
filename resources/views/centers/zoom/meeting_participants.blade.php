@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.center')
 
 @section('content')
 <section id="headers">
@@ -10,21 +10,21 @@
 
                         @if( ! $zoom->is_active && $zoom->is_global)
                             <div class='col-4'>
-                                <a href="{{ route('events.admin_register_participants_to_sibir',[$zoom->id]) }}" class='btn btn-primary registration'>
+                                <a href="{{ route('event.center_register_participants_to_sibir',[$zoom->id]) }}" class='btn btn-primary registration'>
                                     Begin Registration
                                 </a>
                             </div>
                         @endif
                         @if( ! $zoom->is_active && ! $zoom->is_global)
                             <div class='col-4'>
-                            <a class="btn btn-primary" href="{{ route('events.admin_create_zonal_registration',[$zoom->id]) }}">
+                            <a class="btn btn-primary" href="{{ route('event.center_create_zonal_registration',[$zoom->id]) }}">
                                     Begin Registration
                                 </a>
                             </div>
                         @endif
                         @if(! $zoom->is_active)
                         <div class='col-4'>
-                            <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('events.admin_start_global_meeting',[$zoom->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom->id]) }} @endif">
+                            <form target="_blank" method="post" action=" {{ route('event.center_start_zonal_setting',[$zoom->id]) }}">
                                 @csrf
                                 <button type="submit" class="btn btn-success">Start Session</button>
                             </form>
@@ -32,14 +32,14 @@
                         </div>
                         @else
                         <div class='col-4'>
-                            <form method="post" action="@if($zoom->is_global) {{ route('events.admin_end_zonal_setting',[$zoom->id])}} @else {{ route('events.admin_end_global_setting',[$zoom->id]) }} @endif">
+                            <form method="post" action="{{ route('event.center_end_zonal_setting',[$zoom->id])}} ">
                                 @csrf
                                 <button type="submit" class="btn btn-danger">End Session</button>
                             </form>
                             <!-- <a href="{{-- route('events.admin_start_global_meeting',[$zoom->id]) --}}" class='btn btn-success'>Start Meeting</a> -->
                         </div>
                         <div class='col-4'>
-                        <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('events.admin_start_global_meeting',[$zoom->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) }} @endif">
+                        <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('event.center_start_global_meeting',[$zoom->id])}} @else {{ route('event.center_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) }} @endif">
                                 @csrf
                                 <button type="submit" class="btn btn-success">Reconnect Session</button>
                             </form>
@@ -48,11 +48,11 @@
                         @endif
                         @if( ! $zoom->is_active && !$zoom->is_used)           
                             <div class='col-4'>
-                                <a href="{{ route('events.admin_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Recreate Meeting</a>
+                                <a href="{{ route('event.center_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Recreate Meeting</a>
                             </div>
                         @elseif (! $zoom->is_active)
                             <div class='col-4'>
-                                <a href="{{ route('events.admin_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Create Meeting</a>
+                                <a href="{{ route('event.center_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Create Meeting</a>
                             </div>
 
                         @endif
@@ -79,14 +79,9 @@
                     <div style="display:none" id="alert_message">
                     </div>               
                     <x-alert></x-alert>
-                    <form class='mb-2' method="post" id="search_and_add" action="{{ route('events.admin_add_user_to_meeting') }}">
-                        @csrf
-                        <input type="hidden" name="current_meeting" value="{{$zoom->id}}" />
-                        <input type="search" class="form-control" name="search" placeholder="Search by loginID or Email" />
-                        <input type="submit" class='btn btn-primary mt-2' value="Search and Add" />
-                    </form>
+                    
                     <div id="search_filter_result"></div>
-                    <table class='table table-bordered table-hover'>
+                    <table class='table table-bordered table-hover' id="participants_table">
                         <thead>
                             <tr>
                                 <th>Full Name</th>
@@ -139,9 +134,9 @@
                                             @endif
                                             
                                             @if( ! $registration )
-                                                <a href="{{ route('events.admin_create_zonal_registration',[$zoom->id,'user'=>$participant->userdetail->id]) }}" class='btn btn-success btn-sm'>Register Sadhak</a>
+                                                <a href="{{ route('event.center_create_zonal_registration',[$zoom->id,'user'=>$participant->userdetail->id]) }}" class='btn btn-success btn-sm'>Register Sadhak</a>
                                             @else 
-                                                <a href="{{ route('events.admin_revoke_zoom_access',[$zoom->id,'user'=>$participant->userdetail->id]) }}" class='btn btn-danger btn-sm '>Revoke Access</a>
+                                                <a href="{{ route('event.center_revoke_zoom_access',[$zoom->id,'user'=>$participant->userdetail->id]) }}" class='btn btn-danger btn-sm '>Revoke Access</a>
                                             @endif
                                         </td>
                                     </tr>
@@ -180,6 +175,21 @@
 @endSection()
 
 @section('page_js')
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+        <!-- END: Page Vendor JS-->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#participants_table").DataTable();
+            });
+        </script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
    <script type="text/javascript">
@@ -221,22 +231,23 @@
             return false;
         });
 
-        $("form#search_and_add").submit(function(event) {
-            event.preventDefault();
-            $.ajax({
-                method : $(this).attr("method"),
-                url : $(this).attr('action'),
-                data: $(this).serializeArray(),
-                success: function (response) {
-                    if (response.success == true){
-                            $("#alert_message").attr("class",'alert alert-success')
-                        } else {
-                            $("#alert_message").attr("class",'alert alert-danger')
-                        }
-                    $("#alert_message").html(response.message);
-                    $("#alert_message").fadeIn('medium');
-                }
-            })
-        })
+        // $("form").submit(function(event) {
+        //     event.preventDefault();
+        //     $.ajax({
+        //         method : $(this).attr("method"),
+        //         url : $(this).attr('action'),
+        //         data: $(this).serializeArray(),
+        //         success: function (response) {
+        //             if (response.success == true){
+        //                     $("#alert_message").attr("class",'alert alert-success')
+        //                 } else {
+        //                     $("#alert_message").attr("class",'alert alert-danger')
+        //                 }
+        //             $("#alert_message").html(response.message);
+        //             $("#alert_message").fadeIn('medium');
+        //         }
+        //     })
+        // })
    </script>
+
 @endSection()

@@ -1,9 +1,9 @@
 @if( ! $funds->count())
     <h4 class='text-danger'>Record Not Found.</h4>
 @else
-    <table class='table table-bordered'>
+    <table id="user_table" class='table table-responsive table-bordered table-hover '>
         <thead>
-            @if(request()->record_type == "overview")
+            @if(request()->record_type == "overview" || request()->record_type == "all")
                 <tr>
                     <th>Sadhak Detail</th>
                     <th class="bg-light">Amount</th>
@@ -25,7 +25,7 @@
             @endif
         </thead>
         <tbody>
-            @if(request()->record_type == "overview")
+            @if(request()->record_type == "overview" || request()->record_type == "all")
                 @foreach ($funds as $fund)
                     <tr>
                         <td>
@@ -37,7 +37,7 @@
                         <td>
                             {{ $fund->fund_detail->count() }}
                             <br />
-                            <small>[<a href="" style="text-decoration:underline">view detail</a>]</small>
+                            <small>[<a href="{{ route('courses.admin_view_transaction_detail',[$fund->id]) }}" target="_blank" style="text-decoration:underline">view detail</a>]</small>
                         </td>
                         <td>
                             {{ $fund->fund_detail->last()->created_at }}
@@ -80,5 +80,30 @@
             @endif
         </tbody>
     </table>
+    <!-- BEGIN: Page Vendor JS-->
+    <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+        <!-- END: Page Vendor JS-->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#user_table").DataTable();
+            });
+        </script>
 @endif
+
+
+<!-- 
+lalpurja
+Mom Citizenship
+Nirman Sapana
+Trace Nakasa 
+-->
+
+
 

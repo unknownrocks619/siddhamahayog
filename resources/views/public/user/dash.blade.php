@@ -171,8 +171,6 @@
 
 				<div class='row'>
 					@include("public.user.dash.offline")
-
-					@include("public.user.dash.regular")
 				</div>
 
 			</div>
