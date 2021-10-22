@@ -46,6 +46,8 @@ Route::get('/excel',[ImportExcel::class,'index']);
 Route::get('/import/intl',[ImportExcel::class,'internationList']);
 Route::get("/local/transaction",[ImportExcel::class,'local_transaction'])->name('local_transaction_import');
 Route::get('/', function () {
+        echo "404 Not Found.";
+        die();
     return redirect('locale');
 });
 
