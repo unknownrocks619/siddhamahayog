@@ -13,7 +13,7 @@
             @foreach ($transaction->fund_detail as $all_transactions)
             <div class="col-6 mb-2">
                 <div class="card">
-                    <div class="card-header @if($all_transactions->status == 'Verified') bg-success @else bg-warning @endif  text-white">
+                    <div class="card-header @if($all_transactions->status == 'Verified') bg-success @elseif($all_transactions->status == 'Rejected')  bg-danger @else bg-warning @endif  text-white">
                         <h4 class="card-title">
                             {{ $all_transactions->status }}
                         </h4>
