@@ -32,7 +32,7 @@
                         </div>
                         @else
                         <div class='col-4'>
-                            <form method="post" action="@if($zoom->is_global) {{ route('events.admin_end_zonal_setting',[$zoom->id])}} @else {{ route('events.admin_end_global_setting',[$zoom->id]) }} @endif">
+                            <form method="post" action="@if(! $zoom->is_global) {{ route('events.admin_end_zonal_setting',[$zoom->id])}} @else {{ route('events.admin_end_global_setting',[$zoom->id]) }} @endif">
                                 @csrf
                                 <button type="submit" class="btn btn-danger">End Session</button>
                             </form>

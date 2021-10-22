@@ -614,7 +614,6 @@ class ZoomController extends Controller
                                         ->where("meeting_id",$zoom->meeting_id)
                                         ->latest()
                                         ->first();
-        dd($event_detail);
         if ( $event_detail ) {
             $event_detail->is_active = false;
             $event_detail->save();
