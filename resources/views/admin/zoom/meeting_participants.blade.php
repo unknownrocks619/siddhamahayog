@@ -48,11 +48,19 @@
                         @endif
                         @if( ! $zoom->is_active && !$zoom->is_used)           
                             <div class='col-4'>
+                                @if($zoom->is_global)
+                                    <a href="{{ route('events.admin_create_global_meeting') }}" class="btn btn-warning">Create Meeting </a>
+                                @else
                                 <a href="{{ route('events.admin_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Recreate Meeting</a>
+                                @endif
                             </div>
                         @elseif (! $zoom->is_active)
                             <div class='col-4'>
-                                <a href="{{ route('events.admin_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Create Meeting</a>
+                                @if ($zoom->is_global)
+                                <a href="{{ route('events.admin_create_global_meeting') }}" class="btn btn-warning">Create Meeting </a>
+                                @else
+                                    <a href="{{ route('events.admin_create_zonal_meeting',[$zoom->country_id]) }}" class='btn btn-warning'>Create Meeting</a>
+                                @endif
                             </div>
 
                         @endif
