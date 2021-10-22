@@ -146,7 +146,7 @@ class ZoomController extends Controller
         $meeting_setting = ZoomSetting::where('is_global',true)->firstOrFail();
         $meeting_configuration = [
             "type" => 2,
-            "topic" => " Testing -- " . $meeting_setting->sibir->sibir_title . " Global ",
+            "topic" => $meeting_setting->sibir->sibir_title . " Global ",
             "start_time" => date('Y-m-dT'.$time),
             "timezone" => $meeting_setting->timezone,
             "duration" => 300,
