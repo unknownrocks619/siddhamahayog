@@ -111,7 +111,7 @@
                     <div class='card-body'>
                         <div class='card'>
                             <div class='card-body mt-2'>
-                                <table class='table table-bordered table-hover'>
+                                <table class='table table-bordered table-hover table-responsive' id="user_list">
                                     <thead>
                                         <tr>
                                             <th>Sadhak / User Name</th>
@@ -121,6 +121,7 @@
                                             <th>Total</th>
                                             <!-- <th>Percentage</th> -->
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -129,48 +130,50 @@
                                         @endphp
 
                                         @foreach ($all_user as $user)
-                                            <tr>
-                                                <td> {{ $user->userDetail->full_name() }} </td>
-                                                <td> {{ $collection->sibir->sibir_title }} </td>
-                                                <td>
-                                                    @php
-                                                        $ans_coll = \App\Models\UserAnswer::where('question_collection_id',$collection->id)
-                                                                                                ->where('user_detail_id',$user->userDetail->id)
-                                                                                                ->first();
-                                                        
-                                                        if ($ans_coll) {
-                                                            // calculate subjective marks
-                                                            echo $ans_coll->objective_answer->sum('obtained_marks');
-                                                        } else {
-                                                            echo "<span class='text-danger'>Not Attempted</span>";
-                                                        }
-                                                    @endphp
-                                                </td>
-                                                <td>
-                                                    @if($ans_coll)
-                                                        {{ $ans_coll->subjective_answer->sum('obtained_marks') }}
-                                                    @else
-                                                        0
-                                                    @endif
-                                                </td>
-                                                <td> 
-                                                    {{ $ans_coll->marks_obtained ?? 0 }}
-                                                </td>
-                                                <td>
-                                                    @if($ans_coll)
-                                                        <a href="{{ route('modals.display',['modal'=>'objective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" data-toggle='modal' data-target='#page-modal'>
-                                                            Objective Result
-                                                        </a>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($ans_coll)
-                                                        <a href="{{ route('modals.display',['modal'=>'subjective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" data-toggle="modal" data-target="#page-modal">
-                                                            Subjective Answer
-                                                        </a>
-                                                    @endif
-                                                </td>
-                                            </tr>
+                                            @if($user->userDetail)
+                                                <tr>
+                                                    <td> {{ $user->userDetail->full_name() }} </td>
+                                                    <td> {{ $collection->sibir->sibir_title }} </td>
+                                                    <td>
+                                                        @php
+                                                            $ans_coll = \App\Models\UserAnswer::where('question_collection_id',$collection->id)
+                                                                                                    ->where('user_detail_id',$user->userDetail->id)
+                                                                                                    ->first();
+                                                            
+                                                            if ($ans_coll) {
+                                                                // calculate subjective marks
+                                                                echo $ans_coll->objective_answer->sum('obtained_marks');
+                                                            } else {
+                                                                echo "<span class='text-danger'>Not Attempted</span>";
+                                                            }
+                                                        @endphp
+                                                    </td>
+                                                    <td>
+                                                        @if($ans_coll)
+                                                            {{ $ans_coll->subjective_answer->sum('obtained_marks') }}
+                                                        @else
+                                                            0
+                                                        @endif
+                                                    </td>
+                                                    <td> 
+                                                        {{ $ans_coll->marks_obtained ?? 0 }}
+                                                    </td>
+                                                    <td>
+                                                        @if($ans_coll)
+                                                            <a href="{{ route('modals.display',['modal'=>'objective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" data-toggle='modal' data-target='#page-modal'>
+                                                                Objective Result
+                                                            </a>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($ans_coll)
+                                                            <a href="{{ route('modals.display',['modal'=>'subjective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" data-toggle="modal" data-target="#page-modal">
+                                                                Subjective Answer
+                                                            </a>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -222,6 +225,21 @@
     <!-- /Modal -->
 @endSection()
 @section('page_js')
+<script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.print.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.bootstrap4.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/pdfmake.min.js') }}"></script>
+        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/vfs_fonts.js') }}"></script>
+        <!-- END: Page Vendor JS-->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $("#user_list").DataTable();
+            });
+        </script>
+   
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
    <script type="text/javascript">
@@ -237,5 +255,5 @@
             })
         });
    </script>
-   
+        
 @endSection()
