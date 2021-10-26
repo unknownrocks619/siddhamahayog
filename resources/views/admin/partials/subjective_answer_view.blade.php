@@ -21,6 +21,8 @@
                         @if($answers->question->question_type == "image")
                             <img src='{{ question_image($answers->question->alternate_question_title) }}' class='img-thumbnail' style="max-width:75px; max-height: 75px" />
                         @endif
+                        
+                      
                     </h5>
                 </div>
             </div>
@@ -41,6 +43,13 @@
                                     <source src="{{ audio_asset($user_upload_answer->file) }}" type="audio/mpeg" />
                                 </audio>
                             @endif
+                            @php
+                                // $upload_file_type = json_decode($answers->subjective_answer_upload);
+
+                                if ($user_upload_answer->type == "application/pdf") {
+                                    echo "<a target='_blank' href='".question_image($user_upload_answer->file)."'>Click to Download PDF</a>";
+                                }
+                        @endphp
                         @endif
                     @endif
 
