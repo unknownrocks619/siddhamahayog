@@ -142,7 +142,7 @@
                                                             
                                                             if ($ans_coll) {
                                                                 // calculate subjective marks
-                                                                echo $ans_coll->objective_answer->sum('obtained_marks');
+                                                                echo ($ans_coll->objective_answer->sum('obtained_marks')) ? $ans_coll->objective_answer->sum('obtained_marks') : "Submitted";
                                                             } else {
                                                                 echo "<span class='text-danger'>Not Attempted</span>";
                                                             }
