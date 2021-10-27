@@ -56,7 +56,6 @@ class GeneralQuestionsController extends Controller
                                     ->where('question_id',$q->id)
                                     ->first();
         if ( $user_answer ) {
-            // dd("answer already available");
             $request->session()->flash("message","You have already attempted this question.");
             return back();
         }

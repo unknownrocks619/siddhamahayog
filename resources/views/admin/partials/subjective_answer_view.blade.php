@@ -5,6 +5,7 @@
             <div class='row'>
                 <div class='col-md-0 pr-0'>
                     <h5><strong>Q.</strong></h5>
+                    <small class='text-danger'>Submission Date: {{ $answers->created_at }}</small>
                 </div>
                 <div class='col-md-11 pl-0'>
                     <h5>
