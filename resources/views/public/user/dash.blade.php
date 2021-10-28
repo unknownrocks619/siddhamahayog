@@ -72,6 +72,9 @@
 			
 			<div class="col-md-7 col-lg-8 col-xl-9">
 				<div class='row'>
+					<div class='col-md-12'>
+						@include("public.inc.support-text")
+					</div>
 					<div class='col-md-8 mt-4 pt-4'>
 						<div class='card'>
 							<div class='card-header bg-primary'>
@@ -257,7 +260,7 @@
     </script>
 	<script type="text/javascript">
 		$(window).on('load',function() {
-			$("#notification").modal('show');
+			// $("#notification").modal('show');
 		})
 		
 		$('#page-modal').on('shown.bs.modal', function (event) {

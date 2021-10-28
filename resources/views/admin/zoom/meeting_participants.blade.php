@@ -39,11 +39,14 @@
                             <!-- <a href="{{-- route('events.admin_start_global_meeting',[$zoom->id]) --}}" class='btn btn-success'>Start Meeting</a> -->
                         </div>
                         <div class='col-4'>
-                        <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('events.admin_start_global_meeting',[$zoom->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) }} @endif">
+                            <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('events.admin_start_global_meeting',[$zoom->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) }} @endif">
                                 @csrf
                                 <button type="submit" class="btn btn-success">Reconnect Session</button>
                             </form>
                             <!-- <a href="{{-- route('events.admin_start_global_meeting',[$zoom->id]) --}}" class='btn btn-success'>Start Meeting</a> -->
+                        </div>
+                        <div class='col-4'>
+                            <a href="{{ route('events.admin_zoom_join_as_sadhak',[$zoom->id]) }}" class='btn btn-info'>Enter As Sadhak</a>
                         </div>
                         @endif
                         @if( ! $zoom->is_active && !$zoom->is_used)           

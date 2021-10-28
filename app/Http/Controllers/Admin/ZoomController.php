@@ -869,4 +869,19 @@ class ZoomController extends Controller
         ]);
 
     }
+
+    public function admin_join_as_sadhak(Request $request, ZoomSetting $zoom) {
+        if (! isAdmin()  ) {
+            abort(404);
+        }
+
+        $user_sadhak_join_link = SadhakUniqueZoomRegistration::where('meeting_id',$zoom->meeting_id)
+                                    ->where('user_detail_id',auth()->user()->user_detail_id)
+                                    ->first();
+        if ($user_sadhak_join_link) {
+            return redirect()->away($user_sadhak_join_link->join_link);
+        } 
+        $request->session()->flash('message',"Sorry Id is not registered as sadhak.");
+        return back();
+    }
 }

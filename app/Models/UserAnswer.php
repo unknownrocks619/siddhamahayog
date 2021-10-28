@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserAnswer extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     public function answers() {
         return $this->hasMany(UserAnswersSubmit::class,'user_answer_id');

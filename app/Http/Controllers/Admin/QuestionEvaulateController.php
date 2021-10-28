@@ -53,7 +53,6 @@ class QuestionEvaulateController extends Controller
         $answer->obtained_marks = $request->marks;
         $answer->marks_verified = true;
         $answer->is_correct = ($request->marks) ? true : false;
-
         try {
             $answer->save();
             $answer->answer_collection->save();
@@ -63,7 +62,7 @@ class QuestionEvaulateController extends Controller
                 'message' => "Unable to save changes."
             ]);
         }
-
+        // also add user notification.
         return response([
             "success" => true,
             'message' => "Record updated."
