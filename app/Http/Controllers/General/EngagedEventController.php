@@ -74,7 +74,7 @@ class EngagedEventController extends Controller
             "transaction_medium" => 'required|in:bank_deposit,wire_transfer,international_payment,other',
             "depository_party" => "required|string",
             "reference_number" => "required",
-            "file" => "required|mimes:png,jpg,jpeg,gif|mimetypes:image/*",
+            "file" => "required",
             "amount" => "required|numeric"
         ]);
         $event_detail = SibirRecord::findOrFail(decrypt($event));

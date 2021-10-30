@@ -137,6 +137,23 @@ if ( ! function_exists('profile_asset') ) {
 }
 
 
+
+if ( ! function_exists('transaction_asset') ) {
+
+    function transaction_asset( $file_id )
+    {
+
+        $file = Uploader::find($file_id);
+        if ($file != NULL )
+        {
+            //
+            return app('url')->asset($file->path);
+        }
+        return null;
+    }
+}
+
+
 if (! function_exists ("rand_booking_number") ) {
 
     function rand_booking_number() {

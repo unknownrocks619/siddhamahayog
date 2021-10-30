@@ -20,6 +20,7 @@
                     </div>
                     <div class="card-body">
                         @if ($all_transactions->file)
+                            
                             <img src="{{ profile_asset($all_transactions->file) }}" class='img-fluid' />
                         @endif
                         <hr />
