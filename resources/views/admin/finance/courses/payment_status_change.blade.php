@@ -32,7 +32,7 @@
                     <p>
                         <strong>Uploaded File:</strong> @if( ! $transaction->file) Not Found @else <br />
                             <br />
-                            <a href="{{ profile_asset($transaction->file) }}" target="_blank">Having Proble? Click Here to view image</a>
+                            <a href="{{ profile_asset($transaction->file) }}" target="_blank">Having Problem? Click Here to view image</a>
                             <img src="{{ profile_asset($transaction->file) }}" class='img-thumbnail' />
                         @endif
                     </p>
