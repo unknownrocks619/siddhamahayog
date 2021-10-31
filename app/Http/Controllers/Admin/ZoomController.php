@@ -734,11 +734,12 @@ class ZoomController extends Controller
                 $data = [
                     "first_name" => ucwords(strtolower($first_name)),
                     "last_name" => ($register_user->userDetail->last_name) ?  ucwords(strtolower($register_user->userDetail->last_name)) : "L",
-                    "email" => "_test_{$register_user->user_detail_id}@gmail.com",
+                    "email" => "_test_{$register_user->user_detail_id}@siddhamahayog.org",
                     // "email" => ($register_user->userDetail->userlogin && $register_user->userDetail->userlogin->email) ? $register_user->userDetail->userlogin->email : "anoemailg_{$register_user->user_detail_id}@gmail.com"
                 ];
                 
                 $zoom_response = zoom_registration_link($data,$zoom->meeting_id,$zoom->signature);
+    
                 if ( $zoom_response ) {
                     $innerArray = [
                         'join_link' => $zoom_response->join_url,
@@ -753,6 +754,7 @@ class ZoomController extends Controller
                     $bulk_record[] = $innerArray;
                     $offlimitcontd = $register_user->id;    
                 } else {
+                    dd($data);
                     $skip_record[] = $data;
                 }
             }
