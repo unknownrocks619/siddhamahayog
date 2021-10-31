@@ -203,7 +203,7 @@ if ( ! function_exists ("zoom_registration_link") ) {
         } elseif(strtolower($user_data["first_name"]) == "shipa" && strtolower($user_data["last_name"]) == "neupane") {
             $user_data["first_name"] = "Ram";
             $user_data["last_name"] = "Das (E)";
-        } elseif(strtolower($user_data["first_name"]) == "ananda" && strtolower($user_data["last"]) == "priya") {
+        } elseif(strtolower($user_data["first_name"]) == "ananda" && strtolower($user_data["last_name"]) == "priya") {
             $user_data["first_name"] = "Ram";
             $user_data["last_name"] = "Das (F)";
         }
