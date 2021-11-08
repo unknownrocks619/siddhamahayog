@@ -600,10 +600,11 @@ class SadhanaController extends Controller
         
         if ($request->ajax()) {
 
-            $all_event_user = UserSadhakRegistration::where('sibir_record_id',$sibir->id)->paginate(($request->record_per_page) ? $request->record_per_page : 100);
+            $all_event_user = UserSadhakRegistration::where('sibir_record_id',$sibir->id)->with(["userDetail"])->paginate(($request->record_per_page) ? $request->record_per_page : 100);
             $event_class = EventVideoClass::where('event_id',$sibir->id)->first();
 
-            $filter_session = VideoClassLog::select(['start_time','id'])->where("event_video_class_id",$event_class->id)
+            $filter_session = VideoClassLog::select(['start_time','id'])
+            // ->where("event_video_class_id",$event_class->id)
                                             ->whereBetween('start_time',[$request->from_date,($request->end_date) ? $request->end_date : date("Y-m-d")])
                                             ->get();
             return view('admin.sadhana.attendance_result',compact("filter_session","all_event_user"));
