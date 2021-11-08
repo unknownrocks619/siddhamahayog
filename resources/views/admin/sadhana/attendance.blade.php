@@ -74,6 +74,8 @@
                         <option value="200">200</option>
                         <option value="350">350</option>
                         <option value="500">500</option>
+                        <option value="500">700</option>
+
                     </select>
                 </div>
                 <div class='col-md-12 mt-2'>
