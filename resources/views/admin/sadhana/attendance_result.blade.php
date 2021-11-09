@@ -46,7 +46,7 @@
         </tbody>
 
         <tfoot>
-            {{ $filter_session->paginate() }}
+            {{ $all_event_user->paginate() }}
         </tfoot>
     </table>
 
