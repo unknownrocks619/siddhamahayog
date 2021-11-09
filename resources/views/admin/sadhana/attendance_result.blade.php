@@ -66,4 +66,20 @@
             });
         });
     </script>
+    <script>
+        $('.page-link').click(function(event) {
+            event.preventDefault();
+            let from_date = $("input[name='from_date']").val()
+                let to_end = $("input[name='to_date']").val();
+                let record_per_page = $("select[name='record_per_page']").val();
+                $.ajax({
+                    type : "GET",
+                    url : $(this).attr("href"),
+                    data : "from_date="+from_date+"&end_date="+to_end+"&record_per_page="+record_per_page,
+                    success : function (response) {
+                        $("#user_list").html(response);
+                    }
+                })
+        })
+    </script>
 @endif
