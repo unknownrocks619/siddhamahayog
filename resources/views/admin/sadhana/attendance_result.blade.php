@@ -46,7 +46,7 @@
         </tbody>
 
         <tfoot>
-            {{ $all_event_user->paginate() }}
+            {{-- $all_event_user->paginate() --}}
         </tfoot>
     </table>
 
