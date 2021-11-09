@@ -46,6 +46,7 @@
         </tbody>
 
         <tfoot>
+            {{ $filter_session->paginate() }}
         </tfoot>
     </table>
 
