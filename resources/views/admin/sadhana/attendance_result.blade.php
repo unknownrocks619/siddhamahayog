@@ -21,9 +21,10 @@
 
         <tbody>
             @foreach ($all_event_user as $users)
+                @if($users->userDetail)
                 <tr>
                     <td> {{ $users->userDetail->full_name() ?? "User N/A" }} </td>
-                    <td> {{ $users->userDetail->phone_number }} </td>
+                    <td> {{ $users->userDetail->phone_number ?? "Phone N/A" }} </td>
                     @foreach ($filter_session as $session)
                         @php
                             $user_attendance = \App\Models\EventVideoAttendance::where('user_id',$users->user_detail_id)
@@ -42,6 +43,7 @@
                         @endif 
                     @endforeach
                 </tr> 
+                @endif
             @endforeach
         </tbody>
 
