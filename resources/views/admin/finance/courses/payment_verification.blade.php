@@ -56,6 +56,8 @@
                         </tbody>
                     </table>
                     @endif
+
+                    {{ $funds->links() }}
                 </div>
             </div>
         </div>

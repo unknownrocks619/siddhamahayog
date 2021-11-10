@@ -151,7 +151,7 @@ class CourseController extends Controller
     }
 
     public function unverified_payments() {
-        $funds = EventFundDetail::with(["user_detail","sibir"])->where('status','pending')->latest()->get();
+        $funds = EventFundDetail::with(["user_detail","sibir"])->where('status','pending')->latest()->paginate(50);
         return view("admin.finance.courses.payment_verification",compact("funds"));
     }
     
