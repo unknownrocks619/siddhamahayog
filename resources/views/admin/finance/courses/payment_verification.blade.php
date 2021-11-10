@@ -37,7 +37,7 @@
                                         {{ $fund->sibir->sibir_title }}
                                     </td>
                                     <td>
-                                        NRs. {{ number_format($fund->amount ?? 0,2) }}
+                                        NRs. {{ number_format((float) $fund->amount,2) }}
                                     </td>
                                     <td>
                                         {{ $fund->source }}
