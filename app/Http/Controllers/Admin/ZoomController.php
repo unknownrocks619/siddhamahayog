@@ -140,7 +140,8 @@ class ZoomController extends Controller
         if (! isAdmin() ) {
             abort(403);
         }
-        $time = "19:30:00";
+        $time = '07:30:00';
+        //  date("h:i:s");
 
         // fetch jwt token for meeting.
         $meeting_setting = ZoomSetting::where('is_global',true)->firstOrFail();
