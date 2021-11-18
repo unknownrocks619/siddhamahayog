@@ -39,10 +39,11 @@
                             <!-- <a href="{{-- route('events.admin_start_global_meeting',[$zoom->id]) --}}" class='btn btn-success'>Start Meeting</a> -->
                         </div>
                         <div class='col-4'>
-                            <form target="_blank" method="post" action="@if($zoom->is_global) {{ route('events.admin_start_global_meeting',[$zoom->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) }} @endif">
+                            <a href="{{ $zoom->admin_start_url }}" target="_blank">Re-Connect</a>
+                            <!-- <form target="_blank" method="post" action="@if($zoom->is_global) {{-- route('events.admin_start_global_meeting',[$zoom->id]) --}} @else {{-- route('events.admin_start_zonal_setting',[$zoom->id,'type'=>'rejoin']) --}} @endif">
                                 @csrf
                                 <button type="submit" class="btn btn-success">Reconnect Session</button>
-                            </form>
+                            </form> -->
                             <!-- <a href="{{-- route('events.admin_start_global_meeting',[$zoom->id]) --}}" class='btn btn-success'>Start Meeting</a> -->
                         </div>
                         <div class='col-4'>

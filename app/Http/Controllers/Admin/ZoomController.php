@@ -887,4 +887,12 @@ class ZoomController extends Controller
         $request->session()->flash('message',"Sorry Id is not registered as sadhak.");
         return back();
     }
-}
+
+    public function reconnect_session(Request $request, ZoomSetting $zoom) {
+        if (! isAdmin()  ) {
+            abort(404);
+        }
+
+        dd($zoom);
+    }
+ }

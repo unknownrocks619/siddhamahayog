@@ -235,6 +235,7 @@ Route::prefix("event")
             Route::get("/zoom/revoke/{zoom}",[ZoomController::class,"revoke_access"])->name("admin_revoke_zoom_access");
             Route::get("/zoom/merge/",[ZoomController::class,"zoom_merge"])->name("admin_view_merge_session");
             Route::get("/zoom/registration/{zoom}",[ZoomController::class,"global_sadhak_register"])->name('admin_register_participants_to_sibir');
+            Route::get("/zoom/reconnect/{zoom}",[ZoomController::class,"reconnect_session"])->name('admin_reconnect_zoom_session');
             Route::get("/zoom/join/{zoom}",[ZoomController::class,'admin_join_as_sadhak'])->name('admin_zoom_join_as_sadhak');
             Route::post("/zoom/merge/post",[ZoomController::class,"merge_submission"])->name("admin_merge_session");
             Route::post('/zoom/zonal_session_start/{zoom}',[ZoomController::class,"start_zonal_session"])->name("admin_start_zonal_setting");
