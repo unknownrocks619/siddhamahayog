@@ -18,7 +18,7 @@ class CreateCourseChaptersTable extends Migration
             $table->string('sibir_record_id');
             $table->string("chapter_name");
             $table->string("chapter_slug")->unique();
-            $table->longText("description");
+            $table->longText("description")->nullable();
             $table->string('total_lessions')->default(0);
             $table->boolean("active")->default(true);
             $table->boolean('locked')->default(false);

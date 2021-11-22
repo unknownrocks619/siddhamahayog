@@ -124,6 +124,12 @@ class ChapterCourseController extends Controller
             ]);
         }
 
+        if (! $video->course_chapter_id) {
+            $add_plus_to_videos = true;
+
+        } else {
+            $add_plus_to_videos = false;
+        }
         $video->video_title = $request->video_title;
         $video->description = $request->description;
         $video->course_chapter_id = ($video->course_chapter_id) ? $video->course_chapter_id : $request->chapter;
@@ -131,6 +137,11 @@ class ChapterCourseController extends Controller
         $video->description = $request->description;
         try {
             $video->save();
+            if ( $add_plus_to_videos ) {
+                $chapter = $chapter->chapter;
+                $chapter->total_lessions = $chapter->total_lessions + 1;
+                $chapter->save();
+            }
         } catch (\Throwable $th) {
             //throw $th;
             $request->session()->flash('message','Error: '. $th->getMessage());

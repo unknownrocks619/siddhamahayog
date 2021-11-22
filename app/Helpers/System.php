@@ -197,9 +197,6 @@ if ( ! function_exists ("zoom_registration_link") ) {
         } elseif (strtolower($user_data["first_name"]) == "banshidhar" && strtolower($user_data["last_name"]) == "sharma") {
             $user_data["first_name"] = "Ram";
             $user_data["last_name"] = "Das (D)";
-        } elseif (strtolower($user_data["first_name"]) == "prashant" && strtolower($user_data["last_name"]) == "adhikari") {
-            $user_data["first_name"] = "Ram";
-            $user_data["last_name"] = "Das (C)";
         } elseif(strtolower($user_data["first_name"]) == "shipa" && strtolower($user_data["last_name"]) == "neupane") {
             $user_data["first_name"] = "Ram";
             $user_data["last_name"] = "Das (E)";
@@ -207,6 +204,10 @@ if ( ! function_exists ("zoom_registration_link") ) {
             $user_data["first_name"] = "Ram";
             $user_data["last_name"] = "Das (F)";
         }
+        // elseif (strtolower($user_data["first_name"]) == "prashant" && strtolower($user_data["last_name"]) == "adhikari") {
+            // $user_data["first_name"] = "Ram";
+            // $user_data["last_name"] = "Das (C)";
+        // } 
         $curl_url = "https://api.zoom.us/v2/meetings/".$meeting_id."/registrants";        
         $curl = curl_init();
         curl_setopt_array($curl, array(
