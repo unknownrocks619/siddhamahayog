@@ -53,6 +53,8 @@
                       </td>
                       <td>
                           <a href="{{ $video->full_link }}" target="__blank">View</a>
+                          |
+                          <a href="{{ route('chapters.lession.admin_edit_offline_video',[$video->id]) }}">Edit Source</a>
                       </td>
                     </tr>
                   @endforeach

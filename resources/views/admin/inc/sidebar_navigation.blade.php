@@ -452,14 +452,14 @@
                   </span>
               </a>
                 <ul class="menu-content">
-                    <li class="{{ isActive('events.admin_video_class_list') }} {{ isActive('events.admin_video_add_form') }} {{ isActive('events.admin_view_active_attendance') }} {{  isActive('events.admin_view_active_session') }} {{ isActive('events.admin_view_session_attendance') }} ">
-                      <a class="d-flex align-items-center" href="{{ route('events.admin_video_class_list') }}">
+                    <!-- <li class="{{-- isActive('events.admin_video_class_list') --}} {{-- isActive('events.admin_video_add_form') --}} {{-- isActive('events.admin_view_active_attendance') --}} {{-- isActive('events.admin_view_active_session') --}} {{-- isActive('events.admin_view_session_attendance') --}} ">
+                      <a class="d-flex align-items-center" href="{{-- route('events.admin_video_class_list') --}}">
                         <i class="bx bx-right-arrow-alt"></i>
                         <span class="menu-item text-truncate" data-i18n="programs">
                           Add Class Detail
                         </span>
                       </a>
-                  </li>
+                  </li> -->
                   <li class="{{ isActive('events.admin_offline_video_list') }} {{ isActive('events.admin_offline_video_add') }} {{ isActive('events.admin_offline_video_attendance_list') }}">
                       <a class="d-flex align-items-center" href="{{ route('events.admin_offline_video_list') }}">
                         <i class="bx bx-right-arrow-alt"></i>
@@ -467,7 +467,16 @@
                             Offline Video Source
                         </span>
                       </a>
+                  </li>
+                  <li class="{{ areActiveRoutes(['chapters.admin_list_all_chapters','chapters.admin_add_new_chapters']) }} ">
+                      <a class="d-flex align-items-center" href="{{ route('chapters.admin_list_all_chapters') }}">
+                        <i class="bx bx-right-arrow-alt"></i>
+                        <span class="menu-item text-truncate" data-i18n="programs">
+                            Chapters
+                        </span>
+                      </a>
                   </li>                
+
                 </ul>
             </li> 
 

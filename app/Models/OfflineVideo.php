@@ -20,4 +20,8 @@ class OfflineVideo extends Model
     public function user_registration() {
         return $this->belongsTo(UserSadhakRegistration::class,"event_id",'sibir_record_id');
     }
+
+    public function chapter() {
+        return $this->belongsTo(CourseChapter::class,"course_chapter_id");
+    }
 }

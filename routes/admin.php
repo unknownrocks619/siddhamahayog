@@ -16,6 +16,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\EventVideoClassController;
 use App\Http\Controllers\OfflineVideoController;
 use App\Http\Controllers\Admin\ZoomController;
+use App\Http\Controllers\Admin\Chapters\ChapterCourseController;
 /**
  * Admin Folder Controller
  */
@@ -324,9 +325,33 @@ Route::prefix("course")
                 Route::post("/add",[CourseController::class,"store"])->name("admin_course_store");
         });
 
-Route::get('/attendance', function (){
-    return view("admin.attendance.report");
-});
+
+    Route::get('/attendance', function (){
+     return view("admin.attendance.report");
+    });
 
 Route::get("/user-registration-link", [ZoomActionController::class,"index"])->name("admin_zoom_registration_view");
 Route::get('/user-generate-link/{meetin_id}/{user_id?}',[ZoomActionController::class,"generate_link"])->name('admin_generate_link');
+
+
+
+Route::prefix('chapters')
+        ->name('chapters.')
+        ->middleware(['auth','admin'])
+        ->group(function() {
+            Route::get("/list",[ChapterCourseController::class,'index'])->name("admin_list_all_chapters");
+            Route::get('/add',[ChapterCourseController::class,"create"])->name('admin_add_new_chapters');
+            Route::get('/edit/{courseChapter}',[ChapterCourseController::class,"edit"])->name('admin_edit_chapter_detail');
+            Route::post('/add',[ChapterCourseController::class,"store"])->name("admin_store_chapter");
+            Route::post('/edit/{courseChapter}',[ChapterCourseController::class,"update"])->name('update_chapter_detail');
+
+            Route::prefix('lession')
+                    ->name('lession.')
+                    ->group( function () {
+                        Route::get("/list/{courseChapter}",[ChapterCourseController::class,"show"])->name("admin_course_videos");
+                        Route::get('/add/{courseChapter}',[ChapterCourseController::class,"add_video"])->name('admin_course_add_video');
+                        Route::post("/add/{courseChapter}",[ChapterCourseController::class,"store_video"])->name('admin_store_new_video');
+                        Route::get("/edit/{video}",[ChapterCourseController::class,"edit_video"])->name("admin_edit_offline_video");
+                        Route::post('/edit/{video}',[ChapterCourseController::class,"update_video"])->name("admin_update_offline_video");
+                    });
+        });
