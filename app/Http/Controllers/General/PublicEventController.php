@@ -660,7 +660,15 @@ class PublicEventController extends Controller
         ]);
     }
 
-    public function offline_videos() {
+    public function offline_videos($sibir_record = 1, $video_id = null) {
+        //check authroized
+        $user_registration = UserSadhakRegistration::where('user_detail_id',auth()->user()->user_detail_id)->where('sibir_record_id',$sibir_record)->first();
+
+        if ( ! $user_registration )  {
+            abort(403);
+        }
+        $chapters = \App\Models\CourseChapter::with(["videos"])->where('sibir_record_id',$sibir_record)->get();
+        return view("public.user.offline.chapter_view",compact('chapters','video_id'));
         return view("public.user.offline.index");
     }
 

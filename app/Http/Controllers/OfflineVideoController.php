@@ -13,7 +13,7 @@ class OfflineVideoController extends Controller
     use Upload;
     //
     public function index() {
-        $offline_video = OfflineVideo::withCount('video_attendance')->get();
+        $offline_video = OfflineVideo::withCount('video_attendance')->where('course_chapter_id' ,null)->get();
         return view('admin.event_class.video_list',compact('offline_video'));
     }
 

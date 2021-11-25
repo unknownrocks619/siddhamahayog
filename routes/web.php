@@ -245,6 +245,7 @@ Route::prefix("p")
                         ->name('offline.')
                         ->group( function () {
                                 Route::get("/list",[PublicEventController::class,'offline_videos'])->name('public_get_offline_videos');
+                                Route::get("/list/{sibir_record?}/{video_id?}",[PublicEventController::class,'offline_videos'])->name('public_get_video_detail');
                         });
 
                 Route::prefix("live")
