@@ -126,7 +126,7 @@ class ChapterCourseController extends Controller
 
         if (! $video->course_chapter_id) {
             $add_plus_to_videos = true;
-
+            $chapter = CourseChapter::find($request->chapter);
         } else {
             $add_plus_to_videos = false;
         }
@@ -138,7 +138,7 @@ class ChapterCourseController extends Controller
         try {
             $video->save();
             if ( $add_plus_to_videos ) {
-                $chapter = $chapter->chapter;
+                // $chapter = $chapter->chapter;
                 $chapter->total_lessions = $chapter->total_lessions + 1;
                 $chapter->save();
             }
