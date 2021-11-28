@@ -56,10 +56,10 @@
                                 <ul>
                                     @foreach($chapters as $chapter)
                                         <li class='sidebar-dropdown active'>
-                                            <a href='#'> {{$chapter->chapter_name}} </a>
+                                            <a href='#'> {{$chapter->chapter_name}} - <small class="text-white"> {{ $chapter->total_lessions }} </small> </a>
                                             <div class="sidebar-submenu"  style="display:block">
                                                 <ul>
-                                                    @foreach ($chapter->videos as $video)
+                                                    @foreach ($chapter->videos->sortBy('sortable') as $video)
                                                         <li>
                                                             <a @if($video->id == $final_video_id)  class='text-info' @endif href="{{ route('public.offline.public_get_video_detail',[$video->event_id,encrypt($video->id)]) }}">
                                                                 {{$video->video_title}}
@@ -128,7 +128,7 @@
                                 @if($last_video_watch)
                                     <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/{{ $offline_video->youtube_id }}?title=0&byline=0&portrait=0&badge=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
                                     <p>
-                                        <a href="#">{{ $offline_video->video_title }}| </a> on <a href="#">Siddhamahayog.org</a>.</p>
+                                        <a href="#">{{ $offline_video->video_title }} | </a> on <a href="#">Siddhamahayog.org</a>.</p>
                                 @else
                                     <h5>Please Select Chapter from left navigation</h5>
                                 @endif
