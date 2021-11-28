@@ -56,7 +56,7 @@
                                 <ul>
                                     @foreach($chapters as $chapter)
                                         <li class='sidebar-dropdown active'>
-                                            <a href='#'> {{$chapter->chapter_name}} - <small class="text-white"> {{ $chapter->total_lessions }} </small> </a>
+                                            <a href='#'> {{$chapter->chapter_name}} - <small class="text-white"> {{ $chapter->total_lessions }} videos </small> </a>
                                             <div class="sidebar-submenu"  style="display:block">
                                                 <ul>
                                                     @foreach ($chapter->videos->sortBy('sortable') as $video)
