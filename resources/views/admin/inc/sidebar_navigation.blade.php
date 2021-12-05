@@ -460,14 +460,14 @@
                         </span>
                       </a>
                   </li> -->
-                  <li class="{{ isActive('events.admin_offline_video_list') }} {{ isActive('events.admin_offline_video_add') }} {{ isActive('events.admin_offline_video_attendance_list') }}">
-                      <a class="d-flex align-items-center" href="{{ route('events.admin_offline_video_list') }}">
+                  <!-- <li class="{{-- isActive('events.admin_offline_video_list') --}} {{ isActive('events.admin_offline_video_add') }} {{ isActive('events.admin_offline_video_attendance_list') }}">
+                      <a class="d-flex align-items-center" href="{{-- route('events.admin_offline_video_list') --}}">
                         <i class="bx bx-right-arrow-alt"></i>
                         <span class="menu-item text-truncate" data-i18n="programs">
                             Offline Video Source
                         </span>
                       </a>
-                  </li>
+                  </li> -->
                   <li class="{{ areActiveRoutes(['chapters.admin_list_all_chapters','chapters.admin_add_new_chapters']) }} ">
                       <a class="d-flex align-items-center" href="{{ route('chapters.admin_list_all_chapters') }}">
                         <i class="bx bx-right-arrow-alt"></i>

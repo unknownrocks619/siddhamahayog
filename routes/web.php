@@ -41,10 +41,10 @@ use App\Http\Controllers\General\PublicEventController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('/sms-test',[SmsTestController::class,"index"])->name('sms');
-Route::get('/excel',[ImportExcel::class,'index']);
-Route::get('/import/intl',[ImportExcel::class,'internationList']);
-Route::get("/local/transaction",[ImportExcel::class,'local_transaction'])->name('local_transaction_import');
+// Route::get('/sms-test',[SmsTestController::class,"index"])->name('sms');
+// Route::get('/excel',[ImportExcel::class,'index']);
+// Route::get('/import/intl',[ImportExcel::class,'internationList']);
+// Route::get("/local/transaction",[ImportExcel::class,'local_transaction'])->name('local_transaction_import');
 Route::get('/', function () {
         echo "404 Not Found.";
         die();

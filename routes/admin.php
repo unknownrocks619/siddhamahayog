@@ -73,7 +73,7 @@ Route::name('users.')
         ->group(function () {
             Route::get('register',[UserController::class,'new_user'])->name('new_user_registration');
             Route::get("edit/{userDetail}",[UserController::class,'edit'])->name('edit_user_detail');
-            Route::put('edit/{userDetail}',[UserContwroller::class,'update'])->name('update_user_detail');
+            Route::put('edit/{userDetail}',[UserController::class,'update'])->name('update_user_detail');
             Route::get('user-list',[UserController::class,'index'])->name('user-list');
             Route::get('user-detail/{id}',[UserController::class,'ad_user_detail'])->name('view-user-detail');
             Route::get("user-detail/{id}/{type}",[UserController::class,'ad_user_detail'])->name('view-service-detail');

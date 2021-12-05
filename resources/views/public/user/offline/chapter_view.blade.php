@@ -49,9 +49,17 @@
         <div class="row">
             <div class="col-md-3 col-lg-3 col-xl-3" style="padding-left:0px;padding-right:0px;background:#31353D">
                 <div class="page-wrapper chiller-theme toggled">
-                  
+                    <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+                        <i class="fas fa-bars"></i>
+                    </a>                    
                     <nav id="sidebar" class="sidebar-wrapper">
                         <div class="sidebar-content">
+                            <div class="sidebar-brand">
+                                <a href="#"></a>
+                                <div id="close-sidebar">
+                                <i class="fas fa-times"></i>
+                                </div>
+                            </div>
                             <div class="sidebar-menu">
                                 <ul>
                                     @foreach($chapters as $chapter)
