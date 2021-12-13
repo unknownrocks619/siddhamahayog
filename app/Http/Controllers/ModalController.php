@@ -91,6 +91,7 @@ class ModalController extends Controller
                         $modalRecord = Booking::findOrFail($request->reference_id);
                         break;
                     case "Offline":
+
                         $modalRecord = OfflineVideo::findOrFail(decrypt($request->reference_id));
                         break;
                     case "question":

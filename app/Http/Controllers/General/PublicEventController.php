@@ -14,6 +14,8 @@ use App\Models\EventAbsentRecord;
 use App\Models\SadhakUniqueZoomRegistration;
 use App\Models\ZoomSetting;
 use App\Models\userDetail;
+use App\Models\OfflineVideo;
+use App\Models\OfflineVideoAttendance;
 class PublicEventController extends Controller
 {
     //
@@ -660,14 +662,20 @@ class PublicEventController extends Controller
         ]);
     }
 
-    public function offline_videos($sibir_record = 1, $video_id = null) {
+    public function offline_videos(Request $request, $sibir_record = 1, $video_id = null) {
         //check authroized
         $user_registration = UserSadhakRegistration::where('user_detail_id',auth()->user()->user_detail_id)->where('sibir_record_id',$sibir_record)->first();
 
         if ( ! $user_registration )  {
             abort(403);
         }
+
         $chapters = \App\Models\CourseChapter::with(["videos"])->where('sibir_record_id',$sibir_record)->get();
+        if ( $request->ajax() ) {
+            return view ("public.user.offline.offline.folder",compact('chapters'));
+        }
+
+        return view("public.user.offline.folder_view",compact('chapters','video_id'));
         return view("public.user.offline.chapter_view",compact('chapters','video_id'));
         return view("public.user.offline.index");
     }
@@ -708,5 +716,31 @@ class PublicEventController extends Controller
 
     public function live_program(){
         return view('public.user.program.live');
+    }
+
+    public function chapter_list(Request $request) {
+        $videos = OfflineVideo::select(["full_link",'source','video_title','description','total_video_time','course_chapter_id',"id"])
+                                ->where('course_chapter_id',decrypt($request->__v))
+                                ->where('event_id',decrypt($request->__s))
+                                ->orderBy("sortable")
+                                ->get();
+        return view("public.user.offline.offline.chapter-view",compact("videos"));
+        
+    }
+
+    public function continue_watch(Request $request) {
+        $event = OfflineVideoAttendance::where('user_id',auth()->user()->user_detail_id)->latest()->first();
+        
+        if ( ! $event ) {
+            return null;
+        }
+
+        $offlineVideo = OfflineVideo::find($event->video_id);
+
+        if ( ! $offlineVideo ) {
+            return null;
+        }
+
+        return view("public.user.offline.offline.continue",compact("offlineVideo","event"));
     }
 }

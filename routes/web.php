@@ -124,7 +124,6 @@ Route::middleware(["auth"])
         ->name('public_offline_video_attendance');
 
 
-
 /**
  * 
  */
@@ -245,7 +244,9 @@ Route::prefix("p")
                         ->name('offline.')
                         ->group( function () {
                                 Route::get("/list",[PublicEventController::class,'offline_videos'])->name('public_get_offline_videos');
+                                Route::get("/videos/chapters/",[PublicEventController::class,"chapter_list"])->name('public_offline_video_list');
                                 Route::get("/list/{sibir_record?}/{video_id?}",[PublicEventController::class,'offline_videos'])->name('public_get_video_detail');
+                                Route::get("/continue/watch",[PublicEventController::class,"continue_watch"])->name("public_offline_video_continue_watch");
                         });
 
                 Route::prefix("live")
@@ -262,3 +263,4 @@ Route::prefix("p")
                                 Route::get("/personal",[PublicUserProfileController::class,"personal"])->name("public_personal");
                         });
         });
+// Route::get("/attendance",[\App\Http\Controllers\Attendance::class,"index"]);

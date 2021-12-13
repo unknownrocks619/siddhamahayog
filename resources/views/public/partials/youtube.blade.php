@@ -16,7 +16,6 @@
 
         // 
     } elseif($userAuth && ! $attendance) {
-        dd("if not attendance");
         $attendance = new \App\Models\OfflineVideoAttendance;
         $attendance->video_id = $record->id;
         $attendance->user_id = $user_detail;
@@ -89,12 +88,13 @@ $.ajaxSetup({
     }
     var request_param=1;
     $('#page-modal').on('hidden.bs.modal', function () {
+        $(".modal-body").html("please wait..loading your video");
         $.ajax({
             type: "post",
             data : "r_id={{ encrypt($record->id) }}&a_id={{encrypt($attendance->id)}}&request_param="+request_param,
             url : "{{ route('public_offline_video_attendance',[encrypt($record->id),encrypt($attendance->id)]) }}",
             success: function (response) {
-                window.location.href = "{{ route('public_user_dashboard') }}"
+                // window.location.href = "{{ route('public_user_dashboard') }}"
             }
         })
     });   
