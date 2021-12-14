@@ -19,9 +19,9 @@ class Attendance extends Controller {
         $get_all_meeting_record = EventVideoAttendance::where('source',"zonal")
                                     ->where('zonal_setting_id',2)
                                     ->with(["user_detail"])
-                                    ->limit(20)
-                                    ->get()
-                                    ->groupBy("user_id");
+                                    // ->limit(20)
+                                    ->get();
+                                    // ->groupBy("user_id");
         // dd($get_all_meeting_record);
         return view('canada',compact("get_all_meeting_record"));
         
