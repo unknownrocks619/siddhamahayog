@@ -47,7 +47,7 @@ class PublicUserProfileController extends Controller
         $user_detail->skills = $request->skills;
 
         try {
-            $user_dertail->save();
+            $user_detail->save();
         } catch (\Throwable $th) {
             //throw $th;
             $request->session()->flash('message',"Error: ". $th->getMessage());
