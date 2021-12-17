@@ -53,7 +53,7 @@ class PublicUserProfileController extends Controller
             $request->session()->flash('message',"Error: ". $th->getMessage());
             return back()->withInput();
         }
-
+        return back();
     }
     /**
      * Show the form for creating a new resource.
