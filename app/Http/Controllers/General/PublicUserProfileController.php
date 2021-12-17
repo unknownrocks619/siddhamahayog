@@ -50,7 +50,7 @@ class PublicUserProfileController extends Controller
             $user_dertail->save();
         } catch (\Throwable $th) {
             //throw $th;
-            $request->session()->flash('message',"Unable to save your record. Please try again.");
+            $request->session()->flash('message',"Error: ". $th->getMessage());
             return back()->withInput();
         }
 
