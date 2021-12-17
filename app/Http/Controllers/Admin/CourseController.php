@@ -11,6 +11,8 @@ use App\Models\EventFundDetail;
 use App\Models\userLogin;
 use App\Models\userDetail;
 use App\Models\UserNotification;
+use DataTables;
+use Yajra\DataTables\Html\Button;
 
 class CourseController extends Controller
 {
@@ -150,8 +152,63 @@ class CourseController extends Controller
 
     }
 
-    public function unverified_payments() {
+    public function unverified_payments(Request $request) {
         
+
+        if ( $request->ajax() ) {
+            $funds = EventFundDetail::with(["user_detail","sibir","image_file"])->where('status','pending')->latest()->get();
+
+            $datatable_report = DataTables::of($funds)
+                                            ->addIndexColumn()
+                                            ->addColumn("full_name",function( $row ) {
+                                                return $row->user_detail->full_name();
+                                            })
+                                            ->addColumn('phone_number', function ($row) {
+                                                return $row->user_detail->phone_number;
+                                            })
+                                            ->addColumn("amount", function ($row) {
+                                                return  "NRs. ". number_format((float) $row->amount,2);
+                                            })
+                                            ->addColumn("transaction_bank", function ($row) {
+                                                $source =  $row->source;
+                                                // if ($row->reference_number) {
+                                                //     $source .= "<br />";
+                                                //     $source .= $row->reference_number;
+                                                // }
+
+                                                return $source;
+                                            })
+                                            ->addColumn("image_preview",function($row) {
+                                                $file = "<span class='text-danger'>File Not Found</span>";
+                                                if ($row->image_file && $row->image_file->path) {
+                                                    $file = "<a href='".app('url')->asset($row->image_file->path)."' target='_blank'>";
+                                                    $file .= "<img src='".app('url')->asset($row->image_file->path)."' class='img-thumb' style='max-width:80px;max-height:80px' />";
+                                                    $file .= "</a>";
+                                                }
+                                                return $file;
+
+                                            })
+                                            ->addColumn("action", function ($row) {
+                                                $action = "";
+                                                    // $action .= "<a href='#'>";
+                                                    //     $action .= "Download Voucher";
+                                                    // $action .= "</a>";
+                                                    // $action .= " | ";
+                                                    $action .= "<a href='".route('courses.admin_change_payment_status',[$row->id])."'>";
+                                                    $action .= "View Detail";
+                                                    $action .= "</a>";
+                                                    return $action;
+                                            })
+                                            ->rawColumns(["full_name",'phone_number',"amount","transaction_bank","image_preview","action"])
+                                          
+                                            ->make(true);
+            return $datatable_report;
+        }
+
+        return view("admin.finance.courses.payment_verification_datatable");
+
+
+
         $funds = EventFundDetail::with(["user_detail","sibir","image_file"])->where('status','pending')->latest()->paginate(50);
         return view("admin.finance.courses.payment_verification_card",compact('funds'));
         return view("admin.finance.courses.payment_verification",compact("funds"));
@@ -358,4 +415,58 @@ class CourseController extends Controller
         return view('admin.finance.courses.transaction_detail',compact("transaction"));
     }
 
+    public function unverified_payment_datatable_view(Request $request){
+
+        if ( $request->ajax() ) {
+            $funds = EventFundDetail::with(["user_detail","sibir","image_file"])->where('status','pending')->latest()->get();
+
+            $datatable_report = DataTables::of($funds)
+                                            ->addIndexColumn()
+                                            ->addColumn("full_name",function( $row ) {
+                                                return $row->user_detail->full_name();
+                                            })
+                                            ->addColumn('phone_number', function ($row) {
+                                                return $row->user_detail->phone_number;
+                                            })
+                                            ->addColumn("amount", function ($row) {
+                                                return  "NRs. ". number_format((float) $row->amount,2);
+                                            })
+                                            ->addColumn("transaction_bank", function ($row) {
+                                                $source =  $row->source;
+                                                // if ($row->reference_number) {
+                                                //     $source .= "<br />";
+                                                //     $source .= $row->reference_number;
+                                                // }
+
+                                                return $source;
+                                            })
+                                            ->addColumn("image_preview",function($row) {
+                                                $file = "<span class='text-danger'>File Not Found</span>";
+                                                if ($row->image_file && $row->image_file->path) {
+                                                    $file = "<a href='".app('url')->asset($row->image_file->path)."' target='_blank'>";
+                                                    $file .= "<img src='".app('url')->asset($row->image_file->path)."' class='img-thumb' style='max-width:80px;max-height:80px' />";
+                                                    $file .= "</a>";
+                                                }
+                                                return $file;
+
+                                            })
+                                            ->addColumn("action", function ($row) {
+                                                $action = "";
+                                                    // $action .= "<a href='#'>";
+                                                    //     $action .= "Download Voucher";
+                                                    // $action .= "</a>";
+                                                    // $action .= " | ";
+                                                    $action .= "<a href='".route('courses.admin_change_payment_status',[$row->id])."'>";
+                                                    $action .= "View Detail";
+                                                    $action .= "</a>";
+                                                    return $action;
+                                            })
+                                            ->rawColumns(["full_name",'phone_number',"amount","transaction_bank","image_preview","action"])
+                                          
+                                            ->make(true);
+            return $datatable_report;
+        }
+
+        return view("admin.finance.courses.payment_verification_datatable");
+    }
  }

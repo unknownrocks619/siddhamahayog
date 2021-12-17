@@ -33,6 +33,28 @@ class PublicUserProfileController extends Controller
         $user_detail = userDetail::findOrFail(auth()->user()->user_detail_id);
         return view("public.user.profile.personal",compact("user_detail"));
     }
+
+    public function update_personal_prof(Request $request){
+        $request->validate([
+            "profession" => "required",
+            "education_level" => "required"
+        ]);
+
+        $user_detail = auth()->user()->userdetail;
+
+        $user_detail->profession = $request->profession;
+        $user_detail->education_level = $request->education_level;
+        $user_detail->skills = $request->skills;
+
+        try {
+            $user_dertail->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            $request->session()->flash('message',"Unable to save your record. Please try again.");
+            return back()->withInput();
+        }
+
+    }
     /**
      * Show the form for creating a new resource.
      *

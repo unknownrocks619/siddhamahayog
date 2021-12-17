@@ -147,6 +147,7 @@ Route::prefix("p")
         ->name('public.')
         ->middleware(['auth'])
         ->group (function() {
+                Route::post("/temp/profile/prof",[PublicUserProfileController::class,"update_personal_prof"])->name('user_personal_prof_update');
                 // Route::get("profile",[PublicUserProfileController::class,'index'])
                 //         ->name('public_profile_display');
                 Route::post("profile/personal",[PublicUserProfileController::class,'personal_setting_store'])

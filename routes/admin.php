@@ -313,6 +313,7 @@ Route::prefix("course")
                 Route::get("/list",[CourseController::class,"index"])->name('admin_course_list');
                 Route::get("/add",[CourseController::class,"create"])->name("admin_course_add");
                 Route::get("/report/{course}",[CourseController::class,'course_report'])->name("admin_course_report");
+                Route::get("/payment/unverified/datatable", [CourseController::class,"unverified_payment_datatable_view"])->name('admin_unverified_list_datatable');
                 Route::get("/payment/verification/{course?}",[CourseController::class,"unverified_payments"])->name("admin_payment_verification");
                 Route::get("/payment/status/{transaction}",[CourseController::class,"change_payment_status"])->name("admin_change_payment_status");
                 Route::post("/payment/status/{transaction}",[CourseController::class,"store_change_payment_status"])->name('admin_store_change_payment_status');
