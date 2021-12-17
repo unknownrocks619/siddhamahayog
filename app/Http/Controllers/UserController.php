@@ -82,7 +82,7 @@ class UserController extends Controller
             //$users = userDetail::chunk(300, function ($result) {
              //   return $result;
             //});
-            $users = userDetail::with(["country_name",'city_name'])->get();
+            $users = userDetail::with(["country_name",'city_name'])->paginate(50);
             return view('admin.users.list',["users"=>$users]);
         }
     }
