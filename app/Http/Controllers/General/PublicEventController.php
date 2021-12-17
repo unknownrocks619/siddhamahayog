@@ -722,7 +722,7 @@ class PublicEventController extends Controller
         $videos = OfflineVideo::select(["full_link",'source','video_title','description','total_video_time','course_chapter_id',"id"])
                                 ->where('course_chapter_id',decrypt($request->__v))
                                 ->where('event_id',decrypt($request->__s))
-                                ->orderBy("sortable")
+                                ->orderBy("sortable","ASC")
                                 ->get();
         return view("public.user.offline.offline.chapter-view",compact("videos"));
         

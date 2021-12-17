@@ -17,4 +17,8 @@ class EventFundDetail extends Model
     public function sibir () {
         return $this->belongsTo(SibirRecord::class,"sibir_record_id");
     }
+
+    public function image_file(){
+        return $this->hasOne(Uploader::class,"id","file");
+    }
 }
