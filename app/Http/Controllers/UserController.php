@@ -118,7 +118,7 @@ class UserController extends Controller
             //                 ->make(true);
             //     return $datatable;
             // }
-                $users_table = userDetail::with(["country_name"])->paginate(100);
+                $users = userDetail::with(["country_name"])->paginate(100);
 
             return view('admin.users.list_org',compact("users"));
         }
