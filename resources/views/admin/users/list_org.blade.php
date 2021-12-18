@@ -59,7 +59,7 @@
                                             <span class='badge badge-danger'>Priority</span>
                                         @endif
                                     </td>
-                                    <td> {{-- $user->address() --}} {{-- ((int)$user->country&&$user->country_name)?$user->country_name->name:$user->country --}}</td>
+                                    <td> {{-- $user->address() --}} {{ ( (int)$user->country&&$user->country_name)?$user->country_name->name:$user->country }}</td>
                                     <td>{{ $user->phone_number }}</td>
                                     <td>{{ ucwords($user->gender) }}</td>
                                     <td>{{ ucwords($user->profession) }}</td>
