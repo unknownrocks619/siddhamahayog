@@ -596,7 +596,6 @@ class SadhanaController extends Controller
                                 return $query->with(["userlogin",'country_name']);
                             }])
                             ->get();
-    
             $datatable = DataTables::of($participants)
                                     ->addColumn("full_name", function ($row) {
                                         if($row->userDetail) {
