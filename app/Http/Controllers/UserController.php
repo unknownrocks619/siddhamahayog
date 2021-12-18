@@ -124,9 +124,9 @@ class UserController extends Controller
                             ->make(true);
                 return $datatable;
             }
-            // $users= userDetail::with(["country_name",'city_name'])->get();
-
-            return view('admin.users.list');
+            $users= userDetail::with(["country_name",'city_name'])->get();
+            dd($users);
+            return view('admin.users.list',compact("users"));
         }
     }
 
