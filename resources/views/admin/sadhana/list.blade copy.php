@@ -19,41 +19,59 @@
                     <h4 class="card-title">User List</h4>
                 </div>
                 <div class="card-body card-dashboard">
-                    <p class="card-text text-right">
-                        <!-- <a href='' class='btn btn-info'>Export To Excel</a> -->
-                        <a href="{{ route('users.new_user_registration') }}" class='btn btn-info'>
-                            <i class='fas fa-plus'></i>
-                            Add New User
-                        </a>
-                    </p>
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered complex-headers" id="user_table">
                             <thead>
-                                <tr>
-                                    <th colspan="3" class="text-center bg-dark text-white">Personal Information</th>
-                                    <th colspan="2" class='text-center  bg-dark text-white'>Other Information</th>
-                                    <th rowspan="2" class='bg-success'>Action</th>
-                                </tr>
+              
                                 <tr class=''>
                                     <th>Name</th>
-                                    <th>Address</th>
                                     <th>Phone</th>
-                                    <th>Profession</th>
-                                    <th>Gender</th>
+                                    <th>Email</th>
+                                    <th>Address</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($participants as $participant)
+                                    @if($participant->userDetail)
+                                    <tr>
+                                        <td>
+                                            {{ $participant->userDetail->full_name()}};
+                                            {{ $participant->userDetail->id }}
+                                        </td>
+                                        <td>
+                                            @if($participant->userDetail)
+                                                {{ $participant->userDetail->phone_number }}
+                                            @else
+                                                "No detail";
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($participant->userDetail->userlogin)
+                                                {{ $participant->userDetail->userlogin->email }}
+                                            @else 
+                                                "No Detail";
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if((int) $participant->userDetail->country && (int) $participant->userDetail->city)
+                                                {{ address([$participant->userDetail->country,$participant->userDetail->city]) }};
+                                            @else
+                                                {{ $participant->userDetail->country }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @else
+                                        <tr>
+                                            <td>No Name {{ $participant->id }}</td>
+                                            <td>no_data</td>
+                                            <td>no_data</td>
+                                            <td>no_data</td>
+                                        </tr>
+                                    @endif
+                                @endforeach
                             </tbody>
-                        <!-- <tfoot>
-                            <tr>
-                                <th>Name</th>
-                                <th>Address</th>
-                                <th>Phone Number</th>
-                                <th>Profession</th>
-                                <th>Skills</th>
-                                <th></th>
-                            </tr>
-                        </tfoot> -->
+                     
+                        </tfoot>
                         </table>
                 </div>
                 </div>
@@ -77,17 +95,14 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $("#user_table").DataTable({
-                    processing : true,
-                    serverSide : true,
-                    ajax: "{{ url()->full() }}",
-                    columns : [
-                        {data: 'full_name', name:'full_name'},
-                        {data: 'address',name: 'address'},
-                        {data: 'phone_number',name:'phone_number'},
-                        {data : 'gender', name: 'gender'},
-                        {data : 'profession', name: 'profession'},
-                        {data : 'action', name: 'action'}
-                    ],
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copyHtml5',
+                        'excelHtml5',
+                        'csvHtml5',
+                        'pdfHtml5'
+                    ]
+
                 });
             });
         </script>

@@ -28,52 +28,13 @@
                                     <th>Phone</th>
                                     <th>Email</th>
                                     <th>Address</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($participants as $participant)
-                                    @if($participant->userDetail)
-                                    <tr>
-                                        <td>
-                                            {{ $participant->userDetail->full_name()}};
-                                            {{ $participant->userDetail->id }}
-                                        </td>
-                                        <td>
-                                            @if($participant->userDetail)
-                                                {{ $participant->userDetail->phone_number }}
-                                            @else
-                                                "No detail";
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if($participant->userDetail->userlogin)
-                                                {{ $participant->userDetail->userlogin->email }}
-                                            @else 
-                                                "No Detail";
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if((int) $participant->userDetail->country && (int) $participant->userDetail->city)
-                                                {{ address([$participant->userDetail->country,$participant->userDetail->city]) }};
-                                            @else
-                                                {{ $participant->userDetail->country }}
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @else
-                                        <tr>
-                                            <td>No Name {{ $participant->id }}</td>
-                                            <td>no_data</td>
-                                            <td>no_data</td>
-                                            <td>no_data</td>
-                                        </tr>
-                                    @endif
-                                @endforeach
                             </tbody>
-                     
-                        </tfoot>
                         </table>
-                </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,7 +44,7 @@
 
 @section('page_js')
     <!-- BEGIN: Page Vendor JS-->
-        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
@@ -95,13 +56,24 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 $("#user_table").DataTable({
-                    dom: 'Bfrtip',
-                    buttons: [
-                        'copyHtml5',
-                        'excelHtml5',
-                        'csvHtml5',
-                        'pdfHtml5'
-                    ]
+                    processing : true,
+                    serverSide : true,
+                    ajax: "{{ url()->full() }}",
+                    columns : [
+                        {data: 'full_name', name:'full_name'},
+                        {data: 'phone_number',name: 'phone_number'},
+                        {data: 'email',name:'email'},
+                        {data : 'address', name: 'address'},
+                        {data : 'action', name: 'action'}
+                    ],
+                    
+                    // dom: 'Bfrtip',
+                    // buttons: [
+                    //     'copyHtml5',
+                    //     'excelHtml5',
+                    //     'csvHtml5',
+                    //     'pdfHtml5'
+                    // ]
 
                 });
             });

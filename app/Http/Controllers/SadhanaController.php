@@ -589,15 +589,41 @@ class SadhanaController extends Controller
             abort(403);
         }
 
-        // if ($request->ajax() ) {
+        if ($request->ajax() ) {
+            $sibir_record = SibirRecord::findOrFail(request()->sibir);
+            $participants = UserSadhakRegistration::where('sibir_record_id',$sibir_record->id)
+                            ->with(['userDetail'=>function($query) {
+                                return $query->with(["userlogin",'country_name']);
+                            }])
+                            ->get();
+    
+            $datatable = DataTables::of($participants)
+                                    ->addColumn("full_name", function ($row) {
+                                        return ($row->userDetail->full_name());
+                                        // return ucwords($row->full_name());
+                                    })
+                                    ->addColumn('phone_number',function($row){
+                                        return $row->userDetail->phone_number;
+                                        // return $row->phone_number;
+                                    })
+                                    ->addColumn('email', function ($row) {
+                                        // return $row;
+                                        return ($row->userDetail->userlogin) ? $row->userDetail->userlogin->email : "email";
+                                    })
+                                    ->addColumn('address', function ($row) {
+                                        return ((int) $row->userDetail->country) ? $row->userDetail->country_name->name : $row->country;
+                                        
+                                    })
+                                    ->addColumn('action', function ($row) {
+                                        return "View Detail";
+                                    })
+                                    ->rawColumns(["action"])
+                                    ->make(true);
+            return $datatable;
+        }
 
-        // }
 
-
-        $sibir_record = SibirRecord::findOrFail(request()->sibir);
-        $participants = UserSadhakRegistration::where('sibir_record_id',$sibir_record->id)->get();
-
-        return view('admin.sadhana.list',compact('sibir_record','participants'));
+        return view('admin.sadhana.list');
     }
 
     public function sibir_attendance(Request $request, SibirRecord $sibir){
