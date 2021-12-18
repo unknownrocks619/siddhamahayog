@@ -48,7 +48,7 @@
                                     <td>
                                         
                                         <a href="{{ route('users.view-user-detail',$user->id) }}">
-                                            {{-- $user->full_name() --}}
+                                            {{ $user->full_name() }}
                                         </a>
                                         @if($user->user_role == "visitor" || $user->user_role == null)
                                             <br />
