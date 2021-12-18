@@ -32,15 +32,25 @@
                             </thead>
                             <tbody>
                                 @foreach ($participants as $participant)
+                                    @if($participant->userDetail)
                                     <tr>
                                         <td>
-                                            {{ $participant->userDetail->full_name() }}
+                                            {{ $participant->userDetail->full_name()}};
+                                            {{ $participant->userDetail->id }}
                                         </td>
                                         <td>
-                                            {{ $participant->userDetail->phone_number }}
+                                            @if($participant->userDetail)
+                                                {{ $participant->userDetail->phone_number }}
+                                            @else
+                                                "No detail";
+                                            @endif
                                         </td>
                                         <td>
-                                            {{ $participant->userDetail->userlogin->email }}
+                                            @if($participant->userDetail->userlogin)
+                                                {{ $participant->userDetail->userlogin->email }}
+                                            @else 
+                                                "No Detail";
+                                            @endif
                                         </td>
                                         <td>
                                             @if((int) $participant->userDetail->country && (int) $participant->userDetail->city)
@@ -50,6 +60,14 @@
                                             @endif
                                         </td>
                                     </tr>
+                                    @else
+                                        <tr>
+                                            <td>No Name {{ $participant->id }}</td>
+                                            <td>no_data</td>
+                                            <td>no_data</td>
+                                            <td>no_data</td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                      

@@ -68,7 +68,7 @@ class userDetail extends Model
         $full_name .= $this->last_name;
         return $full_name;
     }
-
+    
     public function address()
     {
         return $this->country . ", " . $this->city;

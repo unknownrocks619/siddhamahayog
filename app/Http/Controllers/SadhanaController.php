@@ -22,6 +22,7 @@ use App\Models\EventVideoClass;
 use App\Models\VideoClassLog;
 use App\Models\UserFamilyGroup;
 use App\Models\EventAbsentRecord;
+use DataTables;
 class SadhanaController extends Controller
 {
 
@@ -583,10 +584,16 @@ class SadhanaController extends Controller
     }
 
 
-    public function participants_list() {
+    public function participants_list(Request $request) {
         if ( ! isAdmin()) {
             abort(403);
         }
+
+        // if ($request->ajax() ) {
+
+        // }
+
+
         $sibir_record = SibirRecord::findOrFail(request()->sibir);
         $participants = UserSadhakRegistration::where('sibir_record_id',$sibir_record->id)->get();
 

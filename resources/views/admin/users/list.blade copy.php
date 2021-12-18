@@ -30,21 +30,47 @@
                         <table class="table table-striped table-bordered complex-headers" id="user_table">
                             <thead>
                                 <tr>
-                                    <th colspan="3" class="text-center bg-dark text-white">Personal Information</th>
-                                    <th colspan="2" class='text-center  bg-dark text-white'>Other Information</th>
-                                    <th rowspan="2" class='bg-success'>Action</th>
+                                <th colspan="3" class="text-center bg-dark text-white">Personal Information</th>
+                                <th colspan="2" class='text-center  bg-dark text-white'>Other Information</th>
+                                <th rowspan="2" class='bg-success'>Action</th>
                                 </tr>
                                 <tr class=''>
-                                    <th>Name</th>
-                                    <th>Address</th>
-                                    <th>Phone</th>
-                                    <th>Profession</th>
-                                    <th>Gender</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Profession</th>
+                                <th>Skills</th>
                                 </tr>
                             </thead>
                             <tbody>
+                            @foreach ( $users as $user)
+                                <tr @if( ! $user->userverification || ! $user->userverification->parent_name || ! $user->userverification->parent_phone || !$user->userverification->verification_type || ! $user->userverification->document_file_detail ) class='text-danger' @endif>
+                                    <td>
+                                        <a href="{{ route('users.view-user-detail',$user->id) }}">
+                                            {{ $user->full_name() }}
+                                        </a>
+                                        @if($user->user_role == "visitor" || $user->user_role == null)
+                                            <br />
+                                            <span class='badge badge-primary'>Visitor</span>
+                                        @endif
+                                        @if ($user->user_room_allotment)
+                                            <br />
+                                            <span class='badge badge-danger'>Priority</span>
+                                        @endif
+                                    </td>
+                                    <td> {{ $user->address() }} {{-- $user->country_name->name??$user->country_name->name --}}</td>
+                                    <td>{{ $user->phone_number }}</td>
+                                    <td>{{ ucwords($user->gender) }}</td>
+                                    <td>{{ ucwords($user->profession) }}</td>
+                                    <td>
+                                        <a href="{{ route('users.edit_user_detail',$user->id) }}">
+                                        Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
                             </tbody>
-                        <!-- <tfoot>
+                        <tfoot>
                             <tr>
                                 <th>Name</th>
                                 <th>Address</th>
@@ -53,7 +79,7 @@
                                 <th>Skills</th>
                                 <th></th>
                             </tr>
-                        </tfoot> -->
+                        </tfoot>
                         </table>
                 </div>
                 </div>
@@ -65,7 +91,7 @@
 
 @section('page_js')
     <!-- BEGIN: Page Vendor JS-->
-        <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/jquery.dataTables.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/dataTables.buttons.min.js') }}"></script>
         <script src="{{ asset ('admin/app-assets/vendors/js/tables/datatable/buttons.html5.min.js') }}"></script>
@@ -76,19 +102,7 @@
         <!-- END: Page Vendor JS-->
         <script type="text/javascript">
             $(document).ready(function() {
-                $("#user_table").DataTable({
-                    processing : true,
-            serverSide : true,
-            ajax: "{{ url()->full() }}",
-            columns : [
-                {data: 'full_name', name:'full_name'},
-                {data: 'address',name: 'address'},
-                {data: 'phone_number',name:'phone_number'},
-                {data : 'gender', name: 'gender'},
-                {data : 'profession', name: 'profession'},
-                {data : 'action', name: 'action'}
-            ],
-                });
+                $("#user_table").DataTable();
             });
         </script>
 @endSection()

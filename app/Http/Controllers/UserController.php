@@ -25,9 +25,9 @@ use App\Models\Booking;
 use Illuminate\Support\Facades\App;
 
 use Nepali;
+use DataTables;
 
 use Illuminate\Support\Facades\Cache;
-
 
 class UserController extends Controller
 {
@@ -82,8 +82,44 @@ class UserController extends Controller
             //$users = userDetail::chunk(300, function ($result) {
              //   return $result;
             //});
-            $users = userDetail::with(["country_name",'city_name'])->paginate(50);
-            return view('admin.users.list',["users"=>$users]);
+            if ($request->ajax())  {
+                $users_table = userDetail::with(["country_name",'city_name']);
+
+                $users = $users_table->get();
+                $datatable = DataTables::of($users)
+                            // ->addIndexColumn()
+                            ->addColumn('full_name',function ($row) {
+                                $link = "<a href='".route('users.view-user-detail',$row->id)."'>";
+                                    $link .= $row->full_name();
+                                $link .= "</a>";
+                                return $link;
+                                // return ucwords($row->full_name());
+                            })
+                            ->addColumn("address",function ($row) {
+                                return ((int)$row->country) ? $row->country_name->name : $row->country;
+                            })
+                            ->addColumn('phone_number',function ($row){
+                                return $row->phone_number;
+                            })
+                            ->addColumn('gender', function ($row) {
+                                return ucwords($row->gender);
+                            })
+                            ->addColumn('profession', function ($row) {
+                                return ucwords($row->profession);
+                            })
+                            ->addColumn('action', function ($row) {
+                                $action = "";
+                                    $action .= "<a href='".route('users.edit_user_detail',$row->id)."'>";
+                                        $action .= "Edit";
+                                    $action .= "</a>";
+                                return $action;
+                            })
+                            ->rawColumns(['full_name','action'])
+                            ->make(true);
+                return $datatable;
+            }
+
+            return view('admin.users.list');
         }
     }
 
