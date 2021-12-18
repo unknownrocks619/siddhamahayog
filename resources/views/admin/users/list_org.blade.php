@@ -48,7 +48,7 @@
                                     <td>
                                         
                                         <a href="{{ route('users.view-user-detail',$user->id) }}">
-                                            {{ $user->full_name() }}
+                                            {{-- $user->full_name() --}}
                                         </a>
                                         @if($user->user_role == "visitor" || $user->user_role == null)
                                             <br />
@@ -59,12 +59,12 @@
                                             <span class='badge badge-danger'>Priority</span>
                                         @endif
                                     </td>
-                                    <td> {{-- $user->address() --}} {{ ((int)$user->country && $user->country_name) ? $user->country_name->name : $user->country}}</td>
-                                    <td>{{ $user->phone_number }}</td>
-                                    <td>{{ ucwords($user->gender) }}</td>
-                                    <td>{{ ucwords($user->profession) }}</td>
+                                    <td> {{-- $user->address() --}} {{-- ((int)$user->country&&$user->country_name)?$user->country_name->name:$user->country --}}</td>
+                                    <td>{{-- $user->phone_number --}}</td>
+                                    <td>{{-- ucwords($user->gender) --}}</td>
+                                    <td>{{-- ucwords($user->profession) --}}</td>
                                     <td>
-                                        <a href="{{ route('users.edit_user_detail',$user->id) }}">
+                                        <a href="{{-- route('users.edit_user_detail',$user->id) --}}">
                                         Edit
                                         </a>
                                     </td>
