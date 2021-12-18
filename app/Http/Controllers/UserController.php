@@ -120,7 +120,7 @@ class UserController extends Controller
             // }
                 $users_table = userDetail::with(["country_name"])->paginate(100);
 
-            return view('admin.users.list',compact("users"));
+            return view('admin.users.list_org',compact("users"));
         }
     }
 
