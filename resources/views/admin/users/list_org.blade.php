@@ -46,6 +46,7 @@
                             @foreach ( $users as $user)
                                 <tr @if( ! $user->userverification || ! $user->userverification->parent_name || ! $user->userverification->parent_phone || !$user->userverification->verification_type || ! $user->userverification->document_file_detail ) class='text-danger' @endif>
                                     <td>
+                                        
                                         <a href="{{ route('users.view-user-detail',$user->id) }}">
                                             {{ $user->full_name() }}
                                         </a>
@@ -58,7 +59,7 @@
                                             <span class='badge badge-danger'>Priority</span>
                                         @endif
                                     </td>
-                                    <td> {{ $user->address() }} {{-- $user->country_name->name??$user->country_name->name --}}</td>
+                                    <td> {{-- $user->address() --}} {{ ((int)$user->country && $user->country_name) ? $user->country_name->name : $user->country}}</td>
                                     <td>{{ $user->phone_number }}</td>
                                     <td>{{ ucwords($user->gender) }}</td>
                                     <td>{{ ucwords($user->profession) }}</td>
