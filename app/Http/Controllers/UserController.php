@@ -101,10 +101,12 @@ class UserController extends Controller
                                 // return ((int)$row->country) ? $row->country_name->name : $row->country;
                             })
                             ->addColumn('phone_number',function ($row){
+                                return "phone";
                                 return $row->phone_number;
                             })
                             ->addColumn('gender', function ($row) {
-                                return ucwords($row->gender);
+                                return "gender";
+                                // return ucwords($row->gender);
                             })
                             ->addColumn('profession', function ($row) {
                                 return ucwords($row->profession);
