@@ -109,14 +109,16 @@ class UserController extends Controller
                                 // return ucwords($row->gender);
                             })
                             ->addColumn('profession', function ($row) {
+                                return "profession";
                                 return ucwords($row->profession);
                             })
                             ->addColumn('action', function ($row) {
-                                $action = "";
-                                    $action .= "<a href='".route('users.edit_user_detail',$row->id)."'>";
-                                        $action .= "Edit";
-                                    $action .= "</a>";
-                                return $action;
+                                return "hello";
+                                // $action = "";
+                                //     $action .= "<a href='".route('users.edit_user_detail',$row->id)."'>";
+                                //         $action .= "Edit";
+                                //     $action .= "</a>";
+                                // return $action;
                             })
                             ->rawColumns(['full_name','action'])
                             ->make(true);
