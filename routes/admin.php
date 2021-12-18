@@ -246,6 +246,14 @@ Route::prefix("event")
             Route::post("/zoom/registration/remove/{zoom}",[ZoomController::class,'global_remove_registration'])->name('admin_remove_global_registered_user');
             Route::post('/zoom/add-user/',[ZoomController::class,'add_user_to_meeting'])->name('admin_add_user_to_meeting');
             
+            /**
+             * for General Meeting and other settings.
+             */
+
+            Route::get("/zoom/other/meeting/",[ZoomController::class,"list_general_meetings"])->name("admin_zoom_other_general_settings");
+            Route::post("/zoom/other/create/",[ZoomController::class,"create_meeting_for_other"])->name("admin_zoom_create_other_meetings");
+            Route::post('/zoom/other/start/meeting/',[ZoomController::class,"start_other_meeting_for_detail"]);
+
             Route::get('/video',[OfflineVideoController::class,'index'])
                 ->name('admin_offline_video_list');
             Route::get("/video/add",[OfflineVideoController::class,"create"])

@@ -15,3 +15,5 @@
 		</div>
 	</div>
 </div>
+
+@include("public.user.dash.regular")

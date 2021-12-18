@@ -10,7 +10,7 @@
 										$regular_event = \App\Models\SibirRecord::where('is_private',false)
 																					->where('active',true)
 																					->latest()
-																					->paginate(3);
+																					->paginate(4);
 									@endphp
 									<table class='table table-hover table-bordered'>
 										<thead>

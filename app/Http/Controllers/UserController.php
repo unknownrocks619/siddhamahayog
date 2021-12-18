@@ -89,14 +89,16 @@ class UserController extends Controller
                 $datatable = DataTables::of($users)
                             // ->addIndexColumn()
                             ->addColumn('full_name',function ($row) {
-                                $link = "<a href='".route('users.view-user-detail',$row->id)."'>";
-                                    $link .= $row->full_name();
-                                $link .= "</a>";
-                                return $link;
+                                return "full_name";
+                                // $link = "<a href='".route('users.view-user-detail',$row->id)."'>";
+                                //     $link .= $row->full_name();
+                                // $link .= "</a>";
+                                // return $link;
                                 // return ucwords($row->full_name());
                             })
                             ->addColumn("address",function ($row) {
-                                return ((int)$row->country) ? $row->country_name->name : $row->country;
+                                return "country";
+                                // return ((int)$row->country) ? $row->country_name->name : $row->country;
                             })
                             ->addColumn('phone_number',function ($row){
                                 return $row->phone_number;

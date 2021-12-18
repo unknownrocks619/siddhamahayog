@@ -15,6 +15,7 @@
                     <table class='table table-bordered table-hover'>
                         <thead>
                             <tr>
+                                <th>Title</th>
                                 <th>Country</th>
                                 <th>Zoom Account</th>
                                 <th>Avaibility</th>
@@ -25,6 +26,7 @@
                         <tbody>
                             @foreach ($settings as $zoom_setting)
                                 <tr>
+                                    <td> {{ $zoom_setting->sibir->sibir_title }} </td>
                                     <td>
                                         @if($zoom_setting->is_global) 
                                             International                                      

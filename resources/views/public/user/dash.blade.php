@@ -284,7 +284,7 @@
     </script>
 	<script type="text/javascript">
 		$(window).on('load',function() {
-			$("#notification").fadeIn();
+			// $("#notification").fadewIn();
 				// $("#notification").modal('show');
 			
 		})

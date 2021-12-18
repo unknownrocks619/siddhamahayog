@@ -18,7 +18,7 @@ class ZoomController extends Controller
     //
     public function settings() {
         if (isAdmin() ) {
-            $settings = ZoomSetting::with(["country"])->get(); 
+            $settings = ZoomSetting::with(["country","sibir"])->get(); 
             // dd($settings);
             return view('admin.zoom.settings',compact('settings'));    
         }
@@ -894,5 +894,25 @@ class ZoomController extends Controller
         }
 
         dd($zoom);
+    }
+
+    public function list_general_meetings(Request $request) {
+        if (isAdmin()) {
+            $other_meetings = \App\Models\SibirRecord::where("private",false)->get();
+            return view("admin.zoom.zoom_class",compact('other_meetings'));
+        }
+        if (isCenter()) {
+            $other_meetings = \App\Models\SibirRecord::where("private",false)
+                                ->where('user_login_id',auth()->id())->get();
+        }
+
+    }
+
+    public function create_meeting_for_other(Request $request) {
+
+    }
+
+    public function start_other_meeting_for_detail(Request $request) {
+
     }
  }
