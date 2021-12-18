@@ -89,43 +89,36 @@ class UserController extends Controller
                 $datatable = DataTables::of($users)
                             // ->addIndexColumn()
                             ->addColumn('full_name',function ($row) {
-                                return "full_name";
-                                // $link = "<a href='".route('users.view-user-detail',$row->id)."'>";
-                                //     $link .= $row->full_name();
-                                // $link .= "</a>";
-                                // return $link;
+                                $link = "<a href='".route('users.view-user-detail',$row->id)."'>";
+                                    $link .= $row->full_name();
+                                $link .= "</a>";
+                                return $link;
                                 // return ucwords($row->full_name());
                             })
                             ->addColumn("address",function ($row) {
-                                return "country";
-                                // return ((int)$row->country) ? $row->country_name->name : $row->country;
+                                return ((int)$row->country) ? $row->country_name->name : $row->country;
                             })
                             ->addColumn('phone_number',function ($row){
-                                return "phone";
                                 return $row->phone_number;
                             })
                             ->addColumn('gender', function ($row) {
-                                return "gender";
-                                // return ucwords($row->gender);
+                                return ucwords($row->gender);
                             })
                             ->addColumn('profession', function ($row) {
-                                return "profession";
                                 return ucwords($row->profession);
                             })
                             ->addColumn('action', function ($row) {
-                                return "hello";
-                                // $action = "";
-                                //     $action .= "<a href='".route('users.edit_user_detail',$row->id)."'>";
-                                //         $action .= "Edit";
-                                //     $action .= "</a>";
-                                // return $action;
+                                $action = "";
+                                    $action .= "<a href='".route('users.edit_user_detail',$row->id)."'>";
+                                        $action .= "Edit";
+                                    $action .= "</a>";
+                                return $action;
                             })
                             ->rawColumns(['full_name','action'])
                             ->make(true);
                 return $datatable;
             }
-            $users= userDetail::with(["country_name"])->get();
-            return view('admin.users.list_org',compact("users"));
+            return view('admin.users.list');
         }
     }
 
@@ -138,8 +131,6 @@ class UserController extends Controller
     public function create()
     {
         //
-
-        
     }
 
     /**
@@ -187,7 +178,6 @@ class UserController extends Controller
     public function update(Request $request, userDetail $userDetail)
     {
         //
-
         if ($request->dob_eng){
         // let's convert date to english
         $date_of_birth_nepali = $request->date_of_birth_nepali;
