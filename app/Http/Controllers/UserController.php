@@ -125,7 +125,6 @@ class UserController extends Controller
                 return $datatable;
             }
             $users= userDetail::with(["country_name"])->get();
-            // dd($users);
             return view('admin.users.list_org',compact("users"));
         }
     }
