@@ -599,19 +599,30 @@ class SadhanaController extends Controller
     
             $datatable = DataTables::of($participants)
                                     ->addColumn("full_name", function ($row) {
-                                        return ($row->userDetail->full_name());
+                                        if($row->userDetail) {
+                                            return $row->userDetail->full_name();
+                                        }else {
+                                            return "not defined.";
+                                        }
+                                        
+                                        // return ($row->userDetail->full_name());
                                         // return ucwords($row->full_name());
                                     })
                                     ->addColumn('phone_number',function($row){
-                                        return $row->userDetail->phone_number;
+                                        if ($row->userDetail) {
+                                            return $row->userDetail->phone_number;
+                                        } else {
+                                            return "no defined.";
+                                        }
+                                        // return $row->userDetail->phone_number;
                                         // return $row->phone_number;
                                     })
                                     ->addColumn('email', function ($row) {
                                         // return $row;
-                                        return ($row->userDetail->userlogin) ? $row->userDetail->userlogin->email : "email";
+                                        return ($row->userDetail && $row->userDetail->userlogin) ? $row->userDetail->userlogin->email : "email";
                                     })
                                     ->addColumn('address', function ($row) {
-                                        return ((int) $row->userDetail->country) ? $row->userDetail->country_name->name : $row->country;
+                                        return ( $row->userDetail && (int) $row->userDetail->country) ? $row->userDetail->country_name->name : $row->country;
                                         
                                     })
                                     ->addColumn('action', function ($row) {
