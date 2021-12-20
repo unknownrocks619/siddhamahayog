@@ -601,7 +601,9 @@ class SadhanaController extends Controller
                                         if($row->userDetail) {
                                             $full_name = $row->userDetail->full_name();
                                             $full_name .= "<br />";
-                                            $full_name .= $row->userDetail->profession;
+                                            $full_name .= "<span class='text-danger'>".$row->userDetail->profession."</span>";
+                                            $full_name .= "<br />";
+                                            $full_name .= "<span class='text-info'>". $row->userDetail->profession_in_form . "</span>";
                                             return $full_name;
                                         }else {
                                             return "not defined.";
