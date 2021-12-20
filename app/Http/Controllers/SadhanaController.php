@@ -630,7 +630,7 @@ class SadhanaController extends Controller
                                     ->addColumn('action', function ($row) {
                                         return "View Detail";
                                     })
-                                    ->rawColumns(["action"])
+                                    ->rawColumns(["action","full_name"])
                                     ->make(true);
             return $datatable;
         }
