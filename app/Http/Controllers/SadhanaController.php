@@ -599,7 +599,10 @@ class SadhanaController extends Controller
             $datatable = DataTables::of($participants)
                                     ->addColumn("full_name", function ($row) {
                                         if($row->userDetail) {
-                                            return $row->userDetail->full_name();
+                                            $full_name = $row->userDetail->full_name();
+                                            $full_name .= "<br />";
+                                            $full_name .= $row->userDetail->profession;
+                                            return $full_name;
                                         }else {
                                             return "not defined.";
                                         }
