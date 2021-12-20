@@ -60,13 +60,27 @@
                         </div>
                     </div>
 
-                    <div class='card-body mt-2'>
+                    <div class='card-body'>
                         <div class='row'>
-                            <div class='col-md-4'>
-                                <a href='#'>
-                                    <!-- ## Configure Center -->
-                                </a>
-                            </div>
+                            <div class='col-md-6'>
+                                    <label class='label-control'>Registration Type</label>
+                                    <select class='form-control' name="program_type">
+                                        <option value="bod">Board Meeting</option>
+                                        <option value="admin">Admins</option>
+                                        <option value="public" selected>Public</option>
+                                        <option value="center">Center</option>
+                                        <option value="open">Open</option>
+                                        <option value="country">Country</option>
+                                    </select>
+                                </div>
+                                <div class='col-md-6'>
+                                    <label class='label-control'>Program Privacy</label>
+                                    <select name="privacy" id="" class="form-control">
+                                        <option value="private">Private</option>
+                                        <option value="protected">Protected</option>
+                                        <option value="public">Public</option>
+                                    </select>
+                                </div>
                         </div>
                     </div>
 

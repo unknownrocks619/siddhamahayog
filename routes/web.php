@@ -41,6 +41,7 @@ use App\Http\Controllers\General\PublicEventController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get("/personal",[ImportExcel::class,"add_personal_detail"]);
 // Route::get('/sms-test',[SmsTestController::class,"index"])->name('sms');
 // Route::get('/excel',[ImportExcel::class,'index']);
 // Route::get('/import/intl',[ImportExcel::class,'internationList']);

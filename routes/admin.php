@@ -226,6 +226,14 @@ Route::prefix("event")
              * zone settings.
              */
 
+             Route::prefix('zoom')->name('zoom.')
+             ->group(function() {
+                Route::get("other/meeting/",[ZoomController::class,"list_general_meetings"])->name("admin_zoom_other_general_settings");
+                Route::post("other/create/",[ZoomController::class,"create_meeting_for_other"])->name("admin_zoom_create_other_meetings");
+                Route::post('other/start/meeting/',[ZoomController::class,"start_other_meeting_for_detail"]);
+    
+             });
+
             Route::get("/zone/{class_id?}",[ZoomController::class,'settings'])->name('admin_view_zone_settings');
             Route::get('/zoom/new/settings',[ZoomController::class,'create_settings'])->name('admin_zoom_settings_add');
             Route::post('/zoom/save/settings',[ZoomController::class,'store_zoom_settings'])->name('admin_store_zoom_setting');
@@ -250,9 +258,6 @@ Route::prefix("event")
              * for General Meeting and other settings.
              */
 
-            Route::get("/zoom/other/meeting/",[ZoomController::class,"list_general_meetings"])->name("admin_zoom_other_general_settings");
-            Route::post("/zoom/other/create/",[ZoomController::class,"create_meeting_for_other"])->name("admin_zoom_create_other_meetings");
-            Route::post('/zoom/other/start/meeting/',[ZoomController::class,"start_other_meeting_for_detail"]);
 
             Route::get('/video',[OfflineVideoController::class,'index'])
                 ->name('admin_offline_video_list');

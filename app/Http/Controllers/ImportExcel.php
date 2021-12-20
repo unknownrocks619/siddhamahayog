@@ -468,4 +468,44 @@ class ImportExcel extends Controller
         return $this->add_fund($amount,$data,$loop);
 
     }
+
+
+    public function add_personal_detail() {
+        $row = 1;
+        $bulk_email = [];
+        $updated_count = 1;
+        if (($handle = fopen("personal_detail.csv", "r")) !== FALSE) {
+            
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $email = $data[0];
+                $education = $data[2];
+                $profession = $data[3];
+                $profession_in_form = $data[4];
+                
+                $get_record = \App\Models\userLogin::where('email',$data[0])->with(["userdetail"])->first();
+
+                if ($get_record && $get_record->userdetail) {
+                    $get_record->userdetail->education_level = $education;
+                    $get_record->userdetail->profession = $profession;
+                    $get_record->userdetail->profession_in_form = $profession_in_form;
+
+                    try {
+                        $get_record->userdetail->save();
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                        dd($th->getMessage());
+                    }
+                    $updated_count++;
+                }
+            }
+
+        }
+        echo $updated_count;
+        // $check_email = \App\Models\userLogin::whereIn('email',$bulk_email)->with(['userdetail'])->get();
+        // foreach ($check_email as $udpate_record)
+        // {
+        //     if($udpate_record->userdetail) {
+        //     }
+        // }
+    }
 }
