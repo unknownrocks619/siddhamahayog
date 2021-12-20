@@ -123,12 +123,9 @@ Route::middleware(["auth"])
 Route::middleware(["auth"])
         ->post('/offline_video_update/{v_id}/{a_id}',[OfflineVideoController::class,'public_offline_attendance'])
         ->name('public_offline_video_attendance');
-
-
 /**
  * 
  */
-
 Route::get("/forgot-password",[AccountRecoveryController::class,'index'])
         ->name('public_forgot_password_form');
 

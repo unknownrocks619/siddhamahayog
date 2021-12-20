@@ -473,6 +473,7 @@ class ImportExcel extends Controller
     public function add_personal_detail() {
         $row = 1;
         $bulk_email = [];
+        $email_bind = [];
         $updated_count = 1;
         if (($handle = fopen("personal_detail.csv", "r")) !== FALSE) {
             
@@ -480,32 +481,52 @@ class ImportExcel extends Controller
                 $email = $data[0];
                 $education = $data[2];
                 $profession = $data[3];
-                $profession_in_form = $data[4];
+                $bulk_email[] = trim(strtolower($data[0]));
+                $email_bind[trim(strtolower($data[0]))] = ["education"=>$education,"profession"=>$profession,'profession_in_form'=>$data[4]];
+                // $profession_in_form = $data[4];
                 
-                $get_record = \App\Models\userLogin::where('email',$data[0])->with(["userdetail"])->first();
+                // $get_record = \App\Models\userLogin::where('email',$data[0])->with(["userdetail"])->first();
 
-                if ($get_record && $get_record->userdetail) {
-                    $get_record->userdetail->education_level = $education;
-                    $get_record->userdetail->profession = $profession;
-                    $get_record->userdetail->profession_in_form = $profession_in_form;
+                // if ($get_record && $get_record->userdetail) {
+                //     $get_record->userdetail->education_level = $education;
+                //     $get_record->userdetail->profession = $profession;
+                //     $get_record->userdetail->profession_in_form = $profession_in_form;
 
-                    try {
-                        $get_record->userdetail->save();
-                    } catch (\Throwable $th) {
-                        //throw $th;
-                        dd($th->getMessage());
-                    }
-                    $updated_count++;
+                    // try {
+                    //     $get_record->userdetail->save();
+                    // } catch (\Error $th) {
+                    //     //throw $th;
+
+                    //     dd($th->getMessage());
+                    // }
+                    // $updated_count++;
                 }
             }
 
-        }
-        echo $updated_count;
-        // $check_email = \App\Models\userLogin::whereIn('email',$bulk_email)->with(['userdetail'])->get();
-        // foreach ($check_email as $udpate_record)
-        // {
-        //     if($udpate_record->userdetail) {
-        //     }
-        // }
+        // echo $updated_count;
+        // dd($email_bind);
+        $total_record = 1;
+        $pending_email = [];
+        $check_email = \App\Models\userLogin::whereIn('email',$bulk_email)->with(['userdetail'])->chunk(50,function($row) use ($email_bind,$total_record){
+            foreach ($row as $detail) {
+                    $userdetail = \App\Models\userDetail::find($detail->user_detail_id);
+                if ($userdetail && isset($email_bind[$detail->email])) {
+                        $userdetail->education_level = $email_bind[strtolower($detail->email)]["education"];
+                        $userdetail->profession = ($email_bind[strtolower($detail->email)]["profession"]) ? $email_bind[strtolower($detail->email)]["education"] : $detail->userdetail->education;
+                        $userdetail->profession_in_form = $email_bind[strtolower($detail->email)]["profession_in_form"];
+                        $userdetail->save();
+    
+                } else {
+                    $pending_email[] = $detail->email;
+                }
+                $total_record++;
+            }
+        });
+        echo "<pre>";
+            print_r($pending_email);
+        echo "</pre>";
+        echo $total_record;
+        echo "done";
+
     }
 }

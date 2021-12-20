@@ -38,6 +38,7 @@
 @endsection
 
 @section("breadcrumb")
+
 	<!-- Breadcrumb -->
 	<div class="breadcrumb-bar">
 		<div class="container-fluid">
@@ -283,11 +284,22 @@
         });
     </script>
 	<script type="text/javascript">
-		$(window).on('load',function() {
-			// $("#notification").fadewIn();
+		@php
+			$user_detail = auth()->user()->userdetail;
+			$show_pop = true;
+			if($user_detail->education_level && $user_detail->profession)
+			{
+				$show_pop = false;
+			}
+		@endphp
+
+		@if($show_pop)
+			$(window).on('load',function() {
+				$("#notification").fadeIn();
 				// $("#notification").modal('show');
-			
-		})
+			})
+		@endif
+
 		
 		$('#page-modal').on('shown.bs.modal', function (event) {
 			$('body').removeAttr('class');

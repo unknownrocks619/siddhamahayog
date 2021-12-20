@@ -4,7 +4,8 @@
    // $user_detail = \App\Models\userDetail::findOrFail(auth()->user()->user_detail_id);
    // dd(\Cache::store('file')->get('u_d'));
    $user_detail =  auth()->user()->userdetail;
-   //dd($user_detail->pro);
+
+   
 @endphp
 <div class="page-wrapper chiller-theme toggled">
   <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
