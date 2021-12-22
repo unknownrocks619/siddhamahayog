@@ -304,7 +304,7 @@
                         <div id="question_{{$all_question->id}}" class="collapse @if($loop->index+1 == 1) show @endif" aria-labelledby="headingOne" data-parent="#accordionExample">
                             <div class="card-body">
                                 @if($all_question->question_structure == "subjective")
-                                    <textarea name='subjective_answer[{{ $all_question->id }}]'>@if($attempted_question){{$attempted_question->subjective_answer}}@endif</textarea>
+                                    <textarea  name='subjective_answer[{{ $all_question->id }}]' @if($attempted_question) disabled @endif>@if($attempted_question){{$attempted_question->subjective_answer}}@endif</textarea>
                                     @if( $attempted_question && $attempted_question->subjective_answer_upload)
                                         <p class="text-warning">
                                             You have already uploaded a file. <br />
@@ -329,7 +329,7 @@
                                                 <div class='col-md-6'>
                                                     <div class="funkyradio">
                                                         <div class="funkyradio-success">
-                                                            <input type="radio" @if( $attempted_question && $user_answer[$key]->user_choice == true) checked @endif name="objective_answer[{{ $all_question->id }}]" value="{{ $key }}" id="{{ $objective_answer->text }}" />
+                                                            <input type="radio" @if($attempted_question) disabled @endif @if( $attempted_question && $user_answer[$key]->user_choice == true) checked @endif name="objective_answer[{{ $all_question->id }}]" value="{{ $key }}" id="{{ $objective_answer->text }}" />
                                                             <label style="text-align:center" for="{{ $objective_answer->text }}"> {{ $objective_answer->text }}</label>
                                                         </div>
                                                     </div>

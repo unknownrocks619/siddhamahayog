@@ -19,7 +19,7 @@ class GeneralQuestionsController extends Controller
     //
     use Upload;
     public function index() {
-        $collections = QuestionCollection::with('questions')->get();
+        $collections = QuestionCollection::where("active",true)->with('questions')->get();
         return view('public.user.questions.index',compact('collections'));
     }
 
@@ -216,9 +216,9 @@ class GeneralQuestionsController extends Controller
         $question_collection_id = decrypt($collection);
         $question_model = Questions::where('question_collections_id',$question_collection_id)->get();
         // dd($all_users_answer["subjective_answer"][9]);
-        // $user_previous_answer = UserAnswer::where('question_collection_id',$question_collection_id)
-        //                         ->where('user_login_id',auth()->id())
-        //                         ->first();
+        $user_previous_answer = UserAnswer::where('question_collection_id',$question_collection_id)
+                                ->where('user_login_id',auth()->id())
+                                ->first();
 
         $user_answer_submit = new UserAnswersSubmit;
         foreach ($question_model as $default_question) {
@@ -250,7 +250,9 @@ class GeneralQuestionsController extends Controller
                                 $is_correct = true;
                             }
                         }
-
+                        $user_previous_answer = UserAnswer::where('question_collection_id',$question_collection_id)
+                                                ->where('user_login_id',auth()->id())
+                                                ->first();
                         if ( $user_previous_answer ) {
                             $user_previous_answer->total_attempt = $user_previous_answer->total_attempt + 1;
                             $user_previous_answer->total_correct = ($is_correct) ? $user_previous_answer->total_correct + 1 : $user_previous_answer->total_correct;
@@ -259,7 +261,7 @@ class GeneralQuestionsController extends Controller
                             $user_previous_answer->save();
                             $user_answer_id = $user_previous_answer->id;
                         } else {
-                            $new_user_answer = new UserAnswers;
+                            $new_user_answer = new UserAnswer;
                             $new_user_answer->sibir_record_id = 1;
                             $new_user_answer->question_collection_id = $question_collection_id;
                             $new_user_answer->marks_obtained = ($is_correct) ? $default_question->total_point : 0;
@@ -272,6 +274,7 @@ class GeneralQuestionsController extends Controller
                             $new_user_answer->display = false;
 
                             $new_user_answer->save();
+                            dd($new_user_answer);
                             $user_answer_id = $new_user_answer->id();
                         }
                         // new user answer submit .
