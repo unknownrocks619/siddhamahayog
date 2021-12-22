@@ -65,7 +65,7 @@
 		<h4 id="loading_text">Please wait... Connecting to server...</h4>
     </div>
 	<div class="container-fluid" style="padding-left:0px">
-		<div class="row">
+		<div class="row" style="background: #f1b633 !important">
 			<div class="col-md-5 col-lg-4 col-xl-3" style="padding-left:0px; padding-right:0px;background:#31353d">
 				@include("public.inc.navigation")
 				
@@ -77,7 +77,7 @@
 						@include("public.inc.support-text")
 					</div>
 					<div class='col-md-8 mt-4 pt-4'>
-						<div class='card'>
+						<div class='card' style="background: #b8e8fb !important">
 							<div class='card-header bg-primary'>
 								<h4 class='card-title'>Live Session <i class='fas fa-podcast text-secondary'></i></h4>
 							</div>
@@ -99,12 +99,12 @@
 																			->get();
 							@endphp
 							@if (! $subscribed_class->count() )
-								<div class='card-body' style="background: ">
+								<div class='card-body' style="background: #b8e8fb !important">
 									<i class='d-flex fas fa-podcast img-fluid text-secondary justify-content-center' style='font-size:80px;'></i>
 								</div>
 							@endif
 							@if( $subscribed_class->count() )
-								<div class="card-body">
+								<div class="card-body" style="background: #b8e8fb !important">
 									<table class='table table-hover table-bordered'>
 										<thead>
 											<tr>
@@ -140,7 +140,7 @@
 									</table>
 								</div>
 							@endif
-							<div class='card-footer'>
+							<div class='card-footer' style="background: #b8e8fb !important">
 								@if ( ! $subscribed_class->count() )
 									<p class="text-info">You do not have any active live session.</p>
 									<p class='text-danger'>Missed your Session !!	<span class='text-primary border-bottom'><a href="{{ route('public.offline.public_get_offline_videos') }}">Check Recorded Video</a></span></p>

@@ -22,7 +22,7 @@
             $user_answer = \App\Models\UserAnswersSubmit::where('question_id',$question->id)
                                                         ->where('user_login_id',auth()->id())
                                                         ->first();
-            $user_answer_decode = json_decode($user_answer->user_answers);
+                $user_answer_decode = json_decode($user_answer->user_answers);
         @endphp
         <div class='card card-body'>
             @if($question->question_title)

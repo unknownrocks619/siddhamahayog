@@ -12,6 +12,7 @@ use App\Models\QuestionCollection;
 use App\Models\UserAnswer;
 use App\Models\UserAnswersSubmit;
 use App\Traits\Upload;
+use Illuminate\Support\Facades\Storage;
 
 class GeneralQuestionsController extends Controller
 {
@@ -39,6 +40,7 @@ class GeneralQuestionsController extends Controller
             // dd($qts);
 
         }
+        return view("public.user.questions.start-exam-new",compact('question','qts'));
         return view("public.user.questions.start-exam",compact('question','qts'));
     }
 
@@ -181,13 +183,13 @@ class GeneralQuestionsController extends Controller
         if ( ! $next_question ){
             $signed_url = \URL::temporarySignedRoute(
                                 'public.exam.examination_complete',
-                                now()->addMinute(2),
+                                now()->addMinute(600),
                                 [encrypt($collection->id)]
             );    
         } else {
             $signed_url = \URL::temporarySignedRoute(
                 'public.exam.public_examination_start',
-                now()->addMinute(($collection->total_exam_time) ? $collection->total_exam_time : 60) ,
+                now()->addMinute(600) ,
                 [encrypt($collection->id),"q"=>$next_question]);
 
         }
@@ -198,5 +200,240 @@ class GeneralQuestionsController extends Controller
         $question = QuestionCollection::where('id',decrypt($collection))->firstOrFail();
 
         return view('public.user.questions.complete',compact('question'));
+    }
+
+    public function submit_all_answer(Request $request, $collection) {
+        // if (! $request->hasValidSignature()) {
+        //     abort(401);
+        // }
+        // dd($request->answer_file);
+        $all_users_answer = $request->all();
+        $total_attempt = 0;
+        $total_correct = 0;
+        $total_incorrect =0 ;
+        // answer bulk sheet.
+        $answers = [];
+        $question_collection_id = decrypt($collection);
+        $question_model = Questions::where('question_collections_id',$question_collection_id)->get();
+        // dd($all_users_answer["subjective_answer"][9]);
+        // $user_previous_answer = UserAnswer::where('question_collection_id',$question_collection_id)
+        //                         ->where('user_login_id',auth()->id())
+        //                         ->first();
+
+        $user_answer_submit = new UserAnswersSubmit;
+        foreach ($question_model as $default_question) {
+
+            $user_have_attempted = UserAnswersSubmit::where('question_id',$default_question->id)
+                                                    ->where('user_login_id',auth()->id())
+                                                    ->first();
+            if ( ! $user_have_attempted ) :
+                
+                $innerArray = [];
+                if ($default_question->question_structure == "objective") {
+                    
+                    $admin_answer = json_decode($default_question->objectives);
+                    $question_id = $default_question->id;
+                    if (isset($request->objective_answer[$default_question->id])) {
+                        //
+                        $total_attempt++;
+                        $is_correct = false;
+                        $user_answer_sheet = $request->objective_answer[$default_question->id];
+                        foreach ($admin_answer as $key => $qts) {
+                            // dd($default_question);
+                            if($key == $user_answer_sheet) {
+                                $admin_answer[$key]->user_choice = true;
+                            } else {
+                                $admin_answer[$key]->user_choice = false;
+                            }
+                            
+                            if ($key == $user_answer_sheet && $qts->correct) {
+                                $is_correct = true;
+                            }
+                        }
+
+                        if ( $user_previous_answer ) {
+                            $user_previous_answer->total_attempt = $user_previous_answer->total_attempt + 1;
+                            $user_previous_answer->total_correct = ($is_correct) ? $user_previous_answer->total_correct + 1 : $user_previous_answer->total_correct;
+                            $user_previous_answer->total_incorrect = ($is_correct) ? $user_previous_answer->total_incorrect : $user_previous_answer->total_incorrect + 1;
+                            $user_previous_answer->marks_obtained = ($is_correct) ? $user_previous_answer->marks_obtained + $default_question->total_point : $user_previous_answer->marks_obtained;
+                            $user_previous_answer->save();
+                            $user_answer_id = $user_previous_answer->id;
+                        } else {
+                            $new_user_answer = new UserAnswers;
+                            $new_user_answer->sibir_record_id = 1;
+                            $new_user_answer->question_collection_id = $question_collection_id;
+                            $new_user_answer->marks_obtained = ($is_correct) ? $default_question->total_point : 0;
+                            $new_user_answer->user_detail_id = auth()->user()->user_detail_id;
+                            $new_user_answer->user_login_id = auth()->id();
+                            $new_user_answer->total_attempt = 1;
+                            $new_user_answer->total_correct = ($is_correct) ? true : false;
+                            $new_user_answer->total_incorrect = ($is_correct) ? false : true;
+
+                            $new_user_answer->display = false;
+
+                            $new_user_answer->save();
+                            $user_answer_id = $new_user_answer->id();
+                        }
+                        // new user answer submit .
+                        $user_answer_detail = new UserAnswersSubmit;
+                        $user_answer_detail->user_answer_id = $user_answer_id;
+                        $user_answer_detail->question_collection_id = $question_collection_id;
+                        $user_answer_detail->sibir_record_id = 1;
+                        $user_answer_detail->question_id = $question_id;
+                        $user_answer_detail->is_correct = ($is_correct) ? true : false;
+                        $user_answer_detail->obtained_marks = ($is_correct)  ? $default_question->total_point : false;
+                        $user_answer_detail->marks_verified = true;
+                        $user_answer_detail->question_type = $default_question->question_structure;
+                        $user_answer_detail->subjective_answer = null;
+                        $user_answer_detail->user_login_id = auth()->id();
+                        $user_answer_detail->user_answers = json_encode($admin_answer);
+                        $user_answer_detail->user_detail_id = auth()->user()->user_detail_id;
+                        $user_answer_detail->save();
+                    }
+
+                } elseif ($default_question->question_structure == "subjective") {
+                    
+                    $is_file = false;
+                    $is_subjective = true;
+                    if (isset($all_users_answer["answer_file"][$default_question->id])  ) 
+                    {
+
+                        // ($request->hasFile("answer_file"));
+
+                        // let's upload and set in the given location
+                        $uploader = new \App\Models\Uploader;
+                        // dd($uploader);
+                        // dd($all_users_answer["answer_file"][$default_question->id]->getMimeType());
+                        // orginal filename 
+                        $uploader->original_name = $all_users_answer["answer_file"][$default_question->id]->getClientOriginalName();
+                        $uploader->file_type = $all_users_answer["answer_file"][$default_question->id]->getMimeType();
+                        $uploader->path =  Storage::putFile('site',$all_users_answer["answer_file"][$default_question->id]->path());
+                        $uploader->save();
+                        // dd($uploaded_file)
+                        $user_answer_file  = json_encode(
+                            [
+                                "file"=>$uploader->id,
+                                'type'=>$all_users_answer["answer_file"][$default_question->id]->getMimeType()
+                            ]);
+
+                        $is_file = true;
+                        $is_subjective = false;
+                        // dd($user_answer_file);
+                        // dd($all_users_answer["answer_file"][$default_question->id]->getClientOriginalName());
+                    }
+
+
+                    if (isset($all_users_answer['subjective_answer'][$default_question->id])) {
+                        $is_subjective = true;
+                        $user_previous_answer = UserAnswer::where('user_login_id',auth()->id())
+                                                            ->where('question_collection_id',$question_collection_id)
+                                                            ->first();
+
+                        if($user_previous_answer) {
+                            $user_previous_answer->marks_obtained = null;
+                            $user_previous_answer->total_attempt = $user_previous_answer->total_attempt + 1;
+                            $user_previous_answer->save();
+                            $user_answer_id = $user_previous_answer->id;
+                        } else {
+                            $user_new_answer_prev = new UserAnswer;
+                            $user_new_answer_prev->sibir_record_id = 1;
+                            $user_new_answer_prev->question_collection_id = $question_collection_id;
+                            $user_new_answer_prev->marks_obtained = null;
+                            $user_new_answer_prev->user_detail_id = auth()->user()->user_detail_id;
+                            $user_new_answer_prev->user_login_id = auth()->id();
+                            $user_new_answer_prev->total_attempt = 1;
+                            $user_new_answer_prev->total_correct = 0;
+                            $user_new_answer_prev->total_incorrect = 0;
+                            $user_new_answer_prev->display = false;
+                            $user_new_answer_prev->save();
+
+                            $user_answer_id = $user_new_answer_prev->id;
+                        }
+
+                        // now let's first add users answer 
+                        $user_answers_detail = new UserAnswersSubmit;
+                        $user_answers_detail->question_collection_id = $question_collection_id;
+                        $user_answers_detail->sibir_record_id = 1;
+                        $user_answers_detail->question_id = $default_question->id;
+                        $user_answers_detail->question_type = $default_question->question_structure;
+                        $user_answers_detail->is_correct = null;
+                        $user_answers_detail->obtained_marks = 0;
+                        $user_answers_detail->marks_verified = 0;
+                        $user_answers_detail->subjective_answer = $all_users_answer['subjective_answer'][$default_question->id];
+                        $user_answers_detail->user_login_id = auth()->id();
+                        $user_answers_detail->user_detail_id = auth()->user()->user_detail_id;
+                        $user_answers_detail->user_answer_id = $user_answer_id;
+                        $user_answers_detail->subjective_answer_upload = ($is_file) ? $user_answer_file : null;
+                        $user_answers_detail->save(); 
+
+                        // now let's check for upload file as well.
+
+        
+                    }
+
+                    if ($is_file && ! $is_subjective) {
+                        $user_previous_answer = UserAnswer::where('user_login_id',auth()->id())
+                                                            ->where('question_collection_id',$question_collection_id)
+                                                            ->first();
+
+                        if($user_previous_answer) {
+                            $user_previous_answer->marks_obtained = null;
+                            $user_previous_answer->total_attempt = $user_previous_answer->total_attempt + 1;
+                            $user_previous_answer->save();
+                            $user_answer_id = $user_previous_answer->id;
+                        } else {
+                            $user_new_answer_prev = new UserAnswer;
+                            $user_new_answer_prev->sibir_record_id = 1;
+                            $user_new_answer_prev->question_collection_id = $question_collection_id;
+                            $user_new_answer_prev->marks_obtained = null;
+                            $user_new_answer_prev->user_detail_id = auth()->user()->user_detail_id;
+                            $user_new_answer_prev->user_login_id = auth()->id();
+                            $user_new_answer_prev->total_attempt = 1;
+                            $user_new_answer_prev->total_correct = 0;
+                            $user_new_answer_prev->total_incorrect = 0;
+                            $user_new_answer_prev->display = false;
+                            $user_new_answer_prev->save();
+
+                            $user_answer_id = $user_new_answer_prev->id;
+                        }
+
+                        // now let's first add users answer 
+                        $user_answers_detail = new UserAnswersSubmit;
+                        $user_answers_detail->question_collection_id = $question_collection_id;
+                        $user_answers_detail->sibir_record_id = 1;
+                        $user_answers_detail->question_id = $default_question->id;
+                        $user_answers_detail->question_type = $default_question->question_structure;
+                        $user_answers_detail->is_correct = null;
+                        $user_answers_detail->obtained_marks = null;
+                        $user_answers_detail->marks_verified = 0;
+                        $user_answers_detail->subjective_answer = null;
+                        $user_answers_detail->user_login_id = auth()->id();
+                        $user_answers_detail->user_detail_id = auth()->user()->user_detail_id;
+                        $user_answers_detail->user_answer_id = $user_answer_id;
+                        $user_answers_detail->subjective_answer_upload = ($is_file) ? $user_answer_file : null;
+                        $user_answers_detail->save(); 
+                    }
+                // if ($default_question->)
+                }
+            endif;
+
+        // foreach ( $all_users_answer as $question_id => $user_answer ) {
+        //     $innerArray = [];
+        //     $innerArray["question_collections_id"] = $question_collection_id;
+        //     $innerArray["user_login_id"] = auth()->id();
+        //     $innerArray["question_type"] = $
+        // }
+        // dd(decrypt($collection));
+        }
+
+        
+        $signed_url = \URL::temporarySignedRoute(
+            'public.exam.examination_complete',
+            now()->addMinute(600),
+            [$collection]
+        );    
+
+        return redirect()->to($signed_url);
+        
     }
 }

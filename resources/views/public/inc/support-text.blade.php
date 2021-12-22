@@ -26,10 +26,10 @@
     </div>
 
     @if($question->count() > $user_answer )
-        <div class="card">
+        <div class="card" style="background: #f1b633 !important">
             <div class="card-body">
-                <h5 class='card-title'> Notice / सूचना </h5>
-                <p class='text-info'>
+                <h2 class='card-title'> Notice / सूचना </h2>
+                <p class='text-white text-lg'>
                     <!-- You have  -->
                     @php
                         $remaining_question = $question->count() - $user_answer;
@@ -44,9 +44,9 @@
                     के तपाइ ले वेदान्त दर्शन अर्थपन्चको प्रतिक्रिया फारम बुझाउनु भयो। 
                     <!-- unattended questions left in your home section. -->
                 </p>
-                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-sm btn-info'>अभ्यास</a>
+                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-lg btn-info'>अभ्यास</a>
                 <hr />
-                <p class='text-danger'>If you have already attended the home please ignore this notice.</p>
+                <!-- <p class='text-danger'>If you have already attended the home please ignore this notice.</p> -->
             </div>
         </div>
     @endif

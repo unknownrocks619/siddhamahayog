@@ -86,26 +86,30 @@
                                     <div class="appointment-list @if( $user_attempt && $user_attempt->total_attempt == $collection->questions->count()) bg-success-light  @elseif( $user_attempt &&  $user_attempt->total_attempt == $collection->questions->count()) bg-info-light @endif">
                                         <div class="profile-info-widget">
                                             <div class="profile-det-info">
-                                                <h3><a href="#check_eligibility">{{ $collection->sibir->sibir_title }}</a></h3>
-                                                <p> {{ $collection->question_term  }} </p>
-                                                <p> Start Date: {{ $collection->exam_start_date }} </p>
-                                                <p>Total Duration: {{$collection->total_exam_time}} Minute</p>
+                                                <!-- <h3>
+													<a href="#check_eligibility"> -->
+														{{-- $collection->sibir->sibir_title --}}
+													<!-- </a>
+												</h3> -->
+                                                <h3><strong> <a href='#' class='text-info' style="color: #0f6674!important">{{ $collection->question_term  }}</a></strong> </h3>
+                                                <!-- <p> Start Date: {{-- $collection->exam_start_date --}} </p> -->
+                                                <!-- <p>Total Duration: {{-- $collection->total_exam_time --}} Minute</p> -->
                                             </div>
                                         </div>
                                         <div class="appointment-action">
 											@if( ! $user_attempt)
-												<a href="{{ $signed_url }}" class="btn btn-sm bg-info-light">
+												<a href="{{ $signed_url }}" class="btn btn-lg bg-info text-white">
 													<i class="far fa-eye"></i> Answer the questions / प्रश्नका उत्तर दिनुहोस 
 												</a>
-												<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
+												<a href="javascript:void(0);" class="btn btn-lg bg-success">
 													<i class="fas fa-check"></i>  Result / नतिजा 
 												</a>
 											@elseif ($user_attempt && $user_attempt->total_attempt == $collection->questions->count())
-												<a href="{{ route('modals.public_modal_display',['modal'=>'view-result','reference'=>'q_collection','reference_id'=>encrypt($collection->id)]) }}" data-toggle='modal' data-target="#page-modal" class="btn btn-sm bg-info-light">
-													<i class="far fa-eye"></i> नतिजा 
+												<a href="{{ route('modals.public_modal_display',['modal'=>'view-result','reference'=>'q_collection','reference_id'=>encrypt($collection->id)]) }}" data-toggle='modal' data-target="#page-modal" class="btn btn-lg bg-info text-white">
+													<i class="far fa-file"></i> नतिजा 
 												</a>
 											@else ($user_attempt && $user_attempt->total_attempt != $collection->questions->count())
-												<a href="{{ $signed_url }}" class="btn btn-sm bg-info-light">
+												<a href="{{ $signed_url }}" class="btn btn-lg bg-info text-white">
 													<i class="far fa-eye"></i> Continue answer / जारी राख्नुहोस 
 												</a>
 											@endif
