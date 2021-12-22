@@ -76,6 +76,19 @@ class ZoomController extends Controller
         // $signature = $meeting_setting
             $curl = curl_init();
             $time = date("h:i:s",strtotime($meeting_setting->start_time));
+            if ($meeting_setting->meeting_type == 'course') {
+                $course_setting = $meeting_setting->sibir;
+                if ($course_setting->registration_type == "public" && ! $course_setting->is_private) {
+                    $meeting_type = 1;
+                    $approval_type = 2;
+                } elseif ($course_setting->registration_type == "public" && $course_setting->is_private) {
+                    $meeting_type = 2;
+                    $approval_type = 0;
+                } elseif ($course_setting->registration_type == "bod") {
+                    $meeting_type = 2;
+                    $approval_type = 0;
+                }
+            }
             $meeting_data = json_encode([
                 "type" => 2,
                 "topic" =>$meeting_setting->sibir->sibir_title . " Zone " . address($country,"country"),
@@ -913,6 +926,70 @@ class ZoomController extends Controller
     }
 
     public function start_other_meeting_for_detail(Request $request) {
+        // fetch jwt token for meeting.
+        $meeting_setting = ZoomSetting::where('country_id',$country)->firstOrFail();
+        $sibir_setting = $meeting_setting->sibir;
+        dd($sibir_setting);
+        // $signature = $meeting_setting
+            $curl = curl_init();
+            $time = date("h:i:s",strtotime($meeting_setting->start_time));
+            $meeting_data = json_encode([
+                "type" => 2,
+                "topic" =>$meeting_setting->sibir->sibir_title . " Zone " . address($country,"country"),
+                "start_time" => date('Y-m-dT'.$time),
+                "timezone" => $meeting_setting->timezone,
+                "duration" => 300,
+                "settings" => [
+                                "approval_type"=>0,
+                                "allow_multiple_devices"=>0,
+                                "show_share_button"=>0,
+                                "registrants_confirmation_email"=>false,
+                                "auto_recording" => "cloud"],
+                "language_interpretation" => [
+                            "show_share_button"=>0,
+                            "allow_multiple_devices"=>0,
+                ]
+            ]);
+            // dd($meeting_data);
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.zoom.us/v2/users/{$meeting_setting->username}/meetings",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => $meeting_data,
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_HTTPHEADER => array(
+                "authorization: Bearer {$meeting_setting->signature}",
+                "content-type: application/json"
+            ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
 
+            curl_close($curl);
+            if ( $err ) {
+                dd($err);
+            }
+            // dd($meeting_setting->signature);
+            $zoom_response = json_decode($response);
+            $required_params = [
+                "meeting_id" => $zoom_response->id,
+                "is_used" => false,
+                "admin_start_url" => $zoom_response->start_url,
+            ];
+
+            $meeting_setting->meeting_id = $zoom_response->id;
+            $meeting_setting->is_used = false;
+            $meeting_setting->admin_start_url = $zoom_response->start_url;
+
+            try {
+                $meeting_setting->save();
+            } catch (\Throwable $th) {
+                $request->session("message","Error: " . $th->getMessage());
+                return back();
+            }
+            $request->session()->flash('success',"Meeting Created.");
+            return back();
     }
  }

@@ -283,6 +283,7 @@
 		<div class='row'>
 			<div class='col-md-10 col-lg-10 col-sm-12'>
 				@php
+					$question_collection = $question;
 					$question = $qts;
 				@endphp
 					<div class='bs-callout @error("gender") bs-callout-danger @else bs-callout-primary @enderror'>
@@ -373,6 +374,27 @@
 						<h4>Progress</h4>
 					</div>
 					<div class='card-body'>
+						@if( $question_collection->questions_count == 1 )
+							1 / 1
+						@else
+						@php
+							// previous count
+							$prev_qts = \App\Models\Questions::where('id','<',$question->id)->where('question_collections_id',$question_collection->id)->count();
+							$add_position = $prev_qts + 1;
+
+							if ($add_position == $question_collection->questions_count) {
+								echo $question_collection->questions_count;
+							} else {
+								echo $add_position;
+							}
+						@endphp
+						 / {{ $question_collection->questions_count }}
+						 @endif
+					</div>
+					<div class="card-footer">
+						<p class='text-info'>
+							Total Question: {{ $question_collection->questions_count }}
+						</p>
 					</div>
 				</div>
 			</div>

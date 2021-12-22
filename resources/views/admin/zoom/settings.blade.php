@@ -17,7 +17,6 @@
                             <tr>
                                 <th>Title</th>
                                 <th>Country</th>
-                                <th>Zoom Account</th>
                                 <th>Avaibility</th>
                                 <th>Sadhaks</th>
                                 <th></th>
@@ -60,9 +59,7 @@
 
                                         @endif
                                     </td>
-                                    <td>
-                                        {{ $zoom_setting->username }}
-                                    </td>
+                                    
                                     <td>
                                         @if($zoom_setting->is_global)
                                             <span class='badge bg-secondary'>Global</span>
@@ -70,6 +67,7 @@
                                             <span class='badge bg-warning'>Isolated</span>
                                         @endif
                                     </td>
+
                                     <td>
                                         @if($zoom_setting->is_used && ! $zoom_setting->is_active)
                                                 <br />
@@ -98,6 +96,7 @@
 
                                         @endif
                                     </td>
+                                    
                                     <td>
                                         @if( ! $zoom_setting->is_used && !$zoom_setting->is_active)
                                             <form target="_blank" method="post" action="@if($zoom_setting->is_global) {{ route('events.admin_start_global_meeting',[$zoom_setting->id])}} @else {{ route('events.admin_start_zonal_setting',[$zoom_setting->id]) }} @endif">

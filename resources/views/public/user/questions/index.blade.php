@@ -45,7 +45,7 @@
 					</p>
 				<div class="row">
 					<div class="col-md-12">
-						<h4 class="mb-4">Exams Center </h4>
+						<h4 class="mb-4">Exams Center / परीक्षा केन्द्र</h4>
                         <div class="appointments">
 							@foreach ($collections as $collection)
                                 @php
@@ -56,10 +56,30 @@
 														'public.exam.public_examination_start',
 														now()->addMinute(($collection->total_exam_time) ? $collection->total_exam_time : 60) ,
 														[encrypt($collection->id)]);
+
+
 									// check if user have already attempted.
 									$user_attempt = \App\Models\UserAnswer::where('question_collection_id',$collection->id)
 																					->where('user_login_id',auth()->id())
 																					->first();
+									if($user_attempt && $user_attempt->total_attempt != $collection->questions->count() ) {
+										// last question attemp.
+										$last_question = \App\Models\UserAnswersSubmit::where('user_login_id',auth()->id())
+															->where('question_collection_id',$collection->id)
+															->latest()->first();
+										// now lets fetch question.
+										$question_singed_url = \App\Models\Questions::where('question_collections_id',$collection->id)
+																	//->where('user_login_id',auth()->id())
+																	->where('id' , '>',$last_question->question_id)
+																	->first();
+										if ($question_singed_url) {
+											$signed_url = URL::temporarySignedRoute(
+														'public.exam.public_examination_start',
+														now()->addMinute(($collection->total_exam_time) ? $collection->total_exam_time : 60) ,
+														[encrypt($collection->id),"q"=>$question_singed_url->id]);
+										}
+									}
+
                                 @endphp
                                 @if( $user_allowed)
                                     <!-- Appointment List -->
@@ -75,18 +95,18 @@
                                         <div class="appointment-action">
 											@if( ! $user_attempt)
 												<a href="{{ $signed_url }}" class="btn btn-sm bg-info-light">
-													<i class="far fa-eye"></i> Start Exam
+													<i class="far fa-eye"></i> Answer the questions / प्रश्नका उत्तर दिनुहोस 
 												</a>
 												<a href="javascript:void(0);" class="btn btn-sm bg-success-light">
-													<i class="fas fa-check"></i> Result
+													<i class="fas fa-check"></i>  Result / नतिजा 
 												</a>
 											@elseif ($user_attempt && $user_attempt->total_attempt == $collection->questions->count())
 												<a href="{{ route('modals.public_modal_display',['modal'=>'view-result','reference'=>'q_collection','reference_id'=>encrypt($collection->id)]) }}" data-toggle='modal' data-target="#page-modal" class="btn btn-sm bg-info-light">
-													<i class="far fa-eye"></i> View Result
+													<i class="far fa-eye"></i> नतिजा 
 												</a>
 											@else ($user_attempt && $user_attempt->total_attempt != $collection->questions->count())
 												<a href="{{ $signed_url }}" class="btn btn-sm bg-info-light">
-													<i class="far fa-eye"></i> View Attempt Marks
+													<i class="far fa-eye"></i> Continue answer / जारी राख्नुहोस 
 												</a>
 											@endif
                                         </div>

@@ -28,22 +28,23 @@
     @if($question->count() > $user_answer )
         <div class="card">
             <div class="card-body">
-                <h5 class='card-title'>Homework Notice</h5>
+                <h5 class='card-title'> Notice / सूचना </h5>
                 <p class='text-info'>
-                    You have 
+                    <!-- You have  -->
                     @php
                         $remaining_question = $question->count() - $user_answer;
 
-                        $count_array = ["one","two",'three','four','five'];
-                        if ($remaining_question > 5) {
-                            echo " 5+ ";
-                        } else {
-                            echo $count_array[$remaining_question-1];
-                        }
-                    @endphp 
-                    unattended questions left in your home section.
+                        // $count_array = ["one","two",'three','four','five'];
+                        // if ($remaining_question > 5) {
+                        //    echo " 5+ ";
+                        // } else {
+                        //    echo $count_array[$remaining_question-1];
+                        // }
+                    @endphp
+                    के तपाइ ले वेदान्त दर्शन अर्थपन्चको प्रतिक्रिया फारम बुझाउनु भयो। 
+                    <!-- unattended questions left in your home section. -->
                 </p>
-                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-sm btn-info'>Attend My Question</a>
+                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-sm btn-info'>अभ्यास</a>
                 <hr />
                 <p class='text-danger'>If you have already attended the home please ignore this notice.</p>
             </div>

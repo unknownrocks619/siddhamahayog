@@ -26,7 +26,7 @@ class GeneralQuestionsController extends Controller
         if (! $request->hasValidSignature()) {
             abort(401);
         }
-        $question = QuestionCollection::find(decrypt($collection));
+        $question = QuestionCollection::withCount(["questions"])->find(decrypt($collection));
         if ( ! $question ) {
             $request->session()->flash("message","Question not available.");
             return back();
@@ -36,8 +36,9 @@ class GeneralQuestionsController extends Controller
             $qts = Questions::findOrFail($request->q);
         } else {
             $qts = Questions::where('question_collections_id',$question->id)->first();
-        }
+            // dd($qts);
 
+        }
         return view("public.user.questions.start-exam",compact('question','qts'));
     }
 
@@ -56,7 +57,15 @@ class GeneralQuestionsController extends Controller
                                     ->where('question_id',$q->id)
                                     ->first();
         if ( $user_answer ) {
+            // $next_question = Questions::where("question_collections_id",$collection->id)
+            //                         ->where('id','>',$q->id)
+            //                         ->min('id');
+            // $signed_url = \URL::temporarySignedRoute(
+            //     'public.exam.public_examination_start',
+            //     now()->addMinute(($collection->total_exam_time) ? $collection->total_exam_time : 60) ,
+            //     [encrypt($collection->id),"q"=>$next_question]);
             $request->session()->flash("message","You have already attempted this question.");
+
             return back();
         }
 
