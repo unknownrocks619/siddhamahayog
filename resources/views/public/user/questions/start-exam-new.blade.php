@@ -282,12 +282,15 @@
 		@csrf
 		<div class='row'>
             <div class="col-md-12">
+				<x-alert></x-alert>
                 <!-- accordian menu -->
                 <div class="accordion" id="accordionExample">
                     @foreach ($question->questions as $all_question)
                         @php
                             // check if this question has already been attemped.
-                            $attempted_question = \App\Models\UserAnswersSubmit::where('question_id',$all_question->id)->where('user_login_id',auth()->id())->first();
+                            $attempted_question = \App\Models\UserAnswersSubmit::where('question_id',$all_question->id)
+													->where('user_login_id',auth()->id())
+													->first();
                         @endphp
                     <div class="card">
                         <div class="card-header" id="headingOne">
@@ -304,17 +307,29 @@
                         <div id="question_{{$all_question->id}}" class="collapse @if($loop->index+1 == 1) show @endif" aria-labelledby="headingOne" data-parent="#accordionExample">
                             <div class="card-body">
                                 @if($all_question->question_structure == "subjective")
-                                    <textarea  name='subjective_answer[{{ $all_question->id }}]' @if($attempted_question) disabled @endif>@if($attempted_question){{$attempted_question->subjective_answer}}@endif</textarea>
-                                    @if( $attempted_question && $attempted_question->subjective_answer_upload)
-                                        <p class="text-warning">
-                                            You have already uploaded a file. <br />
-                                        </p>
-                                    @else
-                                    <hr />
-                                    <label class='label-control'>Select Image / Audio File</label><br />
-                                    <input type="file" name="answer_file[{{ $all_question->id }}]"  />
-
-                                    @endif
+									@if($attempted_question && ! $attempted_question->draft)
+										<div class='form-control py-2'> {!! $attempted_question->subjective_answer !!} </div>
+									@else
+										<textarea 
+											name='subjective_answer[{{ $all_question->id }}]'
+										>@if($attempted_question && $attempted_question->draft){{$attempted_question->subjective_answer}}@endif</textarea>
+										@if( $attempted_question && $attempted_question->subjective_answer_upload && ! $attempted_question->draft)
+											<p class="text-warning">
+												You have already uploaded a file. <br />
+											</p>
+										@else
+											<hr />
+											<label class='label-control'>Select Image / Audio File</label><br />
+											<input type="file" name="answer_file[{{ $all_question->id }}]"  />
+											<div class="col-md-12">
+												<p class="text-right">
+													<button type="submit" formaction="{{ route('public.exam.public_submit_answer_as_draft',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-dark btn-sm'>Save As Draft</button>
+													<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm'>Submit</button>
+												</p>
+											</div>
+										@endif
+									@endif
+                                    
                                 @elseif($all_question->question_structure == "objective")
                                     @php
                                         $answers = json_decode($all_question->objectives);
@@ -329,7 +344,7 @@
                                                 <div class='col-md-6'>
                                                     <div class="funkyradio">
                                                         <div class="funkyradio-success">
-                                                            <input type="radio" @if($attempted_question) disabled @endif @if( $attempted_question && $user_answer[$key]->user_choice == true) checked @endif name="objective_answer[{{ $all_question->id }}]" value="{{ $key }}" id="{{ $objective_answer->text }}" />
+                                                            <input type="radio" @if($attempted_question && ! $attempted_question->draft) disabled @endif @if( $attempted_question && $user_answer[$key]->user_choice == true) checked @endif name="objective_answer[{{ $all_question->id }}]" value="{{ $key }}" id="{{ $objective_answer->text }}" />
                                                             <label style="text-align:center" for="{{ $objective_answer->text }}"> {{ $objective_answer->text }}</label>
                                                         </div>
                                                     </div>
@@ -365,6 +380,13 @@
                                                 </div>
                                             @endif
                                         @endforeach
+										<div class="col-md-12">
+											<p class="text-right">
+												<button type="submit" formaction="{{ route('public.exam.public_submit_answer_as_draft',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-dark btn-sm'>Save As Draft</button>
+												<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm'>Submit</button>
+											</p>
+										</div>
+
                                     </div>
 
                                 @endif

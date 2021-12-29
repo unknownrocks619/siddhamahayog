@@ -179,6 +179,10 @@ Route::prefix("p")
                                         ->name('public_submit_answer');
                                 Route::post("post/all-answer/{collection}",[GeneralQuestionsController::class,"submit_all_answer"])
                                         ->name('public_submit_all_answers');
+                                Route::post('/post/draft/{collection}',[GeneralQuestionsController::class,"save_as_draft"])
+                                        ->name('public_submit_answer_as_draft');
+                                Route::post('/post/answer-single/{collection}',[GeneralQuestionsController::class,"submit_single_answer"])
+                                        ->name("public_submit_single_answer");
                                 Route::get("exam/complete/{question}",[GeneralQuestionsController::class,"question_complete"])
                                         ->name('examination_complete');
                 });

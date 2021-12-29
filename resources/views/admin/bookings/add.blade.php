@@ -231,13 +231,13 @@
     @isset($user_detail)
     <script>
         var newCapture = function () {
-            // window.open("{{ route('modals.display') }}?modal=user_webcam_display&user_detail_id={{ $user_detail->id }}",'Visitors Photo','width=800,height=450,resizable=no');    
+            window.open("{{ route('modals.display') }}?modal=user_webcam_display&user_detail_id={{ $user_detail->id }}",'Visitors Photo','width=800,height=450,resizable=no');    
         }
 
-        // newCapture.onunload = function(){ console.log('Child window closed'); };
+        newCapture.onunload = function(){ console.log('Child window closed'); };
 
 
-                webCampWindow = window.open("{{ route('modals.display') }}?modal=user_webcam_display&user_detail_id={{ $user_detail->id }}",'Visitors Photo','width=800,height=450,resizable=no');
+                // webCampWindow = window.open("{{ route('modals.display') }}?modal=user_webcam_display&user_detail_id={{ $user_detail->id }}",'Visitors Photo','width=800,height=450,resizable=no');
         </script>
     @endisset
 @endSection()

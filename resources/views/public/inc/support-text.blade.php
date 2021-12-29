@@ -11,19 +11,7 @@
         $user_answer = \App\Models\UserAnswersSubmit::select('sibir_record_id')->whereIn('question_id',$question)->where('user_login_id',auth()->id())->count();
     @endphp
 
-    <div class="card bg-danger">
-        <div class="card-header bg-danger">
-            <h4 class='card-title text-white'>Exam Notice</h4>
-        </div>
-        <div class="card-body text-white border-none" style="border-bottom:none !important">
-            <!-- <p class='text-white'> -->
-                {!! $last_question->question_title !!}
-            <!-- </p> -->
-        </div>
-        <div class="card-footer bg-danger" style="border-top:none !important">
-            <a href="{{ $signed_url }}" class='btn btn-primary'>Submit My Answer</a>
-        </div>
-    </div>
+  
 
     @if($question->count() > $user_answer )
         <div class="card" style="background: #f1b633 !important">
@@ -41,10 +29,12 @@
                         //    echo $count_array[$remaining_question-1];
                         // }
                     @endphp
-                    के तपाइ ले वेदान्त दर्शन अर्थपन्चको प्रतिक्रिया फारम बुझाउनु भयो। 
+                    प्रथम त्रैमासिक प्रश्न पत्र , वैराग्य प्रकरण र द्वितीय त्रैमासिक प्रश्न पत्र, मुमुक्षु प्रकरण को अभ्यास गर्नुहोस ।
+
+
                     <!-- unattended questions left in your home section. -->
                 </p>
-                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-lg btn-info'>अभ्यास</a>
+                <a href="{{ route('public.exam.public_examination_list') }}" class='btn btn-lg btn-info'>Attend My Question / अभ्यास </a>
                 <hr />
                 <!-- <p class='text-danger'>If you have already attended the home please ignore this notice.</p> -->
             </div>

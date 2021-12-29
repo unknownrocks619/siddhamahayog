@@ -75,7 +75,7 @@
 										if ($question_singed_url) {
 											$signed_url = URL::temporarySignedRoute(
 														'public.exam.public_examination_start',
-														now()->addMinute(($collection->total_exam_time) ? $collection->total_exam_time : 60) ,
+														now()->addMinute(3600) ,
 														[encrypt($collection->id),"q"=>$question_singed_url->id]);
 										}
 									}
@@ -104,11 +104,11 @@
 												<a href="javascript:void(0);" class="btn btn-lg bg-success">
 													<i class="fas fa-check"></i>  Result / नतिजा 
 												</a>
-											@elseif ($user_attempt && $user_attempt->total_attempt == $collection->questions->count())
+											@elseif ($user_attempt && $user_attempt->answers->count() == $collection->questions->count())
 												<a href="{{ route('modals.public_modal_display',['modal'=>'view-result','reference'=>'q_collection','reference_id'=>encrypt($collection->id)]) }}" data-toggle='modal' data-target="#page-modal" class="btn btn-lg bg-info text-white">
 													<i class="far fa-file"></i> नतिजा 
 												</a>
-											@else ($user_attempt && $user_attempt->total_attempt != $collection->questions->count())
+											@else ($user_attempt && $user_attempt->answers->count() != $collection->questions->count())
 												<a href="{{ $signed_url }}" class="btn btn-lg bg-info text-white">
 													<i class="far fa-eye"></i> Continue answer / जारी राख्नुहोस 
 												</a>

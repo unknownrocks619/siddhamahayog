@@ -52,7 +52,8 @@
                 // display results in page
                 document.getElementById('img_preview').innerHTML = 
                     '<img style="width:320px;height:240px" id="imageprev" src="'+data_uri+'" class=" img-thumbnail" />';
-                    var image = document.getElementById('parent_image_id');
+                    var image = window.opener.document.getElementById('parent_image_id');
+                    // var image = document.getElementById('parent_image_id');
                         image.src = data_uri;
                 
             } );
