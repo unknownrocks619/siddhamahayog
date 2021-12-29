@@ -398,11 +398,11 @@
 
             </div>
 
-            <div class='col-md-12 mt-2'>
+            <!-- <div class='col-md-12 mt-2'>
                 <button type="submit" class='btn btn-info btn-block'>
                     Submit My Answer / उत्तर बुझाउनुहोस 
                 </button>
-            </div>
+            </div> -->
 		</div>
 	</form>
 </div>
