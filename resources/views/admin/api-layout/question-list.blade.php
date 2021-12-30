@@ -114,7 +114,7 @@
             </div>
             <div class='col-md-4'>
                 <a data-option="{{ $question->id }}" data-toggle="modal" data-target="#edit-modal" href='{{ route("modals.display",["display"=>"modal","modal"=>"edit-question","reference"=>"question","reference_id"=>$question->id])  }}' class='btn btn-sm bg-success text-white'>Edit</a>
-                <a href="{{ route('questions.admin_question_delete',$question->id) }}" class='btn btn-inline btn-sm bg-danger text-white'>Danger</a>
+                <a href="{{ route('questions.admin_question_delete',$question->id) }}" class='btn btn-inline btn-sm bg-danger text-white'>Delete</a>
             </div>
         </div>
     @endforeach

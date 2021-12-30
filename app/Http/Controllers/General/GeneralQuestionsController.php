@@ -4,7 +4,7 @@ namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ Questions;
+use App\Models\Questions;
 use App\Models\QuestionCollections;
 use App\Models\SibirRecord;
 use App\Models\UserSadhakRegistration;
