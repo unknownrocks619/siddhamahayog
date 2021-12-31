@@ -49,6 +49,7 @@ class QuestionEvaulateController extends Controller
         // check previous marks deduct from total marks.
         $answer->answer_collection->marks_obtained = $answer->answer_collection->marks_obtained - $answer->obtained_marks;
         $answer->answer_collection->marks_obtained += $request->marks;
+        $answer->subjective_answer = $request->user_answer;
         $answer->answer_collection->display = true;
         $answer->obtained_marks = $request->marks;
         $answer->marks_verified = true;

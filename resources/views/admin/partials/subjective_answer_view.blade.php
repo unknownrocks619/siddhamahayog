@@ -31,7 +31,8 @@
                 <div class='1'></div>
                 <div class='col-md-12'>
                     @if($answers->question_type == "subjective" && $answers->question->question_type == "text")
-                        {!! $answers->subjective_answer !!}
+                        <textarea name="user_answer" class='form-control'>{{ $answers->subjective_answer }}</textarea>
+                        <!-- <button type="submit" name='submitbtn'>Save Changes.</button> -->
                         @if($answers->subjective_answer_upload)
                             @php
                                 $user_upload_answer = json_decode($answers->subjective_answer_upload);
@@ -70,7 +71,7 @@
                     <button type="submit" class='btn btn-sm btn-primary'>Submit</button>
                 </div>
                 <div class='col-md-2'>
-                    <div class='loading' style="display:none"></div>
+                    <div class='loading' name="marks_submit" style="display:none"></div>
                 </div>
             </div>
         </form>
@@ -87,6 +88,7 @@
         $(document).ajaxStop(function(){
             $(parent).find('.loading').empty().hide();
         })
+        tinyMCE.triggerSave(); //this line of code will use to update textarea content
 
         $.ajax({
             type : "POST",
@@ -97,4 +99,15 @@
             }
         })
     })
+    
 </script>
+<script>
+    tinymce.init({
+    selector: 'textarea',
+    plugins: 'lists image print preview hr save',
+    toolbar_mode: 'floating',
+    menubar: true,
+    toolbar : " undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | strikethrough | forecolor"
+
+});
+	</script>
