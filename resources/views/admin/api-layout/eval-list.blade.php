@@ -167,7 +167,7 @@
                                                     </td>
                                                     <td>
                                                         @if($ans_coll)
-                                                            <a href="{{ route('modals.display',['modal'=>'subjective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" data-toggle="modal" data-target="#page-modal">
+                                                            <a href="{{ route('modals.display',['modal'=>'subjective-answer','reference'=>'answer','reference_id'=>$ans_coll->id]) }}" target="_blank">
                                                                 Subjective Answer
                                                             </a>
                                                         @endif
