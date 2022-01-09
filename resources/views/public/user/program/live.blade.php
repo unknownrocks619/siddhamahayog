@@ -90,7 +90,7 @@
 								$subscribed_class = \App\Models\ZoomSetting::where('is_active',true)->orderByDesc("is_global")->get();
 								//if ( ! $subscribed_class->count() ) {
 									// zonal session.
-								//	$get_zonal_configurations = \App\Models\ZoomSetting::select(['sibir_record_id','country_id','meeting_id','id','is_active'])
+								//	$get_zonal_configurations = \App\Models\ZoomSetting::select(['sibir_record_id','country_id','meeting_id','id','is_active','admin_start_url'])
 								//								->where('is_active',true)
 								//								->get();
 								//}

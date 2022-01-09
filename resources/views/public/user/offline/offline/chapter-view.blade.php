@@ -14,10 +14,14 @@
                         <td> {{ $video->video_title }} </td>
                         <td> {{ $video->description }} </td>
                         <td> 
-                        <a data-target="#page-modal" data-toggle="modal" href="{{ route('modals.public_modal_display',['modal'=>'youtube_modal','reference'=>'Offline','reference_id'=>encrypt($video->id)]) }}" class="btn btn-sm btn-info">
-                            <i class='fas fa-eye-open'></i>
-                            Play Video
-                        </a>
+                        @if($course->locked ||  $video->is_active == false)
+                            <button class='btn btn-danger' onclick="alert('Sorry, This Video is locked by Admin.')">Locked</button>
+                        @else
+                            <a data-target="#page-modal" data-toggle="modal" href="{{ route('modals.public_modal_display',['modal'=>'youtube_modal','reference'=>'Offline','reference_id'=>encrypt($video->id)]) }}" class="btn btn-sm btn-info">
+                                <i class='fas fa-eye-open'></i>
+                                Play Video
+                            </a>
+                        @endif
                     </td>
                     </tr>
                 @endforeach

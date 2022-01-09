@@ -244,7 +244,7 @@ class ZoomController extends Controller
             $user_data = [
                 "first_name" => ucwords(strtolower($first_name)),
                 "last_name" => ucwords(strtolower($user_detail->last_name)),
-                "email" => "{$user_detail->first_name}_test_{$user_detail->id}@gmail.com"
+                "email" => "{$user_detail->first_name}_test_{$user_detail->id}@siddhamahayog.org"
             ];
 
             $zoom_response = zoom_registration_link($user_data,$meeting_setting->meeting_id,$meeting_setting->signature);

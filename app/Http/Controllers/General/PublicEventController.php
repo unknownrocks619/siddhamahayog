@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\General;
 
 use App\Http\Controllers\Controller;
+use App\Models\CourseChapter;
 use Illuminate\Http\Request;
 use App\Models\SibirRecord;
 use App\Models\UserSadhakRegistration;
@@ -670,7 +671,11 @@ class PublicEventController extends Controller
             abort(403);
         }
 
-        $chapters = \App\Models\CourseChapter::with(["videos"])->where('sibir_record_id',$sibir_record)->get();
+        $chapters = \App\Models\CourseChapter::with(["videos"])
+                                        ->where('sibir_record_id',$sibir_record)
+                                        ->where('active',true)
+                                        ->where('locked',false)
+                                        ->get();
         if ( $request->ajax() ) {
             return view ("public.user.offline.offline.folder",compact('chapters'));
         }
@@ -700,7 +705,7 @@ class PublicEventController extends Controller
                                                                 ->where('sibir_record_id',$request->sibir_record)
                                                                 ->with(["event_source"])
                                                                 ->first();
-            if ( ! $user_registration_for_program ) {
+            if ( ! $user_register_for_program ) {
                 $access = false;
             }
             $offline_videos = OfflineVideos::where('event_id',$request->sibir_record)
@@ -719,12 +724,15 @@ class PublicEventController extends Controller
     }
 
     public function chapter_list(Request $request) {
-        $videos = OfflineVideo::select(["full_link",'source','video_title','description','total_video_time','course_chapter_id',"id"])
+
+        $course = CourseChapter::find(decrypt($request->__v));
+
+        $videos = OfflineVideo::select(["full_link",'source','video_title','description','total_video_time','course_chapter_id',"id","is_active"])
                                 ->where('course_chapter_id',decrypt($request->__v))
                                 ->where('event_id',decrypt($request->__s))
                                 ->orderBy("sortable","ASC")
                                 ->get();
-        return view("public.user.offline.offline.chapter-view",compact("videos"));
+        return view("public.user.offline.offline.chapter-view",compact("videos","course"));
         
     }
 

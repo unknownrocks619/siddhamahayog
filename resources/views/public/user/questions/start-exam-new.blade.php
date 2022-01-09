@@ -253,6 +253,7 @@
 			font-size: 48px;
 		}
 	</style>
+	
 @endsection
 
 @section("breadcrumb")
@@ -277,7 +278,20 @@
 @endsection
 
 @section("content")
-<div class="container-fluid">
+<div class="container-fluid mx-0 px-0">
+	
+	<div class="row mx-0 px-0" style="position:fixed;width:100%;z-index:9999">
+		<div class="col-md-12 bg-danger px-0 mx-0">
+			<div class="text-white text-center text-lg">
+				Exam will Be Over At
+				<span id='demo'> Loading...</span>
+				
+			</div>
+			
+		</div>
+	</div>
+
+
 	<form enctype='multipart/form-data' method="post" action="{{ route('public.exam.public_submit_all_answers',[encrypt($question->id)]) }}">
 		@csrf
 		<div class='row'>
@@ -324,7 +338,7 @@
 											<div class="col-md-12">
 												<p class="text-right">
 													<button type="submit" formaction="{{ route('public.exam.public_submit_answer_as_draft',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-dark btn-sm'>Save As Draft</button>
-													<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm'>Submit</button>
+													<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm submit_button'>Submit</button>
 												</p>
 											</div>
 										@endif
@@ -383,7 +397,7 @@
 										<div class="col-md-12">
 											<p class="text-right">
 												<button type="submit" formaction="{{ route('public.exam.public_submit_answer_as_draft',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-dark btn-sm'>Save As Draft</button>
-												<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm'>Submit</button>
+												<button type="submit" formaction="{{ route('public.exam.public_submit_single_answer',[encrypt($question->id),'q_id'=>$all_question->id]) }}" class='btn btn-info btn-sm submit_button'>Submit</button>
 											</p>
 										</div>
 
@@ -410,13 +424,52 @@
 
 
 @section("page_js")
+<script>
+		const countTimeDown = function (elId,expire_date,disable_button='answer_button') {
+			// Set the date we're counting down to
+			var countDownDate = new Date(expire_date).getTime();
+
+			// Update the count down every 1 second
+			var x = setInterval(function() {
+
+			// Get today's date and time
+			var now = new Date().getTime();
+				
+			// Find the distance between now and the count down date
+			var distance = countDownDate - now;
+				
+			// Time calculations for days, hours, minutes and seconds
+			var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+			var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+			var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+				
+			// Output the result in an element with id="demo"
+			document.getElementById(elId).innerHTML = days + "d " + hours + "h "
+			+ minutes + "m " + seconds + "s ";
+				
+			// If the count down is over, write some text 
+			if (distance < 0) {
+				$('.submit_button').remove();
+				clearInterval(x);
+				document.getElementById(elId).innerHTML = "EXPIRED";
+			}
+			}, 1000);
+		}
+	</script>
     <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
-	<script>
+	<!-- <script>
 			tinymce.init({
 			selector: 'textarea',
 			plugins: 'lists image print preview hr',
 			toolbar_mode: 'floating',
 			menubar: false
 		});
+	</script> -->
+		@php
+			$expire_date = date("M d, Y",strtotime($question->exam_end_date)) . " 24:00:00";
+		@endphp
+		<script>
+		countTimeDown("demo","{{ $expire_date }}",".submit_button")
 	</script>
 @endsection
