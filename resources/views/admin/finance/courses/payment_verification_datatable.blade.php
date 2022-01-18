@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <table class="table table-bordered table-hover" id="payment_list">
                         <thead>
-                            <th>S.No</th>
+                            <th>Date</th>
                             <th>Full Name</th>
                             <th>Phone Number</th>
                             <th>Amouht</th>
@@ -43,7 +43,7 @@
             serverSide : true,
             ajax: "{{ url()->full() }}",
             columns : [
-                {data : 'id', name:'id'},
+                {data : 'created_at', name:'created_at'},
                 {data: 'full_name', name:'full_name'},
                 {data: 'phone_number',name:'phone_number'},
                 {data : 'amount', name: 'amount'},

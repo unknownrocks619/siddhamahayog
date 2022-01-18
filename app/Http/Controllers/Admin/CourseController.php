@@ -154,12 +154,13 @@ class CourseController extends Controller
 
     public function unverified_payments(Request $request) {
         
-
         if ( $request->ajax() ) {
             $funds = EventFundDetail::with(["user_detail","sibir","image_file"])->where('status','pending')->latest()->get();
 
             $datatable_report = DataTables::of($funds)
-                                            ->addIndexColumn()
+                                            ->addColumn("created_at", function( $row) {
+                                                return date("Y-m-d",strtotime($row->created_at));
+                                            })
                                             ->addColumn("full_name",function( $row ) {
                                                 return $row->user_detail->full_name();
                                             })
@@ -416,7 +417,7 @@ class CourseController extends Controller
     }
 
     public function unverified_payment_datatable_view(Request $request){
-
+        // dd("hello");
         if ( $request->ajax() ) {
             $funds = EventFundDetail::with(["user_detail","sibir","image_file"])->where('status','pending')->latest()->get();
 

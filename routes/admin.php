@@ -347,8 +347,6 @@ Route::prefix("course")
 Route::get("/user-registration-link", [ZoomActionController::class,"index"])->name("admin_zoom_registration_view");
 Route::get('/user-generate-link/{meetin_id}/{user_id?}',[ZoomActionController::class,"generate_link"])->name('admin_generate_link');
 
-
-
 Route::prefix('chapters')
         ->name('chapters.')
         ->middleware(['auth','admin'])
