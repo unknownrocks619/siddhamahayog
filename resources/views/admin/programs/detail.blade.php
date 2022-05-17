@@ -1,0 +1,292 @@
+@extends("layouts.portal.app")
+
+@section("page_title")
+::Program
+@endsection
+
+@section("page_css")
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+
+
+@endsection
+
+
+@section("content")
+<!-- Main Content -->
+<section class="content">
+    <div class="container">
+        <div class="block-header">
+            <div class="row clearfix">
+                <div class="col-lg-5 col-md-5 col-sm-12">
+                    <h2>Program `{{$program->program_name}}`</h2>                    
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-4 col-md-12">
+                <div class="card project_widget">                    
+                    <div class="body">
+                        <div class="row pw_content">
+                            <div class="col-12 pw_header">
+                                <h6>Available Sections</h6>
+                            </div>
+                            <div class='row'>
+                                <div class="col-6 pw_meta mb-2">
+                                    <span>Section - A                           
+                                        <small class="text-danger">45 Student(s)</small>
+                                    </span>
+                                </div>
+                                <div class="col-6 pw_meta mb-2">
+                                    <span>Section - B                           
+                                        <small class="text-danger">65 Student(s)</small>
+                                    </span>
+                                </div>
+                                <div class="col-6 pw_meta mb-2">
+                                    <span>Section - C                           
+                                        <small class="text-danger">655 Student(s)</small>
+                                    </span>
+                                </div>
+                                <div class="col-6 pw_meta mb-2">
+                                    <span>Section - D                           
+                                        <small class="text-danger">15 Student(s)</small>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="{{ route('admin.program.sections.admin_list_all_section',[$program->id]) }}" class='btn btn-info btn-block btn-sm'>Manage Section</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="card project_widget">
+                    <div class="body">
+                        <div class="row pw_content">
+                            <div class="col-12 pw_header">
+                                <h6>Current Batch</h6>
+                                <small class="text-muted">{{ $program->active_batch->batch->batch_name }} | {{ $program->active_batch->batch->batch_year }}/ {{ $program->active_batch->batch->batch_month }}</small>
+                            </div>
+                            <div class="col-8 pw_meta">
+                                <span>Total Batch</span>                                
+                                <small class="text-success">{{ $program->batches->count() }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="http://" class='btn btn-info btn-block btn-sm'>Manage Batch</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="card project_widget">
+                    <div class="body">
+                        <div class="row pw_content">
+                            <div class="col-12 pw_header">
+                                <h6>Mobile App</h6>
+                                <small class="text-muted">Alpino  |  Last Update: 21 Dec 2017</small>
+                            </div>
+                            <div class="col-8 pw_meta">
+                                <span>1,870 USD</span>                                
+                                <small class="text-danger">10 Days Remaining</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="sparkline m-t-10" data-type="bar" data-width="97%" data-height="26px" data-bar-Width="2" data-bar-Spacing="7" data-bar-Color="#000000">2,3,6,5,4,5,8,7,6,3</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="http://" class='btn btn-info btn-block btn-sm'>Manage Resources</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-3 col-md-12">
+                <div class="card">
+                    <div class="body activities">
+                    <div class="header">
+                        <h2><strong>Quick</strong> Navigation</h2>
+                    </div>
+                        <div class="streamline b-accent">
+                            <div class="sl-item">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.videos.admin_list_videos_filemanager',[$program->id]) }}">
+                                            Resources
+
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-primary">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a class='text-info text-link' href="{{ route('admin.program.courses.admin_program_course_list',[$program->id]) }}">
+                                            Syllabus
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.program.fee.admin_fee_overview_by_program',$program->id) }}" class="text-info text-link">
+                                            Fee Collection
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.members.admin_add_assign_member_to_program',$program->id) }}">
+                                            Assign Student
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.members.admin_add_member_to_program',$program->id) }}">
+                                            Register Student
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">Exam Center</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if( $program->program_type == "paid" && $program->active_fees)
+            <div class="col-lg-8 col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2><strong>Course Fee </strong> Structure</h2>
+                        <ul class="header-dropdown">
+                            <li class="dropdown"> <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="zmdi zmdi-more"></i> </a>
+                                <ul class="dropdown-menu dropdown-menu-right">
+                                    <li><a href="{{ route('admin.program.fee.admin_program_create_fee',[$program->id]) }}">Add Payment</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body m-b-10 bg-dark">
+                        <div class="row">
+                            <div class="col-6">
+                                <small>Total Collected</small>
+                                <h4 class="text-success m-b-0 m-t-0">
+                                    @if($program->student_fee)
+                                        {{ default_currency($program->student_fee->sum('total_amount')) }}
+                                    @else
+                                        {{ default_currency(0) }}
+                                    @endif
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            @elseif ($program->program_type == "paid" && ! $program->active_fees)
+                    <div class="col-lg-8 col-md-12" id="app">
+                        <add-fee action="{{ route('program.admin_api_program_course_fee_store',$program->id) }}"></add-fee>
+                    </div>
+            @endif
+        </div>        
+      
+        <div class="row clearfix">
+            <div class="col-md-12 col-lg-3">
+                
+            </div>
+            <div class="col-md-12 col-lg-8">
+                <div class="card">
+                    <div class="row profile_state">
+                        <div class="col-lg-4 col-md-4 col-6">
+                            <div class="body">
+                                <h5 class="m-b-0">{{ default_currency($program->active_fees->admission_fee) }}</h5>
+                                <span>Admission Fee</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-6">
+                            <div class="body">
+                                <h5 class="m-b-0">{{ default_currency($program->active_fees->monthly_fee) }}</h5>
+                                <span>Monthly Fee</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-34 col-md-4 col-6">
+                            <div class="body">
+                                <h5 class="m-b-0">
+                                    @php
+                                        $total = $program->active_fees->admission_fee + $program->active_fees->monthly_fee;
+                                        echo default_currency($total);
+                                    @endphp
+                                </h5>
+                                <span>Total</span>
+                            </div>
+                        </div>                   
+                    </div>
+                </div>
+                            
+            </div>            
+        </div>        
+    </div>
+</section>
+@endsection
+
+@section("modal")
+<!-- Large Size -->
+<div class="modal fade" id="addBatch" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" id="modal_content">
+            <div class="moda-body">
+                <p>Please wait...loading your data</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+@if ($program->program_type == "paid" && ! $program->active_fees)
+    <script src="{{ mix ('js/app.js')}}"></script>
+@endif
+
+<script>
+    // $('#student-table').DataTable({
+    //     processing: true,
+    //     serverSide: true,
+    //     ajax: '{{url()->full()}}',
+    //     columns: [
+    //         {data: 'id',name:"id"},
+    //         {data: 'program_name', name: 'program_name'},
+    //         {data: "program_duration",name: "program_duration"},
+    //         {data: "promote", name: "promote"},
+    //         {data: "batch", name: "batch"},
+    //         {data: "action", name: "action"}
+    //     ]
+    // });
+</script>
+
+@endsection
