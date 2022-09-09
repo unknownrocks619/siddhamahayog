@@ -1,7 +1,7 @@
 <div class="menu-container">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">                
+            <div class="col-md-12">
                 <ul class="h-menu">
                     <li class="open active"><a href="index.html"><i class="zmdi zmdi-home"></i></a></li>
                     <li><a href="javascript:void(0)">Website</a>
@@ -29,9 +29,9 @@
                             <li>
                                 <ul class="sub-menu-two">
                                     <li><a href="{{ route('admin.program.admin_program_list',['paid']) }}">Paid Programs</a></li>
-                                    <li><a href="alerts.html">Open Program</a></li>
-                                    <li><a href="collapse.html">Clubs</a></li>
-                                    <li><a href="colors.html">Other</a></li>
+                                    <li><a href="{{ route('admin.program.admin_program_list',['open']) }}">Open Program</a></li>
+                                    <!-- <li><a href="collapse.html">Clubs</a></li> -->
+                                    <li><a href="{{ route('admin.program.admin_program_list') }}">All</a></li>
                                 </ul>
                             </li>
                             <li>
@@ -64,12 +64,12 @@
                             <li><a href="advanced-form-elements.html">Active Sadhana</a></li>
                         </ul>
                     </li>
-                    <li><a href="javascript:void(0)">System Configuration</a>
+                    <li><a href="{{ route('admin.widget.index') }}">Widgets</a>
                     </li>
                     <li><a href="javascript:void(0)">Staffs</a>
                     </li>
                     <li><a href="javascript:void(0)">Dharmashala </a>
-                        <ul class="sub-menu">                            
+                        <ul class="sub-menu">
                             <li><a href="widgets-app.html">Sadhak in Dharmashala</a></li>
                             <li><a href="widgets-data.html">Bookings</a></li>
                             <li><a href="widgets-chart.html">Report</a></li>
@@ -93,7 +93,7 @@
                                     <li><a href="projects.html">Videos</a></li>
                                 </ul>
                             </li>
-                          
+
                         </ul>
                     </li>
                 </ul>

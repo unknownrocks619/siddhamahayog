@@ -9,7 +9,11 @@ class ProgramBatch extends Model
 {
     use HasFactory;
 
-    public function batch() {
-        return $this->belongsTo(Batch::class,"batch_id");
+    public $fillable = [
+        "active"
+    ];
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class, "batch_id");
     }
 }

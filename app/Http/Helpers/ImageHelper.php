@@ -1,18 +1,18 @@
-<?php 
-if (! function_exists("default_image") ) {
+<?php
+if (!function_exists("default_image")) {
 
-    function default_image($broken=false) {
+    function default_image($broken = false)
+    {
 
         if ($broken) {
             // return broken image 
         }
 
-        return ;
+        return;
     }
-
 }
 
-if (! function_exists("image_by_file_type") ) {
+if (!function_exists("image_by_file_type")) {
 
     /**
      * Display Image According to 
@@ -21,7 +21,8 @@ if (! function_exists("image_by_file_type") ) {
      * @return String Img
      * 
      */
-    function image_by_file_type($file) {
+    function image_by_file_type($file)
+    {
         /**
          * check passed param for two option
          * file type and actual filename
@@ -34,7 +35,7 @@ if (! function_exists("image_by_file_type") ) {
             'application/x-' => ""
         ];
 
-        if (array_key_exists($file,$file_types) ) {
+        if (array_key_exists($file, $file_types)) {
             return $file_types[$file];
         }
 
@@ -42,4 +43,16 @@ if (! function_exists("image_by_file_type") ) {
     }
 }
 
-?>
+
+if (!function_exists("banner_image")) {
+
+    function bannner_image($image, $access_field = null)
+    {
+        $json_image = json_decode($image);
+
+        if ($json_image && isset($json_image->$access_field)) {
+            return asset(($json_image->$access_field->path));
+        }
+        return default_image();
+    }
+}

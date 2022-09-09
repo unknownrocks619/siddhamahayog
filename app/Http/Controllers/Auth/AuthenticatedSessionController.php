@@ -17,8 +17,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function create()
     {
-        return view("portal.auth.login");
+        // return view("portal.auth.login");
         // return view('auth.login');
+        return view('frontend.page.auth.login');
     }
 
     /**
@@ -39,32 +40,29 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('admin.admin_dashboard');
         }
 
+        return redirect()->intended();
         /**
          * Center
          */
         if (auth()->user()->role_id == 2) {
-
         }
 
         /**
          * Lecturer
          */
         if (auth()->user()->role_id == 3) {
-
         }
 
         /**
          * Dharmashala
          */
         if (auth()->user()->role_id == 3) {
-
         }
 
         /**
          * 
          */
         if (auth()->user()->role_id == 4) {
-
         }
         return redirect()->intended(RouteServiceProvider::HOME);
     }

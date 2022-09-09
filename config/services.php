@@ -33,7 +33,7 @@ return [
     'facebook' => [    
         'client_id' => "605508593861577",  
         'client_secret' => "51aca24c20324cff221274f4bff90a4f",  
-        'redirect' => env('FACEBOOK_REDIRECT_URI') 
+        'redirect' => config("app.url") . "/social/login/facebook" 
       ],
       'google' => [    
         'client_id' => env('GOOGLE_CLIENT_ID'),  

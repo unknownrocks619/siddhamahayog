@@ -8,6 +8,8 @@ use App\Models\WebsiteEvents;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
 
 class WebsiteEventController extends Controller
 {
@@ -21,7 +23,7 @@ class WebsiteEventController extends Controller
     {
         //
         $events = WebsiteEvents::with(["event_program"])->get();
-        return view('admin.website.events.index',compact("events"));
+        return view('admin.website.events.index', compact("events"));
     }
 
     /**
@@ -67,14 +69,14 @@ class WebsiteEventController extends Controller
 
 
         $images = [];
-        if ($request->hasFile("featured_image_one") ) {
-            $images ["one"] = $this->upload($request,"featured_image_one");
+        if ($request->hasFile("featured_image_one")) {
+            $images["one"] = $this->upload($request, "featured_image_one");
         }
-        if ($request->hasFile("featured_image_two") ) {
-            $images ["two"] = $this->upload($request, "featured_image_two");
+        if ($request->hasFile("featured_image_two")) {
+            $images["two"] = $this->upload($request, "featured_image_two");
         }
         if ($request->hasFile("featured_image_three")) {
-            $images["three"] = $this->upload($request,"featured_image_three");
+            $images["three"] = $this->upload($request, "featured_image_three");
         }
         $events->featured_image = json_encode($images);
 
@@ -86,14 +88,14 @@ class WebsiteEventController extends Controller
 
         $today = \Carbon\Carbon::now();
         $status = ($carbon_event_start_date->gt($today)) ? "upcoming" : null;
-        
-        if ( ! $status ) {
+
+        if (!$status) {
             $status = ($carbon_event_end_date->lt($today)) ? "completed" : null;
             $events->completed = true;
         }
 
-        if ( ! $status ) {
-            $status = $carbon_event_start_date->between($today,$carbon_event_end_date) ? "ongoing" : "pending";
+        if (!$status) {
+            $status = $carbon_event_start_date->between($today, $carbon_event_end_date) ? "ongoing" : "pending";
         }
 
         $events->status = $status;
@@ -107,25 +109,30 @@ class WebsiteEventController extends Controller
         $events->event_contact_person = $request->event_contact_person;
         $events->event_contact_phone = $request->event_phone_contact;
         $page_image = [];
-        if ($request->hasFile('page_header_image') ) {
-            $page_image["header"] = $this->upload($request,"page_header_image");
+        if ($request->hasFile('page_header_image')) {
+            $page_image["header"] = $this->upload($request, "page_header_image");
         }
 
-        if ($request->hasFile('page_image') ) {
-            $page_image['page_image'] = $this->upload($request,"page_image");
+        if ($request->hasFile('page_image')) {
+            $page_image['page_image'] = $this->upload($request, "page_image");
         }
         $events->full_address  = $request->event_location;
         $events->google_map_link = $request->google_map;
         $events->page_image = json_encode($page_image);
-        
+
         try {
-            $events->save();
+            DB::transaction(function () use ($events, $request) {
+                $events->save();
+
+                // now also sync with widgets
+                $events->widget()->sync($request->widgets);
+            });
         } catch (\Throwable $th) {
             //throw $th;
-            $request->session()->flash("error","Unable to create event. Error: ". $th->getMessage());
+            $request->session()->flash("error", "Unable to create event. Error: " . $th->getMessage());
             return back();
         }
-        $request->session()->flash("success","New Event Created.");
+        $request->session()->flash("success", "New Event Created.");
         return back();
     }
 
@@ -146,12 +153,12 @@ class WebsiteEventController extends Controller
      * @param  WebsiteEvents  $event
      * @return \Illuminate\Http\Response
      */
-    public function edit( WebsiteEvents $event)
+    public function edit(WebsiteEvents $event)
     {
         //
         $featured_image = ($event->featured_image) ? json_decode($event->featured_image) : null;
         $page_image = ($event->page_image) ? json_decode($event->page_image) : null;
-        return view('admin.website.events.edit',compact('event','featured_image','page_image'));
+        return view('admin.website.events.edit', compact('event', 'featured_image', 'page_image'));
     }
 
     /**
@@ -166,7 +173,7 @@ class WebsiteEventController extends Controller
         //
         // dd($request->all());
         $event->event_title = $request->event_title;
-        if ($event->isDirty("event_title") ) {
+        if ($event->isDirty("event_title")) {
             $event->slug = Str::slug($request->event_title);
         }
         $event->event_type = $request->event_type;
@@ -177,40 +184,40 @@ class WebsiteEventController extends Controller
         $featured_image = json_decode($event->featured_image);
         $images = [];
 
-        if ($request->hasFile("featured_image_one") ) {
-            $images ["one"] = $this->upload($request,"featured_image_one");
-        } elseif($featured_image && isset($featured_image->one) ) {
+        if ($request->hasFile("featured_image_one")) {
+            $images["one"] = $this->upload($request, "featured_image_one");
+        } elseif ($featured_image && isset($featured_image->one)) {
             $images["one"] = (array) $featured_image->one;
         }
-        if ($request->hasFile("featured_image_two") ) {
-            $images ["two"] = $this->upload($request, "featured_image_two");
-        } elseif($featured_image && isset($featured_image->two) ) {
+        if ($request->hasFile("featured_image_two")) {
+            $images["two"] = $this->upload($request, "featured_image_two");
+        } elseif ($featured_image && isset($featured_image->two)) {
             $images["two"] = (array) $featured_image->two;
         }
 
         if ($request->hasFile("featured_image_three")) {
-            $images["three"] = $this->upload($request,"featured_image_three");
-        } elseif($featured_image && isset($featured_image->three) ) {
+            $images["three"] = $this->upload($request, "featured_image_three");
+        } elseif ($featured_image && isset($featured_image->three)) {
             $images["three"] = (array) $featured_image->three;
         }
 
         $event->featured_image = json_encode($images);
         /**
          * Carbon
-        */
+         */
         $carbon_event_start_date = \Carbon\Carbon::parse($request->event_start_date);
         $carbon_event_end_date = \Carbon\Carbon::parse($request->event_end_date);
 
         $today = \Carbon\Carbon::now();
         $status = ($carbon_event_start_date->gt($today)) ? "upcoming" : null;
-        
-        if ( ! $status ) {
+
+        if (!$status) {
             $status = ($carbon_event_end_date->lt($today)) ? "completed" : null;
             $event->completed = true;
         }
 
-        if ( ! $status ) {
-            $status = $carbon_event_start_date->between($today,$carbon_event_end_date) ? "ongoing" : "pending";
+        if (!$status) {
+            $status = $carbon_event_start_date->between($today, $carbon_event_end_date) ? "ongoing" : "pending";
         }
 
         $event->status = $status;
@@ -227,15 +234,15 @@ class WebsiteEventController extends Controller
         $page_image = [];
         $page_prev_image = json_decode($event->page_image);
 
-        if ($request->hasFile('page_header_image') ) {
-            $page_image["header"] = $this->upload($request,"page_header_image");
-        } elseif ($page_prev_image && isset($page_prev_image->header) ) {
+        if ($request->hasFile('page_header_image')) {
+            $page_image["header"] = $this->upload($request, "page_header_image");
+        } elseif ($page_prev_image && isset($page_prev_image->header)) {
             $page_image["header"] = (array) $page_prev_image->header;
         }
 
-        if ($request->hasFile('page_image') ) {
-            $page_image['page_image'] = $this->upload($request,"page_image");
-        } elseif($page_prev_image && isset($page_prev_image->page_image) )  {
+        if ($request->hasFile('page_image')) {
+            $page_image['page_image'] = $this->upload($request, "page_image");
+        } elseif ($page_prev_image && isset($page_prev_image->page_image)) {
             $page_image["page_image"] = (array) $page_prev_image->page_image;
         }
 
@@ -244,16 +251,19 @@ class WebsiteEventController extends Controller
         $event->google_map_link = $request->google_map;
         $event->page_image = json_encode($page_image);
         try {
+            DB::transaction(function () use ($event, $request) {
+                $event->save();
+                $event->widget()->sync($request->widgets);
+            });
             $event->save();
         } catch (\Throwable $th) {
             //throw $th;
-            $request->session()->flash("error","Unable to update event. Error: ". $th->getMessage());
+            $request->session()->flash("error", "Unable to update event. Error: " . $th->getMessage());
             return back();
         }
 
-        $request->session()->flash("success","Event detail updated.");
+        $request->session()->flash("success", "Event detail updated.");
         return back();
-
     }
 
     /**
@@ -269,12 +279,11 @@ class WebsiteEventController extends Controller
             $event->delete();
         } catch (\Throwable $th) {
             //throw $th;
-            request()->session()->flash('error',"Unable to delete event. Please Try again. Error: " . $th->getMessage());
+            request()->session()->flash('error', "Unable to delete event. Please Try again. Error: " . $th->getMessage());
             return back();
         }
 
-        request()->session()->flash("success","Event Deleted.");
+        request()->session()->flash("success", "Event Deleted.");
         return back();
-
     }
 }

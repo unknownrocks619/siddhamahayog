@@ -1,0 +1,120 @@
+<!-- Menu -->
+
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo">
+        <a href="{{ route('dashboard') }}" class="app-brand-link">
+            <span class="app-brand-logo demo">
+                @if(site_settings("logo"))
+                <img src="{{ site_settings('logo') }}" style="width:50px;" />
+                @endif
+            </span>
+            <span class="app-brand-text demo menu-text fw-bolder ms-2">{{ site_settings("website_name") }}</span>
+        </a>
+
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner py-1">
+        <!-- Dashboard -->
+        <li class="menu-item {{ active_routes(['dashboard']) }}">
+            <x-nav-link href="{{ route('dashboard') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Dashboard</div>
+
+            </x-nav-link>
+        </li>
+
+        <!-- Layouts -->
+        <li class="menu-item {{ active_routes(['user.account.notes.notes.index','user.account.notes.notes.create','user.account.notes.notes.edit']) }}">
+            <x-nav-link href="{{ route('user.account.notes.notes.index') }}" class="menu-link">
+
+                <i class="menu-icon tf-icons bx bxs-note"></i>
+                <div data-i18n="Layouts">Notes</div>
+            </x-nav-link>
+        </li>
+        <!-- Layouts -->
+        <li class="menu-item {{ active_routes(['user.account.support.ticket.index','user.account.support.ticket.create','user.account.support.ticket.edit']) }}">
+            <x-nav-link href="{{ route('user.account.support.ticket.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-support"></i>
+                <div data-i18n="Layouts">Support Ticket</div>
+            </x-nav-link>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Personalise</span>
+        </li>
+        <li class="menu-item {{ active_routes(['user.account.list','user.account.connections','user.account.notifications']) }}">
+            <a href="{{ route('user.account.list') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-cog"></i>
+                <div data-i18n="Account Settings">Account Settings</div>
+            </a>
+        <li class="menu-item">
+            <a href="{{ route('user.account.notifications') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
+
+                <div data-i18n="Notifications">Notifications</div>
+            </a>
+        </li>
+        </li>
+        <!-- Components -->
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
+        <!-- Cards -->
+        <li class="menu-item {{ active_routes(['user.account.event.calendar']) }}">
+            <a href="{{ route('user.account.event.calendar') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                <div data-i18n="Basic">Calendar</div>
+            </a>
+        </li>
+        <!-- User interface -->
+        <li class="menu-item {{ active_routes(['user.account.dharmashala.booking.create','user.account.dharmashala.booking.index'],'active open') }}">
+            <a href="#" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bxs-hotel"></i>
+                <div data-i18n="User interface">Dharmashala</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item {{ active_routes(['user.account.dharmashala.booking.index']) }}">
+                    <a href="{{ route('user.account.dharmashala.booking.index') }}" class="menu-link">
+                        <div data-i18n="Accordion">My Booking</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ active_routes(['user.account.dharmashala.booking.create']) }}">
+                    <a href="{{ route('user.account.dharmashala.booking.create') }}" class="menu-link">
+                        <div data-i18n="Alerts">New Booking</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Extended components -->
+        <li class="menu-item {{ active_routes(['user.account.exams.exam.index','user.account.exams.exam.result'],'active open')}}">
+            <a href="javascript:void(0)" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-copy"></i>
+                <div data-i18n="Extended UI">Exams</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item {{ active_routes(['user.account.exams.exam.index']) }}">
+                    <a href="{{ route('user.account.exams.exam.index') }}" class="menu-link">
+                        <div data-i18n="Perfect Scrollbar">Attend Exam</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ active_routes(['user.account.exams.exam.result']) }} ">
+                    <a href="{{ route('user.account.exams.exam.result') }}" class="menu-link">
+                        <div data-i18n="Text Divider">Result</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="menu-item {{ active_routes(['user.account.programs.program.index','user.account.programs.program.notices','user.account.programs.program.offline.video','user.account.programs.program.resources']) }}">
+            <a href="{{ route('user.account.programs.program.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-crown"></i>
+                <div data-i18n="Boxicons">My Programs</div>
+            </a>
+        </li>
+    </ul>
+</aside>
+<!-- / Menu -->

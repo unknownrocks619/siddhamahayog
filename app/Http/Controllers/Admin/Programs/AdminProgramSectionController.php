@@ -9,6 +9,7 @@ use App\Models\ProgramSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+
 class AdminProgramSectionController extends Controller
 {
     /**
@@ -19,8 +20,8 @@ class AdminProgramSectionController extends Controller
     public function index(Request $request, Program $program)
     {
         //
-        $all_sections = ProgramSection::where('program_id',$program->id)->latest()->get();
-        return view('admin.programs.section.index',compact("all_sections","program"));
+        $all_sections = ProgramSection::where('program_id', $program->id)->latest()->get();
+        return view('admin.programs.section.index', compact("all_sections", "program"));
     }
 
     /**
@@ -39,32 +40,32 @@ class AdminProgramSectionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(AdminProgramSectionRequest $request, Program $program) 
+    public function store(AdminProgramSectionRequest $request, Program $program)
     {
         //
-        $program_section = New ProgramSection;
+        $program_section = new ProgramSection;
         $program_section->program_id = $program->id;
         $program_section->section_name = $request->section_name;
         $program_section->slug = Str::slug($request->section_name, '-');
         $program_section->default = ($request->default) ? true : false;
 
         // check slug 
-        $slug = $program_section->where('slug',Str::slug($request->section_name))->where('program_id',$program->id)->exists();
+        $slug = $program_section->where('slug', Str::slug($request->section_name))->where('program_id', $program->id)->exists();
         if ($slug) {
-            session()->flash('error',"Section Name Already Exists.");
+            session()->flash('error', "Section Name Already Exists.");
             return back()->withInput();
         }
         try {
-            DB::transaction(function() use ($program_section) {
+            DB::transaction(function () use ($program_section, $program) {
                 if ($program_section->default) {
 
-                    $check_previous = $program_section->where("program_id",$program->id)->where('default' , true)->first();
-        
+                    $check_previous = $program_section->where("program_id", $program->id)->where('default', true)->first();
+
                     if ($check_previous) {
                         $check_previous->default = false;
                     }
-                    
-                    if ($check_previous->isDrity()) {
+
+                    if ( $check_previous && $check_previous->isDrity()) {
                         $check_previous->save();
                     }
                 }
@@ -72,11 +73,11 @@ class AdminProgramSectionController extends Controller
             });
         } catch (\Throwable $th) {
             //throw $th;
-            session()->flash('error',"Unable to add section.");
+            session()->flash('error', "Unable to add section. Error: " . $th->getMessage());
             return back()->withInput();
         }
 
-        session()->flash('success',"Section Crated.");
+        session()->flash('success', "Section Crated.");
         return back();
     }
 
@@ -100,7 +101,7 @@ class AdminProgramSectionController extends Controller
     public function edit(ProgramSection $section)
     {
         //
-        return view('admin.programs.section.modal.edit',compact("section"));
+        return view('admin.programs.section.modal.edit', compact("section"));
     }
 
     /**
@@ -117,10 +118,10 @@ class AdminProgramSectionController extends Controller
 
         if ($section->isDirty("section_name")) {
             // check for slug exists.
-            $slug_exits = ProgramSection::where('slug',Str::slug($request->section_name))->where('program_id',$section->program_id)->exists();
+            $slug_exits = ProgramSection::where('slug', Str::slug($request->section_name))->where('program_id', $section->program_id)->exists();
             if ($slug_exits) {
-                session()->flash('error',"Section already exists.");
-                return redirect()->route('admin.program.sections.admin_list_all_section',[$section->program_id]);
+                session()->flash('error', "Section already exists.");
+                return redirect()->route('admin.program.sections.admin_list_all_section', [$section->program_id]);
             }
         }
 
@@ -128,10 +129,10 @@ class AdminProgramSectionController extends Controller
 
         try {
             DB::transaction(function () use ($section) {
-                if ($section->isDirty("default") ) {
+                if ($section->isDirty("default")) {
                     // check 
-                    $check_previous = ProgramSection::where("program_id",$section->program_id)->where('default' , true)->first();
-        
+                    $check_previous = ProgramSection::where("program_id", $section->program_id)->where('default', true)->first();
+
                     if ($check_previous) {
                         $check_previous->default = false;
                     }
@@ -145,12 +146,11 @@ class AdminProgramSectionController extends Controller
             });
         } catch (\Throwable $th) {
             //throw $th;
-            session()->flash("error","Unable to update section.");
+            session()->flash("error", "Unable to update section.");
             return back();
         }
-        session()->flash('success',"Section updated.");
-        return redirect()->route('admin.program.sections.admin_list_all_section',$section->program_id);
-        
+        session()->flash('success', "Section updated.");
+        return redirect()->route('admin.program.sections.admin_list_all_section', $section->program_id);
     }
 
     /**
@@ -162,6 +162,6 @@ class AdminProgramSectionController extends Controller
     public function destroy(ProgramSection $programSection)
     {
         //
-        
+
     }
 }

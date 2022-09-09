@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Rules\GoogleCaptcha;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -30,16 +31,15 @@ class LoginRequest extends FormRequest
     {
         return [
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string']
-            // "g_cap_res" => ["required","string"]
+            'password' => ['required', 'string'],
+            "recaptcha_token" => ["required", new GoogleCaptcha()]
         ];
     }
 
     public function messages()
     {
         return [
-            "g_cap_res.required" => "Invalid Google Captcha. Please try again.",
-            "g_cap_res.string" => "These credentials do not match our records."
+            "recaptcha_token.required" => "Invalid Google Captcha. Please try again.",
         ];
     }
 
@@ -53,14 +53,13 @@ class LoginRequest extends FormRequest
     public function authenticate()
     {
         $this->ensureIsNotRateLimited();
-        // $this->CaptchaValidation();
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+
+        if (!Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
-        
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -73,7 +72,7 @@ class LoginRequest extends FormRequest
      */
     public function ensureIsNotRateLimited()
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -96,32 +95,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey()
     {
-        return Str::lower($this->input('email')).'|'.$this->ip();
-    }
-
-    public function CaptchaValidation() {
-        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
-        $recaptcha_secret = '6LcmdQseAAAAAEAMarWeVGktfPIKx7e3bUj8FOwA';
-        $recaptcha_response = $this->g_cap_res;
-    
-        // Make and decode POST request:
-        $recaptcha = file_get_contents($recaptcha_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response);
-        $recaptcha = json_decode($recaptcha);
-
-        if ( ! $recaptcha->success ) {
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'email' => "Captcha validation failed",
-            ]);
-
-        } 
-        // Take action based on the score returned:
-        if ( $recaptcha->score <= 0.5) { 
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'email' => "Captcha validation failed",
-            ]);
-        } 
-
+        return Str::lower($this->input('email')) . '|' . $this->ip();
     }
 }

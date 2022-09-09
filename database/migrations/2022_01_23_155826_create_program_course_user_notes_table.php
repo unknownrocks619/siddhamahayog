@@ -23,7 +23,7 @@ class CreateProgramCourseUserNotesTable extends Migration
             $table->string("access")->default("private")->comment("available options: private, public");
             $table->string("remarks")->nullable();
             $table->timestamps();
-            $table->softDelete();
+            $table->softDeletes();
         });
     }
 

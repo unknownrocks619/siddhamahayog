@@ -5,7 +5,7 @@
 @endsection
 
 @section("page_css")
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
 
 
 @endsection
@@ -18,13 +18,13 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Program `{{$program->program_name}}`</h2>                    
+                    <h2>Program `{{$program->program_name}}`</h2>
                 </div>
             </div>
         </div>
         <div class="row clearfix">
             <div class="col-lg-4 col-md-12">
-                <div class="card project_widget">                    
+                <div class="card project_widget">
                     <div class="body">
                         <div class="row pw_content">
                             <div class="col-12 pw_header">
@@ -32,22 +32,22 @@
                             </div>
                             <div class='row'>
                                 <div class="col-6 pw_meta mb-2">
-                                    <span>Section - A                           
+                                    <span>Section - A
                                         <small class="text-danger">45 Student(s)</small>
                                     </span>
                                 </div>
                                 <div class="col-6 pw_meta mb-2">
-                                    <span>Section - B                           
+                                    <span>Section - B
                                         <small class="text-danger">65 Student(s)</small>
                                     </span>
                                 </div>
                                 <div class="col-6 pw_meta mb-2">
-                                    <span>Section - C                           
+                                    <span>Section - C
                                         <small class="text-danger">655 Student(s)</small>
                                     </span>
                                 </div>
                                 <div class="col-6 pw_meta mb-2">
-                                    <span>Section - D                           
+                                    <span>Section - D
                                         <small class="text-danger">15 Student(s)</small>
                                     </span>
                                 </div>
@@ -72,7 +72,7 @@
                                 <small class="text-muted">{{ $program->active_batch->batch->batch_name }} | {{ $program->active_batch->batch->batch_year }}/ {{ $program->active_batch->batch->batch_month }}</small>
                             </div>
                             <div class="col-8 pw_meta">
-                                <span>Total Batch</span>                                
+                                <span>Total Batch</span>
                                 <small class="text-success">{{ $program->batches->count() }}</small>
                             </div>
                         </div>
@@ -80,7 +80,7 @@
                     <div class="footer">
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="http://" class='btn btn-info btn-block btn-sm'>Manage Batch</a>
+                                <a href="{{ route('admin.program.batches.admin_batch_list',$program->id) }}" class='btn btn-info btn-block btn-sm'>Manage Batch</a>
                             </div>
                         </div>
                     </div>
@@ -92,10 +92,10 @@
                         <div class="row pw_content">
                             <div class="col-12 pw_header">
                                 <h6>Mobile App</h6>
-                                <small class="text-muted">Alpino  |  Last Update: 21 Dec 2017</small>
+                                <small class="text-muted">Alpino | Last Update: 21 Dec 2017</small>
                             </div>
                             <div class="col-8 pw_meta">
-                                <span>1,870 USD</span>                                
+                                <span>1,870 USD</span>
                                 <small class="text-danger">10 Days Remaining</small>
                             </div>
                             <div class="col-4">
@@ -117,9 +117,9 @@
             <div class="col-lg-3 col-md-12">
                 <div class="card">
                     <div class="body activities">
-                    <div class="header">
-                        <h2><strong>Quick</strong> Navigation</h2>
-                    </div>
+                        <div class="header">
+                            <h2><strong>Quick</strong> Navigation</h2>
+                        </div>
                         <div class="streamline b-accent">
                             <div class="sl-item">
                                 <div class="sl-content">
@@ -176,6 +176,82 @@
                     </div>
                 </div>
             </div>
+
+            @if ($program->program_type == "sadhana")
+            <div class="col-lg-9 col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>
+                                Program
+                            </strong>
+                            student
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <table class="table table-bordered table-hover" id="studentTable">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>
+                                        Full Name
+                                    </th>
+                                    <th>
+                                        Phone Number
+                                    </th>
+                                    <th>
+                                        Email
+                                    </th>
+                                    <th>
+                                        Section
+                                    </th>
+                                    <th>
+                                        Batch
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($students as $student)
+                                <tr>
+                                    <td>
+                                        {{ $loop->iteration }}
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">{{ $student->student->full_name }}</a>
+                                    </td>
+                                    <td>
+                                        {{ $student->student->phone_number }}
+                                    </td>
+                                    <td>
+                                        {{ $student->student->email }}
+                                    </td>
+                                    <td>
+                                        {{ $student->section->section_name }}
+                                    </td>
+                                    <td>
+                                        {{ $student->batch->batch_name }}
+                                    </td>
+                                    <td>
+                                        <a href="">View Detail</a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7">
+                                        Student Record not found...
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             @if( $program->program_type == "paid" && $program->active_fees)
             <div class="col-lg-8 col-md-12">
                 <div class="card">
@@ -195,39 +271,39 @@
                                 <small>Total Collected</small>
                                 <h4 class="text-success m-b-0 m-t-0">
                                     @if($program->student_fee)
-                                        {{ default_currency($program->student_fee->sum('total_amount')) }}
+                                    {{ default_currency($program->student_fee->sum('total_amount')) }}
                                     @else
-                                        {{ default_currency(0) }}
+                                    {{ default_currency(0) }}
                                     @endif
                                 </h4>
                             </div>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
             @elseif ($program->program_type == "paid" && ! $program->active_fees)
-                    <div class="col-lg-8 col-md-12" id="app">
-                        <add-fee action="{{ route('program.admin_api_program_course_fee_store',$program->id) }}"></add-fee>
-                    </div>
+            <div class="col-lg-8 col-md-12" id="app">
+                <add-fee action="{{ route('program.admin_api_program_course_fee_store',$program->id) }}"></add-fee>
+            </div>
             @endif
-        </div>        
-      
+        </div>
+
         <div class="row clearfix">
             <div class="col-md-12 col-lg-3">
-                
+
             </div>
             <div class="col-md-12 col-lg-8">
                 <div class="card">
                     <div class="row profile_state">
                         <div class="col-lg-4 col-md-4 col-6">
                             <div class="body">
-                                <h5 class="m-b-0">{{ default_currency($program->active_fees->admission_fee) }}</h5>
+                                <h5 class="m-b-0">{{ ($program->active_fees && $program->active_fees->count()) ? default_currency($program->active_fees->admission_fee) : 0.00 }}</h5>
                                 <span>Admission Fee</span>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-4 col-6">
                             <div class="body">
-                                <h5 class="m-b-0">{{ default_currency($program->active_fees->monthly_fee) }}</h5>
+                                <h5 class="m-b-0">{{ ($program->active_fees && $program->active_fees->count()) ? default_currency($program->active_fees->monthly_fee) :0.00 }}</h5>
                                 <span>Monthly Fee</span>
                             </div>
                         </div>
@@ -235,18 +311,18 @@
                             <div class="body">
                                 <h5 class="m-b-0">
                                     @php
-                                        $total = $program->active_fees->admission_fee + $program->active_fees->monthly_fee;
-                                        echo default_currency($total);
+                                    $total = ($program->active_fees && $program->active_fees->count()) ? $program->active_fees->admission_fee + $program->active_fees->monthly_fee : 0;
+                                    echo default_currency($total);
                                     @endphp
                                 </h5>
                                 <span>Total</span>
                             </div>
-                        </div>                   
+                        </div>
                     </div>
                 </div>
-                            
-            </div>            
-        </div>        
+
+            </div>
+        </div>
     </div>
 </section>
 @endsection
@@ -270,9 +346,14 @@
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
 @if ($program->program_type == "paid" && ! $program->active_fees)
-    <script src="{{ mix ('js/app.js')}}"></script>
+<script src="{{ mix ('js/app.js')}}"></script>
 @endif
 
+@if($program->program_type == "sadhana")
+<script>
+    $("#studentTable").DataTable()
+</script>
+@endif
 <script>
     // $('#student-table').DataTable({
     //     processing: true,

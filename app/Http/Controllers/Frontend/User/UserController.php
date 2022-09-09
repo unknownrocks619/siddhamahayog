@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Controllers\Frontend\User;
+
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Frontend\User\UserStoreRequest;
+use App\Models\Member;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+class UserController extends Controller
+{
+    //
+
+    public function store(UserStoreRequest $request)
+    {
+    }
+
+    public function facebook()
+    {
+        $fb_user = Socialite::driver("facebook")->user();
+        // check if user exists.
+
+        $user_exists = Member::where('external_source_id', $fb_user->id)->first();
+
+        if ($user_exists) {
+            Auth::login($user_exists);
+            return redirect()->intended();
+        }
+
+        $full_name = explode(" ", $fb_user->name);
+        $member = new Member;
+        $member->full_name = $fb_user->name;
+        $member->first_name = $full_name[0];
+        $member->middle_name = isset($full_name[2]) ? $full_name[1] : null;
+        $member->last_name = isset($full_name[2]) ? $full_name[2] : $full_name[1];
+
+        $member->source = "facebook";
+        $member->external_source_id = $fb_user->id;
+        $member->profileUrl = ["avatar" => $fb_user->avatar];
+        $member->email = $fb_user->email;
+        $member->password =  Hash::make(Str::random());
+        $member->role_id = 7;
+
+        try {
+            $member->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Unable to connect. Something went wrong.");
+            return redirect()->route('login');
+        }
+
+        Auth::login($member);
+        return redirect()->intended();
+    }
+
+    public function google()
+    {
+    }
+}

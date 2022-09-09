@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\ProgramBatch as ProgramBatch;
+use App\Models\SupportTicket;
 use App\Models\WebsiteEvents;
+use App\Observers\Admin\Program\ProgramBatchObserver;
 use App\Observers\Admin\Website\WebsiteEventObserver;
+use App\Observers\Frontend\Support\SupportEventObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -31,7 +35,8 @@ class EventServiceProvider extends ServiceProvider
     {
         //
         WebsiteEvents::observe(WebsiteEventObserver::class);
-
+        ProgramBatch::observe(ProgramBatchObserver::class);
+        SupportTicket::observe(SupportEventObserver::class);
     }
 
     /**
