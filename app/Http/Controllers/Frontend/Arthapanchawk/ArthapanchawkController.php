@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Frontend\Arthapanchawk;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaEnrollStoreRequest;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaStoreRequest;
+use App\Models\MemberEmergencyMeta;
+use App\Models\MemberInfo;
 use App\Models\Program;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
@@ -34,7 +36,7 @@ class ArthapanchawkController extends Controller
         // check if emergency contact already exists.
         $emergencyInfo = $user->emergency_contact()->where('phone_number', $request->emergency_phone)->where('member_id', auth()->id())->first();
 
-        $emergency_contact = ($emergencyInfo) ?  $emergencyInfo : new MemberEmergencyMeta;
+        $emergency_contact = ($emergencyInfo) ?  $emergencyInfo : new MemberEmergencyMeta();
         $emergency_contact->member_id = auth()->id();
         $emergency_contact->contact_person = $request->emergency_contact_person;
         $emergency_contact->relation = $request->emergency_contact_person_relation;
