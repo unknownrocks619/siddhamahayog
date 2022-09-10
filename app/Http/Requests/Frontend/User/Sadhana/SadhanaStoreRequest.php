@@ -32,7 +32,7 @@ class SadhanaStoreRequest extends FormRequest
             "gender" => "required|in:male,female",
             "phone_number" => "required|size:10",
             "country" => "required|exists:countries,id",
-            "state" => "required|exists:cities,id",
+            "state" => "required",
             "street_address" => "required|min:5",
             "date_of_birth" => "required|date|date_format:Y-m-d",
             "place_of_birth" => "required",
