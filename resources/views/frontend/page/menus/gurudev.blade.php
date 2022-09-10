@@ -76,7 +76,7 @@
                     <p class="subtitle">Guruparam para</p>
                     <h4 class="title">Lineages</h4>
                 </div>
-                <img src="{{ asset('assets/images/menu/guru-parampara-template.jpg') }}" class="img-fluid w-100" />
+                <img src="{{ asset('assets/images/menu/guru-lineage.jpg') }}" class="img-fluid w-100" />
             </div>
         </div>
     </div>

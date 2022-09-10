@@ -9,7 +9,7 @@
     <div class="container">
         <div class="row sigma_broadcast-video">
             <div class="col-12 mb-5">
-                <img src="{{ asset('assets/images/menu/guru-parampara-template.jpg') }}" class="img-fluid w-100" />
+                <img src="{{ asset('assets/images/menu/guru-lineage.jpg') }}" class="img-fluid w-100" />
             </div>
         </div>
     </div>
