@@ -5,6 +5,7 @@ use App\Models\Program;
 use App\Models\Slider;
 use App\Models\SliderSetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 if (!function_exists("site_settings")) {
 
@@ -144,7 +145,7 @@ if (!function_exists("profile")) {
     function profile()
     {
         if (user()->profile) {
-            $profile = asset('storage/app/' . user()->profile->path);
+            $profile = Storage::url('storage/app/' . user()->profile->path);
         } elseif (user()->profileUrl) {
             $path = isset(user()->profileUrl->avatar) ? user()->profileUrl->avatar : null;
             $profile = $path;
