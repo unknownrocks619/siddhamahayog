@@ -89,6 +89,10 @@ class ArthapanchawkController extends Controller
 
     public function createTwo()
     {
+        if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists()) {
+            session()->flash("success", "You have already subscribed this program.");
+            return redirect()->route('dashboard');
+        }
         return view("frontend.page.vedanta.createTwo");
     }
 
@@ -106,7 +110,7 @@ class ArthapanchawkController extends Controller
             "terms_and_condition" => $request->terms_and_condition
         ];
         $user->meta->history = $history;
-        $programStudent = new ProgramStudent();
+        $programStudent =  new ProgramStudent();
         $vedantaProgram = Program::with(["active_batch", "active_fees", "active_sections"])->where('status', "active")->where('id', $this->_id)->first();
 
         try {
@@ -115,6 +119,11 @@ class ArthapanchawkController extends Controller
                 session()->flash('error', "Unable to enroll at the moment. Please try again later.");
                 return back()->withInput();
             }
+
+            // if (ProgramStudent::where('student_id', auth()->id())->where('program_id', $vedantaProgram->id)->exists()) {
+            //     session()->flash("success", 'You have already subscribed.');
+            //     return redirect()->route("dashboard");
+            // }
             $programStudent->program_id = $vedantaProgram->id;
             $programStudent->student_id = auth()->id();
             $programStudent->batch_id = $vedantaProgram->active_batch->id;

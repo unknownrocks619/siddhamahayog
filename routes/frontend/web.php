@@ -19,6 +19,12 @@ Route::get('/jagadguru', function () {
 Route::get('/events/atirudri', function () {
     return view("frontend.page.menus.atirudri");
 })->name("events.atirudri");
+Route::name('legal.')
+    ->group(function () {
+        Route::get("/terms-and-conditions", fn () => view("frontend.page.legal.terms"))->name('terms');
+        Route::get("/privacy", fn () => view("frontend.page.legal.privacy"))->name('privacy');
+    });
+
 
 Route::prefix("account")
     ->name("user.account.")
