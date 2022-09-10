@@ -94,7 +94,7 @@
                                             $countries = \App\Models\Country::get();
                                             foreach ($countries as $country) {
                                                 echo "<option value='{$country->id}'";
-                                                if (auth()->user()->country == $country->id) {
+                                                if (auth()->user()->country == $country->id || $country->id == 153) {
                                                     echo "selected";
                                                 }
                                                 echo ">";
