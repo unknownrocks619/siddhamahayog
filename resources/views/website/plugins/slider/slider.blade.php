@@ -14,7 +14,7 @@ $slider_layout_settings = \App\Models\SliderSetting::where('active',true)->order
     <div class="sigma_banner-slider">
         @foreach (plugins_slider() as $slider)
         <!-- Banner Item Start -->
-        <div class="light-bg sigma_banner-slider-inner bg-cover bg-center dark-overlay dark-overlay-2 bg-norepeat" style="background-image: url('{{ $slider->slider_file }}');">
+        <div class="light-bg sigma_banner-slider-inner bg-cover bg-center dark-overlay dark-overlay-2 bg-norepeat" style="background-image: url({{ $slider->slider_file }});">
             <div class="sigma_banner-text">
                 <div class="container">
                     <div class="row justify-content-center">
