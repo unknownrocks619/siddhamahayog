@@ -22,7 +22,7 @@ $slider_layout_settings = \App\Models\SliderSetting::where('active',true)->order
                             <span class="highlight-text">{{ $slider->tagline }}</span>
                             <h1 class="text-white title">{{ $slider->title }}</h1>
                             <div class="mb-0"> {!! $slider->description !!}</div>
-                            <a href="{{ route('jagadguru') }}" class="sigma_btn-custom section-button">About Jagadguru <i class="far fa-arrow-right"></i> </a>
+                            <a href="{{ route('jagadguru') }}" class="sigma_btn-custom section-button">About Sadhguru <i class="far fa-arrow-right"></i> </a>
                         </div>
                     </div>
                 </div>
