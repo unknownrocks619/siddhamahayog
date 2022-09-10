@@ -146,7 +146,8 @@ if (!function_exists("profile")) {
         if (user()->profile) {
             $profile = asset(user()->profile->path);
         } elseif (user()->profileUrl) {
-            $profile = asset(user()->profileUrl->path);
+            $path = isset(user()->profileUrl->avatar) ? user()->profileUrl->avatar : null;
+            $profile = $path;
         } else {
             $hash = md5(user()->email);
             $profile = "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
