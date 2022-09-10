@@ -10,6 +10,7 @@ use App\Models\MemberInfo;
 use App\Models\Program;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ArthapanchawkController extends Controller
 {
@@ -78,6 +79,7 @@ class ArthapanchawkController extends Controller
             });
         } catch (\Throwable $th) {
             //throw $th;
+            session()->flash("error", 'Oops ! Something went wrong.');
             return back()->withInput();
         }
         session()->flash('success', "Information Updated.");
