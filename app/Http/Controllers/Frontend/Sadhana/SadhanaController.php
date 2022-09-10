@@ -112,7 +112,7 @@ class SadhanaController extends Controller
             "terms_and_condition" => $request->terms_and_condition
         ];
         $user->meta->history = $history;
-        // $programStudent = new ProgramStudent();
+        $programStudent = new ProgramStudent();
         $sadhana = Program::with(["active_batch", "active_fees", "active_sections"])->where('status', "active")->where('program_type', "sadhana")->first();
         try {
             $user->meta->save();
@@ -120,6 +120,12 @@ class SadhanaController extends Controller
                 session()->flash('error', "Unable to enroll at the moment. Please try again later.");
                 return back()->withInput();
             }
+            $programStudent->program_id = $sadhana->id;
+            $programStudent->student_id = auth()->id();
+            $programStudent->batch_id = $sadhana->active_batch->id;
+            $programStudent->program_section_id = $sadhana->active_sections->id;
+            $programStudent->active = true;
+            $programStudent->save();
         } catch (\Throwable $th) {
             //throw $th;
             session()->flash("error", "Oops ! Something went wrong. Please try again.");
