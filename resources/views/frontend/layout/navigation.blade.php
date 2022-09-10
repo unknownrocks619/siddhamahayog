@@ -50,7 +50,7 @@
                 @else
                 <li class="menu-item menu-item-has-children d-flex align-items-center">
                     <a href="{{ route('login') }}" class="btn btn-sm btn-info bg-info sigma_btn-custom"> Sign In</a>
-                    <a href="route('register')" class="btn btn-sm btn-warning bg-warning sigma_btn-custom">Register</a>
+                    <a href="{{ route('register') }}" class="btn btn-sm btn-warning bg-warning sigma_btn-custom">Register</a>
                 </li>
                 @endauth
             </ul>
