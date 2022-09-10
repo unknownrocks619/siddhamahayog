@@ -145,7 +145,7 @@ if (!function_exists("profile")) {
     function profile()
     {
         if (user()->profile) {
-            $profile = Storage::url(user()->profile->path);
+            $profile = asset(user()->profile->path);
         } elseif (user()->profileUrl) {
             $path = isset(user()->profileUrl->avatar) ? user()->profileUrl->avatar : null;
             $profile = $path;
