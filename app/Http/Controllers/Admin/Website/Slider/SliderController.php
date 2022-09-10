@@ -39,7 +39,7 @@ class SliderController extends Controller
             "join_now" => $request->services_button
         ];
         $slider->plugins = json_encode($plugins);
-        $slider->slider_file = asset(Storage::putFile("slider/", $request->file('slider_image')->path()));
+        $slider->slider_file = asset(Storage::putFile("public/slider/", $request->file('slider_image')->path()));
 
         try {
             $slider->save();
