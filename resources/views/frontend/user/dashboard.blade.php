@@ -28,18 +28,65 @@
             </div>
         </div>
         @endif
-        <!-- Total Revenue -->
-        <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
-            <div class="card">
-                <div class="row row-bordered g-0">
-                    <div class="col-md-12">
-                        <h5 class="card-header m-0 me-2 pb-3">Event Calendar</h5>
-                        <div id="calendar" class="px-2"></div>
+        <!-- Order Statistics -->
+        <div class="col-md-8 col-lg-8 col-xl-8 order-0 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                    <div class="card-title mb-0">
+                        <h5 class="m-0 me-2">Live Sessions</h5>
                     </div>
+                </div>
+                <div class="card-body">
+                    <ul class="p-0 m-0 mt-3">
+                        @forelse ($enrolledPrograms as $program)
+                        <li class="d-flex mb-4 pb-1">
+                            <div class="avatar flex-shrink-0 me-3">
+                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
+                            </div>
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <h6 class="mb-0">{{ $program->program->program_name }}</h6>
+                                    <small class="text-muted">{{ ($program->live) ? "Started at" .  date('H:i A', strtotime($program->live->create_at)) : Null }}</small>
+                                </div>
+                                <div class="user-progress">
+                                    @if( $program->live && $program->live->section_id == $program->program_section_id)
+                                    <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="fw-semibold btn btn-sm btn-success">
+                                            Join Now
+                                        </button>
+                                    </form>
+                                    @else
+                                    <small class="fw-semibold btn btn-sm btn-secondary">
+                                        Not Available
+                                    </small>
+                                    @endif
+                                </div>
+                            </div>
+                        </li>
+                        @empty
+                        <li class="d-flex mb-4 pb-1">
+                            <div class="avatar flex-shrink-0 me-3">
+                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
+                            </div>
+                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="me-2">
+                                    <h6 class="mb-0">Program not Found</h6>
+                                </div>
+                                <div class="user-progress">
+                                    <small class="fw-semibold btn btn-sm btn-secondary">
+                                        Not Available
+                                    </small>
+                                </div>
+                            </div>
+                        </li>
+                        @endforelse
+                    </ul>
                 </div>
             </div>
         </div>
-        <!--/ Total Revenue -->
+        <!--/ Order Statistics -->
+
         <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
             <div class="row">
             </div>
@@ -113,65 +160,19 @@
         </div>
     </div>
     <div class="row">
-        <!-- Order Statistics -->
-        <div class="col-md-8 col-lg-8 col-xl-8 order-0 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex align-items-center justify-content-between pb-0">
-                    <div class="card-title mb-0">
-                        <h5 class="m-0 me-2">Live Sessions</h5>
+
+        <!-- Total Revenue -->
+        <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+            <div class="card">
+                <div class="row row-bordered g-0">
+                    <div class="col-md-12">
+                        <h5 class="card-header m-0 me-2 pb-3">Event Calendar</h5>
+                        <div id="calendar" class="px-2"></div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <ul class="p-0 m-0 mt-3">
-                        @forelse ($enrolledPrograms as $program)
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <h6 class="mb-0">{{ $program->program->program_name }}</h6>
-                                    <small class="text-muted">{{ ($program->live) ? "Started at" .  date('H:i A', strtotime($program->live->create_at)) : Null }}</small>
-                                </div>
-                                <div class="user-progress">
-                                    @if( $program->live && $program->live->section_id == $program->program_section_id)
-                                    <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="fw-semibold btn btn-sm btn-success">
-                                            Join Now
-                                        </button>
-                                    </form>
-                                    @else
-                                    <small class="fw-semibold btn btn-sm btn-secondary">
-                                        Not Available
-                                    </small>
-                                    @endif
-                                </div>
-                            </div>
-                        </li>
-                        @empty
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <h6 class="mb-0">Program not Found</h6>
-                                </div>
-                                <div class="user-progress">
-                                    <small class="fw-semibold btn btn-sm btn-secondary">
-                                        Not Available
-                                    </small>
-                                </div>
-                            </div>
-                        </li>
-                        @endforelse
-                    </ul>
                 </div>
             </div>
         </div>
-        <!--/ Order Statistics -->
-
+        <!--/ Total Revenue -->
         <!-- Expense Overview -->
         <div class="col-md-6 col-lg-4 order-1 mb-4">
             <div class="card h-100">
