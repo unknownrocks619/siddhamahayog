@@ -33,16 +33,24 @@
                 @endif
 
                 @auth
+
                 <li class="menu-item menu-item-has-children d-flex align-items-center">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="btn btn-sm btn-info bg-info signma_btn-custom">Logout</button>
                     </form>
                 </li>
+                <li class="ms-3 menu-item menu-item-has-children d-flex align-items-center">
+                    <form method="get" action="{{ route('dashboard') }}">
+                        <button type="submit" class="btn btn-sm btn-outline-primary signma_btn-custom">
+                            <img src="{{ profile() }}" style="width:25px; height:25px;" />
+                        </button>
+                    </form>
+                </li>
                 @else
                 <li class="menu-item menu-item-has-children d-flex align-items-center">
                     <a href="{{ route('login') }}" class="btn btn-sm btn-info bg-info sigma_btn-custom"> Sign In</a>
-                    <a href="#" class="btn btn-sm btn-warning bg-warning sigma_btn-custom">Register</a>
+                    <a href="route('register')" class="btn btn-sm btn-warning bg-warning sigma_btn-custom">Register</a>
                 </li>
                 @endauth
             </ul>
