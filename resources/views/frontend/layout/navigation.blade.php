@@ -82,7 +82,23 @@
     </div>
     <div class="d-flex justify-content-center justify-content-lg-between">
         <ul class="navbar-nav">
-
+            <li class="menu-item menu-item-has-children">
+                <a href="#">
+                    program
+                </a>
+                <ul class="sub-menu">
+                    <li class="menu-item">
+                        <a href="{{ route('sadhana.detail') }}">
+                            Sadhana
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('vedanta.index') }}">
+                            Vedanta Darshan
+                        </a>
+                    </li>
+                </ul>
+            </li>
             @foreach (menus() as $menu)
             @if($menu->menu_position == "main_menu" && ! $menu->parent_menu && $menu->active && $menu->display_type == "public")
             <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
