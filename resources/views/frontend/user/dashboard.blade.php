@@ -39,7 +39,7 @@
                 <div class="card-body">
                     <ul class="p-0 m-0 mt-3">
                         @forelse ($enrolledPrograms as $program)
-                        <li class="d-flex mb-4 pb-1">
+                        <li class="d-flex mb-4 pb-1 border-bottom @if($loop->iteration % 2 ) bg-light @endif p-2">
                             <div class="avatar flex-shrink-0 me-3">
                                 <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
                             </div>
@@ -49,6 +49,7 @@
                                     <small class="text-muted">{{ ($program->live) ? "Started at" .  date('H:i A', strtotime($program->live->create_at)) : Null }}</small>
                                 </div>
                                 <div class="user-progress">
+
                                     @if( $program->live && $program->live->section_id == $program->program_section_id)
                                     <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
                                         @csrf
@@ -61,6 +62,9 @@
                                         Not Available
                                     </small>
                                     @endif
+                                    <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">
+                                        Holiday Request
+                                    </button>
                                 </div>
                             </div>
                         </li>

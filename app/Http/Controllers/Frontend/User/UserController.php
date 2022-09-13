@@ -59,5 +59,7 @@ class UserController extends Controller
 
     public function google()
     {
+        $google_usr = Socialite::driver("facebook")->user();
+        dd($google_usr);
     }
 }

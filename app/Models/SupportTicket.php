@@ -12,4 +12,9 @@ class SupportTicket extends Model
     protected $casts = [
         "media" => "object"
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(Member::class, "member_id");
+    }
 }

@@ -87,8 +87,11 @@ Route::prefix("account")
             ->name("programs.")
             ->group(function () {
                 Route::get("/", "index")->name("program.index");
+                Route::get("/request/leave/{program}/list", "requestLeaveList")->name("program.request.index");
+                Route::get("/request/leave/{program}/create", "requestLeaveCreate")->name("program.request.create");
                 Route::get("/resource/{program}/", "resources")->name("program.resources");
                 Route::get("/resource/offline/video/{program}/", "offlineVideo")->name("program.offline.video");
                 Route::get("/resource/notices/{program}/", "notices")->name("program.notices");
+                Route::post("/request/leave/{program}/create", "requestLeaveStore")->name("program.request.store");
             });
     });

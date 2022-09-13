@@ -40,7 +40,7 @@
         <li class="menu-item {{ active_routes(['user.account.support.ticket.index','user.account.support.ticket.create','user.account.support.ticket.edit']) }}">
             <x-nav-link href="{{ route('user.account.support.ticket.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-support"></i>
-                <div data-i18n="Layouts">Support Ticket</div>
+                <div data-i18n="Layouts">Support</div>
             </x-nav-link>
         </li>
 

@@ -65,8 +65,13 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-Route::post("/login/redirect/{media}", function () {
+Route::post("/login/redirect/facebook", function () {
     return Socialite::driver('facebook')->redirect();
 })->name("social_login_redirect");
 
+Route::post("/login/redirect/gmail", function () {
+    return Socialite::driver('google')->redirect();
+})->name("social_login_redirect_google");
+
 Route::get("/social/login/{ref}", [UserController::class, "facebook"])->name("social_login_callback");
+Route::get("/social/login/callback/google", [UserController::class, "google"])->name("social_login_callback_google");

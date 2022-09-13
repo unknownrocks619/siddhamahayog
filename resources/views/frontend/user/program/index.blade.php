@@ -19,11 +19,11 @@
                                 {{$program->program->program_name}}
                             </button>
                         </h2>
-
                         <div id="{{ $program->program->slug }}" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <a href="" class="btn btn-primary mx-3">Reading Material</a>
                                 <a href="" class="btn btn-info mx-2">Offline Videos</a>
+                                <button data-href="{{ route('user.account.programs.program.request.index',$program->program->id) }}" class="clickable btn btn-info mx-2">Holiday Request</button>
                             </div>
                         </div>
                     </div>

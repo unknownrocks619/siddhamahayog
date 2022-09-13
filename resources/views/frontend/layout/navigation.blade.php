@@ -21,7 +21,31 @@
             </ul>
 
 
+            <ul class="navbar-nav">
+                @foreach (menus() as $menu )
+                @if($menu->menu_position == "top" && $menu->display_type == "public" && $menu->active )
+                <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
+                    <a href="">
+                        {{ $menu->menu_name }}
+                    </a>
+                    @if(menus()->where('parent_menu',$menu->id)->count() )
+                    <ul class="sub-menu">
+                        @foreach (menus()->where('parent_menu',$menu->id) as $child_menu)
+                        <li class="menu-item">
+                            <a href="#">
+                                @if($child_menu->active && $child_menu->display_type == "public")
+                                {{ $child_menu->menu_name }}
+                                @endif
+                            </a>
+                        </li>
 
+                        @endforeach
+                    </ul>
+                    @endif
+                </li>
+                @endif
+                @endforeach
+            </ul>
             <ul class="sigma_header-top-links">
                 @if(site_settings('live_show') )
                 <li class="d-flex align-items-center">
@@ -58,57 +82,39 @@
     </div>
     <div class="d-flex justify-content-center justify-content-lg-between">
         <ul class="navbar-nav">
-            <li class="menu-item">
-                <a href="/">
-                    Home
+
+            @foreach (menus() as $menu)
+            @if($menu->menu_position == "main_menu" && ! $menu->parent_menu && $menu->active && $menu->display_type == "public")
+            <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
+                <a href="">
+                    {{ $menu->menu_name }}
                 </a>
-            </li>
-            <li class="menu-item menu-item-has-children">
-                <a href="#">
-                    About
-                </a>
+                @if(menus()->where('parent_menu',$menu->id)->count())
                 <ul class="sub-menu">
-                    <li class="menu-item">
-                        <a href="{{ route('jagadguru') }}">
-                            Jagadguru
+                    @foreach (menus()->where('parent_menu',$menu->id)->where('active',true)->where('display_type','public') as $child_menu)
+                    <li class='menu-item @if(menus()->where("parent_menu",$child_menu->id)->count()) menu-item-has-children @endif'>
+                        <a href="">
+                            {{ $child_menu->menu_name }}
                         </a>
+                        @if(menus()->where("parent_menu",$child_menu->id)->count())
+                        <ul class="sub-menu">
+                            @foreach (menus()->where('parent_menu',$child_menu->id)->where('active',true)->where('display_type','public') as $two_level)
+                            <li class="menu-item">
+                                <a href="">
+                                    {{ $two_level->menu_name }}
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
+                        @endif
                     </li>
-                    <li class="menu-item">
-                        <a href="{{ route('guru-parampara') }}">
-                            Guru parampara
-                        </a>
-                    </li>
+                    @endforeach
                 </ul>
+                @endif
             </li>
-            <li class="menu-item menu-item-has-children">
-                <a href="#">
-                    program
-                </a>
-                <ul class="sub-menu">
-                    <li class="menu-item">
-                        <a href="{{ route('sadhana.detail') }}">
-                            Sadhana
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{{ route('vedanta.index') }}">
-                            Vedanta Darshan
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="menu-item menu-item-has-children">
-                <a href="#">
-                    Events
-                </a>
-                <ul class="sub-menu">
-                    <li class="menu-item">
-                        <a href="{{ route('events.atirudri') }}">
-                            Atirudri
-                        </a>
-                    </li>
-                </ul>
-            </li>
+            @endif
+
+            @endforeach
         </ul>
     </div>
 </div>

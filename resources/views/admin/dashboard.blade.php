@@ -1,10 +1,10 @@
 @extends("layouts.portal.app")
 @section("page_title")
- - Dashboard
+- Dashboard
 @endsection
 @section("top_css")
 <link rel="stylesheet" href="assets/plugins/morrisjs/morris.css" />
-<link rel="stylesheet" href="assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css"/>
+<link rel="stylesheet" href="assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css" />
 <!-- Custom Css -->
 
 @endsection
@@ -14,8 +14,8 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Dashboard</h2>                    
-                </div>            
+                    <h2>Dashboard</h2>
+                </div>
                 <div class="col-lg-7 col-md-7 col-sm-12">
                     <ul class="breadcrumb float-md-right padding-0">
                         <li class="breadcrumb-item"><a href="index.html"><i class="zmdi zmdi-home"></i></a></li>
@@ -28,9 +28,9 @@
             <div class="col-lg-3 col-md-6 col-sm-12 text-center">
                 <div class="card tasks_report">
                     <div class="body">
-                        <input type="text" class="knob" value="66" data-width="90" data-height="90" data-thickness="0.1" data-fgColor="#26dad2" readonly>                        
+                        <input type="text" class="knob" value="66" data-width="90" data-height="90" data-thickness="0.1" data-fgColor="#26dad2" readonly>
                         <h6 class="m-t-20">Satisfaction Rate</h6>
-                        <p class="displayblock m-b-0">47% Average <i class="zmdi zmdi-trending-up"></i></p>                        
+                        <p class="displayblock m-b-0">47% Average <i class="zmdi zmdi-trending-up"></i></p>
                     </div>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                         <input type="text" class="knob dial2" value="26" data-width="90" data-height="90" data-thickness="0.1" data-fgColor="#7b69ec" readonly>
                         <h6 class="m-t-20">Project Panding</h6>
                         <p class="displayblock m-b-0">13% Average <i class="zmdi zmdi-trending-down"></i></p>
-                        
+
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                         <input type="text" class="knob dial3" value="76" data-width="90" data-height="90" data-thickness="0.1" data-fgColor="#f9bd53" readonly>
                         <h6 class="m-t-20">Productivity Goal</h6>
                         <p class="displayblock m-b-0">75% Average <i class="zmdi zmdi-trending-up"></i></p>
-                        
+
                     </div>
                 </div>
             </div>
@@ -60,10 +60,10 @@
                         <input type="text" class="knob dial4" value="88" data-width="90" data-height="90" data-thickness="0.1" data-fgColor="#00adef" readonly>
                         <h6 class="m-t-20">Total Revenue</h6>
                         <p class="displayblock m-b-0">54% Average <i class="zmdi zmdi-trending-up"></i></p>
-                        
+
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row clearfix">
             <div class="col-lg-6 col-md-12">
@@ -96,7 +96,7 @@
                                 <h4 class="margin-0">821</h4>
                                 <p>Last Month</p>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
             </div>
@@ -130,23 +130,24 @@
                                 <h4 class="margin-0">821</h4>
                                 <p>Last Month</p>
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
-            </div>            
+            </div>
         </div>
         <div class="row clearfix">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
+                    <?php
+                    $tickets = \App\Models\SupportTicket::where('parent_id', null)->where('status', "pending")->with(["user"])->paginate();
+                    ?>
                     <div class="header">
-                        <h2><strong>Earning</strong> Report</h2>
+                        <h2><strong>Support</strong> Tickets</h2>
+
                         <ul class="header-dropdown">
                             <li class="dropdown"> <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="zmdi zmdi-more"></i> </a>
                                 <ul class="dropdown-menu slideUp">
-                                    <li><a href="javascript:void(0);">Action</a></li>
-                                    <li><a href="javascript:void(0);">Another action</a></li>
-                                    <li><a href="javascript:void(0);">Something else</a></li>
-                                    <li><a role="button" class="boxs-close">Delete</a></li>
+                                    <li><a href="javascript:void(0);">View All</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -154,12 +155,8 @@
                     <div class="body m-b-10 bg-dark">
                         <div class="row">
                             <div class="col-6">
-                                <small>Total Earning</small>
-                                <h4 class="text-success m-b-0 m-t-0">$7,171</h4>
-                                <h6 class="m-b-0 m-t-0">March 2018</h6>
-                            </div>
-                            <div class="col-6 text-right">
-                                <div class="sparkline m-t-10" data-type="bar" data-width="97%" data-height="50px" data-bar-Width="2" data-bar-Spacing="7" data-bar-Color="#18ce0f ">2,5,6,3,4,5,5,6,2,1</div>                                
+                                <small>Total Unresolved Tickets</small>
+                                <h4 class="text-success m-b-0 m-t-0">10</h4>
                             </div>
                         </div>
                     </div>
@@ -168,130 +165,63 @@
                             <table class="table m-b-0 table-hover">
                                 <thead>
                                     <tr>
-                                        <th colspan="2">User Name</th>
+                                        <th>User</th>
                                         <th>Priority</th>
-                                        <th>Earnings</th>
+                                        <th>Department</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    @forelse ($tickets as $ticket)
                                     <tr>
-                                        <td style="width:60px;"><span class="rounded"><img src="assets/images/xs/avatar1.jpg" alt="user" width="50"></span></td>
+                                        <td>{{ $ticket->user->full_name }}</td>
+                                        <td> {!! __("support.".$ticket->priority) !!} </td>
+                                        <td> {!! __("support.".$ticket->category) !!} </td>
                                         <td>
-                                            <h6>John Smith</h6><small class="text-muted">UI UX Designer</small></td>
-                                        <td><span class="badge badge-success">Low</span></td>
-                                        <td>$1.9K</td>
+                                            <a href="">View</a>
+                                        </td>
                                     </tr>
-                                    <tr class="active">
-                                        <td><span class="rounded"><img src="assets/images/xs/avatar2.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Hossein Shams</h6><small class="text-muted">Project Manager</small></td>
-                                        <td><span class="badge badge-info">Medium</span></td>
-                                        <td>$2.9K</td>
-                                    </tr>
+                                    @empty
                                     <tr>
-                                        <td><span class="round round-success"><img src="assets/images/xs/avatar3.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Maryam Amiri</h6><small class="text-muted">Angular Developer</small></td>
-                                        <td><span class="badge badge-primary">High</span></td>
-                                        <td>$32.9K</td>
+                                        <td colspan="4" class="text-center text-muted">Hurry ! Sit back and Relax, You don't have support ticket.</td>
                                     </tr>
-                                    <tr>
-                                        <td><span class="round round-primary"><img src="assets/images/xs/avatar4.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Tim Hank</h6><small class="text-muted">Frontend</small></td>
-                                        <td><span class="badge badge-danger">Low</span></td>
-                                        <td>$11.9K</td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="round round-warning"><img src="assets/images/xs/avatar5.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Fidel Tonn</h6><small class="text-muted">Content Writer</small></td>
-                                        <td><span class="badge badge-warning">High</span></td>
-                                        <td>$2.5K</td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="round round-danger"><img src="assets/images/xs/avatar6.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Frank Camly</h6><small class="text-muted">Graphic Design</small></td>
-                                        <td><span class="badge badge-info">High</span></td>
-                                        <td>$12.7K</td>
-                                    </tr>
-                                    <tr>
-                                        <td><span class="round round-primary"><img src="assets/images/xs/avatar4.jpg" alt="user" width="50"></span></td>
-                                        <td>
-                                            <h6>Tim Hank</h6><small class="text-muted">Frontend</small></td>
-                                        <td><span class="badge badge-danger">Low</span></td>
-                                        <td>$11.9K</td>
-                                    </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>    
+                </div>
             </div>
             <div class="col-lg-4 col-md-12">
                 <div class="card">
                     <div class="header">
-                        <h2><strong>User</strong> Activities</h2>
-                    </div>
-                    <div class="body m-b-10 widget-user">
-                        <img class="rounded-circle" src="assets/images/sm/avatar5.jpg" alt="">
-                        <div class="wid-u-info">
-                            <h5>Monica Ryther</h5>
-                            <p class="text-muted m-b-0">info@example.com</p>
-                            <small class="text-warning"><b>Developer</b></small>
-                        </div>
+                        <h2><strong>User</strong> Holiday Request</h2>
                     </div>
                     <div class="body activities">
                         <div class="streamline b-accent">
+                            <?php
+                            $holiday_requests = \App\Models\ProgramHoliday::where('status', "pending")->with(["student", "program"])->paginate(10);
+                            ?>
+                            @forelse ($holiday_requests as $holiday)
                             <div class="sl-item">
                                 <div class="sl-content">
-                                    <div class="text-muted">Just now</div>
-                                    <p>Finished task <a href="" class="text-info">#features 4</a>.</p>
+                                    <div class="text-muted">{{ $holiday->student->full_name }} :: {{ $holiday->program->program_name }}</div>
+                                    <p>Holiday From {{ $holiday->start_date }} - {{ $holiday->end_date }}</p>
+                                    <p>
+                                        <a href="">View Detail</a>
+                                    </p>
                                 </div>
                             </div>
-                            <div class="sl-item b-info">
+                            @empty
+                            <div class="sl-item">
                                 <div class="sl-content">
-                                    <div class="text-muted">10:30</div>
-                                    <p><a href="">@Jessi</a> retwit your post</p>
+                                    <div class="text-muted">---</div>
+                                    <p>
+                                        Relax, You don't have pending holiday request.
+                                    </p>
                                 </div>
                             </div>
-                            <div class="sl-item b-primary">
-                                <div class="sl-content">
-                                    <div class="text-muted">12:30</div>
-                                    <p>Call to customer <a href="" class="text-info">Jacob</a> and discuss the detail.</p>
-                                </div>
-                            </div>
-                            <div class="sl-item b-warning">
-                                <div class="sl-content">
-                                    <div class="text-muted">1 days ago</div>
-                                    <p><a href="" class="text-info">Jessi</a> commented your post.</p>
-                                </div>
-                            </div>
-                            <div class="sl-item b-primary">
-                                <div class="sl-content">
-                                    <div class="text-muted">2 days ago</div>
-                                    <p>Call to customer <a href="" class="text-info">Jacob</a> and discuss the detail.</p>
-                                </div>
-                            </div>
-                            <div class="sl-item b-primary">
-                                <div class="sl-content">
-                                    <div class="text-muted">3 days ago</div>
-                                    <p>Call to customer <a href="" class="text-info">Jacob</a> and discuss the detail.</p>
-                                </div>
-                            </div>
-                            <div class="sl-item b-warning">
-                                <div class="sl-content">
-                                    <div class="text-muted">4 Week ago</div>
-                                    <p><a href="" class="text-info">Jessi</a> commented your post.</p>
-                                </div>
-                            </div>
-                            <div class="sl-item b-warning">
-                                <div class="sl-content">
-                                    <div class="text-muted">5 days ago</div>
-                                    <p><a href="" class="text-info">Jessi</a> commented your post.</p>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -337,11 +267,11 @@
                         <canvas id="chart-area" height="150"></canvas>
                     </div>
                 </div>
-            </div>                       
+            </div>
         </div>
         <div class="row clearfix">
             <div class="col-lg-4 col-md-12">
-                <div class="card">                    
+                <div class="card">
                     <div class="carousel slide twitter feed" data-ride="carousel">
                         <div class="carousel-inner" role="listbox">
                             <div class="carousel-item active">
@@ -408,7 +338,7 @@
 <script src="{{ asset ('assets/bundles/knob.bundle.js') }}"></script>
 <script src="{{ asset ('assets/bundles/sparkline.bundle.js') }}"></script>
 <script src="{{ asset ('assets/plugins/chartjs/Chart.bundle.js') }}"></script>
-<script src="{{ asset ('assets/plugins/chartjs/polar_area_chart.js') }}"></script> 
+<script src="{{ asset ('assets/plugins/chartjs/polar_area_chart.js') }}"></script>
 
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script src="{{ asset ('assets/js/pages/index.js') }}"></script>

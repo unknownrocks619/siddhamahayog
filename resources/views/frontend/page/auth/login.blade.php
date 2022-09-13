@@ -171,7 +171,7 @@
                         </div>
                         <div class="col-md-12 mb-3">
 
-                            <form action="" id="googleForm" method="post">
+                            <form action="{{ route('social_login_redirect',['google']) }}" id="googleForm" method="post">
                                 @csrf
                                 <p class="text-center">
                                     <button type='submit' class=" btn mybtn btn-outline-danger w-100"><i class="fa fa-google-plus">

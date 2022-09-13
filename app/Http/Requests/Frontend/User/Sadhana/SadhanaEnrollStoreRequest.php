@@ -27,8 +27,8 @@ class SadhanaEnrollStoreRequest extends FormRequest
             //
             "regural_medicine_history" => "required|in:yes,no",
             "mental_health_history" => "required|in:yes,no",
-            // "regular_medicine_history_detail" => "required_if:regural_medicine_history,yes",
-            // "mental_health_history" => "required_if:mental_health_history,yes",
+            "regular_medicine_history_detail" => "required_if:regural_medicine_history,yes",
+            "mental_health_history" => "required_if:mental_health_history,yes",
             "practiced_info" => "required|in:yes,no",
             "support_in_need" => "required|in:yes,no",
             "terms_and_condition" => "required|accepted"

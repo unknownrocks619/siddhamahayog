@@ -1,11 +1,11 @@
 @extends("layouts.portal.app")
 
 @section("page_title")
-    Program
+Program
 @endsection
 
 @section("page_css")
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
 <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 
 
@@ -18,7 +18,7 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Menus</h2> 
+                    <h2>Menus</h2>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                <strong>Add New </strong> Menu 
+                                <strong>Add New </strong> Menu
                                 <ul class="header-dropdown">
                                     <li class="dropdown">
                                         <a href="{{ route('admin.website.menus.admin_menu_list') }}" class="btn btn-sm btn-danger">
@@ -92,17 +92,18 @@
                                                     </sup>
                                                 </strong>
                                                 <select name="menu_type" id="menu_type" class="form-control">
-                                                    <option value="home" @if(old('menu_type') == "home") selected @endif>Home page</option>
-                                                    <option value="gallery" @if(old('menu_type') == "gallery") selected @endif>Gallery</option>
-                                                    <option value="about" @if(old('menu_type') == "about") selected @endif>About Us</option>
-                                                    <option value="contact"  @if(old('menu_type') == "contact") selected @endif>Contact Us</option>
-                                                    <option value="events"  @if(old('menu_type') == "events") selected @endif>Events List</option>
-                                                    <option value="products"  @if(old('menu_type') == "products") selected @endif>Products List</option>
-                                                    <option value="service" @if(old('menu_type') == "service") selected @endif>Service</option>
-                                                    <option value="blog" @if(old('menu_type') == "blog") selected @endif>Blog</option>
-                                                    <option value="dontaion"  @if(old('menu_type') == "donation") selected @endif>Donation Page</option>
-                                                    <option value="live"  @if(old('menu_type') == "live") selected @endif>Live Boarcast</option>
-                                                    <option value="volunteer" @if(old('menu_type') == "volunteer") selected @endif>Volunteer</option>
+                                                    <option value="home" @if(old('menu_type')=="home" ) selected @endif>Home page</option>
+                                                    <option value="gallery" @if(old('menu_type')=="gallery" ) selected @endif>Gallery</option>
+                                                    <option value="about" @if(old('menu_type')=="about" ) selected @endif>About Us</option>
+                                                    <option value="contact" @if(old('menu_type')=="contact" ) selected @endif>Contact Us</option>
+                                                    <option value="events" @if(old('menu_type')=="events" ) selected @endif>Events List</option>
+                                                    <option value="program" @if(old('menu_type')=="program" ) selected @endif>Program</option>
+                                                    <option value="products" @if(old('menu_type')=="products" ) selected @endif>Products List</option>
+                                                    <option value="service" @if(old('menu_type')=="service" ) selected @endif>Service</option>
+                                                    <option value="blog" @if(old('menu_type')=="blog" ) selected @endif>Blog</option>
+                                                    <option value="dontaion" @if(old('menu_type')=="donation" ) selected @endif>Donation Page</option>
+                                                    <option value="live" @if(old('menu_type')=="live" ) selected @endif>Live Boarcast</option>
+                                                    <option value="volunteer" @if(old('menu_type')=="volunteer" ) selected @endif>Volunteer</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -143,10 +144,10 @@
                                                 <sup class="text-danger">*</sup>
                                             </strong>
                                             <select name="display" id="display_type" class="form-control">
-                                                <option value="public"  @if(old('display_type') == "public") selected @endif>Public</option>
-                                                <option value="draft"  @if(old('menu_type') == "draft") selected @endif>Draft</option>
-                                                <option value="private" @if(old('menu_type') == "private") selected @endif>Private</option>
-                                                <option value="protected" @if(old('menu_type') == "protected") selected @endif>Protected</option>
+                                                <option value="public" @if(old('display_type')=="public" ) selected @endif>Public</option>
+                                                <option value="draft" @if(old('menu_type')=="draft" ) selected @endif>Draft</option>
+                                                <option value="private" @if(old('menu_type')=="private" ) selected @endif>Private</option>
+                                                <option value="protected" @if(old('menu_type')=="protected" ) selected @endif>Protected</option>
                                             </select>
                                         </div>
 
@@ -154,9 +155,9 @@
                                             <div class="form-group">
                                                 <strong>Menu Position</strong>
                                                 <select name="menu_position" id="menu_poistion" class="form-control">
-                                                    <option value="top" @if(old('menu_position') == "top") selected @endif>Top Menu</option>
-                                                    <option value="main_menu" @if(old('menu_position') == "main_menu") selected @endif>Main Menu</option>
-                                                    <option value="footer" @if(old('menu_position') == "footer") selected @endif>Footer Menu</option>
+                                                    <option value="top" @if(old('menu_position')=="top" ) selected @endif>Top Menu</option>
+                                                    <option value="main_menu" @if(old('menu_position')=="main_menu" ) selected @endif>Main Menu</option>
+                                                    <option value="footer" @if(old('menu_position')=="footer" ) selected @endif>Footer Menu</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -169,9 +170,9 @@
                                                 <select name="parent_menu" id="parent_menu" class="form-control">
                                                     <option value="0">No Parent Menu</option>
                                                     @foreach (\App\Models\Menu::get() as $list_menu)
-                                                        <option value="{{$list_menu->id}}">
-                                                            {{ $list_menu->menu_name }} - <small>{{$list_menu->menu_poistion}}</small>
-                                                        </option> 
+                                                    <option value="{{$list_menu->id}}">
+                                                        {{ $list_menu->menu_name }} - <small>{{$list_menu->menu_poistion}}</small>
+                                                    </option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -264,7 +265,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         tinymce.init({
-            selector : 'textarea',
+            selector: 'textarea',
             toolbar_mode: 'floating'
         })
     });

@@ -101,6 +101,13 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script>
+        $("button.clickable").click(function(event) {
+            event.preventDefault();
+            $(this).prop("disabled", true);
+            window.location.replace($(this).data("href"));
+        })
+    </script>
 </body>
 
 </html>

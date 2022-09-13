@@ -113,32 +113,86 @@
 
         <!-- Menu -->
         <ul>
-            <li class="menu-item ">
+            <li class="menu-item">
                 <a href="/">
                     Home
                 </a>
             </li>
-            @foreach (menus() as $menu)
-            @if($menu->menu_position == "main_menu" && ! $menu->parent_menu )
-            <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
-                <a href="">
-                    {{ $menu->menu_name }}
+            <li class="menu-item">
+                <a href="/">
+                    Photo Gallery
                 </a>
-                @if(menus()->where('parent_menu',$menu->id)->count())
+            </li>
+            <li class="menu-item menu-item-has-children">
+                <a href="#">
+                    Sadhana
+                </a>
                 <ul class="sub-menu">
-                    @foreach (menus()->where('parent_menu') as $child_menu)
                     <li class="menu-item">
-                        <a href="">
-                            {{ $child_menu->menu_name }}
+                        <a href="#">Shaktipat</a>
+                    </li>
+                    <li class="menu-item menu-item-has-children">
+                        <a href="#">Hathayog</a>
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="">Surya Namaskar</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">Laya Yoga</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#">Raja Yoga</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="menu-item menu-item-has-children">
+                <a href="#">
+                    About
+                </a>
+                <ul class="sub-menu">
+                    <li class="menu-item">
+                        <a href="{{ route('jagadguru') }}">
+                            Jagadguru
                         </a>
                     </li>
-                    @endforeach
+                    <li class="menu-item">
+                        <a href="{{ route('guru-parampara') }}">
+                            Guru parampara
+                        </a>
+                    </li>
                 </ul>
-                @endif
             </li>
-            @endif
-
-            @endforeach
+            <li class="menu-item menu-item-has-children">
+                <a href="#">
+                    program
+                </a>
+                <ul class="sub-menu">
+                    <li class="menu-item">
+                        <a href="{{ route('sadhana.detail') }}">
+                            Sadhana
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('vedanta.index') }}">
+                            Vedanta Darshan
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="menu-item menu-item-has-children">
+                <a href="#">
+                    Events
+                </a>
+                <ul class="sub-menu">
+                    <li class="menu-item">
+                        <a href="{{ route('events.atirudri') }}">
+                            Atirudri
+                        </a>
+                    </li>
+                </ul>
+            </li>
         </ul>
 
     </aside>
