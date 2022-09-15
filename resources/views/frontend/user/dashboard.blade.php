@@ -63,7 +63,7 @@
                                     </small>
                                     @endif
                                     <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">
-                                        Holiday Request
+                                        Absent Form
                                     </button>
                                 </div>
                             </div>

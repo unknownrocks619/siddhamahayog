@@ -13,9 +13,9 @@
             <a href="{{ route('user.account.programs.program.index') }}">Program</a> /
         </span>
         <span class="text-muted fw-light">
-            <a href="{{ route('user.account.programs.program.request.index',$program->id) }}">Holiday Request</a> /
+            <a href="{{ route('user.account.programs.program.request.index',$program->id) }}">Absent Request</a> /
         </span>
-        Holiday Requisition Form
+        Absent Requisition Form
     </h4>
 
     <div class="row">
@@ -26,7 +26,7 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex align-items-center justify-content-between pb-0">
                         <div class="card-header mb-0 p-0">
-                            <h5 class="">{{ $program->program_name }} Holiday Requisition Form</h5>
+                            <h5 class="">{{ $program->program_name }} Absent Requisition Form</h5>
                         </div>
                         <div class="dropdown">
                             <button data-href="{{ route('user.account.programs.program.request.index',$program->id) }}" class="clickable btn btn-danger">

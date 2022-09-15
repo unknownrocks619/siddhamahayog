@@ -9,7 +9,7 @@
             <a href="{{ route('user.account.programs.program.index') }}">Program</a> /
         </span>
         <span class="text-muted fw-light">
-            Holiday Request
+            Absent List
         </span>
     </h4>
     <div class="card">

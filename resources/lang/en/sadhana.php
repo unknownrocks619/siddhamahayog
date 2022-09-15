@@ -41,5 +41,7 @@ return [
     "sadhan_terms_and_condition" => "I solemnly swear that I will maintain the sanctity of being a sadhak (disciple) of His Divine Grace Jagatguru Ramanandacharya Swami RamKrishna Acharya Maharaj Ji (Mahayogi Siddhababa). I know the process of being a disciple and being initiated into Siddha Mahayog Sadhana can happen only with Jagatguru Mahayogi Siddhababa's Grace and I am only a tool in this sacred tradition. It is the rarest blessing that I will engrave in my heart, honor and cherish. I will never misuse Jagatguru Mahayogi Siddhababa’s name or organization(s) for my personal gain. I commit myself sincerely and loyally. I claim responsibility for any consequences that may arise if I do not properly follow the instructions given about this sadhana.",
     "sadhan_terms_and_condition_label" => "I agree to all the terms and condition.",
     "sadhan_terms_and_condition_heading" => "Terms & Condition.",
-    "sadhana_congratulation" => "Congratulation !! "
+    "sadhana_congratulation" => "Congratulation !! ",
+    "sadhana_rules_regulation_title" => "साधना तथा वेदान्त दर्शन कक्षा नियमावलीहरूः",
+    "sadhana_rules_regulation" => ""
 ];
