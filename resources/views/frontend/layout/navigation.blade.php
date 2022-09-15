@@ -67,7 +67,8 @@
                 <li class="ms-3 menu-item menu-item-has-children d-flex align-items-center">
                     <form method="get" action="{{ route('dashboard') }}">
                         <button type="submit" class="btn btn-sm btn-outline-primary signma_btn-custom">
-                            <img src="{{ profile() }}" style="width:25px; height:25px;" />
+                            <img src="{{ profile() }}" style="width:25px; height:25px;border-radius:50%;border:2px solid " class="img-circle border border-danger" />
+                            Dashboard
                         </button>
                     </form>
                 </li>
