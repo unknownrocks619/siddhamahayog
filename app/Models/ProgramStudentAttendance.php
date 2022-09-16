@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ProgramStudentAttendance extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        "meta" => "object"
+    ];
 }

@@ -5,12 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Live extends Model
+class Donation extends Model
 {
     use HasFactory;
-
-    public function zoomAccount()
-    {
-        return $this->belongsTo(ZoomAccount::class, "zoom_account_id");
-    }
 }

@@ -28,6 +28,10 @@ class Member extends Authenticatable
 
     // ]
 
+    public function section() {
+        return $this->hasOne(ProgramStudent::class,"student_id");
+    }
+
     public function meta()
     {
         return $this->hasOne(MemberInfo::class, "member_id");

@@ -14,7 +14,6 @@
                     <?php
                     $accounts = \App\Models\ZoomAccount::where('account_status', 'active')->get();
                     ?>
-
                     <select name="zoom_account" id="zoom_account" class="form-control">
                         @foreach ($accounts as $account)
                         <option value="{{ $account->id }}">{{ $account->account_name }}</option>

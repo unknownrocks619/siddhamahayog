@@ -18,14 +18,10 @@
                 <h5 class="m-0 me-2">Holiday Request for `{{ $program->program_name }}`</h5>
                 <small class="text-muted"><br /></small>
             </div>
-            <div class="dropdown">
-                <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded"></i>
+            <div>
+                <button class="btn btn-danger clickable" data-href="{{ route('user.account.programs.program.index') }}" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="bx bx-block"></i> Close
                 </button>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics" style="">
-                    <button class="dropdown-item clickable" data-href="{{ route('user.account.programs.program.request.create',$program->id) }}">Request New Holiday</button>
-                    <a class="dropdown-item text-danger" href="javascript:void(0);">Delete All</a>
-                </div>
             </div>
         </div>
         <div class="card-body">

@@ -24,6 +24,11 @@ class Program extends Model
         return $this->hasMany(ProgramChapterLession::class, "program_id");
     }
 
+    public function videoCourses()
+    {
+        return $this->hasMany(ProgramCourse::class, "program_id");
+    }
+
     public function courses()
     {
         return $this->hasMany(ProgramCourseResources::class, "program_id");
@@ -47,5 +52,10 @@ class Program extends Model
     public function sections()
     {
         return $this->hasMany(ProgramSection::class, "program_id");
+    }
+
+    public function last_video_history()
+    {
+        return $this->hasOne(LessionWatchHistory::class, "program_id")->where('student_id', auth()->id())->latest();
     }
 }

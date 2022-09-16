@@ -28,6 +28,7 @@
             </div>
         </div>
         @endif
+        <x-alert></x-alert>
         <!-- Order Statistics -->
         <div class="col-md-8 col-lg-8 col-xl-8 order-0 mb-4">
             <div class="card h-100">
@@ -57,6 +58,14 @@
                                             Join Now
                                         </button>
                                     </form>
+                                    @elseif($program->live && !$program->live->section_id)
+                                    <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="fw-semibold btn btn-sm btn-success">
+                                            Join Now
+                                        </button>
+                                    </form>
+
                                     @else
                                     <small class="fw-semibold btn btn-sm btn-secondary">
                                         Not Available
@@ -181,17 +190,17 @@
         <div class="col-md-6 col-lg-4 order-1 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    <ul class="nav nav-pills" role="tablist">
-                        <li class="nav-item">
-                            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-tabs-line-card-income" aria-controls="navs-tabs-line-card-income" aria-selected="true">
-                                Offer Guru Daskshina
-                            </button>
-                        </li>
-                    </ul>
-                    <form action="" method="post" class="mt-3">
+                    <h5>
+                        Offer Guru Daskshina
+                    </h5>
+                    <form method="post" class="mt-3">
                         @csrf
-                        <input type="text" name="amount" id="amount" value="500" class="form-control">
-                        <button type="submit" class="btn btn-info mt-2">Pay Guru Dakshina</button>
+                        <div class="input-group">
+                            <span class="input-group-text">NRs</span>
+                            <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
+                            <span class="input-group-text">.00</span>
+                        </div>
+                        <button formaction="{{ route('donations.donate','esewa') }}" type="submit" class="btn btn-success mt-2">Pay with E-Sewa</button>
                     </form>
                 </div>
             </div>

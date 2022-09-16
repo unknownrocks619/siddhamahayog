@@ -61,7 +61,7 @@
                 <li class="menu-item menu-item-has-children d-flex align-items-center">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-info bg-info signma_btn-custom">Logout</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger signma_btn-custom">Logout</button>
                     </form>
                 </li>
                 <li class="ms-3 menu-item menu-item-has-children d-flex align-items-center">

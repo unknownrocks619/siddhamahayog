@@ -1,0 +1,63 @@
+<?php
+
+namespace App\Http\Controllers\Frontend\User;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Frontend\User\Program\ProgramVideoLessionWatchRequest;
+use App\Http\Requests\Frontend\User\Program\ProgramVideoListRequest;
+use App\Models\LessionWatchHistory;
+use App\Models\Program;
+use App\Models\ProgramChapterLession;
+use App\Models\ProgramCourse;
+use Illuminate\Http\Request;
+
+class UserProgramVideoController extends Controller
+{
+    //
+
+    public function index(ProgramVideoListRequest $request, Program $program)
+    {
+        $program->load(["videoCourses" => function ($query) {
+            return $query->with(["lession"]);
+        }, "last_video_history"]);
+
+        return view("frontend.user.program.videos.index", compact("program"));
+    }
+
+    public function continueWatch()
+    {
+    }
+
+    public function videos(ProgramVideoLessionWatchRequest $request, Program $program, ProgramCourse $course, ProgramChapterLession $lession)
+    {
+        return view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'));
+    }
+
+    public function storeHistory(ProgramVideoLessionWatchRequest $request, Program $program, ProgramCourse $course, ProgramChapterLession $lession)
+    {
+        $history = new LessionWatchHistory;
+        $history->student_id = auth()->id();
+        $history->program_id = $program->id;
+        $history->program_course_id = $course->id;
+        $history->program_chapter_lession_id = $lession->id;
+
+        try {
+            $history->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response(["success" => false, 'message' => "Watch history error"], 500);
+        }
+        return response(["success" => true, 'message' => "done"], 200);
+    }
+
+    public function showHistory(ProgramVideoLessionWatchRequest $request, Program $program)
+    {
+        $watchHistory = LessionWatchHistory::where('program_id', $program->id)->where('student_id', auth()->id())->latest()->first();
+
+        if (!$watchHistory) {
+            return view("frontend.user.program.videos.modal.no-history");
+        }
+
+        return view('frontend.user.program.videos.modal.history', compact("watchHistory"));
+    }
+}

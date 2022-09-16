@@ -23,7 +23,7 @@ class UserProgramController extends Controller
 
     public function requestLeaveList(LeaveCreateRequest $request, Program $program)
     {
-        $leave_requests = ProgramHoliday::where('student_id', auth()->id())->latest()->get();
+        $leave_requests = ProgramHoliday::where('program_id', $program->id)->where('student_id', auth()->id())->latest()->get();
         return view("frontend.user.program.leave-request-list", compact("program", "leave_requests"));
     }
 

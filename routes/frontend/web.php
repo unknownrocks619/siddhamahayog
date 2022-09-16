@@ -6,6 +6,8 @@ use App\Http\Controllers\Frontend\Exams\ExamCenterController;
 use App\Http\Controllers\Frontend\User\ProfileController;
 use App\Http\Controllers\Frontend\User\UserNoteController;
 use App\Http\Controllers\Frontend\User\UserProgramController;
+use App\Http\Controllers\Frontend\User\UserProgramResourceController;
+use App\Http\Controllers\Frontend\User\UserProgramVideoController;
 use App\Http\Controllers\Frontend\User\UserSupportController;
 use Illuminate\Support\Facades\Route;
 
@@ -93,5 +95,29 @@ Route::prefix("account")
                 Route::get("/resource/offline/video/{program}/", "offlineVideo")->name("program.offline.video");
                 Route::get("/resource/notices/{program}/", "notices")->name("program.notices");
                 Route::post("/request/leave/{program}/create", "requestLeaveStore")->name("program.request.store");
+
+                /**
+                 * Resources
+                 */
+                Route::prefix("resources")
+                    ->name('resources.')
+                    ->controller(UserProgramResourceController::class)
+                    ->group(function () {
+                        Route::get("/list/{program}", "index")->name('index');
+                        Route::get("/show/{program}/{programResource}", "show")->name('show');
+                    });
+
+                /**
+                 * Offline Video
+                 */
+                Route::prefix("videos")
+                    ->name('videos.')
+                    ->controller(UserProgramVideoController::class)
+                    ->group(function () {
+                        Route::get("/list/{program}", "index")->name("index");
+                        Route::get("/list/{program}/{course}/{lession}", "videos")->name("show");
+                        Route::post("/watch/history/{program}/{course}/{lession}", 'storeHistory')->name('store.history');
+                    });
             });
     });
+include __DIR__ . "/donation.php";

@@ -24,7 +24,7 @@
                 <!-- Account -->
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <img src="{{ profile() }}" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                        <img src="{{ profile() }}" alt="user-avatar" class="d-block rounded border border-2" height="100" width="100" id="uploadedAvatar" />
                         <div class="button-wrapper">
                             <form action="{{ route('user.account.store.profile') }}" enctype="multipart/form-data" id="profileForm" method="post">
                                 @csrf

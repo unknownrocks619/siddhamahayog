@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin\Programs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\Live;
 use App\Models\Program;
 use App\Models\ProgramBatch;
 use App\Models\ProgramCourse;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
+use App\Models\ZoomAccount;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\DB;
@@ -97,6 +99,11 @@ class AdminProgramController extends Controller
         return view("admin.programs.modal.add_batch", compact("program", "batches"));
     }
 
+    public function zoom_live_modal(Program $program)
+    {
+        return view('admin.programs.modal.go-live', compact('program'));
+    }
+
     public function store_batch_program(Request $request, Program $program)
     {
 
@@ -155,6 +162,45 @@ class AdminProgramController extends Controller
 
     public function storeLive(Request $request, Program $program)
     {
-        // lets go live.
+        // check if program is already live or not.
+        $liveProgram = Live::where('program_id', $program->id)->where('section_id', $request->section)->where('live', true)->exists();
+        if ($liveProgram) {
+            dd($liveProgram);
+            session()->flash("error", "Session is already active. Please end current session or re-join the session.");
+            return redirect()->route('admin.program.admin_program_list');
+        }
+
+        $liveProgram = new Live;
+        $liveProgram->live = true;
+        $liveProgram->program_id = $program->id;
+        $liveProgram->section_id = ($request->section) ? $request->section : null;
+        $liveProgram->zoom_account_id = $request->zoom_account;
+
+        // now let's retrieve zoom account detail.
+        $zoom_account_detail = ZoomAccount::find($request->zoom_account);
+        $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name);
+
+        if (!$meeting) {
+            dd("unable to create meeting");
+            session()->flash('error', "Unable to create zoom meeting at the moment.");
+            return redirect()->route('admin.program.admin_program_list');
+        }
+
+        $liveProgram->meeting_id = $meeting->id;
+        $liveProgram->admin_start_url = $meeting->start_url;
+        $liveProgram->join_url = $meeting->join_url;
+
+        try {
+            $liveProgram->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+        }
+        dd($meeting);
+        return redirect()->to($liveProgram->start_url);
+
+
+        // create zoom meeting id.
+
     }
 }

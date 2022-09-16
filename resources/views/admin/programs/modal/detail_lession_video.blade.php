@@ -1,5 +1,5 @@
 <div class="modal-header bg-dark text-white">
-    <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small> Resources</small>
+    <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small>Video List</small>
         <button type="button" class="bg-white text-lg close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -10,10 +10,10 @@
         <table class="table m-b-0 table-hover" id="lession_ajax_{{$course->id}}">
             <thead>
                 <tr>
-                    <th>Resource Name</th>
-                    <th>Resource Type</th>
-                    <th>Total View</th>
-                    <th>View</th>
+                    <th>Status</th>
+                    <th>Title</th>
+                    <th>Link</th>
+                    <th>Total Watch</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -26,20 +26,20 @@
         serverSide: true,
         ajax: '{{url()->full()}}',
         columns: [{
-                data: 'resource_title',
-                name: "resource_title"
+                data: 'status',
+                name: "status"
             },
             {
-                data: 'resource_type',
-                name: 'resource_type'
+                data: 'lession_name',
+                name: 'lession_name'
             },
             {
-                data: "total_view",
-                name: "total_view"
+                data: "video_link",
+                name: "video_link"
             },
             {
-                data: "view",
-                name: "view"
+                data: "total_watched",
+                name: "total_watched"
             },
         ]
     });

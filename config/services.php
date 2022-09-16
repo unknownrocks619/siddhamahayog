@@ -41,4 +41,10 @@ return [
         'redirect' => config("app.url") . "/social/login/google"
     ],
 
+    'esewa' => [
+        "merchant_code" => "esewa",
+        "redirect" => "https://uat.esewa.com.np/epay/main",
+        "verification" => "https://uat.esewa.com.np/epay/transrec"
+    ]
+
 ];
