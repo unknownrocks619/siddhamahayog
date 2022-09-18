@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend\Arthapanchawk;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaEnrollStoreRequest;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaStoreRequest;
+use App\Http\Traits\CourseFeeCheck;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
 use App\Models\MemberNotification;
@@ -20,6 +21,7 @@ use Illuminate\Support\Str;
 
 class ArthapanchawkController extends Controller
 {
+    use CourseFeeCheck;
     //
     private $_id = 2;
 
@@ -30,7 +32,7 @@ class ArthapanchawkController extends Controller
 
     public function create()
     {
-        if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists()) {
+        if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists() && auth()->user()->meta && auth()->user()->emergency) {
             session()->flash("success", "You have already subscribed this program.");
             return back();
         }
@@ -94,7 +96,7 @@ class ArthapanchawkController extends Controller
 
     public function createTwo()
     {
-        if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists()) {
+        if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists()  && auth()->user()->meta && auth()->user()->emergency) {
             session()->flash("success", "You have already subscribed this program.");
             return redirect()->route('dashboard');
         }
@@ -117,18 +119,24 @@ class ArthapanchawkController extends Controller
         $user->meta->history = $history;
         $programStudent =  new ProgramStudent();
         $vedantaProgram = Program::with(["active_batch", "active_fees", "active_sections"])->where('status', "active")->where('id', $this->_id)->first();
+        $complete_url = URL::temporarySignedRoute("vedanta.payment.create", now()->addMinute(10));
 
         try {
             $user->meta->save();
+            $user->save();
             if (!$vedantaProgram || !$vedantaProgram->active_batch  || !$vedantaProgram->active_sections) {
                 session()->flash('error', "Unable to enroll at the moment. Please try again later.");
                 return back()->withInput();
             }
 
-            // if (ProgramStudent::where('student_id', auth()->id())->where('program_id', $vedantaProgram->id)->exists()) {
-            //     session()->flash("success", 'You have already subscribed.');
-            //     return redirect()->route("dashboard");
-            // }
+            if (ProgramStudent::where('student_id', auth()->id())->where('program_id', $vedantaProgram->id)->exists()) {
+                if (!$this->checkFeeDetail($vedantaProgram, "admission_fee")) {
+                    session()->flash("success", "Information Updated.");
+                    return redirect()->to($complete_url);
+                }
+                session()->flash("success", 'You have already subscribed.');
+                return redirect()->route("dashboard");
+            }
             $programStudent->program_id = $vedantaProgram->id;
             $programStudent->student_id = auth()->id();
             $programStudent->batch_id = $vedantaProgram->active_batch->id;
@@ -142,7 +150,6 @@ class ArthapanchawkController extends Controller
         }
 
         session()->flash("success", "Information Updated.");
-        $complete_url = URL::temporarySignedRoute("vedanta.payment.create", now()->addMinute(10));
         return redirect()->to($complete_url);
     }
 
@@ -156,7 +163,7 @@ class ArthapanchawkController extends Controller
         // now let's check if data is available in meta.
         if (!auth()->user()->meta || !auth()->user()->emergency) {
             session()->flash("error", "Some of your information is missing. Please fill all the information before proceeding further.");
-            return back();
+            return redirect()->route('vedanta.create');
         }
         $program = Program::find($this->_id);
         return view("frontend.page.vedanta.payment", compact("program"));

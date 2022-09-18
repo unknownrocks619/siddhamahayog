@@ -49,8 +49,8 @@
                             </div>
                         </div>
                         <div class="col-md-8 border-end border-bottom border-top">
-                            <div class="progress mt-5 d-none" style="height:25px">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:25px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress w-100 d-none" style="height:10px">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:10px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <div id="notificationContent">
                             </div>

@@ -22,6 +22,9 @@
                 <button class="btn btn-danger clickable" data-href="{{ route('user.account.programs.program.index') }}" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="bx bx-block"></i> Close
                 </button>
+                <button class="btn btn-success clickable" data-href="{{ route('user.account.programs.program.request.create',$program->id) }}" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class='bx bx-list-plus'></i> New Request
+                </button>
             </div>
         </div>
         <div class="card-body">

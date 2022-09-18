@@ -131,11 +131,11 @@ class AdminProgramCourseController extends Controller
             $lession->save();
         } catch (\Throwable $th) {
             //throw $th;
-            $request->session()->flash('error', "Error: " . $th->getMessage());
+            session()->flash('error', "Error: " . $th->getMessage());
             return redirect()->route('admin.program.courses.admin_program_course_list', [$course->program_id]);
         }
 
-        $request->session()->flash("success", "New Video Resource Added To " . $course->course_name);
+        session()->flash("success", "New Video Resource Added To " . $course->course_name);
         return redirect()->route('admin.program.courses.admin_program_course_list', [$course->program_id]);
     }
 }

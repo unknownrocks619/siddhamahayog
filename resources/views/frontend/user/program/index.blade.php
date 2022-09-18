@@ -22,8 +22,9 @@
                         <div id="{{ $program->program->slug }}" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <button class="btn btn-primary mx-3 clickable" data-href="{{ route('user.account.programs.resources.index',$program->program->id) }}">Reading Material</button>
-                                <button class="btn btn-info mx-2 clickable" data-href="{{ route('user.account.programs.videos.index',$program->program->id) }}">Offline Videos</a>
-                                    <button data-href="{{ route('user.account.programs.program.request.index',$program->program->id) }}" class="clickable btn btn-info mx-2">Absent Form</button>
+                                <button class="btn btn-info mx-2 clickable" data-href="{{ route('user.account.programs.videos.index',$program->program->id) }}">Offline Videos</button>
+                                <button data-href="{{ route('user.account.programs.program.request.index',$program->program->id) }}" class="clickable btn btn-info mx-2">Absent Form</button>
+                                <button data-href="{{ route('user.account.programs.courses.fee.list',$program->program->id) }}" class="clickable btn btn-primary mx-2">My Payment</button>
                             </div>
                         </div>
                     </div>

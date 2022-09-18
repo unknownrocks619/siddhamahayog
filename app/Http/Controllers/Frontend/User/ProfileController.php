@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\StoreProfileRequest;
 use App\Http\Requests\Frontend\User\UpdatePersonalRequest;
-use App\Http\Requests\Frontend\Usr\Notifications\SingleNotificationRequest;
+use App\Http\Requests\Frontend\User\Notifications\SingleNotificationRequest;
 use App\Http\Traits\UploadHandler;
 use App\Models\Live;
 use App\Models\MemberNotification;

@@ -13,13 +13,24 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card mb-4">
-                <h5 class="card-header">Available Videos for <span class="fs-4 text-primary">`{{ $program->program_name }}`</span></h5>
+                <div class="card-header d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
+                    <h5>
+                        Available Videos for <span class="fs-4 text-primary">`{{ $program->program_name }}`</span>
+                    </h5>
+                    <div class="dropdown">
+                        <button data-href="{{ route('user.account.programs.program.index') }}" class="clickable btn btn-danger" type="button" id="orederStatistics">
+                            <i class="bx bx-block"></i>
+                            Close
+                        </button>
+                    </div>
+                </div>
                 <!-- Account -->
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <div class="button-wrapper">
                             <p class="text-muted mb-0">Offline Videos for {{$program->program_name}} will be available here.</p>
                         </div>
+
                     </div>
 
                     <div class="row">

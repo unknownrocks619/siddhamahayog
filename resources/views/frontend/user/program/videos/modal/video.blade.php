@@ -27,4 +27,20 @@
             url: "{{ route('user.account.programs.videos.store.history',[$program->id,$course->id,$lession->id]) }}",
         })
     }, 5000);
+
+    setTimeout(() => {
+        $.ajax({
+            type: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            global: false,
+            url: "{{ route('user.account.programs.videos.video-permission', [$program->id])}}",
+            success: function(response) {
+                if (response) {
+                    $("#videoContent").html(response);
+                }
+            }
+        })
+    }, 20000)
 </script>

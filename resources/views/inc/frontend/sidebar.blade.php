@@ -109,7 +109,7 @@
             </ul>
         </li>
 
-        <li class="menu-item {{ active_routes(['user.account.programs.program.index','user.account.programs.program.notices','user.account.programs.program.offline.video','user.account.programs.program.resources']) }}">
+        <li class="menu-item {{ active_routes(['user.account.programs.program.index','user.account.programs.program.notices','user.account.programs.program.offline.video','user.account.programs.program.resources','user.account.programs.program.request.index','user.account.programs.courses.fee.list','user.account.programs.resources.index','user.account.programs.videos.index','user.account.programs.program.request.create']) }}">
             <a href="{{ route('user.account.programs.program.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-crown"></i>
                 <div data-i18n="Boxicons">My Programs</div>

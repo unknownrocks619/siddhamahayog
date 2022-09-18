@@ -119,6 +119,7 @@ Route::prefix("account")
                         Route::get("/list/{program}", "index")->name("index");
                         Route::get("/list/{program}/{course}/{lession}", "videos")->name("show");
                         Route::post("/watch/history/{program}/{course}/{lession}", 'storeHistory')->name('store.history');
+                        Route::post("/video/check/permission/{program}", "allowedToWatch")->name('video-permission');
                     });
 
                 /**
@@ -128,6 +129,7 @@ Route::prefix("account")
                     ->name('courses.fee.')
                     ->controller(UserProgramFeeController::class)
                     ->group(function () {
+                        Route::get("/transactions/{program}", "index")->name('list');
                     });
             });
     });

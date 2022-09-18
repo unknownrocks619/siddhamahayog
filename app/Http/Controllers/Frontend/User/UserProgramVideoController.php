@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Frontend\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\Program\ProgramVideoLessionWatchRequest;
 use App\Http\Requests\Frontend\User\Program\ProgramVideoListRequest;
+use App\Http\Requests\Frontend\User\Program\VideoAllowedToWatchRequest;
+use App\Http\Traits\CourseFeeCheck;
 use App\Models\LessionWatchHistory;
 use App\Models\Program;
 use App\Models\ProgramChapterLession;
@@ -14,6 +16,7 @@ use Illuminate\Http\Request;
 class UserProgramVideoController extends Controller
 {
     //
+    use CourseFeeCheck;
 
     public function index(ProgramVideoListRequest $request, Program $program)
     {
@@ -59,5 +62,15 @@ class UserProgramVideoController extends Controller
         }
 
         return view('frontend.user.program.videos.modal.history', compact("watchHistory"));
+    }
+
+    public function allowedToWatch(VideoAllowedToWatchRequest $request, Program $program)
+    {
+        // check if user have paid admission fee or not for the moment.
+
+        if (!$this->checkFeeDetail($program, "admission_fee")) {
+            return view("frontend.user.program.videos.modal.payment");
+        }
+        return;
     }
 }
