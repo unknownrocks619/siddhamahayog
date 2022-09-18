@@ -3,31 +3,36 @@
 namespace App\Http\Controllers\Admin\Programs;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Program\AdminCourseFeeRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Member;
 use App\Models\Program;
+use App\Models\ProgramCourseFee;
 use App\Models\ProgramStudentFee;
 use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
 use DataTables;
+
 class ProgramStudentFeeController extends Controller
 {
     //
 
-    public function index() {
-
+    public function index()
+    {
     }
 
-    public function update_transaction_status(Request $request, ProgramStudentFeeDetail $fee_detail) {
-        $request->validate(["status"=>"required|boolean"]);
+    public function update_transaction_status(Request $request, ProgramStudentFeeDetail $fee_detail)
+    {
+        $request->validate(["status" => "required|boolean"]);
 
-        $fee_detail->verified =  ! $fee_detail->verified;
-        $fee_detail->rejected =  ! $fee_detail->reject;
+        $fee_detail->verified =  !$fee_detail->verified;
+        $fee_detail->rejected =  !$fee_detail->reject;
 
         $fee_detail->save();
     }
 
-    public function delete_transaction(ProgramStudentFeeDetail $fee) {
+    public function delete_transaction(ProgramStudentFeeDetail $fee)
+    {
         // check if fee is verified. deduct the amount from overview as well.
 
         if ($fee->verified) {
@@ -55,15 +60,17 @@ class ProgramStudentFeeController extends Controller
             "message" => "Record Deleted.",
         ]);
     }
-    public function list_student_by_program(Request $request, Program $program) {
-
+    public function list_student_by_program(Request $request, Program $program)
+    {
     }
 
-    public function add_fee_to_student_by_program(Program $program) {
-        return view('admin.programs.fee.add',compact('program'));
+    public function add_fee_to_student_by_program(Program $program)
+    {
+        return view('admin.programs.fee.add', compact('program'));
     }
 
-    public function store_fee_by_program(Request $request, Program $program, Member $member) {
+    public function store_fee_by_program(Request $request, Program $program, Member $member)
+    {
         $request->validate([
             "amount" => "required",
             "source" => "required",
@@ -76,15 +83,16 @@ class ProgramStudentFeeController extends Controller
         $program_fee->amount_category = ($request->category) ? $request->category : 'monthly_fee';
         $program_fee->source = $request->source;
         $program_fee->source_detail = $request->source_detail;
-        $program_fee->verified = true; ($request->verified == "yes") ? true : false;
+        $program_fee->verified = true;
+        ($request->verified == "yes") ? true : false;
         $program_fee->rejected = false;
         $program_fee->remarks = "Payment added.";
 
         //
         $fee_detail = new ProgramStudentFee;
-        $check_previous = $fee_detail->where('program_id',$program->id)->where('student_id',$member->id)->first();
+        $check_previous = $fee_detail->where('program_id', $program->id)->where('student_id', $member->id)->first();
 
-        if ( $check_previous ) {
+        if ($check_previous) {
             $check_previous->total_amount = $check_previous->total_amount + $request->amount;
         } else {
             $check_previous = $fee_detail;
@@ -94,7 +102,7 @@ class ProgramStudentFeeController extends Controller
         }
 
         try {
-            DB::transaction(function() use ($check_previous,$program_fee) {
+            DB::transaction(function () use ($check_previous, $program_fee) {
                 $check_previous->save();
 
                 $program_fee->program_student_fees_id = $check_previous->id;
@@ -117,120 +125,158 @@ class ProgramStudentFeeController extends Controller
         ]);
     }
 
-    public function fee_overview_by_program(Request $request,Program $program) {
-        if ( $request->ajax() && $request->wantsJson() ) {
-            $overview_payment = ProgramStudentFee::where('program_id',$program->id)
-                                                ->with(["member"])
-                                                ->orderBy("id","DESC")->get();
+    public function fee_overview_by_program(Request $request, Program $program)
+    {
+        if ($request->ajax() && $request->wantsJson()) {
+            $overview_payment = ProgramStudentFee::where('program_id', $program->id)
+                ->with(["member"])
+                ->orderBy("id", "DESC")->get();
             return DataTables::of($overview_payment)
-                                ->addColumn('member_name', function ($row) {
-                                    $member = "<a href='".route('admin.program.fee.admin_fee_by_member',[$row->program_id,$row->student_id])."'>";
-                                    $member .= $row->member->full_name;
-                                    $member .= "</a>";
-                                    return $member;
-                                })
-                                ->addColumn('amount', function ($row) {
-                                    return default_currency($row->total_amount);
-                                })
-                                ->addColumn('last_transaction', function ($row) {
-                                    return $row->updated_at;
-                                })
-                                ->addColumn('action',function ($row) {
-                                    $action = "";
-                                    $action .= "<a href='".route('admin.program.fee.admin_fee_by_member',[$row->program_id,$row->student_id])."'>";
-                                        $action .= "View";
-                                    $action .= "</a>";
+                ->addColumn('member_name', function ($row) {
+                    $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "'>";
+                    $member .= $row->member->full_name;
+                    $member .= "</a>";
+                    return $member;
+                })
+                ->addColumn('amount', function ($row) {
+                    return default_currency($row->total_amount);
+                })
+                ->addColumn('last_transaction', function ($row) {
+                    return $row->updated_at;
+                })
+                ->addColumn('action', function ($row) {
+                    $action = "";
+                    $action .= "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "'>";
+                    $action .= "View";
+                    $action .= "</a>";
 
-                                    $action .= " | ";
-                                    $action .= " Delete ";
+                    $action .= " | ";
+                    $action .= " Delete ";
 
-                                    return $action;
-                                })
-                            ->rawColumns(["action","amount","last_transaction","member_name"])
-                            ->make(true);
+                    return $action;
+                })
+                ->rawColumns(["action", "amount", "last_transaction", "member_name"])
+                ->make(true);
         }
 
-        return view("admin.fees.program.overview",compact('program'));
+        return view("admin.fees.program.overview", compact('program'));
     }
 
-    public function transaction_by_program(Request $request, Program $program) {
-        if ($request->ajax() && $request->wantsJson() ) {
-            $all_transaction = ProgramStudentFeeDetail::where('program_id',$program->id)->with(["student"])->orderBy("id","DESC")->get();
+    public function transaction_by_program(Request $request, Program $program)
+    {
+        if ($request->ajax() && $request->wantsJson()) {
+            $all_transaction = ProgramStudentFeeDetail::where('program_id', $program->id)->with(["student"])->orderBy("id", "DESC")->get();
             return DataTables::of($all_transaction)
-                                ->addColumn('member_name', function ($row) {
-                                    $member = "<a href='".route('admin.program.fee.admin_fee_by_member',[$row->program_id,$row->student_id])."' class='text-info text-underline'>"; 
-                                    $member .= $row->student->full_name;
-                                    $member .= "</a>";
-                                    
-                                     return $member;
-                                })
-                                ->addColumn('transaction_amount', function ($row) {
-                                    return default_currency($row->amount);
-                                })
-                                ->addColumn ('category', function ($row) {
-                                    $seperate_category = explode ("_",$row->amount_category);
-                                    $category_text = "";
-                                    foreach ($seperate_category as $value) {
-                                        $category_text .= ucwords(strtolower($value)) . " ";
-                                    }
+                ->addColumn('member_name', function ($row) {
+                    $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
+                    $member .= $row->student->full_name;
+                    $member .= "</a>";
 
-                                    return $category_text;
-                                })
-                                ->addColumn('source', function ($row) {
-                                    $source = "<strong>" . $row->source . "</strong>";
-                                    $source .= "<hr />";
-                                    $source .= $row->source_detail;
-                                    return $source;
-                                })
-                                ->addColumn('status' , function ($row) {
-                                    $status = "";
-                                    if ($row->verified) {
-                                        $status .= '<span class="badge bg-success px-2"><a href="#" title="Verified"><i class="text-white zmdi zmdi-check"></i></a>';
-                                    } else {
-                                        $status .= '<span class="badge bg-danger px-2"><a href="#" title="Rejected"><i class="text-white zmdi zmdi-minus-circle-outline"></i></a>';
+                    return $member;
+                })
+                ->addColumn('transaction_amount', function ($row) {
+                    return default_currency($row->amount);
+                })
+                ->addColumn('category', function ($row) {
+                    $seperate_category = explode("_", $row->amount_category);
+                    $category_text = "";
+                    foreach ($seperate_category as $value) {
+                        $category_text .= ucwords(strtolower($value)) . " ";
+                    }
 
-                                    }
-                                    $status .= "</span>";
+                    return $category_text;
+                })
+                ->addColumn('source', function ($row) {
+                    $source = "<strong>" . $row->source . "</strong>";
+                    $source .= "<hr />";
+                    $source .= $row->source_detail;
+                    return $source;
+                })
+                ->addColumn('status', function ($row) {
+                    $status = "";
+                    if ($row->verified) {
+                        $status .= '<span class="badge bg-success px-2"><a href="#" title="Verified"><i class="text-white zmdi zmdi-check"></i></a>';
+                    } else {
+                        $status .= '<span class="badge bg-danger px-2"><a href="#" title="Rejected"><i class="text-white zmdi zmdi-minus-circle-outline"></i></a>';
+                    }
+                    $status .= "</span>";
 
-                                    return $status;
-                                })
-                                ->addColumn('media' , function ($row) {
-                                    if ($row->file) {
-                                        $file_object = json_decode($row->file);
-                                        return "<a href='".asset ($file_object->path)."'>".$row->type."</a>";
-                                    } else {
-                                        return "N/A";
-                                    }
-                                })
-                                ->addColumn('action', function ($row) {
-                                    $action = "";
-                                    $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='".route('fee.api_update_fee_detail',[$row->id])."'>";
-                                        $action .= "<input type='hidden' name='update_type' value='status' />";
+                    return $status;
+                })
+                ->addColumn('media', function ($row) {
+                    if ($row->file) {
+                        $file_object = json_decode($row->file);
+                        return "<a href='" . asset($file_object->path) . "'>" . $row->type . "</a>";
+                    } else {
+                        return "N/A";
+                    }
+                })
+                ->addColumn('action', function ($row) {
+                    $action = "";
+                    $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('fee.api_update_fee_detail', [$row->id]) . "'>";
+                    $action .= "<input type='hidden' name='update_type' value='status' />";
 
-                                    if ($row->verified) {
-                                        $action .= "<button type='submit' class='btn btn-danger btn-sm'>Reject</button>";
-                                    } else {
-                                        $action .= "<button type='submit' class='btn btn-success btn-sm'>Verify</button>";
-                                    }
-                                    $action .= "</form>";
+                    if ($row->verified) {
+                        $action .= "<button type='submit' class='btn btn-danger btn-sm'>Reject</button>";
+                    } else {
+                        $action .= "<button type='submit' class='btn btn-success btn-sm'>Verify</button>";
+                    }
+                    $action .= "</form>";
 
-                                    $action .= "<form style='display:inline' method='DELETE' action='".route('fee.api_delete_fee',$row->id)."' class='transaction_delete_form'>";
-                                        $action .= "<input type='hidden' name='update_type' value='status' />";
-                                        $action .= "<button type='submit' class='btn btn-danger btn-sm'><i class='zmdi zmdi-delete'></i></button>";
-                                    $action .= "</form>";
-                                    return $action;
-                                })
-                                ->rawColumns(["transaction_amount","media","action","source","member_name","status"])
-                                ->make(true);
+                    $action .= "<form style='display:inline' method='DELETE' action='" . route('fee.api_delete_fee', $row->id) . "' class='transaction_delete_form'>";
+                    $action .= "<input type='hidden' name='update_type' value='status' />";
+                    $action .= "<button type='submit' class='btn btn-danger btn-sm'><i class='zmdi zmdi-delete'></i></button>";
+                    $action .= "</form>";
+                    return $action;
+                })
+                ->rawColumns(["transaction_amount", "media", "action", "source", "member_name", "status"])
+                ->make(true);
         }
-        return view('admin.fees.program.transactions',compact('program'));
+        return view('admin.fees.program.transactions', compact('program'));
     }
 
-    public function transaction_by_program_and_student(Request $request, Program $program, Member $member) {
-        $transaction = ProgramStudentFee::where('student_id',$member->id)
-                                        ->where('program_id',$program->id)
-                                        ->with(["transactions"])
-                                        ->first();
-        return view("admin.fees.program.individual",compact('member','program',"transaction"));
+    public function transaction_by_program_and_student(Request $request, Program $program, Member $member)
+    {
+        $transaction = ProgramStudentFee::where('student_id', $member->id)
+            ->where('program_id', $program->id)
+            ->with(["transactions"])
+            ->first();
+        return view("admin.fees.program.individual", compact('member', 'program', "transaction"));
+    }
+
+    public function store_program_course_fee_structure(AdminCourseFeeRequest $request, Program $program)
+    {
+        $program_course_fee_structure = new ProgramCourseFee();
+        $program_course_fee_structure->program_id = $program->id;
+        $program_course_fee_structure->admission_fee = $request->admission_fee;
+        $program_course_fee_structure->monthly_fee = $request->monthly_fee;
+        $program_course_fee_structure->online = true;
+        $program_course_fee_structure->offline = true;
+        $program_course_fee_structure->active = true;
+
+        // check fee structure with current program exists.
+
+
+        $check_existing = ProgramCourseFee::where('program_id', $program->id)->first();
+
+        if ($check_existing) {
+            $check_existing->active = false;
+        }
+
+        try {
+            DB::transaction(function () use ($check_existing, $program_course_fee_structure) {
+
+                if ($check_existing) {
+                    $check_existing->save();
+                }
+                $program_course_fee_structure->save();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash("error", "Error: " . $th->getMessage());
+            return back()->withInput();
+        }
+        session()->flash('success', "Congratulation ! New Fee Structure added.");
+        return back();
     }
 }
