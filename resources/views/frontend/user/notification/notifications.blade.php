@@ -79,19 +79,22 @@
             $(this).addClass("d-none");
         })
     });
-
-    $(document).ready(function() {
-        $.ajax({
-            type: "post",
-            url: "{{ route('user.account.notification-body',[$notifications->first()->id]) }}",
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            success: function(response) {
-                $("#notificationContent").html(response);
-            }
+    <?php
+    if ($notifications->count()) :
+    ?>
+        $(document).ready(function() {
+            $.ajax({
+                type: "post",
+                url: "{{ route('user.account.notification-body',[$notifications->first()->id]) }}",
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    $("#notificationContent").html(response);
+                }
+            })
         })
-    })
+    <?php endif ?>
 
     $(".watchLession").click(function(event) {
         event.preventDefault();
