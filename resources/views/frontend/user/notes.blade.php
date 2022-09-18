@@ -10,13 +10,10 @@
                 <small class="text-muted">All your notes are private. You and only you can see these notes.</small>
             </div>
             <div class="dropdown">
-                <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded"></i>
+                <button class="btn btn-outline-success clickable" data-href="{{ route('user.account.notes.notes.create') }}" type="button" id="orederStatistics">
+                    <i class='bx bxs-file-plus'></i>
+                    Create New Note
                 </button>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics" style="">
-                    <a class="dropdown-item" href="{{ route('user.account.notes.notes.create') }}">Create New Note</a>
-                    <a class="dropdown-item text-danger" href="javascript:void(0);">Delete All</a>
-                </div>
             </div>
         </div>
         <div class="card-body">

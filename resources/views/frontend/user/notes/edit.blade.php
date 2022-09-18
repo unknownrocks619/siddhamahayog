@@ -22,7 +22,17 @@ Notes > Create New
                 @csrf
                 @method("PUT")
                 <div class="card mb-4">
-                    <h5 class="card-header">Update Your Note</h5>
+                    <div class="card-header d-flex align-items-center justify-content-between pb-0">
+                        <div class="card-title">
+                            <h5>Update Your Note</h5>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-danger clickable" data-href="{{ route('user.account.notes.notes.index') }}" type="button" id="orederStatistics">
+                                <i class='bx bx-block'></i>
+                                Close
+                            </button>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <div>
                             <label for="defaultFormControlInput" class="form-label">Title</label>
@@ -51,3 +61,12 @@ Notes > Create New
     </div>
 </div>
 @endsection
+
+@push("custom_script")
+<script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"> </script>
+<script type="text/javascript">
+    tinymce.init({
+        selector: 'textarea'
+    });
+</script>
+@endpush

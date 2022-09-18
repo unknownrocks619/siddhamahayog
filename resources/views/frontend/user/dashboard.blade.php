@@ -71,7 +71,7 @@
                                                 <small class="text-muted">Continue Notes</small>
                                             </div>
                                             <div class="user-progress">
-                                                <small class="fw-semibold">Edit</small>
+                                                <small class="fw-semibold"><a href="{{ route('user.account.notes.notes.edit',$notes->id) }}">Edit</a></small>
                                             </div>
                                         </div>
                                     </li>
@@ -102,7 +102,7 @@
                                                 <small class="text-muted">Notice</small>
                                             </div>
                                             <div class="user-progress">
-                                                <small class="fw-semibold"><a href="">Create a Support Ticket</a></small>
+                                                <small class="fw-semibold"><button data-href="{{ route('user.account.support.ticket.create') }}" class="btn btn-outline-primary btn-sm">Create a Support Ticket</button></small>
                                             </div>
                                         </div>
                                     </li>
