@@ -19,6 +19,20 @@
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- Place this tag where you want the button to render. -->
+            <li class="nav-item lh-1 me-3">
+                <button type="button" data-href="{{ route('user.account.notifications') }}" class="clickable btn btn-outline-primary">
+                    <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
+                    Notification
+                    <?php
+
+                    use App\Models\MemberNotification;
+
+                    $notification = MemberNotification::where('member_id', user()->id)->where('seen', false)->count();
+                    ?>
+                    <span class="badge bg-white text-primary rounded-pill border notification">{{ $notification }}</span>
+                </button>
+
+            </li>
             <!-- User -->
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">

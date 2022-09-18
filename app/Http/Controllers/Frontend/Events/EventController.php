@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Frontend\Events;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Event\LiveEventRequest;
+use App\Http\Traits\CourseFeeCheck;
 use App\Models\Live;
+use App\Models\MemberNotes;
+use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudentAttendance;
@@ -14,6 +17,7 @@ use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
+    use CourseFeeCheck;
     /**
      * Dispaly Event Detail Page.
      * @param String $slug
@@ -32,6 +36,18 @@ class EventController extends Controller
 
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
+        if ($program->program_type == "paid" && !$this->checkFeeDetail($program, "admission_fee")) {
+            $notification = new MemberNotification;
+            $notification->member_id = auth()->id();
+            $notification->title =  'Unable to access ' . $program->program_name;
+            $notification->body = "You are not authorized to join the session because of your pending dues. Please clear all the dues to access the content without distrubance or contact support for more information.";
+            $notification->type = "message";
+            $notification->level = "info";
+            $notification->seen = false;
+            $notification->save();
+            session()->flash("error", 'Unable to join session, Your payment is due.');
+            return back();
+        }
         // dd($live->zoomAccount);
         // check if user already have joined.
         $attendance = ProgramStudentAttendance::where('live_id', $live->id)
@@ -43,7 +59,6 @@ class EventController extends Controller
         if ($attendance) {
             $meta = (array)$attendance->meta;
             $meta[date("Y-m-d H:i:s")] = "Re-joined";
-
             $attendance->meta = $meta;
             $attendance->save();
             return redirect()->to($attendance->join_url);
@@ -80,9 +95,15 @@ class EventController extends Controller
             $attendance->save();
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
+            $notification = new MemberNotification;
+            $notification->member_id = auth()->id();
+            $notification->title = $program->program_name . " attendance";
+            $notification->body = "Attendance couldn't be taken at the moment. If you are locked out from joining please inform support team.";
+            $notification->type = "message";
+            $notification->level = "info";
+            $notification->seen = false;
+            $notification->save();
         }
-
-        dd("send to join url");
+        return redirect()->to($register_member->join_url);
     }
 }

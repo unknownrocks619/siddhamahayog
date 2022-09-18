@@ -11,4 +11,5 @@ Route::prefix("donations")
         Route::post('/donation/{serviceProvider}', "donate")->name('donate');
         Route::get("/donation/{serviceProvider}/success", "success")->name('success');
         Route::get("/donation/{serviceProvider}/failed", "failed")->name('failed');
+        Route::get('/donation/list/dashboard', "ajaxDonationHistory")->name("dashboard");
     });

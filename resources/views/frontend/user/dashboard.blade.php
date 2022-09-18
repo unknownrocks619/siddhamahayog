@@ -37,65 +37,7 @@
                         <h5 class="m-0 me-2">Live Sessions</h5>
                     </div>
                 </div>
-                <div class="card-body">
-                    <ul class="p-0 m-0 mt-3">
-                        @forelse ($enrolledPrograms as $program)
-                        <li class="d-flex mb-4 pb-1 border-bottom @if($loop->iteration % 2 ) bg-light @endif p-2">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <h6 class="mb-0">{{ $program->program->program_name }}</h6>
-                                    <small class="text-muted">{{ ($program->live) ? "Started at" .  date('H:i A', strtotime($program->live->create_at)) : Null }}</small>
-                                </div>
-                                <div class="user-progress">
-
-                                    @if( $program->live && $program->live->section_id == $program->program_section_id)
-                                    <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="fw-semibold btn btn-sm btn-success">
-                                            Join Now
-                                        </button>
-                                    </form>
-                                    @elseif($program->live && !$program->live->section_id)
-                                    <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="fw-semibold btn btn-sm btn-success">
-                                            Join Now
-                                        </button>
-                                    </form>
-
-                                    @else
-                                    <small class="fw-semibold btn btn-sm btn-secondary">
-                                        Not Available
-                                    </small>
-                                    @endif
-                                    <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">
-                                        Absent Form
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                        @empty
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <h6 class="mb-0">Program not Found</h6>
-                                </div>
-                                <div class="user-progress">
-                                    <small class="fw-semibold btn btn-sm btn-secondary">
-                                        Not Available
-                                    </small>
-                                </div>
-                            </div>
-                        </li>
-                        @endforelse
-                    </ul>
-                </div>
+                @include("frontend.user.dashboard.live-session",["enrolledPrograms" => $enrolledPrograms])
             </div>
         </div>
         <!--/ Order Statistics -->
@@ -203,6 +145,18 @@
                         <button formaction="{{ route('donations.donate','esewa') }}" type="submit" class="btn btn-success mt-2">Pay with E-Sewa</button>
                     </form>
                 </div>
+
+                <hr />
+                <h5 class="text-center">
+                    Your Donation History
+                    <br />
+                    <small>[<a href="" class="refresh-donation">Refresh list</a>]</small>
+                </h5>
+                <div id="dontaionTable" class="table-responsive">
+                    <div class="progress mt-5" style="height:25px">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:25px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
             </div>
         </div>
         <!--/ Expense Overview -->
@@ -212,107 +166,16 @@
             <div class="card h-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title m-0 me-2">Your Assignments</h5>
-                    <div class="dropdown">
-                        <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="bx bx-dots-vertical-rounded"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
-                            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-body">
                     <ul class="p-0 m-0">
                         <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/paypal.png" alt="User" class="rounded" />
-                            </div>
+
                             <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                                 <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Paypal</small>
-                                    <h6 class="mb-0">Send money</h6>
+                                    <h6 class="mb-0">You don't have any assignment</h6>
                                 </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">+82.6</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Wallet</small>
-                                    <h6 class="mb-0">Mac'D</h6>
-                                </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">+270.69</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/chart.png" alt="User" class="rounded" />
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Transfer</small>
-                                    <h6 class="mb-0">Refund</h6>
-                                </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">+637.91</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/cc-success.png" alt="User" class="rounded" />
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Credit Card</small>
-                                    <h6 class="mb-0">Ordered Food</h6>
-                                </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">-838.71</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex mb-4 pb-1">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Wallet</small>
-                                    <h6 class="mb-0">Starbucks</h6>
-                                </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">+203.33</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="d-flex">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img src="../assets/img/icons/unicons/cc-warning.png" alt="User" class="rounded" />
-                            </div>
-                            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                <div class="me-2">
-                                    <small class="text-muted d-block mb-1">Mastercard</small>
-                                    <h6 class="mb-0">Ordered Food</h6>
-                                </div>
-                                <div class="user-progress d-flex align-items-center gap-1">
-                                    <h6 class="mb-0">-92.45</h6>
-                                    <span class="text-muted">USD</span>
-                                </div>
+
                             </div>
                         </li>
                     </ul>
@@ -346,5 +209,23 @@
         });
         calendar.render();
     });
+
+    document.getElementsByClassName('refresh-donation')[0].addEventListener("click", (event) => {
+        event.preventDefault();
+        donation();
+    })
+
+    setTimeout(function() {
+        donation();
+    }, 10000);
+
+    function donation() {
+        $.ajax({
+            url: "{{ route('donations.dashboard') }}",
+            success: function(response) {
+                $("#dontaionTable").html(response);
+            }
+        })
+    }
 </script>
 @endpush

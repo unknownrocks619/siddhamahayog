@@ -168,6 +168,7 @@ Route::prefix('admin')
                         Route::get('/overview/{program}', [ProgramStudentFeeController::class, "fee_overview_by_program"])->name('admin_fee_overview_by_program');
                         Route::get("/transaciton-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
                         Route::post('/store/{program}/{member}', [ProgramStudentFeeController::class, "store_fee_by_program"])->name('admin_store_student_fee');
+                        Route::post('/store/fee-strucutre/new/{program}', [ProgramStudentFeeController::class, "store_program_course_fee_structure"])->name('admin_store_course_fee');
                         Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');
                     });
                 Route::prefix('enroll')

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin\Programs;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Program\AdminCourseFeeRequest;
 use App\Models\Batch;
 use App\Models\Live;
 use App\Models\Program;
 use App\Models\ProgramBatch;
 use App\Models\ProgramCourse;
+use App\Models\ProgramCourseFee;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
 use App\Models\ZoomAccount;
@@ -202,5 +204,42 @@ class AdminProgramController extends Controller
 
         // create zoom meeting id.
 
+    }
+
+    public function store_program_course_fee_structure(AdminCourseFeeRequest $request, Program $program)
+    {
+        $program_course_fee_structure = new ProgramCourseFee;
+        $program_course_fee_structure->program_id = $program->id;
+        $program_course_fee_structure->admission_fee = $request->admission_fee;
+        $program_course_fee_structure->monthly_fee = $request->monthly_fee;
+        $program_course_fee_structure->online = true;
+        $program_course_fee_structure->offline = true;
+        $program_course_fee_structure->active = true;
+
+        // check fee structure with current program exists.
+
+
+        $check_existing = ProgramCourseFee::where('program_id', $program->id)->first();
+
+        if ($check_existing) {
+            $check_existing->active = false;
+        }
+
+        try {
+            DB::transaction(function () use ($check_existing, $program_course_fee_structure) {
+
+                if ($check_existing) {
+                    $check_existing->save();
+                }
+                $program_course_fee_structure->save();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+            session()->flash("error", "Error: " . $th->getMessage());
+            return back()->withInput();
+        }
+        session()->flash('success', "Congratulation ! New Fee Structure added.");
+        return back();
     }
 }

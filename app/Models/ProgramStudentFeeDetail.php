@@ -8,18 +8,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProgramStudentFeeDetail extends Model
 {
-    use HasFactory,SoftDeletes;
-
-    public function student_fee(){
-        return $this->belongsTo(ProgramStudentFee::class,"program_student_fees_id");
+    use HasFactory, SoftDeletes;
+    protected $casts = [
+        "remarks" => "object"
+    ];
+    public function student_fee()
+    {
+        return $this->belongsTo(ProgramStudentFee::class, "program_student_fees_id");
     }
 
-    public function student(){
-        return $this->belongsTo(Member::class,"student_id");
+    public function student()
+    {
+        return $this->belongsTo(Member::class, "student_id");
     }
 
     public function program()
     {
-        return $this->belongsTo(Program::class,"program_id");
+        return $this->belongsTo(Program::class, "program_id");
     }
 }

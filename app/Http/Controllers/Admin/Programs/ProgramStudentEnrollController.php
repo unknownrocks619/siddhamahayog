@@ -18,7 +18,7 @@ class ProgramStudentEnrollController extends Controller
     public function program_student_enrollement(Request $request, Program $program) {
         $member = Member::find($request->member);
         $enrollment = ProgramStudentEnroll::where('program_id',$program->id)->where('member_id', $member->id)->first();
-        $last_payment = ProgramStudentFeeDetail::where('program_id',$program->id)->where('student_id',$member->id)->orderBy("id","DESC")->first();
+        $last_payment = ProgramStudentFeeDetail::where('program_id',$program->id)->where('student_id',$request->member)->orderBy("id","DESC")->first();
         return view('admin.programs.fee.partial.student_detail',compact('program','member','enrollment',"last_payment"));
     }
 

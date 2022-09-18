@@ -6,6 +6,7 @@ use App\Http\Controllers\Frontend\Exams\ExamCenterController;
 use App\Http\Controllers\Frontend\User\ProfileController;
 use App\Http\Controllers\Frontend\User\UserNoteController;
 use App\Http\Controllers\Frontend\User\UserProgramController;
+use App\Http\Controllers\Frontend\User\UserProgramFeeController;
 use App\Http\Controllers\Frontend\User\UserProgramResourceController;
 use App\Http\Controllers\Frontend\User\UserProgramVideoController;
 use App\Http\Controllers\Frontend\User\UserSupportController;
@@ -38,7 +39,8 @@ Route::prefix("account")
         Route::get("/user/notifications", [ProfileController::class, "notifications"])->name("notifications");
         Route::post("/profile", [ProfileController::class, "storeProfile"])->name("store.profile");
         Route::post("/profile/detail", [ProfileController::class, "storeDetail"])->name("store.personal");
-
+        Route::post('/user/notifications/{notification}', [ProfileController::class, "singleNotification"])->name('notification-body');
+        Route::post('/user/notifications/{notification}/update', [ProfileController::class, "markNotification"])->name('notification-update');
 
         Route::get("/dashboard", [ProfileController::class, "index"])->name("dashboard");
         Route::prefix("notes")
@@ -117,6 +119,15 @@ Route::prefix("account")
                         Route::get("/list/{program}", "index")->name("index");
                         Route::get("/list/{program}/{course}/{lession}", "videos")->name("show");
                         Route::post("/watch/history/{program}/{course}/{lession}", 'storeHistory')->name('store.history');
+                    });
+
+                /**
+                 * Course Fee
+                 */
+                Route::prefix("courses/fee")
+                    ->name('courses.fee.')
+                    ->controller(UserProgramFeeController::class)
+                    ->group(function () {
                     });
             });
     });

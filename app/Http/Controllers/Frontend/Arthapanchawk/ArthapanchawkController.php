@@ -7,11 +7,16 @@ use App\Http\Requests\Frontend\User\Sadhana\SadhanaEnrollStoreRequest;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaStoreRequest;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
+use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramStudent;
+use App\Models\ProgramStudentEnroll;
+use App\Models\ProgramStudentFee;
+use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class ArthapanchawkController extends Controller
 {
@@ -136,12 +141,154 @@ class ArthapanchawkController extends Controller
             return back()->withInput();
         }
 
-        session()->flash("success", "Thank-you for your registration,Please wait.. while we redirect to your dashboard.");
-        $complete_url = URL::temporarySignedRoute("sadhana.process.complete", now()->addMinute(2));
+        session()->flash("success", "Information Updated.");
+        $complete_url = URL::temporarySignedRoute("vedanta.payment.create", now()->addMinute(10));
         return redirect()->to($complete_url);
     }
 
-    public function enroll()
+    public function payment()
     {
+        if (!ProgramStudent::where('program_id', $this->_id)->where('student_id', user()->id)->exists()) {
+            session()->flash('error', "Oops ! Something went wrong.");
+            return back();
+        }
+
+        // now let's check if data is available in meta.
+        if (!auth()->user()->meta || !auth()->user()->emergency) {
+            session()->flash("error", "Some of your information is missing. Please fill all the information before proceeding further.");
+            return back();
+        }
+        $program = Program::find($this->_id);
+        return view("frontend.page.vedanta.payment", compact("program"));
+    }
+
+    public function paymentProcessor(Program $program)
+    {
+        $url = config('services.esewa.redirect');
+        $data = [
+            'amt' => 100, // (int) $program->active_fees->admission_fee,
+            'pdc' => 0,
+            'psc' => 0,
+            'txAmt' => 0,
+            'tAmt' => 100, //(int) $program->active_fees->admission_fee,
+            'pid' => (string) Str::uuid(),
+            'scd' => config("services.esewa.merchant_code"),
+            'su' => route('vedanta.payment.success', $program->id),
+            'fu' => route('vedanta.payment.failed', $program->id)
+        ];
+
+        $output =  "<form method='POST' action='{$url}' id='esewa_form' class='d-none'>";
+        foreach ($data as $payment_key => $payment_value) :
+            $output .= "<input type='hidden' value='{$payment_value}' name='{$payment_key}' />";
+        endforeach;
+        $output .= "</form>";
+
+        // autosubmit form
+        $output .= "<script type='text/javascript'>";
+        $output .= "document.getElementById('esewa_form').submit();";
+        $output .= "</script>";
+
+        return $output;
+        // $curl = curl_init($url);
+        // curl_setopt($curl, CURLOPT_POST, true);
+        // curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        // curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        // $response = curl_exec($curl);
+        // echo $response;
+        // curl_close($curl);
+    }
+
+    public function paymentSuccess(Program $program)
+    {
+        // now formally enroll user in program.
+        $notification =  new MemberNotification;
+        $notification->member_id = auth()->id();
+        $notification->title = "Payment Success ";
+        $notification->notification_type = "App\Models\Program";
+        $notification->notification_id = $program->id;
+        $notification->body = "Congratulation ! Your admissin fee for " . $program->program_name . " was successfully paid.";
+        $notification->type = "message";
+        $notification->level = "notice";
+        $notification->seen = false;
+
+        // also enroll the user in course.
+        $enrollUser = new ProgramStudentEnroll;
+
+        $enrollUser->program_id = $program->id;
+        $enrollUser->member_id = auth()->id();
+        $enrollUser->enroll_date = date("Y-m-d");
+        $enrollUser->program_course_fee_id = $program->active_fees->id;
+        $enrollUser->scholarship = false;
+
+        // include payment in student table.
+
+        $program_student_fee = new ProgramStudentFee();
+        $program_student_fee->program_id = $program->id;
+        $program_student_fee->student_id = auth()->id();
+        $program_student_fee->total_amount = $program->active_fees->admission_fee;
+
+        // fee detail.
+
+        $program_student_fee_detail = new ProgramStudentFeeDetail();
+        $program_student_fee_detail->program_id = $program->id;
+        $program_student_fee_detail->student_id = auth()->id();
+        $program_student_fee_detail->amount = $program->active_fees->admission_fee;
+        $program_student_fee_detail->amount_category = "admission_fee";
+        $program_student_fee_detail->source = "online";
+        $program_student_fee_detail->source_detail = "E-sewa Transaction";
+        $program_student_fee_detail->verified = true;
+        $program_student_fee_detail->remarks = request()->all();
+
+        try {
+            //code...
+            DB::transaction(function () use ($program, $program_student_fee_detail, $program_student_fee, $enrollUser, $notification) {
+                $notification->save();
+                $enrollUser->save();
+                $program_student_fee->save();
+                $program_student_fee_detail->program_student_fees_id = $program_student_fee->id;
+                $program_student_fee_detail->save();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Your payment couldn't be verified. Please make sure to create a support ticket for any issue");
+            info('Payment make but couldn\'t save in  database. UUID for payment is ' . request()->oid, ["Program payment"]);
+            // now formally enroll user in program.
+            $notification =  new MemberNotification;
+            $notification->member_id = auth()->id();
+            $notification->title = "Payment Unverified ";
+            $notification->notification_type = "App\Models\Program";
+            $notification->notification_id = $program->id;
+            $notification->body = "Your payment couldn't be verified. Please create a ticket with the reference id:  " . request()->oid;
+            $notification->type = "message";
+            $notification->level = "notice";
+            $notification->seen = false;
+            $notification->save();
+            return redirect()->route('dashboard');
+        }
+
+        session()->flash("success", 'Congratulation ! You have successfully enrolled in ' . $program->program_name);
+        return redirect()->route('dashboard');
+    }
+
+    public function paymentFailed(Program $program)
+    {
+        $notification =  new MemberNotification;
+        $notification->member_id = auth()->id();
+        $notification->title = "Payment Failed for " . $program->program_name;
+        $notification->body = "Your admissin fee for " . $program->program_name . " couldn't be completed. You can still try from your dashboard.";
+        $notification->type = "message";
+        $notification->level = "notice";
+        $notification->seen = false;
+
+        try {
+            $notification->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            info("Unable to save record in member notification table. due to " . $th->getMessage(), ["Program Payment"]);
+            session()->flash("error", "Your admission fee for " . $program->program_name . " coludn't be completed. Please try again.");
+            return redirect()->route('dashboard');
+        }
+        session()->flash("error", "Your admission fee for " . $program->program_name . " coludn't be completed. Please try again.");
+        return redirect()->route('dashboard');
     }
 }

@@ -47,12 +47,12 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Personalise</span>
         </li>
-        <li class="menu-item {{ active_routes(['user.account.list','user.account.connections','user.account.notifications']) }}">
+        <li class="menu-item {{ active_routes(['user.account.list','user.account.connections']) }}">
             <a href="{{ route('user.account.list') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-cog"></i>
                 <div data-i18n="Account Settings">Account Settings</div>
             </a>
-        <li class="menu-item">
+        <li class="menu-item  {{ active_routes(['user.account.notifications']) }}">
             <a href="{{ route('user.account.notifications') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
 

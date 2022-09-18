@@ -211,7 +211,7 @@
 
             <div class="row">
                 <div class="col-md-12 text-end">
-                    <button type="submit" class="btn btn-primary">Join Sadhana</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
                 </div>
             </div>
         </div>

@@ -143,6 +143,7 @@ Program
         $.ajax({
             method: "get",
             url: event.relatedTarget.href,
+            dataType: 'html',
             success: function(success) {
                 $("#modal_content").html(success);
             }

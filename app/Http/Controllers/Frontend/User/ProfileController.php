@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Frontend\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\StoreProfileRequest;
 use App\Http\Requests\Frontend\User\UpdatePersonalRequest;
+use App\Http\Requests\Frontend\Usr\Notifications\SingleNotificationRequest;
 use App\Http\Traits\UploadHandler;
 use App\Models\Live;
+use App\Models\MemberNotification;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 
@@ -17,7 +19,9 @@ class ProfileController extends Controller
     public function index()
     {
         // get live event
-        $enrolledPrograms  = ProgramStudent::where('student_id', auth()->id())->with(['live', "program"])->get();
+        $enrolledPrograms  = ProgramStudent::where('student_id', auth()->id())->with(['live', "program" => function ($query) {
+            return $query->with(["student_admission_fee"]);
+        }])->get();
         return view("frontend.user.dashboard", compact("enrolledPrograms"));
     }
 
@@ -32,7 +36,20 @@ class ProfileController extends Controller
     }
     public function notifications()
     {
-        return view("frontend.user.notifications");
+        $notifications = MemberNotification::where('member_id', auth()->id())->latest()->cursor();
+        return view("frontend.user.notification.notifications", compact("notifications"));
+    }
+
+    public function singleNotification(SingleNotificationRequest $request, MemberNotification $notification)
+    {
+        return view('frontend.user.notification.notification-body', compact('notification'));
+    }
+
+    public function markNotification(SingleNotificationRequest $request, MemberNotification $notification)
+    {
+        $notification->seen = true;
+
+        $notification->save();
     }
 
     public function storeProfile(StoreProfileRequest $request)

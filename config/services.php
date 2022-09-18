@@ -42,7 +42,7 @@ return [
     ],
 
     'esewa' => [
-        "merchant_code" => "esewa",
+        "merchant_code" => "EPAYTEST",
         "redirect" => "https://uat.esewa.com.np/epay/main",
         "verification" => "https://uat.esewa.com.np/epay/transrec"
     ]

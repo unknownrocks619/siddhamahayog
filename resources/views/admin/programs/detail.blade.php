@@ -283,7 +283,57 @@
             </div>
             @elseif ($program->program_type == "paid" && ! $program->active_fees)
             <div class="col-lg-8 col-md-12" id="app">
-                <add-fee action="{{ route('program.admin_api_program_course_fee_store',$program->id) }}"></add-fee>
+                <div class="card">
+                    <div class="header pt-0">
+                        <h2>
+                            <strong>Setup</strong> Fee Structure
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <form action="{{ route('admin.program.fee.admin_store_course_fee',$program->id) }}" method="post">
+                            @csrf
+                            <div class="row ">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="admission_fee" class="label-control">
+                                            Admission Fee
+                                            <sup class="text-danger">
+                                                *
+                                            </sup>
+                                        </label>
+                                        <input type="text" name="admission_fee" id="admission_fee" class="form-control @error('admission_fee') border border-danger @enderror " />
+                                        @error("admission_fee")
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="monthly_fee" class="label-control">
+                                            Monthly Fee
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="text" name="monthly_fee" id="monthly_fee" class="form-control @error('monthly_fee') border border-danger @enderror" />
+                                        @error("monthly_fee")
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary">Update Fee Structure</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
             @endif
         </div>

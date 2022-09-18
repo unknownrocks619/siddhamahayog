@@ -1,7 +1,7 @@
 @extends("layouts.portal.app")
 
 @section("page_title")
-    ::Add Fee Collection
+::Add Fee Collection
 @endsection
 
 @section("top_css")
@@ -15,7 +15,7 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Program Payment</h2> 
+                    <h2>Program Payment</h2>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
                         <ul class="header-dropdown">
                             <li class="remove">
                                 <button type="button" onclick="window.location.href='{{route('admin.program.admin_program_detail',[$program->id])}}'" class="btn btn-danger btn-sm boxs-close">
-                                <i class="zmdi zmdi-close"></i> Close</button>
+                                    <i class="zmdi zmdi-close"></i> Close</button>
                             </li>
                         </ul>
                     </div>
@@ -42,7 +42,7 @@
                                     </strong>
                                     <input value="{{$program->program_name}}" type="text" name="program_name" id="program_name" readonly class="form-control">
                                     @error("program_name")
-                                        <div class="text-danger">{{$message}}</div>
+                                    <div class="text-danger">{{$message}}</div>
                                     @enderror
                                 </div>
                             </div>
@@ -50,9 +50,20 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Select Member
-                                    <sup class="text-danger">*</sup>
+                                        <sup class="text-danger">*</sup>
                                     </label>
-                                    <select name="member" class="form-control select_member" id="select_member"></select>
+                                    <select placeholder="Click to select member" name="member" class="form-control select_member" id="select_member">
+                                        <option>Click to select member</option>
+                                        <?php
+
+                                        use App\Models\Member;
+
+                                        $users = Member::get();
+                                        foreach ($users as $user) :
+                                            echo "<option value='{$user->id}'>{$user->full_name} &lt;{$user->email}&gt;</option>";
+                                        endforeach
+                                        ?>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -68,33 +79,25 @@
 </section>
 @endsection
 @section("page_script")
-<script src="{{ asset ('assets/plugins/momentjs/moment.js') }}"></script> <!-- Moment Plugin Js --> 
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{{ asset ('assets/plugins/momentjs/moment.js') }}"></script> <!-- Moment Plugin Js -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
-    <script>
-        // $(document).ready(function(){
-            $("#select_member").select2({
-                ajax: {
-                    url : "{{ route('member.admin_api_student_list_by_program',$program->id) }}",
-                    dataType : 'json',
-                },
-                placeholder : "Select Student to assign",
-                theme: "classic",
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script>
+    // $(document).ready(function(){
+    $("#select_member").select2()
+    // });
 
-            })
-        // });
-
-            $("#select_member").change(function(event) {
-                let member = $(this).val();
-                $.ajax({
-                    type : "GET",
-                    url : "{{ route('admin.program.enroll.admin_program_member_enroll',[$program->id]) }}",
-                    data : "member="+member,
-                    success : function (response) {
-                        $("#student_info").html(response);
-                    }
-                })
-            });
-    </script>
+    $("#select_member").change(function(event) {
+        let member = $(this).val();
+        $.ajax({
+            type: "GET",
+            url: "{{ route('admin.program.enroll.admin_program_member_enroll',[$program->id]) }}",
+            data: "member=" + member,
+            success: function(response) {
+                $("#student_info").html(response);
+            }
+        })
+    });
+</script>
 @endsection

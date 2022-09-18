@@ -89,6 +89,7 @@ export default {
             }
         },
         submitForm() {
+
             this.loading = true;
             this.validateForm();
             let scroll_id = document.getElementById("app");
