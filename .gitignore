@@ -3,6 +3,12 @@
 /public/hot
 /public/storage
 /storage/*.key
+/public/courses
+/public/events
+/public/public
+/public/slider
+/public/website
+
 /vendor
 .env
 .env.backup
