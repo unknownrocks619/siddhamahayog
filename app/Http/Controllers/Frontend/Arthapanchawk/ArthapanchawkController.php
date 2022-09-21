@@ -292,10 +292,10 @@ class ArthapanchawkController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             info("Unable to save record in member notification table. due to " . $th->getMessage(), ["Program Payment"]);
-            session()->flash("error", "Your admission fee for " . $program->program_name . " coludn't be completed. Please try again.");
+            session()->flash("error", "Your admission fee for " . $program->program_name . " couldn't be completed. Please try again.");
             return redirect()->route('dashboard');
         }
-        session()->flash("error", "Your admission fee for " . $program->program_name . " coludn't be completed. Please try again.");
+        session()->flash("error", "Your admission fee for " . $program->program_name . " couldn't be completed. Please try again.");
         return redirect()->route('dashboard');
     }
 }

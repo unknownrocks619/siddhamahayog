@@ -13,7 +13,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-primary">Congratulations {{ user()->full_name }}! 🎉</h5>
                             <p class="mb-4">
-                                You are now a member of Himalayan Siddhamahayog Spiritual.
+                                You are now a member of Himalayan Siddhamahayog Spiritual Academy.
                             </p>
 
                             <a href="javascript:;" class="btn btn-sm btn-outline-primary">View My Courses</a>

@@ -37,6 +37,9 @@ Spiritual Academy
 
 @include("frontend.page.event.home.shortcode")
 
+@include("index.about-gurudev")
+
+
 @if(\App\Models\Program::where('program_type','sadhana')->exists() )
 
 <div class="section pt-0 pb-0">
@@ -50,6 +53,7 @@ Spiritual Academy
   </div>
 </div>
 @endif
+
 <!-- Icons Start -->
 <div class="section section-padding pt-1">
   <div class="container">
