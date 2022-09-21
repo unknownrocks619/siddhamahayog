@@ -18,7 +18,7 @@
     <div class="container">
 
         <div class="row align-items-center">
-            <div class="col-lg-4 d-none d-lg-block">
+            <div class="col-lg-4 d-none">
                 <div class="sigma_img-box">
                     <div class="row">
                         <div class="col-lg-6">
@@ -34,7 +34,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="me-lg-30">
                     <div class="ms-2 mb-0 text-start">
                         <!-- <p class="subtitle">महायोगी सिद्घबाबा</p> -->
@@ -55,11 +55,11 @@
 
 </section>
 <!-- About End -->
-<div class="row align-items-center mt-3">
+<!-- <div class="row align-items-center mt-3">
     <div class="col-md-12">
-        <img src="{{ asset('assets/img/siddhamahayog/programs/vedanta-darshan-banner-one.jpeg') }}" class="img-fluid w-100" />
+        <img src="{{-- asset('assets/img/siddhamahayog/programs/vedanta-darshan-banner-one.jpeg') --}}" class="img-fluid w-100" />
     </div>
-</div>
+</div> -->
 
 <section>
     <div class="container">
@@ -71,7 +71,7 @@
                             <p class="m-0 fs-5">
                                 आफ्नो अभीष्ट प्राप्तिको दिशामा अनेकों अकथनीय पीडा र संघर्षबाट रत्तिभर पनि विचलित नभई उहाँले आफ्नो अध्ययनलाई निरन्तरता दिदै भौतिक विज्ञानअन्तर्गतको वनस्पती शास्त्रको द्रव्यगुण विज्ञान, योग दर्शन, वेदांत दर्शन, ज्योतिष, स्वर विज्ञान, नाड़ी विज्ञान, आयुर्वेदादि अनेक शास्त्रहरुमा उच्च उच्चतम शिक्षा हासिल गर्नुभयो र भौतिक साम्राज्यको सुख सयल सामान्य रुपमै उपलब्ध हुने स्थितिमा पुग्नुभयो । तर यसले उहाँमा रहेको संस्कारगत जिज्ञासालाइ पूर्ति गर्न सकेन । फलतः उहाँ अध्यात्म विज्ञानको अध्ययन, अन्वेषण र साधनामा समर्पित हुनुभयो । </p>
 
-                            <a class="btn btn-outline-primary mt-3 w-100" href="http://localhost:8000/sadhana/signup">Register for Sadhana</a>
+                            <!-- <a class="btn btn-outline-primary mt-3 w-100" href="http://localhost:8000/sadhana/signup">Register for Sadhana</a> -->
                         </div>
 
                         <div class="sigma_box m-0">
@@ -95,6 +95,28 @@
     </div>
 </section>
 
+
+<section>
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-12 mb-lg-30">
+                <!-- <div class="section-title mb-0 text-start">
+                            <p class="subtitle">volunteers</p>
+                            <h4 class="title">Our Volunteers Achievments</h4>
+                        </div> -->
+                <p class="blockquote bg-transparent fs-5">
+                    यो सबैले बुझेको जानेको कुरा हो कि आज हामीसँग समग्रमा ‘सर्वत्व भावेन’ उत्थान गर्ने वा गराउने संयन्त्र छैन । यदी तपाईं निर्गुण निराकार उपासनाद्वारा अगाडि बढन चाहनुहुन्छ भने तपाईंको चित्त स्थिर हुनुपर्दछ । यदी तपाईं सगुण साकारको माध्यमबाट अगाडि बढन चाहनुहुन्छ भने तपाईंको चित्त निर्मल हुनुपर्दछ । आज हाम्रो मन, इन्द्रिय, बुद्धि न स्थिर छ न शुद्ध छ । यस्तो परिवेशले हाम्रो वरिपरि भएको जगतलाई पनि बुझ्न सकेका छैनौँ ।
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
 <div class="row align-items-cener mt-3">
     <h4 class="title mt-4 text-center">भू–समाधिका केही झलकहरु
     </h4>
@@ -111,63 +133,16 @@
     </div>
 </div>
 
-<section>
-    <div class="container">
-
-        <div class="row align-items-center">
-
-            <div class="col-lg-6 mb-lg-30">
-                <!-- <div class="section-title mb-0 text-start">
-                            <p class="subtitle">volunteers</p>
-                            <h4 class="title">Our Volunteers Achievments</h4>
-                        </div> -->
-                <p class="blockquote bg-transparent fs-5">
-                    यो सबैले बुझेको जानेको कुरा हो कि आज हामीसँग समग्रमा ‘सर्वत्व भावेन’ उत्थान गर्ने वा गराउने संयन्त्र छैन । यदी तपाईं निर्गुण निराकार उपासनाद्वारा अगाडि बढन चाहनुहुन्छ भने तपाईंको चित्त स्थिर हुनुपर्दछ । यदी तपाईं सगुण साकारको माध्यमबाट अगाडि बढन चाहनुहुन्छ भने तपाईंको चित्त निर्मल हुनुपर्दछ । आज हाम्रो मन, इन्द्रिय, बुद्धि न स्थिर छ न शुद्ध छ । यस्तो परिवेशले हाम्रो वरिपरि भएको जगतलाई पनि बुझ्न सकेका छैनौँ ।
-                </p>
-            </div>
-
-            <div class="col-lg-6 mt-4">
-                <div class="me-lg-30">
-                    <div class="row">
-
-                        <div class="col-lg-6 col-md-6">
-                            <div class="sigma_volunteers volunteers-5">
-                                <div class="sigma_volunteers-thumb">
-                                    <img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-five.jpeg') }}" alt="siddhamahayog">
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6 col-md-6">
-                            <div class="sigma_volunteers volunteers-5">
-                                <div class="sigma_volunteers-thumb">
-                                    <img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-four.jpeg') }}" alt="siddhamahayog">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            <div class="sigma_volunteers volunteers-5">
-                                <div class="sigma_volunteers-thumb">
-                                    <img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-six.jpeg') }}" alt="siddhamahayog">
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6 col-md-6">
-                            <div class="sigma_volunteers volunteers-5">
-                                <div class="sigma_volunteers-thumb">
-                                    <img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-seven.jpeg') }}" style="max-height:138px" alt="siddhamahayog">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+<div class="row align-items-center mt-3">
+    <div class="col-lg-4">
+        <a href="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-five.jpeg') }}" class="gallery-thumb"><img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-five.jpeg') }}" alt="siddhamahayog"></a>
     </div>
-</section>
+    <div class="col-lg-4">
+        <a href="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-four.jpeg') }}" class="gallery-thumb"><img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-four.jpeg') }}" alt="siddhamahayog"></a>
+    </div>
+    <div class="col-lg-4">
+        <a href="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-six.jpeg') }}" class="gallery-thumb"><img src="{{ asset('assets/img/siddhamahayog/samadhi/jagatguru-six.jpeg') }}" alt="siddhamahayog"></a>
+    </div>
+</div>
+
 @endsection

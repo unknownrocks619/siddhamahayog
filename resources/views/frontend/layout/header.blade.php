@@ -6,7 +6,7 @@
         <nav class="navbar">
 
             <!-- Logo Start -->
-            <div class="sigma_logo-wrapper">
+            <div class="sigma_logo-wrapper p-0 text-center">
                 <a class="navbar-brand" href="/">
                     <img src="{{ site_settings('logo') }}" alt="siddhamahayog">
                 </a>

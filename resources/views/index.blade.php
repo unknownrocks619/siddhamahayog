@@ -37,22 +37,27 @@ Spiritual Academy
 
 @include("frontend.page.event.home.shortcode")
 
-@include("index.about-gurudev")
+
 
 
 @if(\App\Models\Program::where('program_type','sadhana')->exists() )
 
-<div class="section pt-0 pb-0">
-  <div class="container-fluid m-0 p-0">
+<div class="section section-padding pb-0" style="padding: 50px 0 50px">
+  <div class="container m-0 p-0 mx-auto">
     <div class="row pt-0">
       <div class="col-md-12">
       </div>
     </div>
-    <a href="{{ route('sadhana.detail') }}"><img class="img-fluid" src="{{ asset('themes/om/assets/img/events/sadhana/banner-one.jpg') }}" /></a>
-
+    <a href="{{ route('sadhana.detail') }}">
+      <img src="{{ asset('assets/img/siddhamahayog/programs/vedanta-darshan-banner-one.jpeg') }}" class="img-fluid w-100" style="height: 225px !important" />
+    </a>
   </div>
 </div>
 @endif
+
+
+@include("index.about-gurudev")
+
 
 <!-- Icons Start -->
 <div class="section section-padding pt-1">

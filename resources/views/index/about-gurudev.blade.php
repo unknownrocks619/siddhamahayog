@@ -4,6 +4,8 @@
         margin-right: 0px !important;
     }
 </style>
+
+
 <section class="section mt-1 bg-light">
     <div class="container">
         <div class="row align-items-center">
@@ -36,7 +38,7 @@
                     <p class="blockquote bg-transparent">
                         सदगुरुदेव लोप भईसकेको महायोग ध्यान साधनाका परम्परागत आचार्यका रुपमा विद्यमान हुनुहुन्छ।महायोग(हठ, राज, मन्त्र तथा लय), नाडी विज्ञानका विज्ञ, ज्योतिष विज्ञानका विशेषज्ञ, रसायन शास्त्रका ज्ञाता, आयुर्वेदका सर्वज्ञ, स्वर विज्ञानका दुर्लभ ज्ञाता, वनस्पति विज्ञानका विज्ञ
                     </p>
-                    <a href="{{ route('jagadguru') }}" class="sigma_btn-custom light">Learn More <i class="far fa-arrow-right"></i>
+                    <a href="{{ route('jagadguru') }}" class="sigma_btn-custom w-75">Learn More <i class="far fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
