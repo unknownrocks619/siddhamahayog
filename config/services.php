@@ -36,9 +36,9 @@ return [
         'redirect' => config("app.url") . "/social/login/facebook"
     ],
     'google' => [
-        'client_id' => "538761618057-u80i30si7qmpp9klb8hl0ioc1g98sht6.apps.googleusercontent.com",
-        'client_secret' => "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",
-        'redirect' => config("app.url") . "/social/login/google"
+        'client_id' => "360712739244-r496klcb4sutfba3j3513g823qsl3t6a.apps.googleusercontent.com",
+        'client_secret' => "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",
+        'redirect' => config("app.url") . "/social/login/callback/google"
     ],
 
     'esewa' => [

@@ -24,7 +24,7 @@ class UserController extends Controller
         $fb_user = Socialite::driver("facebook")->user();
         // check if user exists.
 
-        $user_exists = Member::where('external_source_id', $fb_user->id)->first();
+        $user_exists = Member::where('source', 'facebook')->where('external_source_id', $fb_user->id)->first();
 
         if ($user_exists) {
             Auth::login($user_exists);
@@ -59,7 +59,36 @@ class UserController extends Controller
 
     public function google()
     {
-        $google_usr = Socialite::driver("facebook")->user();
-        dd($google_usr);
+        $google_usr = Socialite::driver("google")->user();
+        $user_exists = Member::where('external_source_id', $google_usr->user["id"])->first();
+
+        if ($user_exists) {
+            Auth::login($user_exists);
+            return redirect()->intended();
+        }
+
+        $member = new Member;
+        $member->full_name = $google_usr->user["name"];
+        $member->first_name = $google_usr->user["given_name"];
+        $member->last_name =  (isset($google_usr->user["family_name"]) && $google_usr->user["family_name"]) ? $google_usr->user["family_name"] : "Not Available";
+
+        $member->source = "google";
+        $member->external_source_id = $google_usr->user["sub"];
+        $member->profileUrl = ["avatar" => $google_usr->user["picture"]];
+
+        $member->email = $google_usr->user["email"];
+        $member->password =  Hash::make(Str::random());
+        $member->role_id = 7;
+
+        try {
+            $member->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Unable to connect. Something went wrong.");
+            return redirect()->route('login');
+        }
+
+        Auth::login($member);
+        return redirect()->intended();
     }
 }
