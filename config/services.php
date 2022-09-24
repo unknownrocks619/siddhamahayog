@@ -31,8 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'facebook' => [
-        'client_id' => "605508593861577",
-        'client_secret' => "51aca24c20324cff221274f4bff90a4f",
+        'client_id' => "1462718610895338",
+        'client_secret' => "82f3084908f3c0f0b273625235e4fc64",
         'redirect' => config("app.url") . "/social/login/facebook"
     ],
     'google' => [
