@@ -96,7 +96,7 @@
 
                         </h2>
                         <p>
-                            CampVine is just a market place for camping and we do not save your personal data in our server. But according to the Facebook Platform rules, we have to provide User Data Deletion Callback URL or Data Deletion Instructions URL. If you want to delete your activities for CampVine App, you can remove your activities by the following instructions.
+                            We do not save your personal data in our server. But according to the Facebook Platform rules, we have to provide User Data Deletion Callback URL or Data Deletion Instructions URL. If you want to delete your activities for Siddhamahayog App, you can remove your activities by the following instructions.
 
                             Go to Your Facebook Account’s Setting & Privacy. Click ” Setting “.
                             Then, go to ” Apps and Websites” and you will see all of your Apps activities.
