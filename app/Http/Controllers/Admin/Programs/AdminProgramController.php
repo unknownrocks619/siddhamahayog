@@ -26,6 +26,8 @@ class AdminProgramController extends Controller
         if ($request->ajax() && $request->wantsJson()) {
             $programs = Program::with(["active_batch" => function ($query) {
                 return $query->with(["batch"]);
+            }, "liveProgram" => function ($query) {
+                return $query->with(["sections"]);
             }]);
 
             if ($type) {
@@ -48,6 +50,30 @@ class AdminProgramController extends Controller
                     return ($row->program_duration) ? "Ongoing" : $row->program_duration;
                 })
                 ->addColumn('promote', function ($row) {
+                    if ($row->liveProgram->count()) {
+                        $live_session = "";
+                        foreach ($row->liveProgram as $live_program) {
+                            $live_session .= "<form method='post' action='" . route('admin.program.live_program.end', [$live_program->id]) . "'>";
+                            $live_session .= csrf_field();
+                            $live_session .= "<button type='submit' class='btn btn-danger btn-sm clickable'>";
+                            if (!$live_program->section_id) {
+                                $live_session .= "End Live Session";
+                            } else {
+                                $live_session .= "End " . $live_program->sections->section_name . " Program";
+                            }
+                            //
+                            $live_session .= "</button>";
+                            $live_session .= "</form>";
+                        }
+
+
+                        $live_session .= "<br />";
+                        $live_session .= "<a href='" . route('admin.program.live_program.merge.view', [$row->id, $live_program->id]) . "' data-toggle='modal' data-target='#addBatch'  class='btn btn-info btn-sm'>";
+                        $live_session .= "Merge";
+                        $live_session .= "</a>";
+                        $live_session .= "<a class='btn btn-success btn-sm' href='" . route('admin.program.live', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Go Live</a>";
+                        return $live_session;
+                    }
                     return "<a class='btn btn-success btn-sm' href='" . route('admin.program.live', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Go Live</a>";
                 })
                 ->addColumn('batch', function ($row) {
@@ -164,10 +190,10 @@ class AdminProgramController extends Controller
 
     public function storeLive(Request $request, Program $program)
     {
+
         // check if program is already live or not.
         $liveProgram = Live::where('program_id', $program->id)->where('section_id', $request->section)->where('live', true)->exists();
         if ($liveProgram) {
-            dd($liveProgram);
             session()->flash("error", "Session is already active. Please end current session or re-join the session.");
             return redirect()->route('admin.program.admin_program_list');
         }
@@ -183,7 +209,7 @@ class AdminProgramController extends Controller
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name);
 
         if (!$meeting) {
-            dd("unable to create meeting");
+            // dd("unable to create meeting");
             session()->flash('error', "Unable to create zoom meeting at the moment.");
             return redirect()->route('admin.program.admin_program_list');
         }
@@ -206,5 +232,58 @@ class AdminProgramController extends Controller
 
     }
 
-    
+    public function endLiveSession(Live $live)
+    {
+
+        $live->live = false;
+        $program_message = $live->program->program_name;
+
+        if ($live->section_id) {
+            $program_message .= " - " . $live->programSection->section_name;
+        }
+        $program_message .= " session ended.";
+        try {
+            $live->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Error: " . $th->getMessage());
+            return back();
+        }
+
+        session()->flash('success', $program_message);
+        return back();
+    }
+
+    /**
+     * Merge two different section together.However you 
+     * cannot merge different program 
+     */
+    public function mergeSessionView(Program $program, Live $live)
+    {
+        return view("admin.programs.modal.merge-session", compact("program", 'live'));
+    }
+
+    public function mergeSessionStore(Request $request, Program $program, Live $live)
+    {
+        $merge = ($live->merge) ?  array($live->merge) : [];
+        $section = ProgramSection::find($request->merge_with);
+        $merge[$request->merge_with] = ["id" => $request->merge_with, "name" => $section->section_name];
+        $live->merge = $merge;
+
+        try {
+            $live->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Error:" . $th->getMessage());
+            return redirect()->route('admin.program.admin_program_list');
+        }
+        session()->flash('success', "Session has been merged.");
+        return redirect()->route('admin.program.admin_program_list');
+    }
+
+    public function liveProgram()
+    {
+        $lives = Live::with(['zoomAccount', "program", 'programSection'])->where("live", true)->get();
+        return view('admin.programs.live.list', compact('lives'));
+    }
 }

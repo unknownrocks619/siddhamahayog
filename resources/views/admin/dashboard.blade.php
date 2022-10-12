@@ -147,7 +147,7 @@
                         <ul class="header-dropdown">
                             <li class="dropdown"> <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="zmdi zmdi-more"></i> </a>
                                 <ul class="dropdown-menu slideUp">
-                                    <li><a href="javascript:void(0);">View All</a></li>
+                                    <li><a href="{{ route('admin.suppports.tickets.list') }}">View All</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -178,7 +178,7 @@
                                         <td> {!! __("support.".$ticket->priority) !!} </td>
                                         <td> {!! __("support.".$ticket->category) !!} </td>
                                         <td>
-                                            <a href="">View</a>
+                                            <a href="{{ route('admin.suppports.tickets.show',$ticket->id) }}">View</a>
                                         </td>
                                     </tr>
                                     @empty
@@ -208,7 +208,7 @@
                                     <div class="text-muted">{{ $holiday->student->full_name }} :: {{ $holiday->program->program_name }}</div>
                                     <p>Holiday From {{ $holiday->start_date }} - {{ $holiday->end_date }}</p>
                                     <p>
-                                        <a href="">View Detail</a>
+                                        <a href="{{ route('admin.holidays.holiday.show',$holiday->id) }}">View Detail</a>
                                     </p>
                                 </div>
                             </div>

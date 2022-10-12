@@ -1,0 +1,19 @@
+{
+    "name": "binod/upload",
+    "description": "Package to upload a file and maintain a record in database",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Binod Giri",
+            "email": "unknownrocks619@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload" : {
+        "psr4" : {
+            "Upload\\Media\\" : "src/"
+        }
+    }
+}

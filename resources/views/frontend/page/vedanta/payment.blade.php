@@ -5,7 +5,7 @@
     <div class="container">
         <div class="sigma_subheader-inner" style="align-items: flex-start">
             <div class="sigma_subheader-text">
-                <h1 style="color:#db4242">Mahayog Sadhana</h1>
+                <h1 style="color:#db4242">vedanta Philosophy - Payment </h1>
             </div>
         </div>
     </div>
@@ -13,9 +13,7 @@
 
 <!-- partial -->
 <div class="section section-padding" style="padding-top:50px">
-    <form action="{{ route('vedanta.payment.store',[$program->id]) }}" method="post">
-        @csrf
-        @google_captcha()
+    <form action="{{ route('dashboard') }}" method="get">
         <div class="container">
             <div class="row sigma_broadcast-video my-3">
                 <div class="col-md-12 mx-auto">
@@ -25,6 +23,7 @@
                             <h3 class="text-center">
                                 Admission Fee Collection
                             </h3>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -32,7 +31,8 @@
                                             Payment Method
                                         </label>
                                         <select name="regural_medicine_history" id="regural_medicine_history" class="mt-2 form-control @error('regural_medicine_history') border border-danger @enderror">
-                                            <option value="esewa">E-Sewa</option>
+                                            <!-- <option value="esewa">E-Sewa</option> -->
+                                            <option value="later" selected>Pay Later</option>
                                         </select>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
             </div>
             <div class="row card-footer">
                 <div class="col-md-12 text-end">
-                    <button type="submit" class="btn btn-primary">Continue Payment</button>
+                    <button type="submit" class="btn btn-primary">Go to Dashboard</button>
                 </div>
             </div>
         </div>
@@ -75,4 +75,11 @@
 @push("page_script")
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript">
+    var paymentMode = $("#regural_medicine_history").val();
+
+    function paymentType() {
+
+    }
+</script>
 @endpush

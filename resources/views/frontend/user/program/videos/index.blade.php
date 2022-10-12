@@ -92,7 +92,7 @@
                             </div>
                             <div id="videoContent">
                                 @if($program->last_video_history)
-                                @include("frontend.user.program.videos.modal.history",["watchHistory" => $program->last_video_history]);
+                                @include("frontend.user.program.videos.modal.history",["watchHistory" => $program->last_video_history])
                                 @else
                                 @include("frontend.user.program.videos.modal.no-history")
                                 @endif

@@ -5,13 +5,16 @@
         ?>
         <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/{{ $vidoe_id }}?title=0&byline=0&portrait=0&badge=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
         <script src="https://player.vimeo.com/api/player.js"></script>
-        <div class="mt-5 border text-center">
+        <div class="mt-2 border text-center">
             <h5>
                 You are currently watching.
             </h5>
             <p class="text-danger">
                 {{ $program->program_name }} > {{ $course->course_name }} > {{ $lession->lession_name }}
             </p>
+        </div>
+        <div class="mt-2 fs-4 text-black ms-2 py-1">
+            {!! $lession->video_description !!}
         </div>
     </div>
 </div>

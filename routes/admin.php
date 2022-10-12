@@ -1,15 +1,21 @@
 <?php
 
 use App\Http\Controllers\Admin\Batch\AdminBatchController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\FileManager\AdminFileManagerController;
 use App\Http\Controllers\Admin\Members\MemberController;
+use App\Http\Controllers\Admin\Notice\Noticecontroller;
+use App\Http\Controllers\Admin\Post\PostController;
+use App\Http\Controllers\Admin\Programs\AdminProgramAttendanceController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
 use App\Http\Controllers\Admin\Programs\AdminProgramCourseController;
+use App\Http\Controllers\Admin\Programs\AdminProgramHolidayController;
 use App\Http\Controllers\Admin\Programs\AdminProgramSectionController;
 use App\Http\Controllers\Admin\Programs\ProgramBatchController;
 use App\Http\Controllers\Admin\Programs\ProgramCourseResourceController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentEnrollController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
+use App\Http\Controllers\Admin\Support\SupportTicketController;
 use App\Http\Controllers\Admin\Website\Events\WebsiteEventController;
 use App\Http\Controllers\Admin\Website\Menus\MenuController;
 use App\Http\Controllers\Admin\Website\Settings\AdminSettingController;
@@ -17,19 +23,13 @@ use App\Http\Controllers\Admin\Website\Slider\SliderController;
 use App\Http\Controllers\Admin\Widget\WidgetController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomAccountController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomMeetingController;
-use App\Models\ProgramCourseResources;
-use App\Models\ProgramStudent;
-use App\Models\ProgramStudentEnroll;
-use App\Models\ProgramStudentFee;
-use App\Models\ProgramStudentFeeDetail;
-use App\Models\Slider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/zoom", function () {
     // dd(zoom_meeting_details());
     // dd(register_participants());
-    dd(create_zoom_meeting());
+    // dd(create_zoom_meeting());
 });
 
 Route::prefix('admin')
@@ -109,6 +109,7 @@ Route::prefix('admin')
                 Route::get("/edit/{program}", [AdminProgramController::class, "edit_program"])->name("admin_program_edit");
                 Route::get("/add/batch/modal/{program}", [AdminProgramController::class, "add_batch_modal"])->name("admin_program_add_batch_modal");
                 Route::get("/detail/{program}", [AdminProgramController::class, "program_detail"])->name("admin_program_detail");
+                Route::get("live-program/list", [AdminProgramController::class, "liveProgram"])->name('all-live-program');
                 Route::get("live/{program}", [AdminProgramController::class, "goLiveCreate"])->name('live');
                 Route::post("/add/batch/{program}", [AdminProgramController::class, "store_batch_program"])->name("admin_program_store_batch_modal");
                 Route::post("/live/{program}", [AdminProgramController::class, "storeLive"])->name("store_live");
@@ -131,6 +132,14 @@ Route::prefix('admin')
                         Route::post("/delete/{course}", [AdminProgramCourseController::class, "delete_course"])->name('admin_program_course_delete');
                         Route::post("/add/lession/{course}", [AdminProgramCourseController::class, "store_course_lession_video"])->name("admin_program_course_store_lession_modal");
                         Route::post("/add/resources/{course}", [ProgramCourseResourceController::class, "store_program_resource"])->name('admin_program_course_store_resource_modal');
+                    });
+
+                Route::prefix("live")
+                    ->name("live_program.")
+                    ->group(function () {
+                        Route::get('/merge/{program}/{live}', [AdminProgramController::class, "mergeSessionView"])->name("merge.view");
+                        Route::post('/merge/{program}/{live}', [AdminProgramController::class, "mergeSessionStore"])->name("merge.store");
+                        Route::post('/end-session/{live}', [AdminProgramController::class, "endLiveSession"])->name("end");
                     });
 
                 /**
@@ -177,7 +186,17 @@ Route::prefix('admin')
                         Route::get("/student/detail/{program}", [ProgramStudentEnrollController::class, "program_student_enrollement"])->name('admin_program_member_enroll');
                         Route::post('/student/store/program/{program}/{member}', [ProgramStudentEnrollController::class, "enroll_student_in_program"])->name('admin_store_student_in_program');
                     });
+
+
+                Route::prefix('attendance')
+                    ->name('attendances.')
+                    ->controller(AdminProgramAttendanceController::class)
+                    ->group(function () {
+                        Route::get("/attendance/{program}", "index")->name('list');
+                    });
             });
+
+
         /**
          * Finance 
          */
@@ -268,7 +287,12 @@ Route::prefix('admin')
         /**
          * Notices
          */
-
+        Route::prefix("notices")
+                ->name("notices.")
+                ->controller(Noticecontroller::class)
+                ->group(function () {
+                    Route::resource("notice",Noticecontroller::class);
+                });
         /**
          * Settings
          */
@@ -314,5 +338,50 @@ Route::prefix('admin')
             ->group(function () {
             });
 
+        /**
+         * 
+         * Support Tickets
+         *  
+         * */
+        Route::prefix('supports')
+            ->name("suppports.")
+            ->controller(SupportTicketController::class)
+            ->group(function () {
+                Route::get("list", "index")->name("tickets.list");
+                Route::get("show/{ticket}", "show")->name("tickets.show");
+                Route::post("show/{ticket}", "responseTicket")->name("tickets.store");
+                Route::post("close/{ticket}", "closeTicket")->name("tickets.close");
+            });
+
+        /**
+         * Holidays
+         */
+        Route::prefix('prefix')
+            ->name('holidays.')
+            ->controller(AdminProgramHolidayController::class)
+            ->group(function () {
+                Route::get("list", "index")->name('holiday.index');
+                Route::get("show/{holiday}", "show")->name('holiday.show');
+                Route::post('update/{holiday}', 'update')->name('holiday.update');
+            });
+        /**
+         * 
+         * Category
+         * 
+         */
+        Route::prefix("categories")
+            ->resource("category", CategoryController::class);
+        /**
+         * 
+         * Post
+         * 
+         */
+        Route::prefix("posts")
+            ->resource("post", PostController::class);
+        /**
+         * 
+         * Page
+         * 
+         */
         Route::resource("widget", WidgetController::class);
     });

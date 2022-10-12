@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Widget;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Widget\Accordian\AccordianStoreRequest;
 use App\Http\Requests\Admin\Widget\Accordian\AccordianUpdateRequest;
+use App\Http\Traits\VideoHandler;
 use App\Models\Widget;
-use App\Traits\VideoHandler;
 use Illuminate\Http\Request;
 use Upload\Media\Traits\FileUpload;
 use Illuminate\Support\Str;

@@ -157,3 +157,36 @@ if (!function_exists("profile")) {
         return $profile;
     }
 }
+
+
+if (!function_exists("notices")) {
+    function notices()
+    {
+        static $notices = null;
+
+        if ($notices) return $notices;
+
+        //
+        if (Cache::has('notices')) {
+            return $notices = Cache::get('notices')->where("active", true);
+        }
+        $notices_db = \App\Models\Notices::latest()->where('active', true)->get();
+        Cache::add("notices", $notices_db);
+        $notices = Cache::get("notices")->where('active', true);
+        return $notices;
+    }
+}
+
+
+if (!function_exists("categories")) {
+    function categories()
+    {
+
+        static $category = null;
+
+        if ($category) return $category;
+
+        $category = \App\Models\Category::get();
+        return $category;
+    }
+}

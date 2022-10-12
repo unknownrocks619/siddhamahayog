@@ -31,26 +31,15 @@
                                 <h6>Available Sections</h6>
                             </div>
                             <div class='row'>
-                                <div class="col-6 pw_meta mb-2">
-                                    <span>Section - A
-                                        <small class="text-danger">45 Student(s)</small>
-                                    </span>
+                                @foreach ($program->sections as $section)
+                                <div class="col-md-12 mb-2">
+                                    <h6 style="font-size:12px;">{{ $section->section_name }}</h6>
+                                    <small class="text-danger">{{ $section->programStudents->count() }}
+                                        Student(s)
+                                    </small>
                                 </div>
-                                <div class="col-6 pw_meta mb-2">
-                                    <span>Section - B
-                                        <small class="text-danger">65 Student(s)</small>
-                                    </span>
-                                </div>
-                                <div class="col-6 pw_meta mb-2">
-                                    <span>Section - C
-                                        <small class="text-danger">655 Student(s)</small>
-                                    </span>
-                                </div>
-                                <div class="col-6 pw_meta mb-2">
-                                    <span>Section - D
-                                        <small class="text-danger">15 Student(s)</small>
-                                    </span>
-                                </div>
+                                @endforeach
+
                             </div>
                         </div>
                     </div>
@@ -86,21 +75,47 @@
                     </div>
                 </div>
             </div>
+            @if($program->liveProgram->count())
             <div class="col-lg-4 col-md-12">
                 <div class="card project_widget">
                     <div class="body">
                         <div class="row pw_content">
                             <div class="col-12 pw_header">
-                                <h6>Mobile App</h6>
-                                <small class="text-muted">Alpino | Last Update: 21 Dec 2017</small>
+                                <h6 class="text-success">This Program is Live</h6>
                             </div>
-                            <div class="col-8 pw_meta">
-                                <span>1,870 USD</span>
-                                <small class="text-danger">10 Days Remaining</small>
+                            @foreach ($program->liveProgram as $live_program)
+                            <div class="row">
+                                <div class="col-8 pw_meta">
+                                    <span>Started At: {{ $live_program->created_at }}</span>
+                                    <small class="text-danger">
+                                        @if($live_program->merge)
+                                        This session is merged.
+                                        @endif
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="sparkline m-t-10" data-type="bar" data-width="97%" data-height="26px" data-bar-Width="2" data-bar-Spacing="7" data-bar-Color="#000000">
+                                        @if($live_program->section_id)
+                                        <span class="btn btn-success-outline btn-sm">
+                                            {{ $live_program->programSection->section_name }}
+                                        </span>
+                                        @else
+                                        <span class="btn btn-outline-primary btn-sm">
+                                            Open
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <div class="border-bottom">
+                                        <form action="{{ route('admin.program.live_program.end',[$live_program->id]) }}" method="post">
+                                            @csrf
+                                            <button class="btn btn-sm btn-danger">End Session</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-4">
-                                <div class="sparkline m-t-10" data-type="bar" data-width="97%" data-height="26px" data-bar-Width="2" data-bar-Spacing="7" data-bar-Color="#000000">2,3,6,5,4,5,8,7,6,3</div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                     <div class="footer">
@@ -112,6 +127,7 @@
                     </div>
                 </div>
             </div>
+            @endif
         </div>
         <div class="row clearfix">
             <div class="col-lg-3 col-md-12">
@@ -163,6 +179,15 @@
                                     <div class="text-muted">
                                         <a href="{{ route('admin.members.admin_add_member_to_program',$program->id) }}">
                                             Register Student
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.program.attendances.list',$program->id) }}">
+                                            Attendance
                                         </a>
                                     </div>
                                 </div>

@@ -130,9 +130,9 @@
                             <div class="col-md-12 text-center">
                                 <h1>Login</h1>
                             </div>
-                            <div class="col-md-12 alert alert-danger">
+                            <!-- <div class="col-md-12 alert alert-danger">
                                 You can use your Arthapanchawk or Atirudri account to access the portal.
-                            </div>
+                            </div> -->
                         </div>
                         <form action="{{ route('login') }}" id="loginForm" method="post" name="login">
                             @csrf

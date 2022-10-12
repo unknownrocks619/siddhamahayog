@@ -11,6 +11,11 @@ class Program extends Model
 
     protected string $foreignKey = "program_id";
 
+    public function students()
+    {
+        return $this->hasMany(ProgramStudent::class, $this->foreignKey);
+    }
+
     /**
      * Active Batch Group
      */
@@ -97,5 +102,10 @@ class Program extends Model
     public function student_admission_fee()
     {
         return $this->hasOne(ProgramStudentFeeDetail::class, $this->foreignKey)->where('student_id', auth()->id())->where('amount_category', 'admission_fee')->where('verified', true);
+    }
+
+    public function liveProgram()
+    {
+        return $this->hasMany(Live::class, "program_id")->where('live', true);
     }
 }

@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Notices;
 use App\Models\ProgramBatch as ProgramBatch;
 use App\Models\ProgramHoliday;
 use App\Models\SupportTicket;
 use App\Models\WebsiteEvents;
+use App\Observers\Admin\Notice\NoticeObserver;
 use App\Observers\Admin\Program\ProgramBatchObserver;
 use App\Observers\Admin\Website\WebsiteEventObserver;
 use App\Observers\Frontend\Program\ProgramHolidayObserver;
@@ -40,6 +42,7 @@ class EventServiceProvider extends ServiceProvider
         ProgramBatch::observe(ProgramBatchObserver::class);
         SupportTicket::observe(SupportEventObserver::class);
         ProgramHoliday::observe(ProgramHolidayObserver::class);
+        Notices::observe(NoticeObserver::class);
     }
 
     /**

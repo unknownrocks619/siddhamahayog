@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string("ends_at")->nullable();
             $table->boolean('lock')->default(false);
             $table->longText("lock_text")->nullable();
+            $table->integer("started_by")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

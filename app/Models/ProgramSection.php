@@ -9,7 +9,8 @@ class ProgramSection extends Model
 {
     use HasFactory;
 
-    public function total_student() {
-        
+    public function programStudents()
+    {
+        return $this->hasMany(ProgramStudent::class, "program_section_id");
     }
 }

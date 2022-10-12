@@ -9,7 +9,19 @@
                 <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                     <div class="me-2">
                         <h6 class="mb-0">{{ $program->program->program_name }}</h6>
-                        <small class="text-muted">{{ ($program->live) ? "Started at" .  date('H:i A', strtotime($program->live->create_at)) : Null }}</small>
+                        @if($program->live)
+                        <small class="text-muted">Started at {{ date('H:i A', strtotime($program->live->create_at)) }}</small>
+                        <?php
+                        if ($program->live->merge) {
+                            $user_section = user()->section->program_section_id;
+                            if (isset($program->live->merge->$user_section) || $program->live->section_id == NULL || $program->live->section_id == $user_section) :
+                                echo "<small class='text-info ps-2'>";
+                                echo "[Merged]";
+                                echo "</small>";
+                            endif;
+                        }
+                        ?>
+                        @endif
                     </div>
                     <div class="user-progress">
                         @if($program->program && $program->program->program_type == "paid" && ! $program->program->student_admission_fee)
@@ -24,7 +36,7 @@
                         @if( $program->live && $program->live->section_id == $program->program_section_id)
                         <form action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
                             @csrf
-                            <button onclick="this.disabled=true;this.value='Joining...'" type="submit" class="fw-semibold btn btn-sm btn-success">
+                            <button onclick="this.innerText='Please wait...';" type="submit" class="fw-semibold btn btn-sm btn-success">
                                 Join Now
                             </button>
                         </form>
@@ -36,9 +48,27 @@
                             </button>
                         </form>
                         @else
-                        <small class="fw-semibold btn btn-sm btn-secondary">
-                            Not Available
-                        </small>
+                        <?php
+                        if (isset($user_section)) {
+                            if (isset($program->live->merge->$user_section) || $program->live->section_id == NULL || $program->live->section_id == $user_section) :
+                                echo '<form action="' . route('user.account.event.live', [$program->program->id, $program->live->id]) . '" method="post">';
+                                echo csrf_field();
+                                echo '<button type="submit" onclick="this.disabled=true;this.innerText=\'Joining...\';this.form.submit();" class="fw-semibold btn btn-sm btn-success">';
+                                echo 'Join Now';
+                                echo '</button>';
+                                echo '</form>';
+                            else :
+                                echo '<small class="fw-semibold btn btn-sm btn-secondary">';
+                                echo 'Not Available';
+                                echo '</small>';
+                            endif;
+                        } else {
+                            echo '<small class="fw-semibold btn btn-sm btn-secondary">';
+                            echo 'Not Available';
+                            echo '</small>';
+                        }
+                        ?>
+
                         @endif
                         @endif
                         <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">

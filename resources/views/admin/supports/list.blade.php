@@ -74,13 +74,41 @@ Support Ticket
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
-                                        <th>Program Name</th>
-                                        <th>Total Student</th>
-                                        <th>Live</th>
-                                        <th>Batch</th>
+                                        <th>Priority</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>User</th>
                                         <th></th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    @foreach ($tickets as $ticket)
+                                    <tr>
+                                        <td>
+                                            {{ $loop->iteration }}
+                                        </td>
+                                        <td>
+                                            {!! __("support.".$ticket->priority) !!}
+                                        </td>
+                                        <td>
+                                            {!! __("support.".$ticket->category) !!}
+                                        </td>
+                                        <td>
+                                            {!! __("support.".$ticket->status) !!}
+                                        </td>
+                                        <td>
+                                            {{ $ticket->user->full_name }}
+                                        </td>
+                                        <td>
+                                            <a href="{{ route('admin.suppports.tickets.show',$ticket->id) }}">View</a>
+                                            <form action="{{ route('admin.suppports.tickets.close',$ticket->id) }}" method="post">
+                                                @csrf
+                                                <button type="submit" class="btn btn-primary btn-sm">Close Ticket</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
                             </table>
                         </div>
                     </div>

@@ -28,8 +28,9 @@ class Member extends Authenticatable
 
     // ]
 
-    public function section() {
-        return $this->hasOne(ProgramStudent::class,"student_id");
+    public function section()
+    {
+        return $this->hasOne(ProgramStudent::class, "student_id");
     }
 
     public function meta()

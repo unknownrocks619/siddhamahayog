@@ -18,6 +18,9 @@ use Illuminate\Support\Str;
 class EventController extends Controller
 {
     use CourseFeeCheck;
+
+    protected $model = null;
+
     /**
      * Dispaly Event Detail Page.
      * @param String $slug
@@ -36,26 +39,44 @@ class EventController extends Controller
 
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
-        if ($program->program_type == "paid" && !$this->checkFeeDetail($program, "admission_fee")) {
-            $notification = new MemberNotification;
-            $notification->member_id = auth()->id();
-            $notification->title =  'Unable to access ' . $program->program_name;
-            $notification->body = "You are not authorized to join the session because of your pending dues. Please clear all the dues to access the content without distrubance or contact support for more information.";
-            $notification->type = "message";
-            $notification->level = "info";
-            $notification->seen = false;
-            $notification->save();
-            session()->flash("error", 'Unable to join session, Your payment is due.');
+        $attendance = $this->checkAndUpdateAttendance($program, $live);
+        if ($attendance) {
+            return $attendance;
+        }
+        
+        $lock = $this->isLiveLock($live);
+        if ($lock) {
+            return $lock;
+        }
+        // dd($live->id);
+
+        $access = true;
+        if ($live->section_id) {
+            $user_section = user()->section->program_section_id;
+            $access = ($user_section == $live->section_id) ? true : false;
+            if (!$access) {
+                $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+            }
+        }
+        if (!$access && $live->merge) {
+            $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+        }
+        if (!$access) {
+            session()->flash('error', "You are not allowed to join this session. Please contact support or create a support ticket to address this issue.");
             return back();
         }
-        // dd($live->zoomAccount);
-        // check if user already have joined.
+        return $this->markAttendance($program, $live);
+    }
+
+    protected function checkAndUpdateAttendance(Program $program, Live $live)
+    {
         $attendance = ProgramStudentAttendance::where('live_id', $live->id)
             ->where('program_id', $program->id)
-            ->where("student", auth()->id())
+            ->where("student", user()->id)
             ->where('meeting_id', $live->meeting_id)
             ->latest()
             ->first();
+
         if ($attendance) {
             $meta = (array)$attendance->meta;
             $meta[date("Y-m-d H:i:s")] = "Re-joined";
@@ -63,12 +84,10 @@ class EventController extends Controller
             $attendance->save();
             return redirect()->to($attendance->join_url);
         }
+    }
 
-        if ($live->lock) {
-            $message = ($live->lock_text) ?  $live->lock_text : "Sorry ! This meeting has been locked. Pelase contact support to get access.";
-            session()->flash('error', $message);
-            return back();
-        }
+    protected function markAttendance(Program $program, Live $live)
+    {
         $attendance = new ProgramStudentAttendance;
         $attendance->program_id = $program->id;
         $attendance->student = auth()->id();
@@ -85,8 +104,8 @@ class EventController extends Controller
         $attendance->join_url = $register_member->join_url; // register user and fetch account.
         $attendance->meta = [
             "zoom" => $register_member, //,
-            "ip" => $request->ip(),
-            "browser" => $request->header("User-Agent")
+            "ip" => request()->ip(),
+            "browser" => request()->header("User-Agent")
         ];
         // 
 
@@ -103,7 +122,19 @@ class EventController extends Controller
             $notification->level = "info";
             $notification->seen = false;
             $notification->save();
+
+            session()->flash('error', "Oops ! Something went wrong. Please try again later.");
+            return back();
         }
         return redirect()->to($register_member->join_url);
+    }
+
+    protected function isLiveLock(Live $live)
+    {
+        if ($live->lock) {
+            $message = ($live->lock_text) ?  $live->lock_text : "Sorry ! This meeting has been locked. Pelase contact support to get access.";
+            session()->flash('error', $message);
+            return back();
+        }
     }
 }

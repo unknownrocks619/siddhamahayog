@@ -18,10 +18,11 @@ return new class extends Migration
             $table->longText("title");
             $table->longText("notice")->nullable();
             $table->string("notice_type")->default("text")->comment("available options: text, file, video");
-            $table->longText("settings");
+            $table->longText("settings")->nullable();
             $table->boolean("active")->default(true);
             $table->string('target')->default("all")->comment("available options: all, program");
-            $table->foreignId("program_id")->constrained("programs", "id")->nullable();
+            $table->foreignId("program_id")->nullable()->constrained("programs", "id");
+            $table->foreignId("section_id")->nullable()->constrained('program_sections', 'id');
             $table->timestamps();
             $table->softDeletes();
         });

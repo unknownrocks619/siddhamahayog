@@ -28,6 +28,7 @@
             </div>
         </div>
         @endif
+        @include("frontend.user.notices.dashboard")
         <x-alert></x-alert>
         <!-- Order Statistics -->
         <div class="col-md-8 col-lg-8 col-xl-8 order-0 mb-4">
