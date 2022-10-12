@@ -33,8 +33,8 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                <a href="{{ asset ('themes/om/assets/img/puja/details/4.jpg') }}" class="gallery-thumb">
-                    <img src="{{ asset ('themes/om/assets/img/puja/details/4.jpg') }}" alt="post">
+                <a href="{{ asset ('assets/images/sadhana/aarati.jpg') }}" class="gallery-thumb">
+                    <img src="{{ asset ('assets/images/sadhana/aarati.jpg') }}" alt="post">
                 </a>
             </div>
             <div class="col-md-4">
