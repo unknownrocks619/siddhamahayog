@@ -143,7 +143,7 @@
                             <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
                             <span class="input-group-text">.00</span>
                         </div>
-                        <button formaction="{{ route('donations.donate','esewa') }}" type="submit" class="btn btn-success mt-2">Pay with E-Sewa</button>
+                        <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
                     </form>
                 </div>
 
