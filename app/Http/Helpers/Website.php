@@ -5,6 +5,7 @@ use App\Models\Program;
 use App\Models\Slider;
 use App\Models\SliderSetting;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 if (!function_exists("site_settings")) {

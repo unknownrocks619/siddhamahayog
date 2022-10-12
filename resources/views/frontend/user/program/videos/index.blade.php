@@ -45,7 +45,7 @@
                                                 {{ $courses->course_name }}
                                             </button>
                                         </h2>
-                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 @if($courses->lession)
                                                 <ul class="list-group lms-list">
@@ -74,7 +74,7 @@
                                                 {{ $program->program_name }}
                                             </button>
                                         </h2>
-                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 <div class="alert alert-info">
                                                     Videos for {{ $program->program_name }} is currently unavailable.
@@ -109,7 +109,7 @@
                                                 {{ $courses->course_name }}
                                             </button>
                                         </h2>
-                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 @if($courses->lession)
                                                 <ul class="list-group">
@@ -138,7 +138,7 @@
                                                 {{ $program->program_name }}
                                             </button>
                                         </h2>
-                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample" style="">
+                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                             <div class="accordion-body">
                                                 <div class="alert alert-info">
                                                     Videos for {{ $program->program_name }} is currently unavailable.
