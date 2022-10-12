@@ -38,13 +38,13 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="{{ asset ('assets/images/sadhana/sadhana-small-two.jpg') }}" class="gallery-thumb">
-                    <img src="{{ asset ('assets/images/sadhana/sadhana-small-two.jpg') }}" alt="post">
+                <a href="{{ asset ('assets/images/sadhana/sadhana-small-two.JPG') }}" class="gallery-thumb">
+                    <img src="{{ asset ('assets/images/sadhana/sadhana-small-two.JPG') }}" alt="post">
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="{{ asset ('assets/images/sadhana/sadhana-small-three.jpg') }}" class="gallery-thumb">
-                    <img src="{{ asset ('assets/images/sadhana/sadhana-small-three.jpg') }}" alt="post">
+                <a href="{{ asset ('assets/images/sadhana/sadhana-small-three.JPG') }}" class="gallery-thumb">
+                    <img src="{{ asset ('assets/images/sadhana/sadhana-small-three.JPG') }}" alt="post">
                 </a>
             </div>
         </div>
