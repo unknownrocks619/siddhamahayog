@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    return redirect()->route('vedanta.index');
     return view('index');
 });
 
@@ -47,10 +48,16 @@ Route::prefix("event")->name("events.")
         Route::get('{slug}', [EventController::class, "event"])->name("event_detail");
     });
 
+
+    
 Route::prefix("sadhana")->name('sadhana.')
     ->middleware(["auth"])
     ->group(function () {
-        Route::get("/mahayog-sadhana", [SadhanaController::class, "index"])->name('detail');
+        
+Route::get('/mahayog-sadhana', function () {
+    return redirect()->route('vedanta.index');
+})->name('detail');
+        // Route::get("/mahayog-sadhana", [SadhanaController::class, "index"])->name('detail');
         Route::get("/signup", [SadhanaController::class, "create"])->name("create");
         Route::get("/signup/history", [SadhanaController::class, "createHistory"])->name("create.history");
         Route::get("/signup/complete", [SadhanaController::class, "SadhanaEnrollComplete"])->name("process.complete");

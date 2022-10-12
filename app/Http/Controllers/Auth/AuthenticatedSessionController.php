@@ -65,7 +65,8 @@ class AuthenticatedSessionController extends Controller
         if (auth()->user()->role_id == 4) {
         }
 
-        return redirect()->route("dashboard");
+        // return redirect()->route("dashboard");
+        return redirect()->route('vedanta.index');
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
