@@ -24,8 +24,7 @@ class UserController extends Controller
         $fb_user = Socialite::driver("facebook")->user();
         // check if user exists.
 
-        dd($fb_user);
-        $user_exists = Member::where('source', 'facebook')->where('external_source_id', $fb_user->id)->first();
+        $user_exists = Member::where('email', $fb_user->email)->first();
 
         if ($user_exists) {
             Auth::login($user_exists);
@@ -62,7 +61,7 @@ class UserController extends Controller
     public function google()
     {
         $google_usr = Socialite::driver("google")->user();
-        $user_exists = Member::where('external_source_id', $google_usr->user["id"])->first();
+        $user_exists = Member::where('email', $google_usr->user["email"])->first();
 
         if ($user_exists) {
             Auth::login($user_exists);
