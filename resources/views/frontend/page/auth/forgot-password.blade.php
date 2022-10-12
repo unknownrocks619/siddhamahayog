@@ -128,68 +128,26 @@
                     <div class="myform form ">
                         <div class="logo mb-3">
                             <div class="col-md-12 text-center">
-                                <h1>Login</h1>
+                                <h1>Reset Your Password</h1>
                             </div>
                             <!-- <div class="col-md-12 alert alert-danger">
                                 You can use your Arthapanchawk or Atirudri account to access the portal.
                             </div> -->
                         </div>
-                        <form action="{{ route('login') }}" id="loginForm" method="post" name="login">
+                        <form action="{{ route('password.email') }}" id="loginForm" method="post" name="login">
                             @csrf
                             @google_captcha()
                             <div class="form-group">
                                 <label for="eid">Email address</label>
                                 <input required aria-required="true" type="email" name="email" class="form-control @error('email') border border-danger @enderror" id="eid" aria-describedby="emailHelp" placeholder="Enter email">
                             </div>
-                            <div class="form-group">
-                                <label for="password">Password
-                                    <sup>
-                                        <a class="text-info" title="reset password" href="{{ route('password.request') }}">
-                                            [?]
-                                        </a>
-                                    </sup>
-                                </label>
-                                <input required aria-required="true" type="password" name="password" id="pass" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
-                            </div>
-                            <div class="form-group">
-                                <p class="text-center">By signing up you accept our <a href="https://siddhamahayog.org/terms-and-condition">Terms Of Use</a></p>
-                            </div>
                             <div class="col-md-12 text-center ">
-                                <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Login</button>
+                                <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Submit</button>
                             </div>
                         </form>
 
-                        <div class="col-md-12 ">
-                            <div class="login-or">
-                                <hr class="hr-or">
-                                <span class="span-or">or</span>
-                            </div>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <form action="{{ route('social_login_redirect',['facebook']) }}" id="facebookForm" method="post">
-                                @csrf
-                                <p class="text-center">
-                                    <button type="submit" class="btn mybtn w-100 btn-outline-primary"><i class="fa fa-facebook">
-                                        </i> Signin using Facebook
-                                    </button>
-                                </p>
-                            </form>
-                        </div>
-                        <div class="col-md-12 mb-3">
-
-                            <form action="{{ route('social_login_redirect_google') }}" id="googleForm" method="post">
-                                @csrf
-                                <p class="text-center">
-                                    <button type='submit' class=" btn mybtn btn-outline-danger w-100"><i class="fa fa-google-plus">
-                                        </i> Signin using Google
-                                    </button>
-                                </p>
-                            </form>
-                        </div>
                         <div class="form-group">
-                            <p class="text-center">
-                                Don't have account? <a href="{{ route('register') }}" id="signup">Sign up here</a>
-                            </p>
+                            <p class="text-center">Don't have account? <a href="{{ route('register') }}" id="signup">Sign up here</a></p>
                         </div>
                     </div>
                 </div>
