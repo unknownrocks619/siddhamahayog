@@ -53,7 +53,7 @@
                                 </div>
                             </div>
 
-                            <div class="row d-none" id="regular_health_detail mt-2">
+                            <div class="row  mt-2 d-none" id="regular_health_detail">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="label-control">
@@ -66,7 +66,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row d-none" id="regular_health_detail mt-2">
+                            <div class="row d-none mt-2" id="mental_health_hisotry_detail">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label for="label-control">
@@ -80,7 +80,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>  
                 </div>
             </div>
             <div class="row sigma_broadcast-video my-3">
@@ -127,6 +127,37 @@
                     </div>
                 </div>
             </div>
+
+
+            <div class="row sigma_broadcast-video my-3">
+                <div class="col-md-12 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="text-center">
+                                Membership Info
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="are_you_sadhak">Are you a sadhak ?
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <select name="user_sadhak" id="user_sadhak" class="form-control @error('user_sadhak') border border-danger @enderror">
+                                            <option value="no" @if(old('user_sadhak')=="no" ) selected @endif>No</option>
+                                            <option value="yes" @if(old('user_sadhak')=="yes" ) selected @endif>Yes</option>
+                                        </select>
+                                        @error("user_sadhak")
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="row sigma_broadcast-video my-3">
                 <div class="col-md-12 mx-auto">
@@ -209,9 +240,10 @@
                 </div>
             </div>
 
+
             <div class="row">
                 <div class="col-md-12 text-end">
-                    <button type="submit" class="btn btn-primary">Continue</button>
+                    <button type="submit" class="btn btn-primary disabled enroll-sadhana">Continue</button>
                 </div>
             </div>
         </div>
@@ -231,4 +263,51 @@
 @push("page_script")
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#regural_medicine_history").change(function() {
+            if ($(this).val() == "yes") {
+                $("#regular_health_detail").fadeIn("fast", function() {
+                    $(this).removeClass("d-none")
+                    $(this).find("textarea").prop("required", true);
+                })
+            } else {
+                $("#regular_health_detail").fadeOut('medium', function() {
+                    $(this).addClass("d-none")
+
+                    $(this).find('textarea').prop("required", false)
+                })
+            }
+        })
+
+        $("#mental_health_history").change(function() {
+            if ($(this).val() == "yes") {
+                console.log("mental health " + $(this).val());
+                $("#mental_health_hisotry_detail").fadeIn("fast", function() {
+                    $(this).removeClass("d-none")
+                    $(this).find("textarea").prop("required", true);
+                })
+            } else {
+                $("#mental_health_hisotry_detail").fadeOut("fast", function() {
+                    $(this).addClass("d-none")
+                    $(this).find("textarea").prop("required", false);
+                })
+            }
+        })
+    })
+
+    $("input#terms_and_condition").change(function() {
+        if ($(this).val() == 1) {
+            $("button.enroll-sadhana").prop('disabled', false).removeClass('disabled btn btn-outline-primary').addClass("btn btn-primary")
+        }
+    })
+
+    $(document).click("button.enroll-sadhana", function(event) {
+        if ($(this).hasClass("disabled")) {
+            alert("Please accept terms and condition before getting enrolled in program.");
+            return false;
+        }
+    })
+</script>
 @endpush

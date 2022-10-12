@@ -74,6 +74,7 @@ class ArthapanchawkController extends Controller
         $userInfo->personal = $personal;
         $userInfo->education = $education;
 
+
         try {
             DB::transaction(function () use ($user, $userInfo, $emergency_contact) {
                 if ($user->isDirty()) {
@@ -114,7 +115,8 @@ class ArthapanchawkController extends Controller
             "mental_health_detail_problem" => $request->mental_health_detail_problem,
             "practiced_info" => $request->practiced_info,
             "support_in_need" => $request->support_in_need,
-            "terms_and_condition" => $request->terms_and_condition
+            "terms_and_condition" => $request->terms_and_condition,
+            "sadhak" => $request->user_sadhak
         ];
         $user->meta->history = $history;
         $programStudent =  new ProgramStudent();
