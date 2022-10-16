@@ -191,3 +191,11 @@ if (!function_exists("categories")) {
         return $category;
     }
 }
+
+
+if (!function_exists("widget_title")) {
+    function widget_title($title)
+    {
+        return ($title == "***DO NOT DISPLAY***") ? "" : $title;
+    }
+}

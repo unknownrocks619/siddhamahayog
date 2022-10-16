@@ -26,7 +26,7 @@ class SadhanaStoreRequest extends FormRequest
     {
         return [
             //
-            "first_name" => "required|alpha",
+            "first_name" => "required|alpha|min:3",
             "middle_name" => "nullable|alpha_dash",
             "last_name" => "required",
             "gender" => "required|in:male,female",

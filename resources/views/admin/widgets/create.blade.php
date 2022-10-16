@@ -11,17 +11,46 @@ New Widget Manager
 @endsection
 
 @section("content")
-<x-layout heading="New Widget :: {{ request()->widget_name }}">
-    <div class="card">
-        <div class="card-body">
-            @include("admin.widgets.create.".request()->widget_type.".sample")
-            @include("admin.widgets.create.".request()->widget_type)
+<section class="content home">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row clearfix">
+                <div class="col-md-12">
+                    <h2>New Widget :: {{ ucfirst(request()->widget_type) }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Create</strong> :: <?php echo request()->widget_name ?>
+                        </h2>
+                        <ul class="header-dropdown">
+                            <li class="dropdown">
+                                <a href="{{ route('admin.widget.index') }}" class="btn btn-sm-danger">
+                                    <i class="zmdi zmdi-close"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="body">
+                        @include("admin.widgets.create.".request()->widget_type.".sample")
+                        @include("admin.widgets.create.".request()->widget_type)
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</x-layout>
+</section>
 @endsection
 
-@push("custom_script")
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+
 <script src="{{ asset ('admin/assets/vendors/bootstrap-colorpicker/bootstrap-colorpicker.min.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script type="text/javascript">
@@ -70,7 +99,6 @@ New Widget Manager
             }
         ],
         importcss_append: true,
-        file_picker_callback: elFinderBrowser,
 
         // file_picker_callback: (callback, value, meta) => {
         //     /* Provide file and text for the link dialog */
@@ -123,56 +151,12 @@ New Widget Manager
         content_css: useDarkMode ? 'dark' : 'default',
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
     });
-
-    function elFinderBrowser(callback, value, meta) {
-        tinymce.activeEditor.windowManager.openUrl({
-            title: 'File Manager',
-            url: "{{ route('elfinder.tinymce5') }}",
-            /**
-             * On message will be triggered by the child window
-             * 
-             * @param dialogApi
-             * @param details
-             * @see https://www.tiny.cloud/docs/ui-components/urldialog/#configurationoptions
-             */
-            onMessage: function(dialogApi, details) {
-                if (details.mceAction === 'fileSelected') {
-                    const file = details.data.file;
-
-                    // Make file info
-                    const info = file.name;
-
-                    // Provide file and text for the link dialog
-                    if (meta.filetype === 'file') {
-                        callback(file.url, {
-                            text: info,
-                            title: info
-                        });
-                    }
-
-                    // Provide image and alt text for the image dialog
-                    if (meta.filetype === 'image') {
-                        callback("{{ config('app.request_protocol') }}" + file.url, {
-                            alt: info
-                        });
-                    }
-
-                    // Provide alternative source and posted for the media dialog
-                    if (meta.filetype === 'media') {
-                        callback(file.url);
-                    }
-
-                    dialogApi.close();
-                }
-            }
-        });
-    }
 </script>
 <script>
     $(function() {
         'use strict';
 
-        $('#background_color').colorpicker();
+        // $('#background_color').colorpicker();
     });
     $(".add_widget_row").click(function(event) {
         event.preventDefault();
@@ -193,4 +177,4 @@ New Widget Manager
     //     $(this).closest('.row').remove();
     // })
 </script>
-@endpush
+@endsection

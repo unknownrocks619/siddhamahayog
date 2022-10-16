@@ -10,9 +10,13 @@ use App\Http\Controllers\Frontend\User\UserProgramFeeController;
 use App\Http\Controllers\Frontend\User\UserProgramResourceController;
 use App\Http\Controllers\Frontend\User\UserProgramVideoController;
 use App\Http\Controllers\Frontend\User\UserSupportController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
 include __DIR__ . "/arthapanchawk.php";
+// Route::get("/{slug}", [HomeController::class, "menu"])->name('slug');
+
+
 Route::get('/guru-parampara', function () {
     return view("frontend.page.menus.guru-parampara");
 })->name("guru-parampara");

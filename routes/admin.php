@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\FileManager\AdminFileManagerController;
 use App\Http\Controllers\Admin\Members\MemberController;
 use App\Http\Controllers\Admin\Notice\Noticecontroller;
+use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\Post\PostController;
 use App\Http\Controllers\Admin\Programs\AdminProgramAttendanceController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
@@ -246,14 +247,25 @@ Route::prefix('admin')
                  */
                 Route::prefix("menus")
                     ->name('menus.')
+                    ->controller(MenuController::class)
                     ->group(function () {
-                        Route::get('/list', [MenuController::class, "index"])->name('admin_menu_list');
-                        Route::get('/add', [MenuController::class, 'create'])->name('admin_create_menu');
-                        Route::get("/edit/{menu}", [MenuController::class, "edit"])->name('admin_edit_menu');
-                        Route::get('/settings', [MenuController::class, "settings"])->name('admin_settings');
-                        Route::post('/store-menu', [MenuController::class, 'store'])->name('admin_store_menu');
-                        Route::put('/update-menu/{menu}', [MenuController::class, "update"])->name('admin_update_menu');
-                        Route::delete("/delete/{menu}", [MenuController::class, "delete"])->name('admin_delete_menu');
+
+                        Route::post('/reoder', "reOrder")->name('reorder');
+                        Route::PUT('/reoder-single/{menu}', "reOrderSingle")->name('reorder_position');
+                        Route::get('module-link/{menu}', "modulesOptions")->name('link_module_options');
+                        Route::get('module-link/manage/{menu}', "manageModule")->name('manage_module');
+                        Route::post('module-link/{menu}', 'moduleAttach')->name('attach_module');
+                        Route::delete('module-unlink/{menu}/{deatch_id}', 'moduleDeatch')->name('deatch_module');
+
+
+
+                        Route::get('/list', "index")->name('admin_menu_list');
+                        Route::get('/add', 'create')->name('admin_create_menu');
+                        Route::get("/edit/{menu}", "edit")->name('admin_edit_menu');
+                        Route::get('/settings', "settings")->name('admin_settings');
+                        Route::post('/store-menu', 'store')->name('admin_store_menu');
+                        Route::put('/update-menu/{menu}', "update")->name('admin_update_menu');
+                        Route::delete("/delete/{menu}", "delete")->name('admin_delete_menu');
                     });
 
                 /**
@@ -288,11 +300,11 @@ Route::prefix('admin')
          * Notices
          */
         Route::prefix("notices")
-                ->name("notices.")
-                ->controller(Noticecontroller::class)
-                ->group(function () {
-                    Route::resource("notice",Noticecontroller::class);
-                });
+            ->name("notices.")
+            ->controller(Noticecontroller::class)
+            ->group(function () {
+                Route::resource("notice", Noticecontroller::class);
+            });
         /**
          * Settings
          */
@@ -336,6 +348,7 @@ Route::prefix('admin')
         Route::prefix('widget')->name("widget.")
             ->controller(WidgetController::class)
             ->group(function () {
+                Route::get('filter', "filterIndex")->name('widget_by_type');
             });
 
         /**
@@ -377,11 +390,32 @@ Route::prefix('admin')
          * 
          */
         Route::prefix("posts")
-            ->resource("post", PostController::class);
+            ->controller(PostController::class)
+            ->group(function () {
+                Route::get("/widgets/{post}", "widgetView")->name('posts.widgets');
+                Route::get("/widgets/modal/{post}", "widgetAdd")->name('posts.widgets.create');
+                Route::post("/widgets/{post}", "widgetStore")->name('posts.widgets.store');
+                Route::delete("/widgets/remove/{post}/{widget}", "widgetDestroy")->name('posts.widgets.destroy');
+                Route::post("/remove/media/{post}", "removeMedia")->name("posts.destroy_media");
+                Route::resource("post", PostController::class);
+            });
         /**
          * 
          * Page
          * 
+         */
+        Route::prefix("pages")
+            ->name('page.')
+            ->controller(PageController::class)
+            ->group(function () {
+                Route::get("/widget/modal/{page}", "widgetAdd")->name('add_widget');
+                Route::get('/widget/{page}', "widgetView")->name('manage_widget');
+                Route::delete('/widget/remove/{page}/{widget}', "widgetDestroy")->name('destroy_widget');
+                Route::post("/widget/modal/{page}", "widgetStore")->name('store_widget');
+                Route::resource("page", PageController::class);
+            });
+        /**
+         * Resources
          */
         Route::resource("widget", WidgetController::class);
     });

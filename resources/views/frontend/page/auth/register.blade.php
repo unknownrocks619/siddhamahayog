@@ -163,6 +163,15 @@
                                 </label>
                                 <input required aria-required="true" type="password" name="password_confirmation" id="pass" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
                             </div>
+
+                            <div class="form-group">
+                                <label for="reference_by">
+                                    Reference Code
+                                </label>
+
+                                <input type="text" name="sharing_code" id="sharing_code" class="form-control">
+                            </div>
+
                             <div class="form-group">
                                 <p class="text-center">By signing up you accept our <a href="https://siddhamahayog.org/terms-and-condition">Terms Of Use</a></p>
                             </div>

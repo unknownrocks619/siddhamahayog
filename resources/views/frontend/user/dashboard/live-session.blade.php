@@ -12,6 +12,7 @@
                         @if($program->live)
                         <small class="text-muted">Started at {{ date('H:i A', strtotime($program->live->create_at)) }}</small>
                         <?php
+                        $user_section = null;
                         if ($program->live->merge) {
                             $user_section = user()->section->program_section_id;
                             if (isset($program->live->merge->$user_section) || $program->live->section_id == NULL || $program->live->section_id == $user_section) :
@@ -49,8 +50,11 @@
                         </form>
                         @else
                         <?php
-                        if (isset($user_section)) {
-                            if (isset($program->live->merge->$user_section) || $program->live->section_id == NULL || $program->live->section_id == $user_section) :
+                        // dd(isset($user_section));
+                        if (isset($user_section) && $user_section) {
+                            dd($user_section);
+                            $program_section_id = (isset($program->live) && isset($program->live->section_id)) ? $program->live->section_id : null;
+                            if (isset($program->live->merge->$user_section) && $program->live || ($program->live->section_id == NULL || $program->live->section_id == $user_section)) :
                                 echo '<form action="' . route('user.account.event.live', [$program->program->id, $program->live->id]) . '" method="post">';
                                 echo csrf_field();
                                 echo '<button type="submit" onclick="this.disabled=true;this.innerText=\'Joining...\';this.form.submit();" class="fw-semibold btn btn-sm btn-success">';
@@ -91,12 +95,16 @@
             </div>
             <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                 <div class="me-2">
-                    <h6 class="mb-0">Program not Found</h6>
+                    <h6 class="mb-0 fs-5">
+                        सीताराम!!! हालै सुरु हुन गईरहेको अर्थपञ्चकको दोस्रो संस्करणमा
+                        आफू वा आफ्नालाई सहभागी गराउनका लागि निम्न उल्लिखित लिङ्कमा गएर आफ्नो सम्पूर्ण विवरण खुलाएर फारम भर्नुहोला।
+                    </h6>
+
                 </div>
                 <div class="user-progress">
-                    <small class="fw-semibold btn btn-sm btn-secondary">
-                        Not Available
-                    </small>
+                    <a href="{{ route('vedanta.create') }}" class="fw-semibold btn btn-primary clickable">
+                        Sign Up
+                    </a>
                 </div>
             </div>
         </li>

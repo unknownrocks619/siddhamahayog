@@ -8,7 +8,8 @@
                         <ul class="sub-menu">
                             <li><a href="{{ route('admin.website.menus.admin_menu_list') }}">Menu</a></li>
                             <li><a href="{{ route('admin.website.slider.admin_slider_index') }}">Slider</a></li>
-                            <li><a href="events.html">Post</a></li>
+                            <li><a href="{{ route('admin.post.index') }}">Post</a></li>
+                            <li><a href="{{ route('admin.page.page.index') }}">Pages</a></li>
                             <li><a href="{{ route('admin.category.index') }}">Category</a></li>
                             <li><a href="contact.html">Activity</a></li>
                             <li><a href="{{ route('admin.website.events.events.index') }}">Programs</a></li>

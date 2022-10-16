@@ -121,14 +121,14 @@
             @foreach (menus() as $menu)
             @if($menu->menu_position == "main_menu" && ! $menu->parent_menu )
             <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
-                <a href="">
+                <a href="{{-- route('slug',$menu->slug) --}}">
                     {{ $menu->menu_name }}
                 </a>
                 @if(menus()->where('parent_menu',$menu->id)->count())
                 <ul class="sub-menu">
                     @foreach (menus()->where('parent_menu') as $child_menu)
                     <li class="menu-item">
-                        <a href="">
+                        <a href="{{-- route('slug',$child_menu->slug) --}}">
                             {{ $child_menu->menu_name }}
                         </a>
                     </li>
@@ -146,8 +146,6 @@
     <!-- partial -->
 
     @include("frontend.layout.header")
-
-
     @yield("content")
 
     <!-- partial:partia/__footer.html -->
@@ -268,6 +266,18 @@
     <!-- partial -->
     @yield("page_script")
     @stack("page_script")
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z4K6SC5D6J"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-Z4K6SC5D6J');
+    </script>
 </body>
 
 </html>

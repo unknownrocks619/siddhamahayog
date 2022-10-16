@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('menu_name');
             $table->string('slug');
             $table->text("description")->nullable();
-            $table->enum('menu_type',["home","gallery",'about','contact','events','products','service','blog','donation','live','volunteer'])->default('home');
+            $table->enum('menu_type', ["home", "gallery", 'about', 'contact', 'events', 'products', 'service', 'blog', 'donation', 'live', 'volunteer', 'page', 'post'])->default('home');
             $table->string('parent_menu')->nullable()->default(false);
             $table->string('sort_by')->default(1);
-            $table->enum('menu_position',["top","main_menu","footer_menu"])->default('main_menu');
+            $table->enum('menu_position', ["top", "main_menu", "footer_menu"])->default('main_menu');
             $table->boolean('active')->default(true);
             $table->string('display_type')->default("public")->comment('Available optiosn: draft, protected, private');
             $table->text('meta_title')->nullable();

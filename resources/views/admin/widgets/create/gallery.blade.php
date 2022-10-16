@@ -1,4 +1,4 @@
-<form enctype="multipart/form-data" action="{{ route('admin.web.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
+<form enctype="multipart/form-data" action="{{ route('admin.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
     @csrf
     <div class="row">
         <div class="col-md-6">

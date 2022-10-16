@@ -32,7 +32,7 @@ Route::prefix('esewa')->name("esewa.")
 
 
 
-Route::get('/dashboard', [ProfileController::class, "index"])->middleware(['auth'])->name('dashboard');
+Route::get('/user/dashboard', [ProfileController::class, "index"])->middleware(['auth'])->name('dashboard');
 
 Route::get("/terms", function () {
     return view("terms");
@@ -49,14 +49,14 @@ Route::prefix("event")->name("events.")
     });
 
 
-    
+
 Route::prefix("sadhana")->name('sadhana.')
     ->middleware(["auth"])
     ->group(function () {
-        
-Route::get('/mahayog-sadhana', function () {
-    return redirect()->route('vedanta.index');
-})->name('detail');
+
+        Route::get('/mahayog-sadhana', function () {
+            return redirect()->route('vedanta.index');
+        })->name('detail');
         // Route::get("/mahayog-sadhana", [SadhanaController::class, "index"])->name('detail');
         Route::get("/signup", [SadhanaController::class, "create"])->name("create");
         Route::get("/signup/history", [SadhanaController::class, "createHistory"])->name("create.history");

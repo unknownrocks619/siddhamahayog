@@ -25,9 +25,21 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <div class="button-wrapper">
-                            <p class="text-muted mb-0">You don't have any active connection.</p>
+                            <p class="text-muted mb-0">
+                                <?php
+                                $ref_code = (user()->sharing_code) ? user()->sharing_code : mt_rand(00000, 999999);
+                                ?>
+                                Reference Code : <a href="{{ route('vedanta.create',['ref'=>$ref_code]) }}" class="copyLink"><?php echo $ref_code ?></a>
+                            </p>
                         </div>
                     </div>
+                    <div class="d-flex align-items-start align-items-sm-center gap-4">
+                        <div class="button-wrapper">
+                            <p class="text-muted mb-0">Total Refered: <?php echo user()->refered->count() ?></p>
+                        </div>
+                    </div>
+
+
                 </div>
                 <hr class="my-0" />
                 <!-- /Account -->
@@ -46,5 +58,21 @@
             $("#profileForm").submit();
         }
     })
+
+    $(".copyLink").click(function(event) {
+        event.preventDefault();
+        let copyLink = $(this).attr("href");
+        copyToClipboard(copyLink)
+    })
+
+    function copyToClipboard(text) {
+        var inputc = document.body.appendChild(document.createElement("input"));
+        inputc.value = text;
+        inputc.focus();
+        inputc.select();
+        document.execCommand('copy');
+        inputc.parentNode.removeChild(inputc);
+        alert("URL Copied.");
+    }
 </script>
 @endpush

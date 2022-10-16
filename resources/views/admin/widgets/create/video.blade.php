@@ -1,4 +1,4 @@
-<form enctype="multipart/form-data" action="{{ route('admin.web.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
+<form enctype="multipart/form-data" action="{{ route('admin.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
     @csrf
     <div class="row">
         <div class="col-md-6">
@@ -19,8 +19,13 @@
                     <option value="background" @if(old('layout')=="background" ) selected @endif>Background Video</option>
                     <option value="checkmark_video" @if(old('layout')=="checkmark_video" ) selected @endif>Video With Checkmark</option>
                     <option value="single_video" @if(old('layout')=="single_video" ) selected @endif>Single Video</option>
+                    <option value="single_video_pop" @if(old('layout')=="single_video_pop" ) selected @endif>Single Video Modal</option>
                     <option value="two_column" @if(old('layout')=="two_column" ) selected @endif>Two Column Per Row</option>
                     <option value="full_width_video" @if(old('layout')=="full_width_video" ) selected @endif>Full Width Video</option>
+                    <option value="single_video_left" @if(old('layout')=="single_video_left" ) selected @endif>Single Video Align Left</option>
+                    <option value="single_video_right" @if(old('layout')=="single_video_right" ) selected @endif>Single Video Align Right</option>
+                    <option value="single_video_left_pop" @if(old('layout')=="single_video_left_pop" ) selected @endif>Single Video Align Left Modal</option>
+                    <option value="single_video_right_pop" @if(old('layout')=="single_video_right_pop" ) selected @endif>Single Video Align Right Modal</option>
                 </select>
             </div>
         </div>

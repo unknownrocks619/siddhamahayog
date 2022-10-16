@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Member;
+use App\Models\Reference;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use App\Rules\GoogleCaptcha;
@@ -22,6 +23,15 @@ class RegisteredUserController extends Controller
      */
     public function create()
     {
+        $referer = null;
+        if ((int) request()->ref) {
+            // check if user was recommended.
+            $referer_detail = Member::where('sharing_code', request()->ref)->first();
+            if ($referer_detail) {
+                $referer = $referer_detail->sharing_code;
+                session()->put("_refU", ["id" => $referer_detail->id, "referrer" => $referer]);
+            }
+        }
         return view("frontend.page.auth.register");
         // return view("portal.auth.register");
         // return view('auth.register');
@@ -58,6 +68,21 @@ class RegisteredUserController extends Controller
         $member->role_id = 7;
         $member->save();
 
+        if (session()->has("_refU")) {
+            $reference = new Reference;
+            $reference->referenced_by = session()->get('_refU')["id"];
+            $reference->referenced_to = $member->id;
+            $reference->save();
+        } else {
+            $reference = new Reference;
+            $reference->referenced_to = $member->id;
+            // check sharing code.
+            $r_member = Member::select('id')->where('sharing_code', $request->sharing_code)->first();
+            if ($r_member) {
+                $reference->refereced_by = $r_member->id;
+                $reference->save();
+            }
+        }
         // $user = Member::create([
         //     "full_name" => $request->full_name,
         //     "first_name" => $first_name,
@@ -77,6 +102,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($member);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HOME);
+        // return redirect(RouteServiceProvider::HOME);
     }
 }

@@ -16,14 +16,12 @@ return new class extends Migration
         Schema::create('widgets', function (Blueprint $table) {
             $table->id();
             $table->string("widget_name");
-            $table->string('widget_title')->nullable();
-            $table->string('slug');
-            $table->longText("widget_featured_images")->nullable();
-            $table->longText('widget_description')->nullable();
-            $table->string('widget_type')->comment("Available options: Slider, Accordian, Banner Text, FAQ, Button, PDF Reader, Carousel Slider, Video, Quote,Column wih Icon, Column, Banner Video, Banner Video Checkmark, Image");
-            $table->longText("widgets")->nullable();
-            $table->longText('widget_setting')->nullable();
-            $table->boolean('page')->default(false);
+            $table->string("slug")->nullable();
+            $table->longText("description")->nullable();
+            $table->string("widget_type")->default("text")->comment("Available options: Slider, Accordian, Banner Text, FAQ, Button, PDF Reader, Carousel Slider, Video, Quote,Column wih Icon, Column, Banner Video, Banner Video Checkmark, Image");
+            $table->longText("fields")->nullable();
+            $table->longText("settings")->nullable();
+            $table->longText("layouts")->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

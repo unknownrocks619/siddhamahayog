@@ -104,6 +104,8 @@ Program
                                                     <option value="dontaion" @if(old('menu_type')=="donation" ) selected @endif>Donation Page</option>
                                                     <option value="live" @if(old('menu_type')=="live" ) selected @endif>Live Boarcast</option>
                                                     <option value="volunteer" @if(old('menu_type')=="volunteer" ) selected @endif>Volunteer</option>
+                                                    <option value="page" @if(old('menu_type')=="page" ) selected @endif>Page</option>
+                                                    <option value="post" @if(old('menu_type')=="post" ) selected @endif>Post</option>
                                                 </select>
                                             </div>
                                         </div>

@@ -9,6 +9,12 @@ class Widget extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        "fields" => "object",
+        "settings" => "object",
+        "layouts" => "object"
+    ];
+
     public function lession()
     {
         return $this->morphedByMany(Lession::class, "widgetable");

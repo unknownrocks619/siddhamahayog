@@ -1,121 +1,139 @@
-@extends("themes.admin.master")
+@extends("layouts.portal.app")
 
 @section("title")
-New Page
+{{ $page->page_name }} :: Update
 @endsection
 
 @section("content")
-<x-layout heading="New Page">
-    <form action="{{ route('admin.page.page.store') }}" enctype="multipart/form-data" method="post">
-        @csrf
-        <div class="card">
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <a class="btn btn-secondary" href="{{ route('admin.page.page.index') }}">
-                            <x-arrow-left>Go Back</x-arrow-left>
-                        </a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <x-flash></x-flash>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Title
-                                        <sup class="text-danger">*</sup>
-                                    </label>
-                                    <input type="text" name="page_name" id="page_name" class="form-control" />
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form action="{{ route('admin.page.page.store') }}" enctype="multipart/form-data" method="post">
+                    @csrf
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                <strong>
+                                    {{ $page->page_name }}
+                                </strong>
+                                :: Update
+                            </h2>
+                        </div>
+                        <div class="body">
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <a class="btn btn-secondary" href="{{ route('admin.page.page.index') }}">
+                                        <x-arrow-left>Go Back</x-arrow-left>
+                                    </a>
                                 </div>
                             </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Page Description
-                                    </label>
-                                    <textarea class="form-control" name="page_description" id="page_description"></textarea>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <x-flash></x-flash>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Title
+                                                    <sup class="text-danger">*</sup>
+                                                </label>
+                                                <input type="text" name="page_name" id="page_name" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Page Description
+                                                </label>
+                                                <textarea class="form-control" name="page_description" id="page_description"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Page Type
+                                                </label>
+                                                <select name="page_type" id="page_type" class="form-control">
+                                                    <option value="terms">Terms & Condition</option>
+                                                    <option value="standard">Standard</option>
+                                                    <option value="gallery">Gallery</option>
+                                                    <option value="about-us">About Us</option>
+                                                    <option value="contact-us">Contact Us</option>
+                                                    <option value="team">Team</option>
+                                                    <option value="project-single">Project Single</option>
+                                                    <option value="course">Course</option>
+                                                    <option value="video">Video</option>
+                                                    <option value="home">Home</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Display Option
+                                                </label>
+                                                <select name="display_option" id="display_option" class="form-control">
+                                                    <option value="public">Public</option>
+                                                    <option value="admin">Admin</option>
+                                                    <option value="parent">Parent</option>
+                                                    <option value="auth">Autheticated</option>
+                                                    <option value="student">Student</option>
+                                                    <option value="org">Organisation</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Featured Image
+                                                </label>
+                                                <input type="file" name="featured_image" id="featured_image" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-3">
+                                            <div class="form-group">
+                                                <label class="label-control">
+                                                    Banner Image
+                                                </label>
+                                                <input type="file" name="banner_image" id="featured_image" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-2">
+                                            <div class="form-group">
+                                                <strong>
+                                                    Widgets
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary">
+                                        Create Page
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Page Type
-                                    </label>
-                                    <select name="page_type" id="page_type" class="form-control">
-                                        <option value="terms">Terms & Condition</option>
-                                        <option value="standard">Standard</option>
-                                        <option value="gallery">Gallery</option>
-                                        <option value="about-us">About Us</option>
-                                        <option value="contact-us">Contact Us</option>
-                                        <option value="team">Team</option>
-                                        <option value="project-single">Project Single</option>
-                                        <option value="course">Course</option>
-                                        <option value="video">Video</option>
-                                        <option value="home">Home</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Display Option
-                                    </label>
-                                    <select name="display_option" id="display_option" class="form-control">
-                                        <option value="public">Public</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="parent">Parent</option>
-                                        <option value="auth">Autheticated</option>
-                                        <option value="student">Student</option>
-                                        <option value="org">Organisation</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Featured Image
-                                    </label>
-                                    <input type="file" name="featured_image" id="featured_image" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Banner Image
-                                    </label>
-                                    <input type="file" name="banner_image" id="featured_image" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-2">
-                                <div class="form-group">
-                                    <strong>
-                                        Widgets
-                                    </strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary">
-                            Create Page
-                        </button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
-    </form>
-</x-layout>
+    </div>
+</section>
 @endsection
 
-@push("custom_script")
+@secction("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script type="text/javascript">
     const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -163,7 +181,6 @@ New Page
             }
         ],
         importcss_append: true,
-        file_picker_callback: elFinderBrowser,
 
         // file_picker_callback: (callback, value, meta) => {
         //     /* Provide file and text for the link dialog */
@@ -216,49 +233,5 @@ New Page
         content_css: useDarkMode ? 'dark' : 'default',
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
     });
-
-    function elFinderBrowser(callback, value, meta) {
-        tinymce.activeEditor.windowManager.openUrl({
-            title: 'File Manager',
-            url: "{{ route('elfinder.tinymce5') }}",
-            /**
-             * On message will be triggered by the child window
-             * 
-             * @param dialogApi
-             * @param details
-             * @see https://www.tiny.cloud/docs/ui-components/urldialog/#configurationoptions
-             */
-            onMessage: function(dialogApi, details) {
-                if (details.mceAction === 'fileSelected') {
-                    const file = details.data.file;
-
-                    // Make file info
-                    const info = file.name;
-
-                    // Provide file and text for the link dialog
-                    if (meta.filetype === 'file') {
-                        callback(file.url, {
-                            text: info,
-                            title: info
-                        });
-                    }
-
-                    // Provide image and alt text for the image dialog
-                    if (meta.filetype === 'image') {
-                        callback("{{ config('app.request_protocol') }}" + file.url, {
-                            alt: info
-                        });
-                    }
-
-                    // Provide alternative source and posted for the media dialog
-                    if (meta.filetype === 'media') {
-                        callback(file.url);
-                    }
-
-                    dialogApi.close();
-                }
-            }
-        });
-    }
 </script>
-@endpush
+@endsection

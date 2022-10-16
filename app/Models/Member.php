@@ -17,7 +17,8 @@ class Member extends Authenticatable
         "profileUrl" => "object",
         "address" => "object",
         "created_at" => "datetime",
-        "profile" => "object"
+        "profile" => "object",
+        "remarks" => "object"
     ];
 
     // public $fillable = [
@@ -61,5 +62,10 @@ class Member extends Authenticatable
     public function cities()
     {
         return $this->belongsTo(City::class, "city");
+    }
+
+    public function refered()
+    {
+        return $this->hasMany(Reference::class, "referenced_by");
     }
 }

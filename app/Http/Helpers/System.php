@@ -145,3 +145,34 @@ if (!function_exists("register_participants")) {
         return ($response);
     }
 }
+
+
+function check_unicode_character($character, $exclude = null)
+{
+    if (is_string($character)) {
+        return (mb_detect_encoding($character, "auto") == "UTF-8") ? $character : false;
+    }
+
+    $unicodes = [];
+    foreach ($character as $key => $value) {
+
+        if ($key == $exclude) {
+            continue;
+        }
+        if (is_array($value)) {
+            // return $this->check_unicode_character($value);
+        } else {
+            if (mb_detect_encoding($value, "auto") == "UTF-8") {
+                // echo (mb_detect_encoding($value, "auto") == "UTF-8") ?  $value . " is encoding" : $value  . "  is not encoding";
+                // echo "<br />";
+                $unicodes[$key] = "Unicode is not supported.";
+            }
+        }
+    }
+    return $unicodes;
+}
+
+
+function widgets_view($widgets)
+{
+}

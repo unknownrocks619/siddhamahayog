@@ -25,14 +25,14 @@
                 @foreach (menus() as $menu )
                 @if($menu->menu_position == "top" && $menu->display_type == "public" && $menu->active )
                 <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
-                    <a href="">
+                    <a href="{{-- route('slug',$menu->slug) --}}">
                         {{ $menu->menu_name }}
                     </a>
                     @if(menus()->where('parent_menu',$menu->id)->count() )
                     <ul class="sub-menu">
                         @foreach (menus()->where('parent_menu',$menu->id) as $child_menu)
                         <li class="menu-item">
-                            <a href="#">
+                            <a href="{{-- route('slug',$menu->slug) --}}">
                                 @if($child_menu->active && $child_menu->display_type == "public")
                                 {{ $child_menu->menu_name }}
                                 @endif
@@ -87,14 +87,14 @@
             @foreach (menus() as $menu)
             @if($menu->menu_position == "main_menu" && ! $menu->parent_menu && $menu->active && $menu->display_type == "public")
             <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
-                <a href="">
+                <a href="{{-- route('slug',$menu->slug) --}}">
                     {{ $menu->menu_name }}
                 </a>
                 @if(menus()->where('parent_menu',$menu->id)->count())
                 <ul class="sub-menu">
                     @foreach (menus()->where('parent_menu',$menu->id)->where('active',true)->where('display_type','public') as $child_menu)
                     <li class='menu-item @if(menus()->where("parent_menu",$child_menu->id)->count()) menu-item-has-children @endif'>
-                        <a href="">
+                        <a href="{{-- route('slug',$child_menu->slug) --}}">
                             {{ $child_menu->menu_name }}
                         </a>
                         @if(menus()->where("parent_menu",$child_menu->id)->count())

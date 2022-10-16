@@ -153,4 +153,74 @@ class MenuController extends Controller
     public function update_settings()
     {
     }
+
+
+    /**
+     * 
+     */
+
+    public function reOrder(Request $request)
+    {
+        $request->validate([
+            "ids" => "required|array",
+            "ids.*" => "integer",
+            "menu_id" => "required|integer"
+        ]);
+
+
+        foreach ($request->ids as $index => $id) {
+            $menu = Menu::where('id', $id)->first();
+            $menu->sort_by = $index + 1;
+            $menu->update();
+        }
+    }
+
+    public function reOrderSingle(Request $request, Menu $menu)
+    {
+        $menu->sort_by = $request->sort_by;
+        $menu->saveQuietly();
+        return back();
+    }
+
+    public function modulesOptions(Menu $menu)
+    {
+        return view('admin.website.menu.modules.' . $menu->menu_type . '.list', compact('menu'));
+    }
+
+
+    public function moduleAttach(Request $request, Menu $menu)
+    {
+        $relationship = $request->type;
+        $menu->$relationship()->attach($request->link);
+
+        session()->flash('success', "Module Attached to menu");
+        return redirect()->route('admin.website.menus.admin_menu_list');
+    }
+
+    public function manageModule(Menu $menu)
+    {
+        // load by type.
+        $category = ($menu->menu_type == "category") ? $menu->load('categories') : null;
+        $courses = ($menu->menu_type == "course") ? $menu->load('courses') : null;
+        $pages = ($menu->menu_type == "page") ? $menu->load("pages") : null;
+        $posts = ($menu->menu_type == "post") ? $menu->load("posts") : null;
+
+        return view("admin.website.menu.manage", compact("menu", "category", "courses", "pages", 'posts'));
+    }
+
+    public function moduleDeatch(Request $request, Menu $menu, $deatch_id)
+    {
+        $relationship = $request->type;
+        try {
+            $menu->$relationship()->detach($deatch_id);
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+            session()->flash("error", "Unable to unlink module.");
+            return back();
+        }
+
+        session()->flash("success", "Module Removed from menu.");
+        return back();
+    }
 }

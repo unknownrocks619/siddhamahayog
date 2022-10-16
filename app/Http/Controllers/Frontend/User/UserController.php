@@ -6,6 +6,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\UserStoreRequest;
 use App\Models\Member;
+use App\Models\Reference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -45,11 +46,24 @@ class UserController extends Controller
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
 
+
+        $reference = new Reference;
+        if (session()->has("_refU")) {
+            $reference->referenced_by = session()->get('_refU')["id"];
+        } else {
+            $r_member = Member::where('sharing_code', request()->sharing_code);
+
+            if ($r_member) {
+                $reference->referenced_by = $r_member->id;
+            }
+        }
+
         try {
             $member->save();
+            $reference->referenced_to = $member->id;
+            $reference->save();
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
             session()->flash('error', "Unable to connect. Something went wrong.");
             return redirect()->route('login');
         }

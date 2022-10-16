@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer("widget_id");
             $table->integer("widgetable_id");
             $table->string("widgetable_type");
+            $table->integer("sort_by")->nullable();
             $table->timestamps();
         });
     }

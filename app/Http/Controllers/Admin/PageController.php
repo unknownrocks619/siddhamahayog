@@ -36,19 +36,19 @@ class PageController extends Controller
         $page->description = $request->page_description;
         $page->page_type = $request->page_type;
         $page->display = $request->display_option;
-
+        $image = [];
         if ($request->hasFile("banner_image")) {
             $this->set_access("file");
             $this->set_upload_path("website/page");
-            $page->image["banner_image"] = $this->upload("banner_image");
+            $image["banner_image"] = $this->upload("banner_image");
         }
 
         if ($request->hasFile("featured_image")) {
             $this->set_access("file");
             $this->set_upload_path("website/page");
-            $page->image["featured_image"] = $this->upload("featured_image");
+            $image["featured_image"] = $this->upload("featured_image");
         }
-
+        $page->image;
         try {
             $page->save();
         } catch (\Throwable $th) {
@@ -75,28 +75,29 @@ class PageController extends Controller
         $page->description = $request->page_description;
         $page->page_type = $request->page_type;
         $page->display = $request->display_option;
-
+        $image = (array) $page->image;
         if ($request->hasFile("banner_image")) {
             $this->set_access("file");
             $this->set_upload_path("website/page");
-            $page->image["banner_image"] = $this->upload("banner_image");
+            $image["banner_image"] = $this->upload("banner_image");
         }
 
         if ($request->hasFile("featured_image")) {
             $this->set_access("file");
             $this->set_upload_path("website/page");
-            $page->image["featured_image"] = $this->upload("featured_image");
+            $image["featured_image"] = $this->upload("featured_image");
         }
+        $page->image = $image;
 
         try {
             $page->save();
         } catch (\Throwable $th) {
             //throw $th;
-            session()->flash("error", "Unable to create page.");
+            session()->flash("error", "Unable to update page.");
             return back()->withInput();
         }
 
-        session()->flash('success', "Page Created.");
+        session()->flash('success', "Page Detail Updated.");
         return back();
     }
 

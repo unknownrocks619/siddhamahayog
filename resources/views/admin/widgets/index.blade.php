@@ -14,7 +14,7 @@ Widgets
                     <x-alert></x-alert>
                     <div class="row">
                         <div class="col-md-12 mb-2">
-                            <a href="{{ route('admin.widget.create') }}" data-bs-toggle="modal" data-bs-target="#new_widget" class="btn btn btn-primary">Create New Widget</a>
+                            <a href="{{ route('admin.widget.create') }}" data-toggle="modal" data-target="#new_widget" class="btn btn btn-primary">Create New Widget</a>
                         </div>
                     </div>
                     <table class="table table-hover table-bordered">
@@ -31,7 +31,7 @@ Widgets
                                 <td>{{__("widget.".$key)}}</td>
                                 <td>{{ ($widget_type_group->count()) }}</td>
                                 <td>
-                                    <a href="{{ route('admin.web.widget_by_type',['type'=>$key]) }}">
+                                    <a href="{{ route('admin.widget.widget_by_type',['type'=>$key]) }}">
                                         View
                                     </a>
                                 </td>
@@ -82,6 +82,7 @@ Widgets
                                 <option value="pdf_reder">PDF Reader</option>
                                 <option value="image">Image</option>
                                 <option value="iframe">Iframe</option>
+                                <option value="full_text">Full Text</option>
                             </select>
                         </div>
                     </div>

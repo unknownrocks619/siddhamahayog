@@ -40,7 +40,12 @@ class ArthapanchawkController extends Controller
     }
 
     public function store(SadhanaStoreRequest $request)
-    {
+    {   
+        $unicode_character = check_unicode_character($request->all());
+
+        if ($unicode_character){
+            return back()->withInput()->withErrors($unicode_character);
+        }
         $user = auth()->user();
         // check if emergency contact already exists.
         $emergencyInfo = $user->emergency_contact()->where('phone_number', $request->emergency_phone)->where('member_id', auth()->id())->first();
@@ -106,6 +111,12 @@ class ArthapanchawkController extends Controller
 
     public function storeTwo(SadhanaEnrollStoreRequest $request)
     {
+        $unicode_character = check_unicode_character($request->all());
+
+        if ($unicode_character){
+            return back()->withInput()->withErrors($unicode_character);
+        }
+
         $user = auth()->user();
 
         $history = [

@@ -100,7 +100,7 @@ class WidgetController extends Controller
         }
 
         session()->flash('success', "New Widget Created.");
-        return redirect()->route('admin.web.widget.index');
+        return redirect()->route('admin.widget.index');
     }
 
     public function update(AccordianUpdateRequest $request, Widget $widget)
@@ -162,7 +162,7 @@ class WidgetController extends Controller
         }
 
         session()->flash("success", "Widget Updated.");
-        return redirect()->route('admin.web.widget_by_type', ['type' => $widget->widget_type]);
+        return redirect()->route('admin.widget.widget_by_type', ['type' => $widget->widget_type]);
     }
 
     public function destroy(Widget $widget)

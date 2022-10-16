@@ -1,137 +1,139 @@
-@extends("themes.admin.master")
+@extends("layouts.portal.app")
 
 @section("title")
-New Page
+New Post
 @endsection
 
 @section("content")
-<x-layout heading="New Post">
-    <form action="{{ route('admin.posts.post.store') }}" enctype="multipart/form-data" method="post">
-        @csrf
-        <div class="card">
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <a class="btn btn-secondary" href="{{ route('admin.posts.post.index') }}">
-                            <x-arrow-left>Go Back</x-arrow-left>
-                        </a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="row">
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <x-alert></x-alert>
+            <form action="{{ route('admin.post.store') }}" enctype="multipart/form-data" method="post">
+                @csrf
+                <div class="card">
+                    <div class="body">
+                        <div class="row mb-3">
                             <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Post Title
-                                        <sup class="text-danger">*</sup>
-                                    </label>
-                                    <input type="text" name="post_title" id="post_title" class="form-control" />
+                                <a class="btn btn-secondary" href="{{ route('admin.post.index') }}">
+                                    <x-arrow-left>Go Back</x-arrow-left>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Post Title
+                                                <sup class="text-danger">*</sup>
+                                            </label>
+                                            <input type="text" name="post_title" id="post_title" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Post Short Description
+                                            </label>
+                                            <textarea class="form-control" name="short_description" id="short_description"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Post Full Description
+                                            </label>
+                                            <textarea class="form-control" name="full_description" id="full_description"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Post Short Description
-                                    </label>
-                                    <textarea class="form-control" name="short_description" id="short_description"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Post Full Description
-                                    </label>
-                                    <textarea class="form-control" name="full_description" id="full_description"></textarea>
+                            <div class="col-md-4">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Post Type
+                                            </label>
+                                            <select name="post_layout" id="post_layout" class="form-control">
+                                                <option value="general">General / Standard</option>
+                                                <option value="gallery">Gallery</option>
+                                                <option value="contact">contact</option>
+                                                <option value="video">Video</option>
+                                                <option value="single-post">Single Post</option>
+                                                <option value="posts">List Post</option>
+                                                <option value="team">Team</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Display Option
+                                            </label>
+                                            <select name="post_type" id="post_type" class="form-control">
+                                                <option value="public" @if(old('post_type') == "public") selected @endif>Public</option>
+                                                <option value="admin" @if(old('post_type') == "admin") selected @endif>Admin</option>
+                                                <option value="auth_user" @if(old('post_type') == "auth_user") selected @endif>Autheticated User</option>
+                                                <option value="staff" @if(old('post_type') == "staff") selected @endif>Staffs</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label class="label-control">
+                                                Featured Image
+                                            </label>
+                                            <input type="file" name="featured_image" id="featured_image" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <strong>
+                                                Featured Video URL
+                                            </strong>
+                                            <input type="url" name="featured_video" id="featured_video" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <strong>
+                                                Banner Video URL
+                                            </strong>
+                                            <input type="url" name="banner_video" id="featured_video" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mt-3">
+                                        <div class="form-group">
+                                            <label for="banner_image" class="label-control">
+                                                Banner Image
+                                            </label>
+                                            <input type="file" name="banner_image" id="banner_image" class="form-control">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Post Type
-                                    </label>
-                                    <select name="post_layout" id="post_layout" class="form-control">
-                                        <option value="general">General / Standard</option>
-                                        <option value="gallery">Gallery</option>
-                                        <option value="contact">contact</option>
-                                        <option value="video">Video</option>
-                                        <option value="single-post">Single Post</option>
-                                        <option value="posts">List Post</option>
-                                        <option value="team">Team</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Display Option
-                                    </label>
-                                    <select name="post_type" id="post_type" class="form-control">
-                                        <option value="public">Public</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="parent">Parent of Student</option>
-                                        <option value="auth">Autheticated</option>
-                                        <option value="student_plus">Student Over 18</option>
-                                        <option value="student">Student Under 18</option>
-                                        <option value="org">Organisation</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label class="label-control">
-                                        Featured Image
-                                    </label>
-                                    <input type="file" name="featured_image" id="featured_image" class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <strong>
-                                        Featured Video URL
-                                    </strong>
-                                    <input type="url" name="featured_video" id="featured_video" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <strong>
-                                        Banner Video URL
-                                    </strong>
-                                    <input type="url" name="banner_video" id="featured_video" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 mt-3">
-                                <div class="form-group">
-                                    <label for="banner_image" class="label-control">
-                                        Banner Image
-                                    </label>
-                                    <input type="file" name="banner_image" id="banner_image" class="form-control">
-                                </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary">
+                                    Save Posts
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary">
-                            Save Posts
-                        </button>
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
-    </form>
-</x-layout>
+    </div>
+</section>
 @endsection
 
-@push("custom_script")
+
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script type="text/javascript">
     const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -179,7 +181,6 @@ New Page
             }
         ],
         importcss_append: true,
-        file_picker_callback: elFinderBrowser,
 
         // file_picker_callback: (callback, value, meta) => {
         //     /* Provide file and text for the link dialog */
@@ -232,49 +233,5 @@ New Page
         content_css: useDarkMode ? 'dark' : 'default',
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
     });
-
-    function elFinderBrowser(callback, value, meta) {
-        tinymce.activeEditor.windowManager.openUrl({
-            title: 'File Manager',
-            url: "{{ route('elfinder.tinymce5') }}",
-            /**
-             * On message will be triggered by the child window
-             * 
-             * @param dialogApi
-             * @param details
-             * @see https://www.tiny.cloud/docs/ui-components/urldialog/#configurationoptions
-             */
-            onMessage: function(dialogApi, details) {
-                if (details.mceAction === 'fileSelected') {
-                    const file = details.data.file;
-
-                    // Make file info
-                    const info = file.name;
-
-                    // Provide file and text for the link dialog
-                    if (meta.filetype === 'file') {
-                        callback(file.url, {
-                            text: info,
-                            title: info
-                        });
-                    }
-
-                    // Provide image and alt text for the image dialog
-                    if (meta.filetype === 'image') {
-                        callback("{{ config('app.request_protocol') }}" + file.url, {
-                            alt: info
-                        });
-                    }
-
-                    // Provide alternative source and posted for the media dialog
-                    if (meta.filetype === 'media') {
-                        callback(file.url);
-                    }
-
-                    dialogApi.close();
-                }
-            }
-        });
-    }
 </script>
-@endpush
+@endsection

@@ -1,4 +1,4 @@
-<form enctype="multipart/form-data" action="{{ route('admin.web.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
+<form enctype="multipart/form-data" action="{{ route('admin.widget.store',['widget_name'=>request()->widget_name,'widget_type' => request()->widget_type]) }}" method="post">
     @csrf
     <div class="row">
         <div class="col-md-6">
@@ -18,10 +18,14 @@
                 <select name="layout" id="layout" class="form-control">
                     <option value="background" @if(old('layout')=="background" ) selected @endif>Background</option>
                     <option value="right_align_image" @if(old('layout')=="right_align_image" ) selected @endif>Right Align Image</option>
+                    <option value="right_align_two_column_image" @if(old('layout')=="right_align_two_column_image" ) selected @endif>Right Align Two Column Image</option>
                     <option value="left_align_image" @if(old('layout')=="left_align_image" ) selected @endif>Left Align Image</option>
                     <option value="alternate" @if(old('layout')=="alternate" ) selected @endif>Alternate Align Image</option>
                     <option value="single" @if(old('layout')=="single" ) selected @endif>Single Image</option>
-
+                    <option value="col-md-6" @if(old('layout')=="column" ) selected @endif>Two Column</option>
+                    <option value="col-md-4" @if(old('layout')=="column" ) selected @endif>Three Column</option>
+                    <option value="col-md-3" @if(old('layout')=="column" ) selected @endif>Four Column</option>
+                    <option value="col-md-2" @if(old('layout')=="column" ) selected @endif>Six Column</option>
                 </select>
             </div>
         </div>
@@ -30,7 +34,7 @@
                 <label for="background_color" class="label-control">
                     Background Color
                 </label>
-                <input type="text" id="background_color" class="form-control" name="background_color" value="{{ old('background_color') }}" />
+                <input type="color" id="background_color" class="form-control" name="background_color" value="{{ old('background_color') }}" />
             </div>
         </div>
 
