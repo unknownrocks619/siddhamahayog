@@ -311,7 +311,7 @@
 
                             <div class="row mt-2">
                                 <div class="col-md-12">
-                                    <label for="referer_contact">Refere Contact Detail</label>
+                                    <label for="referer_contact">Refere Mobile Number</label>
                                     <input type="text" name="referer_contact" id="referer_contact" class="form-control @error('referer_contact') border border-danger @enderror" />
                                     @error('referer_contact')
                                     <div class="text-danger">
