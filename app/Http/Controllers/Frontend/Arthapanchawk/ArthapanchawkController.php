@@ -40,10 +40,10 @@ class ArthapanchawkController extends Controller
     }
 
     public function store(SadhanaStoreRequest $request)
-    {   
+    {
         $unicode_character = check_unicode_character($request->all());
 
-        if ($unicode_character){
+        if ($unicode_character) {
             return back()->withInput()->withErrors($unicode_character);
         }
         $user = auth()->user();
@@ -70,6 +70,15 @@ class ArthapanchawkController extends Controller
             "education_major" => $request->education_major,
             "profession" => $request->profession
         ];
+
+        if ($request->referer_person) {
+            $remarks = [
+                "referer_person" => $request->referer_person,
+                "referer_relation" => $request->referer_relation,
+                "referer_contact" => $request->referer_contact
+            ];
+            $userInfo->remarks = $remarks;
+        }
 
         $user->country = $request->country;
         $user->city = $request->state;
@@ -113,7 +122,7 @@ class ArthapanchawkController extends Controller
     {
         $unicode_character = check_unicode_character($request->all());
 
-        if ($unicode_character){
+        if ($unicode_character) {
             return back()->withInput()->withErrors($unicode_character);
         }
 

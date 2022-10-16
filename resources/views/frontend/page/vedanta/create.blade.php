@@ -270,6 +270,61 @@
                     </div>
                 </div>
             </div>
+
+            <div class="row sigma_broadcast-video my-3">
+                <div class="col-md-12 mx-auto">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="text-center">
+                                {{ __("Reference Detail") }}
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="referer_person">
+                                            Referer Person
+                                        </label>
+                                        <input value="{{ old('referer_person') }}" type="text" name="referer_person" id="referer_person" class="form-control @error('referer_person') border border-danger @enderror" />
+                                        @error('referer_person')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="referer_relation">
+                                            Relation
+                                        </label>
+                                        <input type="text" name="referer_relation" id="referer_relation" class="form-control @error('referer_relation') border border-danger @enderror" />
+                                        @error('referer_relation')
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <label for="referer_contact">Refere Contact Detail</label>
+                                    <input type="text" name="referer_contact" id="referer_contact" class="form-control @error('referer_contact') border border-danger @enderror" />
+                                    @error('referer_contact')
+                                    <div class="text-danger">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row sigma_broadcast-video my-3">
                 <div class="col-md-12 mx-auto">
                     <div class="card">

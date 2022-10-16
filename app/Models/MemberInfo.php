@@ -13,6 +13,7 @@ class MemberInfo extends Model
     protected $casts = [
         "history" => "object",
         "education" => "object",
-        "personal" => "object"
+        "personal" => "object",
+        'remarks' => 'object'
     ];
 }

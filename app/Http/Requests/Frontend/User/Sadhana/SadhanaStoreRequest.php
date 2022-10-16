@@ -42,10 +42,9 @@ class SadhanaStoreRequest extends FormRequest
             "emergency_contact_person" => "required",
             "emergency_phone" => "required|size:10",
             "emergency_contact_person_relation" => "required",
-            "recaptcha_token" => ["required", new GoogleCaptcha()]
+            "recaptcha_token" => ["required", new GoogleCaptcha()],
         ];
     }
-
     public function messages()
     {
         return [
