@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
         if (session()->has("_refU")) {
             $reference = new Reference;
             $reference->referenced_by = session()->get('_refU')["id"];
-            $reference->referenced_to = $member->id;
+            $reference->referenced_to  = $member->id;
             $reference->save();
         } else {
             $reference = new Reference;
@@ -79,7 +79,7 @@ class RegisteredUserController extends Controller
             // check sharing code.
             $r_member = Member::select('id')->where('sharing_code', $request->sharing_code)->first();
             if ($r_member) {
-                $reference->refereced_by = $r_member->id;
+                $reference->referenced_by = $r_member->id;
                 $reference->save();
             }
         }
