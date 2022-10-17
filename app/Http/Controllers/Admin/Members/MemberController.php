@@ -35,13 +35,13 @@ class MemberController extends Controller
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
                     return $row->full_name;
-                    return $program;
                 })
                 ->addColumn('login_source', function ($row) {
-                    return ucwords($row->source == "portal");
+                    return ucwords($row->source);
                 })
                 ->addColumn('country', function ($row) {
-                    return ($row->countries) ? $row->countries->country_name : "NaN";
+                    // return $row->countries->country_name;
+                    return ($row->countries) ? $row->countries->name : "NaN";
                 })
                 ->addColumn('phone', function ($row) {
                     return $row->phone_number;
@@ -58,7 +58,7 @@ class MemberController extends Controller
                     return $program_involved;
                 })
                 ->addColumn('action', function ($row) {
-                    $action = "View Detail";
+                    $action = "<a href='" . route('admin.members.show', $row->id) . "'>View Detail</a>";
                     return $action;
                 })
                 ->rawColumns(["full_name", "login_source", "country", "phone", "program_involved", "action"])
@@ -98,6 +98,7 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         //
+        return view('admin.members.show', compact("member"));
     }
 
 
@@ -128,9 +129,32 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         //
+        $member->first_name = $request->first_name;
+        $member->middle_name = $request->middle_name;
+        $member->last_name = $request->last_name;
+        $member->phone_number = $request->phone_number;
+        $member->role = $request->role;
+        $member->country = $request->country;
+        $member->city = $request->city;
+        $member->street_addres = ["street_address" => $request->street_address];
+
+        if ($member->isDirty(["first_name", "middle_name", "last_name"])) {
+            $member->full_name = $request->first_name . ($request->middle_name) ? $request->middle_name . " " . $request->last_name : " " . $request->last_name;
+        }
+
+        try {
+            $member->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', $th->getMessage());
+            return back();
+        }
+
+        session()->flash('success', "Personal Information updated.");
+        return back();
     }
 
-    public function programUpdate(Request $request, Member $member, Program $program, MemberEmergencyMeta $emergencyMeta)
+    public function programUpdate(Request $request, Member $member, MemberEmergencyMeta $emergencyMeta, Program $program = null)
     {
         $emergencyMeta->contact_person = $request->contact_person;
         $emergencyMeta->relation = $request->relation;

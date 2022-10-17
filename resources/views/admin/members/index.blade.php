@@ -66,7 +66,6 @@ Program
                                         <th>Phone</th>
                                         <th>Subscription</th>
                                         <th>Action</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                             </table>
@@ -105,8 +104,8 @@ Program
         serverSide: true,
         ajax: '{{url()->full()}}',
         columns: [{
-                data: 'id',
-                name: "id"
+                data: 'DT_RowIndex',
+                name: "DT_RowIndex"
             },
             {
                 data: 'full_name',

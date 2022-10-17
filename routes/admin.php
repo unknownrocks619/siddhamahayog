@@ -54,12 +54,13 @@ Route::prefix('admin')
             ->group(function () {
 
                 Route::get("/all", "index")->name('all');
+                Route::get('/member/detail/{member}', "show")->name("show");
                 Route::get("/add/{program}", "add_member_to_program")->name('admin_add_member_to_program');
                 Route::get("/assign/{program}", "assign_member_to_program")->name('admin_add_assign_member_to_program');
                 Route::get("/show/program/{member}/{program}", "programShow")->name('admin_show_for_program');
                 Route::post('/add/{program}', "store_member_to_program")->name("admin_store_member_to_program");
                 Route::post("/assign/{program}", "store_member_to_class")->name('admin_store_assign_member_to_program');
-                Route::post("/show/program/{member}/{program}/{emergencyMeta}", "programUpdate")->name('admin_update_for_program');
+                Route::post("/show/program/{member}/{emergencyMeta}/{program?}", "programUpdate")->name('admin_update_for_program');
                 Route::post("/update/{member}", "upate")->name("admin_update_member_basic_info");
                 Route::post("/update/member/meta/{memberInfo}", "updatePersonal")->name("admin_update_member_meta_info");
             });

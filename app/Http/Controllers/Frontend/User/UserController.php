@@ -45,6 +45,7 @@ class UserController extends Controller
         $member->email = $fb_user->email;
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
+        $member->is_email_verified = true;
 
 
         $reference = new Reference;
@@ -92,7 +93,7 @@ class UserController extends Controller
         $member->source = "google";
         $member->external_source_id = $google_usr->user["sub"];
         $member->profileUrl = ["avatar" => $google_usr->user["picture"]];
-
+        $member->is_email_verified = true;
         $member->email = $google_usr->user["email"];
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
