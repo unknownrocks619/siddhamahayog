@@ -4,31 +4,73 @@
 Edit :: {{ $widget->widget_name }}
 @endsection
 
-@push("plugin_css")
-<link rel="stylesheet" href="{{ asset('admin/assets/vendors/mdi/css/materialdesignicons.min.css') }}">
-<link rel="stylesheet" href="{{ asset ('admin/assets/vendors/bootstrap-colorpicker/bootstrap-colorpicker.min.css') }}">
-
-@endpush
-
 @section("content")
 <section class="content">
-    <div class="row">
-        <div class="block-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="block-header"></div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            Strong :: {{ $widget->widget_name }}
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <a class="btn btn-sm btn-primary mb-3" href="{{ route('admin.widget.widget_by_type',['type'=>$widget->widget_type]) }}">
+                            <x-arrow-left>Go back</x-arrow-left>
+                        </a>
+                        @include("admin.widgets.create.full_text.sample")
+                        <form enctype="multipart/form-data" action="{{ route('admin.widget.update',[$widget->id]) }}" method="post">
+                            @method("PUT")
+                            @csrf
+                            @foreach ($widget->fields as $field)
 
-        </div>
-        <div class="col-md-12">
-            <div class="card">
-                <div class="header">
-                    <h2>
-                        <strong>Edit :: </strong>
-                        {{ $widget->widget_name }}
-                    </h2>
-                </div>
-                <div class="body">
-                    <a href="{{ route('admin.widget.widget_by_type',$widget->widget_type) }}">
-                        Go back
-                    </a>
-                    @include("admin.widgets.create.edit",compact('widget'))
+                            <div class="row  @if($loop->iteration > 1) mt-4 bg-light py-4 @endif">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="label-control">Title
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="text" name="title[]" value="{{ $field->title }}" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="layout" class="label-control">
+                                            Layout Option
+                                        </label>
+                                        <select name="layout" id="layout" class="form-control">
+                                            <option value="default" selected>Theme Default</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-group">
+                                        <label for="content" class="label-control">Content
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <textarea name="widget_content[]" id="content" class="form-control">{{ $field->content }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                            <div class="row mt-3" id="submit_button">
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn btn-primary btn-block w-75">
+                                        Create Full Text
+                                    </button>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <button type="button" class="btn btn-secondary add_widget_row">Add More</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -36,8 +78,8 @@ Edit :: {{ $widget->widget_name }}
 </section>
 @endsection
 
-@push("custom_script")
-<script src="{{ asset ('admin/assets/vendors/bootstrap-colorpicker/bootstrap-colorpicker.min.js') }}"></script>
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script type="text/javascript">
     const useDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -138,29 +180,4 @@ Edit :: {{ $widget->widget_name }}
         content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }'
     });
 </script>
-<script>
-    $(function() {
-        'use strict';
-
-        $('#background_color').colorpicker();
-    });
-    $(".add_widget_row").click(function(event) {
-        event.preventDefault();
-        let content = $("#sample_form").clone();
-        let tetId = Math.floor(Math.random() * 57);
-        $(content).find('text-area').replaceWith("<textarea id='accord_" + tetId + "' class='form-control' name='widget_content[]'>");
-        $(content).insertBefore("#submit_button").fadeIn().removeAttr("id");
-
-        // tinymce.init({
-        //     selector: 'textarea#accord_' + tetId,
-        //     plugins: 'advlist autolink lists link image charmap preview anchor pagebreak',
-        //     toolbar_mode: 'floating',
-        // });
-    })
-    // $(".remove_section").click(function(event) {
-    //     event.preventDefault();
-    //     console.log("clicked on remove section");
-    //     $(this).closest('.row').remove();
-    // })
-</script>
-@endpush
+@endsection

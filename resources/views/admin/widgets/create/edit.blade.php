@@ -1,5 +1,5 @@
 @include("admin.widgets.create.accordian.sample")
-<form enctype="multipart/form-data" action="{{ route('admin.web.widget.update',[$widget->id]) }}" method="post">
+<form enctype="multipart/form-data" action="{{ route('admin.widget.update',[$widget->id]) }}" method="post">
     @csrf
     @method("PUT")
     <div class="row mb-3 pb-3">

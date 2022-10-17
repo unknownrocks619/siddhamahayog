@@ -61,7 +61,7 @@ Program
                                     <tr>
                                         <th>S.No</th>
                                         <th>Full Name</th>
-                                        <th>Login Source</th>
+                                        <th>Email</th>
                                         <th>Country</th>
                                         <th>Phone</th>
                                         <th>Subscription</th>

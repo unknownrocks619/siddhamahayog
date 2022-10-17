@@ -5,6 +5,9 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
+        @include("frontend.user.dashboard.incomplete")
+    </div>
+    <div class="row">
         @if(user()->created_at->isToday())
         <div class="col-lg-12 mb-4 order-0">
             <div class="card">
@@ -115,6 +118,7 @@
             </div>
         </div>
     </div>
+
     <div class="row">
 
         <!-- Total Revenue -->

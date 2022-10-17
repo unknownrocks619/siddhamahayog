@@ -37,7 +37,7 @@ class MemberController extends Controller
                     return $row->full_name;
                 })
                 ->addColumn('login_source', function ($row) {
-                    return ucwords($row->source);
+                    return ucwords($row->email);
                 })
                 ->addColumn('country', function ($row) {
                     // return $row->countries->country_name;

@@ -1,23 +1,40 @@
-@extends("themes.admin.master")
+@extends("layouts.portal.app")
 
 @section("title")
 Edit :: {{ $widget->widget_name }}
 @endsection
 
 @section("content")
-<x-layout heading="Edit :: {{ $widget->widget_name }}">
-    <div class="card">
-        <div class="card-body">
-            <a class="btn btn-sm btn-primary mb-3" href="{{ route('admin.web.widget_by_type',['type'=>$widget->widget_type]) }}">
-                <x-arrow-left>Go back</x-arrow-left>
-            </a>
-            @include("admin.widgets.create.edit",compact('widget'))
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="block-header"></div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>
+                                Edit ::
+                            </strong>
+                            {{ $widget->widget_name }}
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <a class="btn btn-sm btn-primary mb-3" href="{{ route('admin.widget.widget_by_type',['type'=>$widget->widget_type]) }}">
+                            <x-arrow-left>Go back</x-arrow-left>
+                        </a>
+                        @include("admin.widgets.create.edit",compact('widget'))
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</x-layout>
+</section>
 @endsection
 
-@push("custom_script")
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+
 <script>
     $(".add_widget_row").click(function(event) {
         event.preventDefault();
@@ -38,4 +55,4 @@ Edit :: {{ $widget->widget_name }}
     //     $(this).closest('.row').remove();
     // })
 </script>
-@endpush
+@endsection

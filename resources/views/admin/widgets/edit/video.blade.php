@@ -5,122 +5,133 @@ Edit :: {{ $widget->widget_name }}
 @endsection
 
 @section("content")
-<x-layout heading="Edit :: {{ $widget->widget_name }}">
-    <div class="card">
-        <div class="card-body">
-            <a class="btn btn-sm btn-primary mb-3" href="{{ route('admin.web.widget_by_type',['type'=>$widget->widget_type]) }}">
-                <x-arrow-left>Go back</x-arrow-left>
-            </a>
-            @include("admin.widgets.create.video.sample")
-            <form enctype="multipart/form-data" action="{{ route('admin.web.widget.update',[$widget->id]) }}" method="post">
-                @csrf
-                @method("PUT")
-                <div class="row mb-3 pb-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="widget_name" class="label-control">Title
-                                <sup class="text-danger">*</sup>
-                            </label>
-                            <input value="{{ $widget->widget_name }}" type="text" name="widget_name" id="widget_name" class="form-control" value="{{ $widget->widget_name }}" />
-                            @error("widget_name")
-                            <div class="text-danger">
-                                {{ $message }}
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="block-header"></div>
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>
+                                Edit ::
+                            </strong>
+                            {{ $widget->widget_name }}}
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <a class="btn btn-sm btn-primary mb-3" href="{{ route('admin.widget.widget_by_type',['type'=>$widget->widget_type]) }}">
+                            <x-arrow-left>Go back</x-arrow-left>
+                        </a>
+                        @include("admin.widgets.create.video.sample")
+                        <form enctype="multipart/form-data" action="{{ route('admin.widget.update',[$widget->id]) }}" method="post">
+                            @csrf
+                            @method("PUT")
+                            <div class="row mb-3 pb-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="widget_name" class="label-control">Title
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input value="{{ $widget->widget_name }}" type="text" name="widget_name" id="widget_name" class="form-control" value="{{ $widget->widget_name }}" />
+                                        @error("widget_name")
+                                        <div class="text-danger">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="widget_type">Widget Type</label>
+                                        <span class="form-control bg-light">{{ __("widget.".$widget->widget_type) }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-group">
+                                        <label for="layout" class="label-control">
+                                            Layout Setting
+                                        </label>
+                                        <select name="layout" id="layout" class="form-control">
+                                            <option value="background" @if(old('layout',$widget->layouts->layout)=="background" ) selected @endif>Background Video</option>
+                                            <option value="checkmark_video" @if(old('layout' ,$widget->layouts->layout)=="checkmark_video" ) selected @endif>Video With Checkmark</option>
+                                            <option value="single_video" @if(old('layout' ,$widget->layouts->layout)=="single_video" ) selected @endif>Single Video</option>
+                                            <option value="two_column" @if(old('layout' ,$widget->layouts->layout)=="two_column" ) selected @endif>Two Column Per Row</option>
+                                            <option value="full_width_video" @if(old('layout' ,$widget->layouts->layout)=="full_width_video" ) selected @endif>Full Width Video</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-group">
+                                        <label for="featured_video" class="label-control">
+                                            Featured
+                                        </label>
+                                        <select name="featured_video" id="featured_video" class="form-control">
+                                            <option value="yes" @if(old('featured', (isset($widget->settings->featured) && $widget->settings->featured == true) ? "yes" : "no") =="yes" ) selected @endif>Yes</option>
+                                            <option value="no" @if(old('featured') !="yes" ) selected @endif>No</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="widget_type">Widget Type</label>
-                            <span class="form-control bg-light">{{ __("widget.".$widget->widget_type) }}</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 mt-3">
-                        <div class="form-group">
-                            <label for="layout" class="label-control">
-                                Layout Setting
-                            </label>
-                            <select name="layout" id="layout" class="form-control">
-                                <option value="background" @if(old('layout',$widget->layouts->layout)=="background" ) selected @endif>Background Video</option>
-                                <option value="checkmark_video" @if(old('layout' ,$widget->layouts->layout)=="checkmark_video" ) selected @endif>Video With Checkmark</option>
-                                <option value="single_video" @if(old('layout' ,$widget->layouts->layout)=="single_video" ) selected @endif>Single Video</option>
-                                <option value="two_column" @if(old('layout' ,$widget->layouts->layout)=="two_column" ) selected @endif>Two Column Per Row</option>
-                                <option value="full_width_video" @if(old('layout' ,$widget->layouts->layout)=="full_width_video" ) selected @endif>Full Width Video</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mt-3">
-                        <div class="form-group">
-                            <label for="featured_video" class="label-control">
-                                Featured
-                            </label>
-                            <select name="featured_video" id="featured_video" class="form-control">
-                                <option value="yes" @if(old('featured', (isset($widget->settings->featured) && $widget->settings->featured == true) ? "yes" : "no") =="yes" ) selected @endif>Yes</option>
-                                <option value="no" @if(old('featured') !="yes" ) selected @endif>No</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                @foreach ($widget->fields as $field)
-                <div class="row @if($loop->iteration > 1) mt-4 bg-light py-4 @endif">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="label-control">Title
-                                <sup class="text-danger">*</sup>
-                            </label>
-                            <input type="text" name="title[]" value="{{ $field->title }}" class="form-control" />
-                        </div>
-                    </div>
-
-
-
-                    <div class="col-md-6 mt-3">
-                        <div class="form-group">
-                            <label for="image" class="label-control">Image
-                            </label>
-                            <input type="file" name="image[]" id="image" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-6 mt-3">
-                        <div class="form-group">
-                            <label for="image" class="label-control">Video Url
-                                <sup class="text-info">
-                                    Only Vimeo and Youtube
-                                </sup>
-                            </label>
-                            <input type="text" name="video_link[]" value="{{ $field->video->link }}" placeholder="https://youtube.com/watch/?v=sqiu23dg or https://vimeo.com/watch/34234343" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-12 mt-3">
-                        <div class="form-group">
-                            <label for="content" class="label-control">Content
-                                <sup class="text-danger">*</sup>
-                            </label>
-                            <textarea name="widget_content[]" id="content" class="form-control">{{ $field->content }}</textarea>
-                        </div>
+                            @foreach ($widget->fields as $field)
+                            <div class="row @if($loop->iteration > 1) mt-4 bg-light py-4 @endif">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="label-control">Title
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="text" name="title[]" value="{{ $field->title }}" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-group">
+                                        <label for="image" class="label-control">Image
+                                        </label>
+                                        <input type="file" name="image[]" id="image" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-group">
+                                        <label for="image" class="label-control">Video Url
+                                            <sup class="text-info">
+                                                Only Vimeo and Youtube
+                                            </sup>
+                                        </label>
+                                        <input type="text" name="video_link[]" value="{{ $field->video->link }}" placeholder="https://youtube.com/watch/?v=sqiu23dg or https://vimeo.com/watch/34234343" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="form-group">
+                                        <label for="content" class="label-control">Content
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <textarea name="widget_content[]" id="content" class="form-control">{{ $field->content }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                            <div class="row mt-3" id="submit_button">
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn btn-primary btn-block w-75">
+                                        Update Video Widget
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button type="button" class="btn btn-secondary add_widget_row">Add More</button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                @endforeach
-                <div class="row mt-3" id="submit_button">
-                    <div class="col-md-8">
-                        <button type="submit" class="btn btn-primary btn-block w-75">
-                            Update Video Widget
-                        </button>
-                    </div>
-
-                    <div class="col-md-4">
-                        <button type="button" class="btn btn-secondary add_widget_row">Add More</button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
-</x-layout>
+</section>
 @endsection
 
-@push("custom_script")
+@section("page_script")
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+
 <script src="{{ asset ('admin/assets/vendors/bootstrap-colorpicker/bootstrap-colorpicker.min.js') }}"></script>
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script type="text/javascript">
@@ -287,4 +298,4 @@ Edit :: {{ $widget->widget_name }}
     //     $(this).closest('.row').remove();
     // })
 </script>
-@endpush
+@endsection
