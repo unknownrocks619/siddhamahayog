@@ -37,7 +37,7 @@ class SadhanaStoreRequest extends FormRequest
             "date_of_birth" => "required|date|date_format:Y-m-d",
             "place_of_birth" => "required",
             "education" => "required|in:primary,secondary,higher_secondary,bachelor,master,phd,none",
-            "profession" => "required",
+            "profession" => "required_unless:education,primary,secondary",
             "field_of_study" => "required_if:education,bachelor,master,phd",
             "emergency_contact_person" => "required",
             "emergency_phone" => "required|size:10",
