@@ -50,16 +50,18 @@ Route::prefix('admin')
          */
         Route::prefix("members")
             ->name('members.')
+            ->controller(MemberController::class)
             ->group(function () {
 
-                Route::get("/add/{program}", [MemberController::class, "add_member_to_program"])->name('admin_add_member_to_program');
-                Route::get("/assign/{program}", [MemberController::class, "assign_member_to_program"])->name('admin_add_assign_member_to_program');
-                Route::get("/show/program/{member}/{program}", [MemberController::class, "programShow"])->name('admin_show_for_program');
-                Route::post('/add/{program}', [MemberController::class, "store_member_to_program"])->name("admin_store_member_to_program");
-                Route::post("/assign/{program}", [MemberController::class, "store_member_to_class"])->name('admin_store_assign_member_to_program');
-                Route::post("/show/program/{member}/{program}/{emergencyMeta}", [MemberController::class, "programUpdate"])->name('admin_update_for_program');
-                Route::post("/update/{member}", [MemberController::class, "upate"])->name("admin_update_member_basic_info");
-                Route::post("/update/member/meta/{memberInfo}", [MemberController::class, "updatePersonal"])->name("admin_update_member_meta_info");
+                Route::get("/all", "index")->name('all');
+                Route::get("/add/{program}", "add_member_to_program")->name('admin_add_member_to_program');
+                Route::get("/assign/{program}", "assign_member_to_program")->name('admin_add_assign_member_to_program');
+                Route::get("/show/program/{member}/{program}", "programShow")->name('admin_show_for_program');
+                Route::post('/add/{program}', "store_member_to_program")->name("admin_store_member_to_program");
+                Route::post("/assign/{program}", "store_member_to_class")->name('admin_store_assign_member_to_program');
+                Route::post("/show/program/{member}/{program}/{emergencyMeta}", "programUpdate")->name('admin_update_for_program');
+                Route::post("/update/{member}", "upate")->name("admin_update_member_basic_info");
+                Route::post("/update/member/meta/{memberInfo}", "updatePersonal")->name("admin_update_member_meta_info");
             });
         /**
          * Zoom & Meetings

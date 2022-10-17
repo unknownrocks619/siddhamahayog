@@ -14,6 +14,7 @@ use App\Models\ProgramStudentEnroll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use DataTables;
 
 class MemberController extends Controller
 {
@@ -25,6 +26,46 @@ class MemberController extends Controller
     public function index()
     {
         //
+        if (request()->ajax() && request()->wantsJson()) {
+            $members = Member::with(["countries", "member_detail" => function ($query) {
+                return $query->with(["program"]);
+            }])->latest()->get();
+
+            $datatable = DataTables::of($members)
+                ->addIndexColumn()
+                ->addColumn('full_name', function ($row) {
+                    return $row->full_name;
+                    return $program;
+                })
+                ->addColumn('login_source', function ($row) {
+                    return ucwords($row->source == "portal");
+                })
+                ->addColumn('country', function ($row) {
+                    return ($row->countries) ? $row->countries->country_name : "NaN";
+                })
+                ->addColumn('phone', function ($row) {
+                    return $row->phone_number;
+                })
+                ->addColumn('program_involved', function ($row) {
+
+                    if (!$row->member_detail->count()) {
+                        return "NaN";
+                    }
+                    $program_involved = "";
+                    foreach ($row->member_detail as $programs) {
+                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs->program->program_name . "</span>";
+                    }
+                    return $program_involved;
+                })
+                ->addColumn('action', function ($row) {
+                    $action = "View Detail";
+                    return $action;
+                })
+                ->rawColumns(["full_name", "login_source", "country", "phone", "program_involved", "action"])
+                ->make(true);
+            return $datatable;
+        }
+        return view('admin.members.index');
     }
 
     /**

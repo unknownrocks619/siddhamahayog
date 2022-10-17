@@ -77,7 +77,7 @@
                             <li><a href="widgets-chart.html">Report</a></li>
                         </ul>
                     </li>
-                    <li><a href="javascript:void(0)">Sadhak</a>
+                    <li><a href="{{ route('admin.members.all') }}">Sadhak</a>
                     </li>
                     <li><a href="{{ route('admin.holidays.holiday.index') }}">Holiday Request</a>
                     </li>
