@@ -30,7 +30,7 @@ class SadhanaStoreRequest extends FormRequest
             "middle_name" => "nullable|alpha_dash",
             "last_name" => "required",
             "gender" => "required|in:male,female",
-            "phone_number" => "required|size:10",
+            "phone_number" => "required",
             "country" => "required|exists:countries,id",
             "state" => "required",
             "street_address" => "required|min:5",
