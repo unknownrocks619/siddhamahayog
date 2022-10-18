@@ -36,6 +36,7 @@
                 <div data-i18n="Layouts">Notes</div>
             </x-nav-link>
         </li>
+        @if(user()->role_id != 8)
         <!-- Layouts -->
         <li class="menu-item {{ active_routes(['user.account.support.ticket.index','user.account.support.ticket.create','user.account.support.ticket.edit']) }}">
             <x-nav-link href="{{ route('user.account.support.ticket.index') }}" class="menu-link">
@@ -43,7 +44,23 @@
                 <div data-i18n="Layouts">Support</div>
             </x-nav-link>
         </li>
+        @endif
 
+        @if(user()->role_id == 8)
+        <!-- Support Staff -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Tickets</span>
+        </li>
+
+        <li class="menu-item {{ active_routes(['user.account.support.ticket.index','user.account.support.ticket.create','user.account.support.ticket.edit']) }}">
+            <x-nav-link href="{{ route('supports.staff.tickets.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-support"></i>
+                <div data-i18n="Layouts">All Tickets</div>
+            </x-nav-link>
+        </li>
+        @endif
+
+        <!-- Personalise -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Personalise</span>
         </li>
@@ -115,6 +132,7 @@
                 <div data-i18n="Boxicons">My Programs</div>
             </a>
         </li>
+
     </ul>
 </aside>
 <!-- / Menu -->

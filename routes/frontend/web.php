@@ -138,3 +138,4 @@ Route::prefix("account")
             });
     });
 include __DIR__ . "/donation.php";
+include __DIR__ . "/support.php";

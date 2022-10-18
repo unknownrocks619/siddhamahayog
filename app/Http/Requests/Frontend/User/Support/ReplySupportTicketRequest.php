@@ -25,7 +25,7 @@ class ReplySupportTicketRequest extends FormRequest
     {
         return [
             //
-            "title" => "required|string",
+            // "title" => "required|string",
             // "category" => "required|in:finance,admission,technical_support,other",
             // "priority" => "required|in:high,low,medium",
             "message" => "required|min:5",

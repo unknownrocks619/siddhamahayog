@@ -17,4 +17,9 @@ class SupportTicket extends Model
     {
         return $this->belongsTo(Member::class, "member_id");
     }
+
+    public function staff()
+    {
+        return $this->belongsTo(Member::class, "replied_by");
+    }
 }

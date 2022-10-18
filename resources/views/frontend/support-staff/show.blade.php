@@ -23,8 +23,9 @@ Ticket > {{ $ticket->title }}
                 </div>
             </div>
             <div class="card-body">
-                <div class="col-md-4">
-                    <h4 class="card-header">{{ $ticket->title }}</h4>
+                <div class="col-md-12 py-2 bg-light">
+                    <h4 class="card-header">{{ $ticket->title }} :: {!! __("support.".$ticket->priority) !!}
+                        :: {!! __("support.".$ticket->category) !!}</h4>
                     <div class="card-text ms-4">{!! $ticket->issue !!}</div>
                     @if($ticket->media && isset($ticket->media->path))
                     <div class="border p-3 ms-4">
@@ -35,13 +36,27 @@ Ticket > {{ $ticket->title }}
 
                 @forelse ($replies as $reply)
                 <hr />
-                <div class="col-md-4">
-                    <!-- <h4 class="card-header">{{-- $reply->title --}}</h4> -->
-                    <div class="card-text ms-4">{!! $reply->issue !!}</div>
 
-                    @if($reply->media && isset($reply->media->path))
-                    <div class="border p-3 ms-4">
-                        <a target="_blank" href="{{ asset($reply->media->path)  }}"> {{ $reply->media->original_filename }}</a>
+                <div class="row @if($reply->replied_by) bg-warning text-white py-2 @endif">
+                    <div class="col-md-9">
+                        <div class="card-text ms-4">{!! $reply->issue !!}</div>
+                        @if($reply->media && isset($reply->media->path))
+                        <div class="border p-3 ms-4">
+                            <a target="_blank" href="{{ asset($reply->media->path)  }}"> {{ $reply->media->original_filename }}</a>
+                        </div>
+                        @endif
+                    </div>
+                    @if($reply->replied_by)
+                    <div class="col-md-3">
+                        <div class="card-text ms-4 text-muted">
+                            Replied By: {{ $reply->staff->full_name }}
+                        </div>
+                    </div>
+                    @else
+                    <div class="col-md-3">
+                        <div class="card-text ms-4 text-muted">
+                            Owner: {{ $reply->user->full_name }}
+                        </div>
                     </div>
                     @endif
                 </div>
@@ -57,37 +72,31 @@ Ticket > {{ $ticket->title }}
         <div class="col-md-12">
             <x-alert></x-alert>
             <div class="card mb-4">
-                <form action="{{ route('user.account.support.ticket.close',$ticket->id) }}" method="post">
+                <form action="{{ route('supports.staff.tickets.destroy',$ticket->id) }}" method="post">
+                    @method("DELETE")
+
                     <div class="card-header d-flex align-items-center justify-content-between pb-0">
                         <div class="card-header mb-0 p-0">
-                            <h5 class="">Open Ticket</h5>
+                            <h5 class="">Reply Ticket</h5>
                         </div>
                         <div class="dropdown">
                             @csrf
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-danger">
                                 Close this Ticket
                             </button>
                         </div>
                     </div>
                 </form>
-                <form enctype="multipart/form-data" action="{{ route('user.account.support.ticket.reply',$ticket->id) }}" method="post">
+                <form enctype="multipart/form-data" action="{{ route('supports.staff.tickets.update',$ticket->id) }}" method="post">
                     @csrf
+                    @method("PUT")
                     <div class="card-body">
-
                         <div class="mt-3">
                             <label for="defaultFormControlInput" class="form-label">Message</label>
                             <textarea name="message" class="form-control @error('message') border border-danger @enderror" id="message" cols="30" rows="10">{{ old('message') }}</textarea>
-                            <div id="messageResponse" class="form-text">
-                                We typically reply within 24 hours
-                            </div>
                             @error("message")
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
-                        </div>
-
-                        <div class="mt-3">
-                            <label for="Attachments" class="form-label">Attachments</label>
-                            <input type="file" name="media" id="Attachments" class="form-control " accept="image/*" />
                         </div>
                     </div>
                     <div class="card-footer">

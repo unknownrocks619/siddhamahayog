@@ -64,7 +64,7 @@ class UserSupportController extends Controller
         $support->parent_id = $ticket->id;
         $support->member_id = auth()->id();
         $support->category = $ticket->category;
-        $support->title = $request->title;
+        $support->title = ($request->title) ? $request->title : $ticket->title;
         $support->priority = $ticket->priority;
         $support->status = "pending";
         $support->issue = $request->message;
