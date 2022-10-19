@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Support;
 
 use App\Http\Controllers\Controller;
+use App\Models\MemberNotification;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,11 +62,19 @@ class SupportStaffController extends Controller
             session()->flash("error", $th->getMessage());
             return back()->withInput();
         }
-
+        MemberNotification::create([
+            "member_id" => $ticket->member_id,
+            "title" => "Support Ticket : #" . $ticket->id,
+            "body" => $request->issue,
+            "notification_type" => "\App\Models\SupporTicket",
+            "notification_id" => $ticket->id,
+            "type" => "message",
+            "level" => "info",
+            "seen" => false
+        ]);
         session()->flash('success', "Ticket Replied.");
         return redirect()->route('supports.staff.tickets.index');
     }
-
 
     public function destroy(Request $request, SupportTicket $ticket)
     {
@@ -86,7 +95,6 @@ class SupportStaffController extends Controller
                     $new_ticket->member_id = $ticket->member_id;
                     $new_ticket->save();
                 }
-
                 if ($ticket_response) {
                     $ticket->total_count = $ticket->total_count + 1;
                 }
@@ -98,7 +106,16 @@ class SupportStaffController extends Controller
             session()->flash('error', $th->getMessage());
             return back()->withInput();
         }
-
+        MemberNotification::create([
+            "member_id" => $ticket->member_id,
+            "title" => "Support Ticket : #" . $ticket->id,
+            "body" => "Your ticket was closed.",
+            "notification_type" => "\App\Models\SupporTicket",
+            "notification_id" => $ticket->id,
+            "type" => "message",
+            "level" => "info",
+            "seen" => false
+        ]);
         session()->flash('success', "Ticket Closed.");
         return redirect()->route('supports.staff.tickets.index');
     }

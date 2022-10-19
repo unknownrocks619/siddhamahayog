@@ -52,7 +52,7 @@
             <span class="menu-header-text">Tickets</span>
         </li>
 
-        <li class="menu-item {{ active_routes(['user.account.support.ticket.index','user.account.support.ticket.create','user.account.support.ticket.edit']) }}">
+        <li class="menu-item {{ active_routes(['supports.staff.tickets.index','supports.staff.tickets.show']) }}">
             <x-nav-link href="{{ route('supports.staff.tickets.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-support"></i>
                 <div data-i18n="Layouts">All Tickets</div>
@@ -133,6 +133,33 @@
             </a>
         </li>
 
+        @if(user()->role_id == 2)
+        <!-- Branch Management -->
+        <li class="menu-header small text-uppercase"><span class="menu-header-text">Branch Management</span></li>
+
+        <!-- Cards -->
+        <li class="menu-item {{ active_routes(['user.account.event.calendar']) }}">
+            <a href="{{ route('user.account.event.calendar') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                <div data-i18n="Basic">Event / Programs</div>
+            </a>
+        </li>
+        <!-- Cards -->
+        <li class="menu-item {{ active_routes(['user.account.event.calendar']) }}">
+            <a href="{{ route('user.account.event.calendar') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                <div data-i18n="Basic">Verification</div>
+            </a>
+        </li>
+        <li class="menu-item {{ active_routes(['user.account.event.calendar']) }}">
+            <a href="{{ route('user.account.event.calendar') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                <div data-i18n="Basic">Live</div>
+            </a>
+        </li>
+        <!-- Branch Management -->
+        <li class="menu-header small text-uppercase"><span class="menu-header-text"></span></li>
+        @endif
     </ul>
 </aside>
 <!-- / Menu -->
