@@ -85,7 +85,10 @@ class DonationController extends Controller
             $data["verified"] = false;
         }
 
-        $store_record = $this->store($request, $data);
+        // Testing purpose only.
+        // $store_record = $this->store($request, $data);
+
+        $store_record = true;
         if ($store_record && $data["verified"]) {
             session()->flash("success", "We received your donation. Thank-you !");
         } elseif ($store_record &&  !$data["verified"]) {

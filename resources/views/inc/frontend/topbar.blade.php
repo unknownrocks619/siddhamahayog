@@ -21,7 +21,7 @@
 
             <!-- Place this tag where you want the button to render. -->
             <li class="nav-item lh-1 me-3">
-                <button type="button" data-href="{{ route('user.account.notifications') }}" class="clickable btn btn-outline-primary">
+                <button type="button" data-href="{{ route('user.account.notifications') }}" class="clickable btn btn-outline-primary btn-sm">
                     <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
                     Notification
                     <?php
@@ -52,7 +52,7 @@
                                 </div>
                                 <div class="flex-grow-1">
                                     <span class="fw-semibold d-block">{{ user()->full_name }}</span>
-                                    <small class="text-muted">General</small>
+                                    <small class="text-muted">{{ \App\Models\Role::$roles[user()->role_id] }}</small>
                                 </div>
                             </div>
                         </a>
@@ -66,6 +66,7 @@
                             <span class="align-middle">Settings</span>
                         </a>
                     </li>
+
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>

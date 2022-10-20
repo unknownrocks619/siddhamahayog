@@ -140,14 +140,18 @@
                     <h5>
                         Offer Guru Daskshina
                     </h5>
-                    <form method="post" class="mt-3">
+                    <form method="post" @if(user()->role_id == 8) action="{{ route('donations.donate',['esewa']) }}" @endif class="mt-3">
                         @csrf
                         <div class="input-group">
                             <span class="input-group-text">NRs</span>
                             <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
                             <span class="input-group-text">.00</span>
                         </div>
+                        @if(user()->role_id == 8)
                         <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
+                        @else
+                        <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
+                        @endif
                     </form>
                 </div>
 
