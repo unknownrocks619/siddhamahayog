@@ -66,7 +66,14 @@
                             <span class="align-middle">Settings</span>
                         </a>
                     </li>
-
+                    @if(\App\Models\Role::$roles[user()->role_id] == "Admin")
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.admin_dashboard') }}">
+                            <i class="bx bx-cog me-2"></i>
+                            <span class="align-middle">Admin</span>
+                        </a>
+                    </li>
+                    @endif
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>

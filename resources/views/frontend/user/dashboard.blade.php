@@ -5,6 +5,8 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
+        <x-alert></x-alert>
+
         @include("frontend.user.dashboard.incomplete")
     </div>
     <div class="row">
@@ -32,7 +34,6 @@
         </div>
         @endif
         @include("frontend.user.notices.dashboard")
-        <x-alert></x-alert>
         <!-- Order Statistics -->
         <div class="col-md-8 col-lg-8 col-xl-8 order-0 mb-4">
             <div class="card h-100">
@@ -138,17 +139,17 @@
             <div class="card h-100">
                 <div class="card-header">
                     <h5>
-                        Offer Guru Daskshina
+                        Donation
                     </h5>
-                    <form method="post" @if(user()->role_id == 8) action="{{ route('donations.donate',['esewa']) }}" @endif class="mt-3">
+                    <form method="post" @if(\App\Models\Role::$roles[user()->role_id] == "Support") action="{{ route('donations.donate',['esewa']) }}" @endif class="mt-3">
                         @csrf
                         <div class="input-group">
                             <span class="input-group-text">NRs</span>
                             <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
                             <span class="input-group-text">.00</span>
                         </div>
-                        @if(user()->role_id == 8)
-                        <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
+                        @if(\App\Models\Role::$roles[user()->role_id] == "Support")
+                        <button type="submit" class="btn btn-success mt-2">Offer Donation</button>
                         @else
                         <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
                         @endif
