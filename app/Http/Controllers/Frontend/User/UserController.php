@@ -82,6 +82,7 @@ class UserController extends Controller
 
         if ($user_exists) {
             Auth::login($user_exists);
+
             return redirect()->intended();
         }
 
@@ -123,6 +124,7 @@ class UserController extends Controller
         }
 
         Auth::login($member);
+
         return redirect()->intended();
     }
 }

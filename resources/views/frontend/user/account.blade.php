@@ -126,7 +126,7 @@
 
                                     foreach ($countries as $country) {
                                         echo "<option value='{$country->id}'";
-                                        if ($country->id == user()->country) {
+                                        if ($country->id == old('country', user()->country)) {
                                             echo " selected ";
                                         }
                                         echo ">";

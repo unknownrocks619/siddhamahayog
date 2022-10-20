@@ -83,7 +83,8 @@ class ArthapanchawkController extends Controller
         $user->country = $request->country;
         $user->city = $request->state;
         $user->address = ["street_address" => $request->street_address];
-
+        $user->phone_number = $request->phone_number;
+        
         $userInfo->member_id = ($userInfo->member_id) ? $userInfo->member_id : $user->id;
         $userInfo->personal = $personal;
         $userInfo->education = $education;
