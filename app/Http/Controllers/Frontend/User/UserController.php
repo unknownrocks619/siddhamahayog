@@ -118,7 +118,7 @@ class UserController extends Controller
             $member->save();
         } catch (\Throwable $th) {
             //throw $th;
-            info("google Login " . $th->getMessage(), ["google_login"]);
+            dd($th->getMessage());
             session()->flash('error', "Unable to connect. Something went wrong.");
             return redirect()->route('login');
         }
