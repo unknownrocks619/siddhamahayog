@@ -97,10 +97,10 @@ class UserController extends Controller
         $member->email = $google_usr->user["email"];
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
-        dd($member);
 
 
         $reference = new Reference;
+        dd($reference);
         if (session()->has("_refU")) {
             $reference->referenced_by = session()->get('_refU')["id"];
         } else {
