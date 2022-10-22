@@ -80,7 +80,6 @@ class UserController extends Controller
         $google_usr = Socialite::driver("google")->user();
         $user_exists = Member::where('email', $google_usr->user["email"])->first();
         if ($user_exists) {
-            dd("user already exists.");
             Auth::login($user_exists);
 
             return redirect()->intended();
@@ -112,6 +111,7 @@ class UserController extends Controller
             }
         }
         try {
+            dd("google singup");
             $reference->referenced_to = $member->id;
             if ($reference->referenced_by) {
                 $reference->save();
