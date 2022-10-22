@@ -109,7 +109,6 @@ class UserController extends Controller
                 $reference->referenced_by = $r_member->id;
             }
         }
-        dd($reference);
         try {
             $reference->referenced_to = $member->id;
             if ($reference->referenced_by) {
