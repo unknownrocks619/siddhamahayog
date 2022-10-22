@@ -80,6 +80,7 @@ class UserController extends Controller
         $google_usr = Socialite::driver("google")->user();
         $user_exists = Member::where('email', $google_usr->user["email"])->first();
         if ($user_exists) {
+            dd("user already exists.");
             Auth::login($user_exists);
 
             return redirect()->intended();
