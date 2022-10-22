@@ -97,7 +97,7 @@ class UserController extends Controller
         $member->email = $google_usr->user["email"];
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
-
+        dd($member);
 
 
         $reference = new Reference;
@@ -111,7 +111,6 @@ class UserController extends Controller
             }
         }
         try {
-            dd("google singup");
             $reference->referenced_to = $member->id;
             if ($reference->referenced_by) {
                 $reference->save();
