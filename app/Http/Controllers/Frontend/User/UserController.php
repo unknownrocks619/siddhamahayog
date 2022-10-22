@@ -51,8 +51,8 @@ class UserController extends Controller
         $reference = new Reference;
         if (session()->has("_refU")) {
             $reference->referenced_by = session()->get('_refU')["id"];
-        } else {
-            $r_member = Member::where('sharing_code', request()->sharing_code);
+        } elseif (request()->sharing_code) {
+            $r_member = Member::where('sharing_code', request()->sharing_code)->first();
 
             if ($r_member) {
                 $reference->referenced_by = $r_member->id;
@@ -103,7 +103,7 @@ class UserController extends Controller
         if (session()->has("_refU")) {
             $reference->referenced_by = session()->get('_refU')["id"];
         } elseif (request()->sharing_code) {
-            $r_member = Member::where('sharing_code', request()->sharing_code);
+            $r_member = Member::where('sharing_code', request()->sharing_code)->first();
 
             if ($r_member) {
                 $reference->referenced_by = $r_member->id;
@@ -117,7 +117,6 @@ class UserController extends Controller
             $member->save();
         } catch (\Throwable $th) {
             //throw $th;
-            dd($th->getMessage());
             session()->flash('error', "Unable to connect. Something went wrong.");
             return redirect()->route('login');
         }
