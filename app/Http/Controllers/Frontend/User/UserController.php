@@ -100,16 +100,16 @@ class UserController extends Controller
 
 
         $reference = new Reference;
-        dd($reference);
         if (session()->has("_refU")) {
             $reference->referenced_by = session()->get('_refU')["id"];
-        } else {
+        } elseif (request()->sharing_code) {
             $r_member = Member::where('sharing_code', request()->sharing_code);
 
             if ($r_member) {
                 $reference->referenced_by = $r_member->id;
             }
         }
+        dd($reference);
         try {
             $reference->referenced_to = $member->id;
             if ($reference->referenced_by) {
