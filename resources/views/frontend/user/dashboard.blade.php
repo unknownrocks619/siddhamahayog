@@ -6,7 +6,6 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
         <x-alert></x-alert>
-
         @include("frontend.user.dashboard.incomplete")
     </div>
     <div class="row">

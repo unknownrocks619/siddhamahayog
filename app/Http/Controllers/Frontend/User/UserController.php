@@ -79,7 +79,7 @@ class UserController extends Controller
     {
         $google_usr = Socialite::driver("google")->user();
         $user_exists = Member::where('email', $google_usr->user["email"])->first();
-
+        dd($user_exists);
         if ($user_exists) {
             Auth::login($user_exists);
 
