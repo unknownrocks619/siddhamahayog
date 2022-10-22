@@ -78,7 +78,6 @@ class UserController extends Controller
     public function google()
     {
         $google_usr = Socialite::driver("google")->user();
-        dd($google_usr);
         $user_exists = Member::where('email', $google_usr->user["email"])->first();
         if ($user_exists) {
             Auth::login($user_exists);
@@ -119,6 +118,7 @@ class UserController extends Controller
             $member->save();
         } catch (\Throwable $th) {
             //throw $th;
+            info("google Login " . $th->getMessage(), ["google_login"]);
             session()->flash('error', "Unable to connect. Something went wrong.");
             return redirect()->route('login');
         }
