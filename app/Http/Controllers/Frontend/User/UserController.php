@@ -24,7 +24,6 @@ class UserController extends Controller
     {
         $fb_user = Socialite::driver("facebook")->user();
         // check if user exists.
-
         $user_exists = Member::where('email', $fb_user->email)->first();
 
         if ($user_exists) {
