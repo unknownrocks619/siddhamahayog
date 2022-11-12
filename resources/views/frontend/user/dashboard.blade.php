@@ -140,19 +140,17 @@
                     <h5>
                         Donation
                     </h5>
-                    <form method="post" @if(\App\Models\Role::$roles[user()->role_id] == "Support") action="{{ route('donations.donate',['esewa']) }}" @endif class="mt-3">
+                    @if(site_settings('donation') || user()->role_id == 1)
+                    <form method="post" action="{{ route('donations.donate',['esewa']) }}" class="mt-3">
                         @csrf
                         <div class="input-group">
                             <span class="input-group-text">NRs</span>
-                            <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
+                            <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount">
                             <span class="input-group-text">.00</span>
                         </div>
-                        @if(\App\Models\Role::$roles[user()->role_id] == "Support")
-                        <button type="submit" class="btn btn-success mt-2">Offer Donation</button>
-                        @else
-                        <button type="submit" class="btn btn-success mt-2 disabled" disabled>Coming Soon</button>
-                        @endif
+                        <button type="submit" class="btn btn-success mt-2">E-Sewa Dakshina</button>
                     </form>
+                    @endif
                 </div>
 
                 <hr />
@@ -194,11 +192,12 @@
         <!--/ Transactions -->
     </div>
 </div>
-<!-- / Content -->
-
 
 <!-- Content wrapper -->
 @endsection
+
+
+
 
 @push("custom_css")
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
@@ -237,4 +236,24 @@
         })
     }
 </script>
+@if(user()->role_id == 8)
+<script type='text/javascript'>
+    $('form#joinSessionForm').submit(function(event) {
+        event.preventDefault();
+        $("#userPopOption").modal('show');
+        let formAction = $(this).attr('action');
+        console.log(formAction);
+        $("#userPopOption").find('form').attr('action', formAction);
+    });
+</script>
+@else
+<script type='text/javascript'>
+    $('#joinSessionForm').submit(function(event) {
+        event.preventDefault();
+        $(this).find('button').prop('disabled', true);
+        $("form#joinSessionForm")[0].submit();
+    });
+</script>
+
+@endif
 @endpush

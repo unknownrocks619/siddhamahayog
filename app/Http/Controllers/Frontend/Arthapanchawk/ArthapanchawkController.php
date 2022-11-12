@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend\Arthapanchawk;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Payment\EsewaController;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaEnrollStoreRequest;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaStoreRequest;
 use App\Http\Traits\CourseFeeCheck;
@@ -195,18 +196,21 @@ class ArthapanchawkController extends Controller
     public function paymentProcessor(Program $program)
     {
         $url = config('services.esewa.redirect');
+        $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
         $data = [
-            'amt' => 100, // (int) $program->active_fees->admission_fee,
+            'amt' => 100, //$program->active_fees->$fee_type,
             'pdc' => 0,
             'psc' => 0,
             'txAmt' => 0,
-            'tAmt' => 100, //(int) $program->active_fees->admission_fee,
+            'tAmt' => 100, //$program->active_fees->$fee_type,
             'pid' => (string) Str::uuid(),
             'scd' => config("services.esewa.merchant_code"),
             'su' => route('vedanta.payment.success', $program->id),
             'fu' => route('vedanta.payment.failed', $program->id)
         ];
-
+        $esewaController = new EsewaController;
+        $esewaController->set_config($data);
+        return $esewaController->process_payment_html();
         $output =  "<form method='POST' action='{$url}' id='esewa_form' class='d-none'>";
         foreach ($data as $payment_key => $payment_value) :
             $output .= "<input type='hidden' value='{$payment_value}' name='{$payment_key}' />";
@@ -230,6 +234,10 @@ class ArthapanchawkController extends Controller
 
     public function paymentSuccess(Program $program)
     {
+        $esewaController = new EsewaController;
+        if (!$esewaController->verify_payment()) {
+            return $this->paymentFailed($program);
+        }
         // now formally enroll user in program.
         $notification =  new MemberNotification;
         $notification->member_id = auth()->id();
@@ -241,29 +249,38 @@ class ArthapanchawkController extends Controller
         $notification->level = "notice";
         $notification->seen = false;
 
+        $enrollUser = null;
         // also enroll the user in course.
-        $enrollUser = new ProgramStudentEnroll;
+        if (!ProgramStudentEnroll::where('program_id', $program->id)->where('member_id', auth()->id())->exists()) {
+            $enrollUser = new ProgramStudentEnroll;
+            $enrollUser->program_id = $program->id;
+            $enrollUser->member_id = auth()->id();
+            $enrollUser->enroll_date = date("Y-m-d");
+            $enrollUser->program_course_fee_id = $program->active_fees->id;
+            $enrollUser->scholarship = false;
+        }
 
-        $enrollUser->program_id = $program->id;
-        $enrollUser->member_id = auth()->id();
-        $enrollUser->enroll_date = date("Y-m-d");
-        $enrollUser->program_course_fee_id = $program->active_fees->id;
-        $enrollUser->scholarship = false;
+        $program_student_fee = ProgramStudentFee::where('program_id', $program->id)
+            ->where('student_id', auth()->id())
+            ->first();
+        $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
 
-        // include payment in student table.
+        if ($program_student_fee) {
+            $program_student_fee->total_amount = $program_student_fee->total_amount + $program->active_fees->$fee_type;
+        } else {
+            $program_student_fee = new ProgramStudentFee();
+            $program_student_fee->program_id = $program->id;
+            $program_student_fee->student_id = auth()->id();
+            $program_student_fee->total_amount = $program->active_fees->admission_fee;
+        }
 
-        $program_student_fee = new ProgramStudentFee();
-        $program_student_fee->program_id = $program->id;
-        $program_student_fee->student_id = auth()->id();
-        $program_student_fee->total_amount = $program->active_fees->admission_fee;
 
         // fee detail.
-
         $program_student_fee_detail = new ProgramStudentFeeDetail();
         $program_student_fee_detail->program_id = $program->id;
         $program_student_fee_detail->student_id = auth()->id();
         $program_student_fee_detail->amount = $program->active_fees->admission_fee;
-        $program_student_fee_detail->amount_category = "admission_fee";
+        $program_student_fee_detail->amount_category = $fee_type;
         $program_student_fee_detail->source = "online";
         $program_student_fee_detail->source_detail = "E-sewa Transaction";
         $program_student_fee_detail->verified = true;
@@ -273,7 +290,9 @@ class ArthapanchawkController extends Controller
             //code...
             DB::transaction(function () use ($program, $program_student_fee_detail, $program_student_fee, $enrollUser, $notification) {
                 $notification->save();
-                $enrollUser->save();
+                if ($enrollUser) {
+                    $enrollUser->save();
+                }
                 $program_student_fee->save();
                 $program_student_fee_detail->program_student_fees_id = $program_student_fee->id;
                 $program_student_fee_detail->save();
@@ -296,22 +315,59 @@ class ArthapanchawkController extends Controller
             return redirect()->route('dashboard');
         }
 
-        session()->flash("success", 'Congratulation ! You have successfully enrolled in ' . $program->program_name);
+        session()->flash("success", 'Congratulation ! Your payment for ' . $program->program_name . ' has been paid.');
         return redirect()->route('dashboard');
     }
 
     public function paymentFailed(Program $program)
     {
+
         $notification =  new MemberNotification;
         $notification->member_id = auth()->id();
         $notification->title = "Payment Failed for " . $program->program_name;
-        $notification->body = "Your admissin fee for " . $program->program_name . " couldn't be completed. You can still try from your dashboard.";
+        $notification->body = "Your payment fee for " . $program->program_name . " couldn't be completed. You can still try from your dashboard. If you think there is mistake in your transaction create a support ticket and include your Reference ID Available in esewa transaction.";
+        if (request()->get('refId')) {
+            $notification->body .= ' Esewa Reference Code : ' . request()->get('refId');
+            $notification->body .= ' Esewa Reference Amount: ' . request()->get('amt');
+            $notification->title = "Payment Verification Failed";
+        }
         $notification->type = "message";
         $notification->level = "notice";
         $notification->seen = false;
 
         try {
             $notification->save();
+
+            if (request()->get('refId') && request()->get('amt')) {
+                $program_student_fee = ProgramStudentFee::where('program_id', $program->id)
+                    ->where('student_id', auth()->id())
+                    ->first();
+
+                $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
+
+                if (!$program_student_fee) {
+                    $program_student_fee = new ProgramStudentFee();
+                    $program_student_fee->program_id = $program->id;
+                    $program_student_fee->student_id = auth()->id();
+                    $program_student_fee->total_amount = 0;
+                    $program_student_fee->save();
+                }
+
+
+                // fee detail.
+                $program_student_fee_detail = new ProgramStudentFeeDetail();
+                $program_student_fee_detail->program_id = $program->id;
+                $program_student_fee_detail->student_id = auth()->id();
+                $program_student_fee_detail->amount = request()->get('amt');
+                $program_student_fee_detail->amount_category = $fee_type;
+                $program_student_fee_detail->source = "online";
+                $program_student_fee_detail->source_detail = "E-sewa Transaction";
+                $program_student_fee_detail->verified = false;
+                $program_student_fee_detail->remarks = request()->all();
+                $program_student_fee_detail->message = "Unable to verify amount with esewa vendor.";
+                $program_student_fee_detail->program_student_fees_id = $program_student_fee->id;
+                $program_student_fee_detail->save();
+            }
         } catch (\Throwable $th) {
             //throw $th;
             info("Unable to save record in member notification table. due to " . $th->getMessage(), ["Program Payment"]);

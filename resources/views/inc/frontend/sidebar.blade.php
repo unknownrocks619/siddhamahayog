@@ -69,6 +69,7 @@
                 <i class="menu-icon tf-icons bx bx-cog"></i>
                 <div data-i18n="Account Settings">Account Settings</div>
             </a>
+        </li>
         <li class="menu-item  {{ active_routes(['user.account.notifications']) }}">
             <a href="{{ route('user.account.notifications') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
@@ -76,6 +77,11 @@
                 <div data-i18n="Notifications">Notifications</div>
             </a>
         </li>
+        <li class="menu-item  {{ active_routes(['donations.list']) }}">
+            <a href="{{ route('donations.list') }}" class="menu-link">
+                <i class='menu-icon bx bx-donate-heart'></i>
+                <div data-i18n="Notifications"> Guru Dakshina</div>
+            </a>
         </li>
         <!-- Components -->
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>

@@ -202,7 +202,7 @@
 <script>
     grecaptcha.ready(function() {
         document.getElementById('loginForm').addEventListener("submit", function(event) {
-            $(this).children("input").prop('disabled');
+            $("form#loginForm").find("button").prop('disabled', true);
             event.preventDefault();
             grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
                     action: 'login'

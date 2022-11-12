@@ -8,6 +8,7 @@ Route::prefix("donations")
     ->middleware(["auth"])
     ->controller(DonationController::class)
     ->group(function () {
+        Route::get('/donation/list', 'index')->name('list');
         Route::post('/donation/{serviceProvider}', "donate")->name('donate');
         Route::get("/donation/{serviceProvider}/success", "success")->name('success');
         Route::get("/donation/{serviceProvider}/failed", "failed")->name('failed');

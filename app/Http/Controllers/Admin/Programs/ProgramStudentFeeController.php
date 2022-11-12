@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Member;
+use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramCourseFee;
 use App\Models\ProgramStudentFee;
@@ -27,6 +28,31 @@ class ProgramStudentFeeController extends Controller
 
         $fee_detail->verified =  !$fee_detail->verified;
         $fee_detail->rejected =  !$fee_detail->reject;
+        if ($fee_detail->verified) {
+            $notification =  new MemberNotification;
+            $notification->member_id = $fee_detail->student_id;
+            $notification->title = "Payment Verified ";
+            $notification->notification_type = "App\Models\ProgramStudentFeeDetail";
+            $notification->notification_id = $fee_detail->id;
+            $notification->body = "Good News ! <br /> Your payment has been verified.";
+            $notification->type = "message";
+            $notification->level = "notice";
+            $notification->seen = false;
+            $notification->save();
+        }
+
+        if ($fee_detail->rejected) {
+            $notification =  new MemberNotification;
+            $notification->member_id = $fee_detail->student_id;
+            $notification->title = "Payment Verification Failed ";
+            $notification->notification_type = "App\Models\ProgramStudentFeeDetail";
+            $notification->notification_id = $fee_detail->id;
+            $notification->body = "We are sorry to inform you, Your transaction of amount. NRs. " . $fee_detail->amount . ' has been rejected. <br /><br /> If you think there is a mistake, Create a ticket explaining your issue.';
+            $notification->type = "message";
+            $notification->level = "notice";
+            $notification->seen = false;
+            $notification->save();
+        }
 
         $fee_detail->save();
     }
@@ -167,6 +193,9 @@ class ProgramStudentFeeController extends Controller
         if ($request->ajax() && $request->wantsJson()) {
             $all_transaction = ProgramStudentFeeDetail::where('program_id', $program->id)->with(["student"])->orderBy("id", "DESC")->get();
             return DataTables::of($all_transaction)
+                ->addColumn('transaction_date', function ($row) {
+                    return date("Y-m-d", strtotime($row->created_at));
+                })
                 ->addColumn('member_name', function ($row) {
                     $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
                     $member .= $row->student->full_name;
@@ -205,15 +234,14 @@ class ProgramStudentFeeController extends Controller
                 })
                 ->addColumn('media', function ($row) {
                     if ($row->file) {
-                        $file_object = json_decode($row->file);
-                        return "<a href='" . asset($file_object->path) . "'>" . $row->type . "</a>";
+                        return "<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>";
                     } else {
                         return "N/A";
                     }
                 })
                 ->addColumn('action', function ($row) {
                     $action = "";
-                    $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('fee.api_update_fee_detail', [$row->id]) . "'>";
+                    $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->id]) . "'>";
                     $action .= "<input type='hidden' name='update_type' value='status' />";
 
                     if ($row->verified) {
@@ -223,7 +251,7 @@ class ProgramStudentFeeController extends Controller
                     }
                     $action .= "</form>";
 
-                    $action .= "<form style='display:inline' method='DELETE' action='" . route('fee.api_delete_fee', $row->id) . "' class='transaction_delete_form'>";
+                    $action .= "<form style='display:inline' method='DELETE' action='" . route('admin.program.fee.api_delete_fee', $row->id) . "' class='transaction_delete_form'>";
                     $action .= "<input type='hidden' name='update_type' value='status' />";
                     $action .= "<button type='submit' class='btn btn-danger btn-sm'><i class='zmdi zmdi-delete'></i></button>";
                     $action .= "</form>";
@@ -278,5 +306,42 @@ class ProgramStudentFeeController extends Controller
         }
         session()->flash('success', "Congratulation ! New Fee Structure added.");
         return back();
+    }
+
+    public function display_uploaded_voucher(ProgramStudentFeeDetail $fee_detail)
+    {
+        if (!$fee_detail->file) {
+            return "Image Not Found.";
+        }
+        $html = "<div class='row'>";
+        $html .= "<div class='col-md-12'>";
+        $html .= "<table class='table table-border table-hover'>";
+        $html .= "<thead>";
+        $html .= "<tr>";
+        $html .= "<th>";
+        $html .= "Bank Name";
+        $html .= "</th>";
+        $html .= "<th>";
+        $html .= "Voucher Date";
+        $html .= "</th>";
+        $html .= "<th>";
+        $html .= "Name";
+        $html .= "</th>";
+        $html .= "</tr>";
+        $html .= "</thead>";
+        $html .= "<tbody>";
+        $html .= "<tr>";
+        $html .= "<td>" . htmlspecialchars($fee_detail->remarks->bank_name) . "</td>";
+        $html .= "<td>" . htmlspecialchars($fee_detail->remarks->upload_date) . "</td>";
+        $html .= "<td>" . strtoupper($fee_detail->student->full_name) . "</td>";
+        $html .= "</tr>";
+        $html .= "</tbody>";
+        $html .= "</table>";
+        $html .= "</div>";
+        $html .= "<div class='col-md-12  mt-3 border'>";
+        $html .= "<img src='" . asset($fee_detail->file->path) . "' class='img-fluid' />";
+        $html .= "</div>";
+        $html .= "</div>";
+        return $html;
     }
 }

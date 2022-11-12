@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\Website\Slider\SliderController;
 use App\Http\Controllers\Admin\Widget\WidgetController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomAccountController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomMeetingController;
+use App\Http\Controllers\API\Fee\FeeAPIController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -62,7 +63,7 @@ Route::prefix('admin')
                 Route::post("/assign/{program}", "store_member_to_class")->name('admin_store_assign_member_to_program');
                 Route::post("/show/program/{member}/{emergencyMeta}/{program?}", "programUpdate")->name('admin_update_for_program');
                 Route::post("/update/{member}", "upate")->name("admin_update_member_basic_info");
-                Route::post("/update/member/meta/{memberInfo}", "updatePersonal")->name("admin_update_member_meta_info");
+                Route::post("/update/member/meta/{member}/{memberInfo?}", "updatePersonal")->name("admin_update_member_meta_info");
             });
         /**
          * Zoom & Meetings
@@ -114,6 +115,7 @@ Route::prefix('admin')
                 Route::get("/add/batch/modal/{program}", [AdminProgramController::class, "add_batch_modal"])->name("admin_program_add_batch_modal");
                 Route::get("/detail/{program}", [AdminProgramController::class, "program_detail"])->name("admin_program_detail");
                 Route::get("live-program/list", [AdminProgramController::class, "liveProgram"])->name('all-live-program');
+                Route::get("live-program/list/join-as-admin/{live}", [AdminProgramController::class, "rejoinSession"])->name('live-program-as-admin');
                 Route::get("live/{program}", [AdminProgramController::class, "goLiveCreate"])->name('live');
                 Route::post("/add/batch/{program}", [AdminProgramController::class, "store_batch_program"])->name("admin_program_store_batch_modal");
                 Route::post("/live/{program}", [AdminProgramController::class, "storeLive"])->name("store_live");
@@ -180,9 +182,12 @@ Route::prefix('admin')
                         Route::get("/add/{program}", [ProgramStudentFeeController::class, "add_fee_to_student_by_program"])->name('admin_program_create_fee');
                         Route::get('/overview/{program}', [ProgramStudentFeeController::class, "fee_overview_by_program"])->name('admin_fee_overview_by_program');
                         Route::get("/transaciton-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
+                        Route::get("/transaciton/voucher/file/{fee_detail}", [ProgramStudentFeeController::class, "display_uploaded_voucher"])->name('admin_display_fee_voucher');
                         Route::post('/store/{program}/{member}', [ProgramStudentFeeController::class, "store_fee_by_program"])->name('admin_store_student_fee');
                         Route::post('/store/fee-strucutre/new/{program}', [ProgramStudentFeeController::class, "store_program_course_fee_structure"])->name('admin_store_course_fee');
                         Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');
+                        Route::put("transaction/update/status/{fee_detail}", [FeeAPIController::class, "update_fee_status"])->name('api_update_fee_detail');
+                        Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
                     });
                 Route::prefix('enroll')
                     ->name('enroll.')

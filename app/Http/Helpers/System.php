@@ -16,8 +16,8 @@ if (!function_exists("create_zoom_meeting")) {
 
     function create_zoom_meeting(ZoomAccount $zoom_account, $meeting_name = "Siddhamahayog, Test Case 01")
     {
-        $token = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InBVQmhpSkRqVFJXaG9XQWVuamttTFEiLCJleHAiOjE2NzIzODA5MDAsImlhdCI6MTYzMTIwMDQ4NH0.33IM6DmA8fs-BGTf7khr5O9euOsHqY3WxQbgcWZq1S8";
-        $username = "zoom@siddhamahayogacademy.org";
+        $token = $zoom_account->api_token;
+        $username = $zoom_account->account_username;
 
         $configurations = [
             "type" => 2,
@@ -32,7 +32,7 @@ if (!function_exists("create_zoom_meeting")) {
             //     "end_date_time" => "2022-12-30T12:00:00Z"
             // ],
             "settings" => [
-                "approval_type" => 1,
+                "approval_type" => 0,
                 "allow_multiple_devices" => 0,
                 "show_share_button" => 0,
                 "registrants_confirmation_email" => false,
@@ -112,11 +112,18 @@ if (!function_exists('meeting_details')) {
 if (!function_exists("register_participants")) {
     function register_participants(ZoomAccount $zoomAccount, $meeting_id)
     {
-        $last_name = (user()->middle_name) ?  " " . Str::ucfirst(Str::lower(Str::of(user()->middle_name)->trim())) . " " .  Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim())) : " " . Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim()));
+        // dd(request()->all());
+        if (user()->role_id == 8 && request()->role == "ram-das") {
+            $first_name = 'Ram';
+            $last_name = 'Das(' . substr(time(), 7, 3) . ')';
+        } else {
+            $first_name = Str::ucfirst(Str::lower(Str::of(user()->first_name)->trim()));
+            $last_name = (user()->middle_name) ?  " " . Str::ucfirst(Str::lower(Str::of(user()->middle_name)->trim())) . " " .  Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim())) : " " . Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim()));
+        }
         $settings = [
-            "first_name" => Str::ucfirst(Str::lower(Str::of(user()->first_name)->trim())),
+            "first_name" => $first_name,
             "last_name" => $last_name,
-            "email" => time() . user()->email,
+            "email" => time() . "_T_" . user()->email,
             "auto_approve" => true
         ];
         $signature = $zoomAccount->api_token;

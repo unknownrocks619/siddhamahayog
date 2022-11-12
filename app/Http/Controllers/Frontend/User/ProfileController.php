@@ -9,6 +9,7 @@ use App\Http\Requests\Frontend\User\Notifications\SingleNotificationRequest;
 use App\Http\Traits\UploadHandler;
 use App\Models\Live;
 use App\Models\MemberNotification;
+use App\Models\Program;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,8 @@ class ProfileController extends Controller
         $enrolledPrograms  = ProgramStudent::where('student_id', auth()->id())->with(['live', "program" => function ($query) {
             return $query->with(["student_admission_fee"]);
         }])->get();
-        return view("frontend.user.dashboard", compact("enrolledPrograms"));
+        $openProgram = Program::where('program_type', 'open')->with(['liveProgram' => fn ($query) => $query->where('live', true)])->get();
+        return view("frontend.user.dashboard", compact("enrolledPrograms", "openProgram"));
     }
 
     public function account()

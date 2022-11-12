@@ -108,4 +108,9 @@ class Program extends Model
     {
         return $this->hasMany(Live::class, "program_id")->where('live', true);
     }
+
+    public function allLivePrograms()
+    {
+        return $this->hasMany(Live::class, "program_id")->where('live', true);
+    }
 }

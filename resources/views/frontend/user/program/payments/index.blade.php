@@ -14,21 +14,32 @@
         <div class="col-md-12">
             <x-alert></x-alert>
             <div class="card mb-4">
-                <h5 class="card-header">Your Transaction history for <span class="fs-4 text-primary">`{{ $program->program_name }}`</span></h5>
+                <h5 class="card-header">Your Payment history for <span class="fs-4 text-primary">`{{ $program->program_name }}`</span></h5>
                 <!-- Account -->
                 <div class="card-body">
-                    <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <div class="button-wrapper">
-                            <p class="text-muted mb-0">All Your transactions for {{$program->program_name}} will be available here.</p>
+                    <div class="d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
+                        <div class="button-wrapper mx-2">
+                            @if(site_settings('online_payment') || user()->role_id == 1)
+                            <button type="submit" data-bs-toggle="modal" data-bs-target="#paymentSelection" class="btn btn-primary">
+                                <x-plus></x-plus>Choose Payment Options
+                            </button>
+                            @endif
                         </div>
-
+                        <div>
+                            <button class="btn btn-danger btn-sm clickable" data-href="{{ route('user.account.programs.program.index') }}">
+                                <i class="bx bx-window-close">
+                                </i>
+                                Close
+                            </button>
+                        </div>
                     </div>
+
                     @if(! $paymentHistories && $program->program_type == "paid")
                     <?php
 
-                    $url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
+                    //$url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
                     ?>
-                    <button data-href="{{ $url }}" type="button" class="mt-2 mb-2 btn btn-outline-danger clickable">Clear Admission Payment</button>
+                    <!-- <button data-href="{{-- $url --}}" type="button" class="mt-2 mb-2 btn btn-outline-danger clickable">Clear Admission Payment</button> -->
                     @endif
                     <table class="table table-border table-hover">
                         <thead>
@@ -50,13 +61,15 @@
                                 </td>
                                 <td> {{ __("payment.".$transaction->amount_category) }} </td>
                                 <td>
-                                    NRs. {{ number_format($transaction->amount,2,",",'.') }}
+                                    NRs. {{ number_format($transaction->amount,2,",") }}
                                 </td>
                                 <td>
                                     @if($transaction->verified)
                                     <span class="badge bg-label-success">Verified</span>
+                                    @elseif ($transaction->rejected)
+                                    <span class="badge bg-label-danger">Rejected</span>
                                     @else
-                                    <span class="badge bg-label-danger">Unverified</span>
+                                    <span class="badge bg-label-info">Unverified</span>
                                     @endif
                                 </td>
                             </tr>
@@ -83,7 +96,17 @@
         </div>
     </div>
 </div>
-
+@if(site_settings('online_payment') || user()->role_id == 1)
+<x-modal modal="paymentSelection">
+    <div class="modal-header">
+        <h5 class="modal-title" id="modalFullTitle">Select Payment Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        @include('frontend.partials.payment-selection')
+    </div>
+</x-modal>
+@endif
 <div class="modal fade" id="resourceImage" tabindex="-1" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen" role="document">
         <div class="modal-content" id="resourceContent">

@@ -5,7 +5,7 @@
 @endsection
 
 @section("page_css")
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
 
 
 @endsection
@@ -18,11 +18,11 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Program `{{$program->program_name}}`</h2>                    
+                    <h2>Program `{{$program->program_name}}`</h2>
                 </div>
             </div>
         </div>
- 
+
         <div class="row clearfix">
             <div class="col-md-12 col-lg-12">
                 <div class="card">
@@ -58,6 +58,7 @@
                         <table id="program_overview" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
+                                    <th>Date</th>
                                     <th>Member Name</th>
                                     <th>Amount</th>
                                     <th>Category</th>
@@ -70,74 +71,125 @@
                         </table>
                     </div>
                 </div>
-            </div>         
-        </div>        
+            </div>
+        </div>
     </div>
 </section>
 @endsection
 
 
-
+<x-modal modal="imageFile">
+    <div class="modal-header">
+        <button type="button" style="z-index:999" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal">CLOSE</button>
+    </div>
+    <div class="modal-body" id='imageContent'>
+        <p class="text-center">
+            Please wait.. loading image.
+        </p>
+    </div>
+</x-modal>
 @section("page_script")
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
 <script type="text/javascript">
+    $("#imageFile").on("shown.bs.modal", function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            success: function(response) {
+                $("#imageContent").html(response);
+            }
+        })
+    });
     $(document).ready(function() {
         $('#program_overview').DataTable({
             processing: true,
             serverSide: true,
             ajax: '{{url()->full()}}',
-            columns: [
-                {data: 'member_name',name:"member_name"},
-                {data: 'transaction_amount', name: 'transaction_amount'},
-                {data: "category",name: "category"},
-                {data: "source", name: "source"},
-                {data: "status", name: "status"},
-                {data: "media", name: "media"},
-                {data: "action", name: "action"},
+            columns: [{
+                    data: 'transaction_date',
+                    name: "transaction_date"
+                },
+                {
+                    data: 'member_name',
+                    name: "member_name"
+                },
+                {
+                    data: 'transaction_amount',
+                    name: 'transaction_amount'
+                },
+                {
+                    data: "category",
+                    name: "category"
+                },
+                {
+                    data: "source",
+                    name: "source"
+                },
+                {
+                    data: "status",
+                    name: "status"
+                },
+                {
+                    data: "media",
+                    name: "media"
+                },
+                {
+                    data: "action",
+                    name: "action"
+                },
+            ],
+            order: [
+                [0, 'desc']
             ]
         });
 
     })
 </script>
 <script>
-    $(document).on("click",".transaction_action",function(event) {
+    $(document).on("click", ".transaction_action", function(event) {
         event.preventDefault();
         var confirm_action = confirm("You are about to change current status of transaction. Are you sure ?");
         let cur_elem = $(this);
+        $(cur_elem).find('button').prop('disabled', true);
         $.ajax({
-            url : $(this).attr("href"),
-            success : function (response) {
+            url: $(this).attr("href"),
+            success: function(response) {
                 $("#program_overview").DataTable().ajax.reload();
+            },
+            error: function() {
+                alert('Unable to update transaction detail');
+                $(cur_elem).find('button').prop('disabled', false);
+
             }
         })
     })
-    $(document).on('submit','.transaction_action_form', function (event) {
+    $(document).on('submit', '.transaction_action_form', function(event) {
         event.preventDefault();
         // alert("prevented.");
         $.ajax({
-            type : $(this).attr('method'),
-            data : $(this).serializeArray(),
-            url : $(this).attr("action"),
-            headers : {
-                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+            type: $(this).attr('method'),
+            data: $(this).serializeArray(),
+            url: $(this).attr("action"),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success : function (response){
+            success: function(response) {
                 $("#program_overview").DataTable().ajax.reload();
             }
 
         })
     })
-    $(document).on("click",'.transaction_delete_form', function (event) {
+    $(document).on("click", '.transaction_delete_form', function(event) {
         event.preventDefault();
         $.ajax({
-            type : $(this).attr('method'),
-            data : $(this).serializeArray(),
-            url : $(this).attr('action'),
-            headers : {
-                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+            type: $(this).attr('method'),
+            data: $(this).serializeArray(),
+            url: $(this).attr('action'),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success : function (response) {
+            success: function(response) {
                 $("#program_overview").DataTable().ajax.reload();
             }
         })

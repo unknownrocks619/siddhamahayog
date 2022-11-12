@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix("v1")
-    ->middleware('auth:sanctum')
+    ->middleware('auth')
     ->group(function () {
         Route::prefix("zoom")
             ->name('zoom.')

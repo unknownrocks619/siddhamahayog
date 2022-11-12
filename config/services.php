@@ -42,9 +42,12 @@ return [
     ],
 
     'esewa' => [
-        "merchant_code" => "EPAYTEST",
-        "redirect" => "https://uat.esewa.com.np/epay/main",
-        "verification" => "https://uat.esewa.com.np/epay/transrec"
+        'environment' => env("ESEWA_MODE", 'test'),
+        "merchant_code" => env("ESEWA_MERCHANT", "EPAYTEST"),
+        "redirect_test" => env("ESEWA_REDIRECT_TEST", "https://uat.esewa.com.np/epay/main"),
+        "redirect_live" => env("ESEWA_REDIRECT_LIVE", "https://uat.esewa.com.np/epay/main"),
+        "verification_test" => env("ESEWA_VERIFICATION_TEST", "https://uat.esewa.com.np/epay/transrec"),
+        "verification_live" => env("ESEWA_VERIFICATION_LIVE", "https://uat.esewa.com.np/epay/transrec")
     ]
 
 ];

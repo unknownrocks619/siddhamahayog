@@ -5,7 +5,7 @@
 @endsection
 
 @section("page_css")
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
 
 
 @endsection
@@ -18,11 +18,11 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Program `{{$program->program_name}}`</h2>                    
+                    <h2>Program `{{$program->program_name}}`</h2>
                 </div>
             </div>
         </div>
- 
+
         <div class="row clearfix">
             <div class="col-md-12 col-lg-12">
                 <div class="card">
@@ -58,17 +58,17 @@
                         <table id="program_overview" class="table table-hover table-bordered">
                             <thead>
                                 <tr>
+                                    <th>Last Transaction</th>
                                     <th>Member Name</th>
                                     <th>Amount</th>
-                                    <th>Last Transaction</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
                 </div>
-            </div>         
-        </div>        
+            </div>
+        </div>
     </div>
 </section>
 @endsection
@@ -83,11 +83,22 @@
         processing: true,
         serverSide: true,
         ajax: '{{url()->full()}}',
-        columns: [
-            {data: 'member_name',name:"member_name"},
-            {data: 'amount', name: 'amount'},
-            {data: "last_transaction",name: "last_transaction"},
-            {data: "action", name: "action"},
+        columns: [{
+                data: "last_transaction",
+                name: "last_transaction"
+            },
+            {
+                data: 'member_name',
+                name: "member_name"
+            },
+            {
+                data: 'amount',
+                name: 'amount'
+            },
+            {
+                data: "action",
+                name: "action"
+            },
         ]
     });
 </script>

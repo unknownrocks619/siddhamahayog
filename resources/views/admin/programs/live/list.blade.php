@@ -75,11 +75,17 @@ Support Ticket
                                             @endif
                                         </td>
                                         <td>
+                                            <form action="{{ route('admin.program.live-program-as-admin',$live->id) }}" method="get">
+                                                <button type="submit" class="clickable btn btn-success">Re-Join</button>
+                                            </form>
+                                        </td>
+                                        <td>
                                             <form action="{{ route('admin.program.live_program.end',$live->id) }}" method="post">
                                                 @csrf
                                                 <button type="submit" class="btn btn-danger">End Program</button>
                                             </form>
                                         </td>
+
                                     </tr>
                                     @endforeach
                                 </tbody>

@@ -10,7 +10,8 @@ class ProgramStudentFeeDetail extends Model
 {
     use HasFactory, SoftDeletes;
     protected $casts = [
-        "remarks" => "object"
+        "remarks" => "object",
+        "file" => "object"
     ];
     public function student_fee()
     {

@@ -114,7 +114,7 @@
                                     </h3>
 
                                     @foreach ($member->emergency_contact as $em_contact)
-                                    <form action="{{-- route('admin.members.admin_update_for_program',[$member->id,$em_contact->id,$program->id]) --}}" method="post">
+                                    <form action="{{ route('admin.members.admin_update_for_program',[$member->id,$em_contact->id,$program->id]) }}" method="post">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12">
@@ -289,84 +289,88 @@
                                 </div>
 
                                 <div class="body mt-3">
-                                    <form action="{{ route('admin.members.admin_update_member_meta_info',$member->meta->id) }}" method="post">
-                                        @csrf
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <b>
-                                                        Date of Birth
-                                                    </b>
-                                                    <input type="date" name="date_of_birth" id="date_of_birth" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->date_of_birth) ? $member->meta->personal->date_of_birth : '' }}" class="form-control" />
+                                    @if($member->meta)
+                                    <form action="{{ route('admin.members.admin_update_member_meta_info',[$member->id, $member->meta->id]) }}" method="post">
+                                        @else
+                                        <form action="{{ route('admin.members.admin_update_member_meta_info',[$member->id]) }}" method="post">
+                                            @endif
+                                            @csrf
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <b>
+                                                            Date of Birth
+                                                        </b>
+                                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->date_of_birth) ? $member->meta->personal->date_of_birth : '' }}" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <b>
+                                                            Place of Birth
+                                                        </b>
+                                                        <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->place_of_birth) ? $member->meta->personal->place_of_birth : null }}" />
+                                                    </div>
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-12">
-                                                <div class="form-group">
+                                            <div class="row mt-2">
+                                                <div class="col-md-12">
                                                     <b>
-                                                        Place of Birth
+                                                        Gender
                                                     </b>
-                                                    <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->place_of_birth) ? $member->meta->personal->place_of_birth : null }}" />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-2">
-                                            <div class="col-md-12">
-                                                <b>
-                                                    Gender
-                                                </b>
-                                                <select name="gender" id="gender" class="form-control">
-                                                    <option value="male" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "male") selected @endif>Male</option>
-                                                    <option value="female" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "female") selected @endif>Female</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="row mt-4">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <b>
-                                                        Education
-                                                    </b>
-                                                    <select name="education" id="education" class="form-control">
-                                                        <option value="primary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="primary" ) selected @endif>Primary</option>
-                                                        <option value="secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="secondary" ) selected @endif>Secondary (1-20 Class)</option>
-                                                        <option value="higher_secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="higher_secondary" ) selected @endif>Higher Secondary (11 - 12 Class)</option>
-                                                        <option value="bachelor" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="bachelor" ) selected @endif>Bachelor</option>
-                                                        <option value="master" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="master" ) selected @endif>Masters</option>
-                                                        <option value="phd" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="phd" ) selected @endif>PhD</option>
-                                                        <option value="none" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="none" ) selected @endif>None</option>
+                                                    <select name="gender" id="gender" class="form-control">
+                                                        <option value="male" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "male") selected @endif>Male</option>
+                                                        <option value="female" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "female") selected @endif>Female</option>
                                                     </select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <b>
-                                                        Education Major
-                                                    </b>
-                                                    <input type="text" value="{{ ($member->meta && $member->meta->education && $member->meta->education->education_major) ? $member->meta->education->education_major : null }}" name="education_major" id="form-control" class="form-control" />
+
+                                            <div class="row mt-4">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <b>
+                                                            Education
+                                                        </b>
+                                                        <select name="education" id="education" class="form-control">
+                                                            <option value="primary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="primary" ) selected @endif>Primary</option>
+                                                            <option value="secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="secondary" ) selected @endif>Secondary (1-20 Class)</option>
+                                                            <option value="higher_secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="higher_secondary" ) selected @endif>Higher Secondary (11 - 12 Class)</option>
+                                                            <option value="bachelor" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="bachelor" ) selected @endif>Bachelor</option>
+                                                            <option value="master" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="master" ) selected @endif>Masters</option>
+                                                            <option value="phd" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="phd" ) selected @endif>PhD</option>
+                                                            <option value="none" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="none" ) selected @endif>None</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <b>
+                                                            Education Major
+                                                        </b>
+                                                        <input type="text" value="{{ ($member->meta && $member->meta->education && $member->meta->education->education_major) ? $member->meta->education->education_major : null }}" name="education_major" id="form-control" class="form-control" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="row mt-1">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <b>
-                                                        Profession
-                                                    </b>
-                                                    <input value="{{ ($member->meta && $member->meta->education && $member->meta->education->profession) ? $member->meta->education->profession : null }}" type="text" name="profession" id="profession" class="form-control" />
+                                            <div class="row mt-1">
+                                                <div class="col-md-12">
+                                                    <div class="form-group">
+                                                        <b>
+                                                            Profession
+                                                        </b>
+                                                        <input value="{{ ($member->meta && $member->meta->education && $member->meta->education->profession) ? $member->meta->education->profession : null }}" type="text" name="profession" id="profession" class="form-control" />
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="row footer bg-light">
-                                            <div class="col-md-12">
-                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            <div class="row footer bg-light">
+                                                <div class="col-md-12">
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </form>
+                                        </form>
                                 </div>
                             </div>
                         </div>

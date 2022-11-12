@@ -206,8 +206,9 @@ class AdminProgramController extends Controller
 
         // now let's retrieve zoom account detail.
         $zoom_account_detail = ZoomAccount::find($request->zoom_account);
+        // dd($zoom_account_detail);
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name);
-
+        // dd($meeting);
         if (!$meeting) {
             // dd("unable to create meeting");
             session()->flash('error', "Unable to create zoom meeting at the moment.");
@@ -224,8 +225,7 @@ class AdminProgramController extends Controller
             //throw $th;
             dd($th->getMessage());
         }
-        dd($meeting);
-        return redirect()->to($liveProgram->start_url);
+        return redirect()->to($liveProgram->admin_start_url);
 
 
         // create zoom meeting id.
@@ -279,6 +279,16 @@ class AdminProgramController extends Controller
         }
         session()->flash('success', "Session has been merged.");
         return redirect()->route('admin.program.admin_program_list');
+    }
+
+    public function rejoinSession(Live $live)
+    {
+        if (!$live->live) {
+            session()->flash("error", "Program already closed.");
+            return back();
+        }
+
+        return redirect()->to($live->admin_start_url);
     }
 
     public function liveProgram()

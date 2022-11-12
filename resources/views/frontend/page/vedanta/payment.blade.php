@@ -13,53 +13,51 @@
 
 <!-- partial -->
 <div class="section section-padding" style="padding-top:50px">
-    <form action="{{ route('dashboard') }}" method="get">
-        <div class="container">
-            <div class="row sigma_broadcast-video my-3">
-                <div class="col-md-12 mx-auto">
-                    <x-alert></x-alert>
-                    <div class="card">
-                        <div class="card-body">
-                            <h3 class="text-center">
-                                Admission Fee Collection
-                            </h3>
+    @if(site_settings('online_payment') || user()->role_id == 1)
+    <form action="{{ route('user.account.programs.payment.create.form',[$program->id]) }}" method="get">
+        @else
+        <form action="{{ route('dashboard',[$program->id]) }}" method="get">
+            @endif
+            <div class="container">
+                <div class="row sigma_broadcast-video my-3">
+                    <div class="col-md-12 mx-auto">
+                        <x-alert></x-alert>
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 class="text-center">
+                                    Admission Fee Collection
+                                </h3>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="regural_medicine_history" class="mb-4">
-                                            Payment Method
-                                        </label>
-                                        <select name="regural_medicine_history" id="regural_medicine_history" class="mt-2 form-control @error('regural_medicine_history') border border-danger @enderror">
-                                            <!-- <option value="esewa">E-Sewa</option> -->
-                                            <option value="later" selected>Pay Later</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="payment_amount">Payment Amount
-                                            <sup class="text-danger">
-                                                *
-                                            </sup>
-                                        </label>
-                                        <input type="text" value="NRs. {{ number_format($program->active_fees->admission_fee,2,'.',',') }}" name="amount" id="amount" disabled class="form-control disabled" />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="paymentOpt" class="mb-4">
+                                                Select Payment Method
+                                            </label>
+                                            <select name="paymentOpt" id="paymentOpt" class="mt-2 form-control @error('regural_medicine_history') border border-danger @enderror">
+                                                <option value="esewa">E-Sewa</option>
+                                                <option value="voucher">Voucher</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row card-footer">
-                <div class="col-md-12 text-end">
-                    <button type="submit" class="btn btn-primary">Go to Dashboard</button>
+                <div class="row card-footer">
+                    <div class="col-md-12 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            @if(site_settings('donation') || user()->role_id == 1)
+                            Confirm Payment Method
+                            @else
+                            Pay Later, Continue To Dashboard
+                            @endif
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
 </div>
 @endsection
 

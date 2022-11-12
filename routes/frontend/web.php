@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dharmashala\DharmashalaController;
 use App\Http\Controllers\Frontend\Events\EventController;
 use App\Http\Controllers\Frontend\Exams\ExamCenterController;
+use App\Http\Controllers\Frontend\Payment\PaymentController;
 use App\Http\Controllers\Frontend\User\ProfileController;
 use App\Http\Controllers\Frontend\User\UserNoteController;
 use App\Http\Controllers\Frontend\User\UserProgramController;
@@ -10,12 +11,10 @@ use App\Http\Controllers\Frontend\User\UserProgramFeeController;
 use App\Http\Controllers\Frontend\User\UserProgramResourceController;
 use App\Http\Controllers\Frontend\User\UserProgramVideoController;
 use App\Http\Controllers\Frontend\User\UserSupportController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Payment\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 include __DIR__ . "/arthapanchawk.php";
-// Route::get("/{slug}", [HomeController::class, "menu"])->name('slug');
-
 
 Route::get('/guru-parampara', function () {
     return view("frontend.page.menus.guru-parampara");
@@ -52,9 +51,6 @@ Route::prefix("account")
             ->name("notes.")
             ->group(function () {
                 Route::resource('notes', UserNoteController::class);
-                // Route::get("/", "index")->name("notes");
-                // Route::get("/create", "create")->name("notes_create");
-                // Route::post("/store", "store")->name("store");
             });
 
         Route::prefix("support")
@@ -71,7 +67,9 @@ Route::prefix("account")
             ->name('event.')
             ->group(function () {
                 Route::get('/calendar', "calendar")->name('calendar');
+                Route::post('/join/admin/{live}', 'join_as_admin')->name('live_as_admin');
                 Route::post('/join/{program}/{live}', "liveEvent")->name('live');
+                Route::post('/join/{program}/{live}', "joinOpenEvent")->name('live_open');
             });
 
         Route::prefix("dharmashala")
@@ -134,6 +132,18 @@ Route::prefix("account")
                     ->controller(UserProgramFeeController::class)
                     ->group(function () {
                         Route::get("/transactions/{program}", "index")->name('list');
+                    });
+
+
+                /**
+                 * Program Payment option.
+                 */
+
+                Route::prefix('payment/program/{program}')
+                    ->name('payment.')
+                    ->group(function () {
+                        Route::get('process', [PaymentController::class, 'create'])->name('create.form');
+                        Route::post("/voucher", [VoucherController::class, 'store'])->name('store.voucher');
                     });
             });
     });

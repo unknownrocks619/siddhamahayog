@@ -107,8 +107,8 @@
                                         {{ $students->student->full_name }}
                                     </td>
                                     <td>
-                                        <?php 
-                                            
+                                        <?php
+
                                         ?>
                                     </td>
                                 </tr>

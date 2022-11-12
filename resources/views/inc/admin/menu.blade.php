@@ -3,7 +3,11 @@
         <div class="row">
             <div class="col-md-12">
                 <ul class="h-menu">
-                    <li class="open active"><a href="index.html"><i class="zmdi zmdi-home"></i></a></li>
+                    <li class="open active">
+                        <a href="{{ route('admin.admin_dashboard') }}">
+                            <i class="zmdi zmdi-home"></i>
+                        </a>
+                    </li>
                     <li><a href="javascript:void(0)">Website</a>
                         <ul class="sub-menu">
                             <li><a href="{{ route('admin.website.menus.admin_menu_list') }}">Menu</a></li>

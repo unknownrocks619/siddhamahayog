@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend\Events;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Frontend\Event\LiveEventJoinAsAdminRequest;
 use App\Http\Requests\Frontend\Event\LiveEventRequest;
 use App\Http\Traits\CourseFeeCheck;
 use App\Models\Live;
@@ -37,19 +38,27 @@ class EventController extends Controller
         return view("frontend.user.calendar.index");
     }
 
+    public function joinOpenEvent(LiveEventRequest $request, Program $program, Live $live)
+    {
+        $attendance = $this->checkAndUpdateAttendance($program, $live);
+        $lock = $this->isLiveLock($live);
+        if ($lock) {
+            return $lock;
+        }
+        return $this->markAttendance($program, $live);
+    }
+
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
         $attendance = $this->checkAndUpdateAttendance($program, $live);
         if ($attendance) {
             return $attendance;
         }
-        
+
         $lock = $this->isLiveLock($live);
         if ($lock) {
             return $lock;
         }
-        // dd($live->id);
-
         $access = true;
         if ($live->section_id) {
             $user_section = user()->section->program_section_id;
@@ -91,7 +100,7 @@ class EventController extends Controller
         $attendance = new ProgramStudentAttendance;
         $attendance->program_id = $program->id;
         $attendance->student = auth()->id();
-        $attendance->section_id = auth()->user()->section->program_section_id;
+        $attendance->section_id = ($program->program_type == "open") ? $program->active_sections->id :  auth()->user()->section->program_section_id;
         $attendance->live_id = $live->id;
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
@@ -136,5 +145,10 @@ class EventController extends Controller
             session()->flash('error', $message);
             return back();
         }
+    }
+
+    public function join_as_admin(LiveEventJoinAsAdminRequest $request, Live $live)
+    {
+        return redirect()->to($live->admin_start_url);
     }
 }

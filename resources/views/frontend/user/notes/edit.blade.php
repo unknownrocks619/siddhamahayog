@@ -36,7 +36,7 @@ Notes > Create New
                     <div class="card-body">
                         <div>
                             <label for="defaultFormControlInput" class="form-label">Title</label>
-                            <input type="text" class="form-control @error('title')border border-danger @enderror" value="{{ old('title',$note->title) }}" id="defaultFormControlInput" placeholder="Note title" aria-describedby="defaultFormControlHelp" name="title">
+                            <input type="text" class="form-control @error('title')border border-danger @enderror" value="{{ htmlspecialchars(strip_tags(old('title',$note->title))) }}" id="defaultFormControlInput" placeholder="Note title" aria-describedby="defaultFormControlHelp" name="title">
                             @error("title")
                             <div class="text-danger">
                                 {{ $message }}
@@ -45,8 +45,8 @@ Notes > Create New
                         </div>
                         <div class="mt-3">
                             <label for="defaultFormControlInput" class="form-label">Note</label>
-                            <textarea name="notes" class="form-control" id="notes" cols="30" rows="10">{{ old('notes',$note->note) }}</textarea>
-                            <div id="defaultFormControlHelp" class="form-text">
+                            <textarea name="notes" class="form-control" id="notes" cols="30" rows="10">{{ strip_tags(old('notes',$note->note),"<blockquote><p><strong><em><span>") }}</textarea>
+                            <div id="defaultFormControlHelp" class="form-text text-danger">
                                 We'll never share your details with anyone else.
                             </div>
                         </div>

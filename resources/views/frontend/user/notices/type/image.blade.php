@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row mb-2">
     <div class="col-md-12">
 
         <div class="card">
@@ -11,7 +11,7 @@
                 {!! $notice->notice !!}
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <img src="{{ asset($notice->settings->path) }}" alt="{{ $notice->title }}" srcset="{{ asset($notice->settings->path) }}">
+                        <img class="img-responsive img-fluid" src="{{ asset($notice->settings->path) }}" alt="{{ $notice->title }}" srcset="{{ asset($notice->settings->path) }}">
                     </div>
                     <button data-href="{{ asset($notice->settings->path) }}" class="btn btn-outline-primary clikcable">
                         Download File

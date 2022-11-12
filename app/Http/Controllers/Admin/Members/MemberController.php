@@ -27,7 +27,7 @@ class MemberController extends Controller
     {
         //
         if (request()->ajax() && request()->wantsJson()) {
-            $members = Member::with(["countries", "member_detail" => function ($query) {
+            $members = Member::with(["emergency", "countries", "member_detail" => function ($query) {
                 return $query->with(["program"]);
             }])->latest()->get();
 
@@ -44,7 +44,19 @@ class MemberController extends Controller
                     return ($row->countries) ? $row->countries->name : "NaN";
                 })
                 ->addColumn('phone', function ($row) {
-                    return $row->phone_number;
+                    $phone = "";
+                    if ($row->phone_number) {
+                        $phone .= "Mo: " . $row->phone_number;
+                    } else {
+                        $phone .= "NaN";
+                    }
+                    if ($row->emergency) {
+                        $phone .= "<br />";
+                        $phone .= "Ref Mo: " . $row->emergency->phone_number;
+                        $phone .= "<br />";
+                        $phone .= "Ref Name: " . $row->emergency->contact_person;
+                    }
+                    return $phone;
                 })
                 ->addColumn('program_involved', function ($row) {
 
@@ -361,8 +373,11 @@ class MemberController extends Controller
         return back();
     }
 
-    public function updatePersonal(Request $request, MemberInfo $memberInfo)
+    public function updatePersonal(Request $request, Member $member, MemberInfo $memberInfo = null)
     {
+        if (!$memberInfo) {
+            return $this->storeUpdatePersonal($request, $member);
+        }
         $education = (array) $memberInfo->education;
         $personal = (array) $memberInfo->personal;
 
@@ -385,6 +400,35 @@ class MemberController extends Controller
         }
 
         session()->flash("success", "Information Updated.");
+        return back();
+    }
+
+
+    public function storeUpdatePersonal(Request $request, Member $member)
+    {
+
+        $memberInfo = new MemberInfo;
+        $personal["date_of_birth"] = $request->date_of_birth;
+        $personal["place_of_birth"] = $request->place_of_birth;
+        $personal["gender"] = $request->gender;
+
+        $education["education"] = $request->education;
+        $education["education_major"] = $request->education_major;
+        $education["profession"] = $request->profession;
+
+        $memberInfo->personal = $personal;
+        $memberInfo->education = $education;
+
+        $memberInfo->member_id = $member->id;
+
+        try {
+            $memberInfo->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', "Unable to save Member information. Error: " . $th->getMessage());
+            return back();
+        }
+        session()->flash('success', "Member information Updated.");
         return back();
     }
 }
