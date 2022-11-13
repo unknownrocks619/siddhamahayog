@@ -129,11 +129,16 @@
                         <div class="logo mb-3">
                             <div class="col-md-12 text-center">
                                 <h1>Login</h1>
+                                <?php
+                                $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->ip(), 3);
+                                ?>
+
                             </div>
                             <!-- <div class="col-md-12 alert alert-danger">
                                 You can use your Arthapanchawk or Atirudri account to access the portal.
                             </div> -->
                         </div>
+                        @if( ! $rateLimit)
                         <form action="{{ route('login') }}" id="loginForm" method="post" name="login">
                             @csrf
                             @google_captcha()
@@ -158,6 +163,7 @@
                                 <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Login</button>
                             </div>
                         </form>
+
 
                         <div class="col-md-12 ">
                             <div class="login-or">
@@ -191,6 +197,11 @@
                                 Don't have account? <a href="{{ route('register') }}" id="signup">Sign up here</a>
                             </p>
                         </div>
+                        @else
+                        <div class="alert alert-danger">
+                            Too many invalid login attempt. Please try again after few minutes
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -198,22 +209,6 @@
     </div>
 
 </body>
-<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
-<script>
-    grecaptcha.ready(function() {
-        document.getElementById('loginForm').addEventListener("submit", function(event) {
-            $("form#loginForm").find("button").prop('disabled', true);
-            event.preventDefault();
-            grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
-                    action: 'login'
-                })
-                .then(function(token) {
-                    document.getElementById("recaptcha_token").value = token;
-                    document.getElementById('loginForm').submit();
-                });
-        });
-    });
-</script>
 <script>
     $(document).ready(function() {
         $("#loginForm").validate({
@@ -236,5 +231,28 @@
         });
     })
 </script>
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
+<script>
+    grecaptcha.ready(function() {
+        document.getElementById('loginForm').addEventListener("submit", function(event) {
+            event.preventDefault();
+            const inputs = [...$(this).find("input")];
+            inputs.every(input => input.reportValidity());
+            let valid = inputs.every(input => input.reportValidity());
+            if (valid) {
+                $("form#loginForm").find("button").prop('disabled', true);
+                grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
+                        action: 'login'
+                    })
+                    .then(function(token) {
+                        document.getElementById("recaptcha_token").value = token;
+                        document.getElementById('loginForm').submit();
+                    });
+            }
+
+        });
+    });
+</script>
+
 
 </html>
