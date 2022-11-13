@@ -139,7 +139,7 @@
                                     <label for="">Full Name
                                         <sup class="text-danger">*</sup>
                                     </label>
-                                    <input type="text" name="full_name" id="full_name" class="form-control @error('full_name') border border-danger @enderror" />
+                                    <input type="text" name="full_name" required id="full_name" class="form-control @error('full_name') border border-danger @enderror" />
 
                                 </div>
                             </div>
@@ -157,11 +157,11 @@
                                 <input required aria-required="true" type="password" name="password" id="pass" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
                             </div>
                             <div class="form-group">
-                                <label for="password">Confirm Password
+                                <label for="password_confirmation">Confirm Password
                                     <sup class="text-danger">*</sup>
 
                                 </label>
-                                <input required aria-required="true" type="password" name="password_confirmation" id="pass" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
+                                <input required aria-required="true" type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
                             </div>
 
                             <div class="form-group">
@@ -218,31 +218,20 @@
 
 </body>
 <script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
-<script>
-    grecaptcha.ready(function() {
-        document.getElementById('loginForm').addEventListener("submit", function(event) {
-            $(this).children("input").prop('disabled');
-            event.preventDefault();
-            grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
-                    action: 'login'
-                })
-                .then(function(token) {
-                    document.getElementById("recaptcha_token").value = token;
-                    document.getElementById('loginForm').submit();
-                });
-        });
-    });
-</script>
+
 <script>
     $(document).ready(function() {
         $("#loginForm").validate({
             rules: {
+                "full_name": {
+                    required: true
+                },
                 "email": {
                     required: true,
                 },
                 "password": {
                     required: true
-                }
+                },
             },
             messages: {
                 "email": "Provide Valid Email.",
@@ -251,9 +240,29 @@
             onsubmit: true,
             onfocusout: true,
             validClass: "alert alert-success"
-
         });
     })
 </script>
+
+<script>
+    grecaptcha.ready(function() {
+        document.getElementById('loginForm').addEventListener("submit", function(event) {
+            event.preventDefault();
+            const inputs = [...$(this).find("input")];
+            let valid = inputs.every(input => input.reportValidity());
+            if (valid) {
+                $(this).find("button").prop('disabled', true);
+                grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
+                        action: 'login'
+                    })
+                    .then(function(token) {
+                        document.getElementById("recaptcha_token").value = token;
+                        document.getElementById('loginForm').submit();
+                    });
+            }
+        });
+    });
+</script>
+
 
 </html>
