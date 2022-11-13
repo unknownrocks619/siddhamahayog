@@ -7,14 +7,14 @@ use App\Http\Traits\VideoHandler;
 use App\Models\Notices;
 use Illuminate\Http\Request;
 use phpDocumentor\Reflection\Types\Nullable;
-use Upload\Media\Traits\FileUpload;
+// use Upload\Media\Traits\FileUpload;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Error\Notice;
 
 class Noticecontroller extends Controller
 {
     //
-    use VideoHandler, FileUpload;
+    // use VideoHandler, FileUpload;
 
     public function index()
     {
@@ -55,7 +55,6 @@ class Noticecontroller extends Controller
             session()->flash('error', "Error: " . $th->getMessage());
             return back();
         }
-
         session()->flash("success", "Notice Saved.");
         return back();
     }
