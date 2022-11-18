@@ -177,7 +177,7 @@ class AdminProgramController extends Controller
 
     public function program_detail(Request $request, Program $program)
     {
-        $sections = ProgramSection::where('program_id', $program->id);
+        $sections = ProgramSection::where('program_id', $program->id)->get();
         $students = ProgramStudent::with(["section", "batch", "student"])->where('program_id', $program->id)->lazy();
         return view("admin.programs.detail", compact("program", "sections", "students"));
     }

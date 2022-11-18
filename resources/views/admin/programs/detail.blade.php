@@ -202,7 +202,6 @@
                 </div>
             </div>
 
-            @if ($program->program_type == "sadhana")
             <div class="col-lg-9 col-md-12">
                 <div class="card">
                     <div class="header">
@@ -254,7 +253,7 @@
                                         {{ $student->student->email }}
                                     </td>
                                     <td>
-                                        {{ $student->section->section_name }}
+                                        {{ $student->section }}
                                     </td>
                                     <td>
                                         {{ $student->batch->batch_name }}
@@ -275,10 +274,9 @@
                     </div>
                 </div>
             </div>
-            @endif
 
             @if( $program->program_type == "paid" && $program->active_fees)
-            <div class="col-lg-8 col-md-12">
+            <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="header">
                         <h2><strong>Course Fee </strong> Structure</h2>
@@ -424,11 +422,9 @@
 <script src="{{ mix ('js/app.js')}}"></script>
 @endif
 
-@if($program->program_type == "sadhana")
 <script>
     $("#studentTable").DataTable()
 </script>
-@endif
 <script>
     // $('#student-table').DataTable({
     //     processing: true,
