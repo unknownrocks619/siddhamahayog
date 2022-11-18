@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Role extends Model
 {
@@ -19,6 +20,26 @@ class Role extends Model
         7 => "Members",
         8 => "Support"
     ];
+
+    protected $casts = [
+        'role_category' => 'array'
+    ];
+
+
+    /**
+     * Return Authorized Center for user
+     */
+    public function authorizedCountry(array $countryId)
+    {
+        $country_id = implode(', ', $countryId);
+        $sql = <<<SQL
+                    SELECT country.id, country.name
+                        FROM country
+                    WHERE country.id IN ($country_id);
+                SQL;
+        return DB::select($sql);
+    }
+
     /**
      * 1 => ADMIN
      * 2 => CENTERS

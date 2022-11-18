@@ -34,7 +34,7 @@ class StoreVoucherUploadRequest extends FormRequest
             //
             'amount' => 'required',
             'payment_type' => "required",
-            'bank_name' => "required|string",
+            'bank_name' => "required|string|in:Garima Bikas Bank",
             "voucher_date" => "required|date|date_format:Y-m-d",
             "voucherPhoto" => "required|image|mimes:png,jpg,gif,jpeg|max:2048"
         ];
@@ -46,6 +46,7 @@ class StoreVoucherUploadRequest extends FormRequest
             'amount.required' => "all fields are mandatory.",
             'bank_name.required' => "Bank name is required.",
             'bank_name.string' => "Valid bank name is required",
+            'bank_name.in' => 'Only Garima Bikas Bank is supported at the moment.',
             'payment_type.required' => "all fields are mandatory.",
             'voucher_date.required' => "all fields are mandatory.",
             'voucher_date.date' => "Plese select date as per your voucher.",

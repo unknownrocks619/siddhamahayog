@@ -55,7 +55,7 @@
                                     <label for="bank_name">Bank Name
                                         <sup class="text-danger">*</sup>
                                     </label>
-                                    <input type="text" name="bank_name" id="bank_name" class="form-control @error('bank_name') border border-danger @enderror" />
+                                    <input type="text" value="Garima Bikas Bank" readonly name="bank_name" id="bank_name" class="form-control @error('bank_name') border border-danger @enderror" />
                                     @error('bank_name')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror

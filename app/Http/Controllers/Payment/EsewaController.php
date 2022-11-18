@@ -59,7 +59,6 @@ class EsewaController extends Controller
         if (!isset($this->payment_configs['scd'])) {
             $this->payment_configs["scd"] = $this->merchant_key;
         }
-
         session()->put(auth()->id(), $this->payment_configs);
     }
 
@@ -69,7 +68,6 @@ class EsewaController extends Controller
     public function get_configs(string $key = null): mixed
     {
         return ($key && isset($this->payment_configs[$key])) ? $this->payment_configs[$key] : $this->payment_configs;
-        return $this->payment_configs;
     }
 
     public function get_payment_url()
@@ -140,6 +138,7 @@ class EsewaController extends Controller
                 "amt" => $sessionData['amt'],
                 "pid" => $sessionData['pid']
             ]);
+            // session()->forget(auth()->id());
         }
     }
 

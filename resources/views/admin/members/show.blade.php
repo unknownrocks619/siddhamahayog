@@ -8,7 +8,7 @@
 <!-- Main Content -->
 
 <section class="content profile-page">
-    <div class="container">
+    <div class="container-fluid">
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
@@ -52,7 +52,7 @@
                 </div>
                 <div role="tabpanel" class="tab-pane" id="overview">
                     <div class="row">
-                        <div class="col-lg-4 col-md-12">
+                        <div class="col-lg-3 col-md-3">
                             <div class="card">
                                 <div class="header">
                                     <h2><strong>Info</strong></h2>
@@ -64,7 +64,7 @@
                                         {{ $member->countries->name }}
                                         @endif
                                         @if($member->city)
-                                        {{ $member->cities->name }}
+                                        {{ $member->city }}
                                         @endif
                                         @if($member->address)
                                         {{ $member->address->street_address }}
@@ -104,8 +104,27 @@
                                     </ul>
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="header">
+                                    <h2><strong>Account Settings</strong> </h2>
+                                </div>
+                                <div class="body">
+                                    <ul class="follow_us list-unstyled m-b-0">
+                                        <li class="online">
+                                            <a href="javascript:void(0);">
+                                                <div class="media">
+                                                    <img class="media-object " src="assets/images/xs/avatar4.jpg" alt="">
+                                                    <div class="media-body">
+                                                        <span class="name">{{ ($member->meta && $member->meta->education && $member->meta->education->education) ? $member->meta->education->education : ""  }}</span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-lg-8 col-md-12">
+                        <div class="col-lg-6 col-md-6">
                             <x-alert></x-alert>
                             <div class="card">
                                 <div class="body m-b-10">
@@ -371,6 +390,96 @@
                                                 </div>
                                             </div>
                                         </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-sm-12">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="body">
+                                            <h3>
+                                                Account Setting(s)
+                                            </h3>
+                                            <form action="" onsubmit="return confirm('You are about to change the password for current user. Are you sure? this action cannot be undone')" method="post">
+                                                @csrf
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <strong>
+                                                                New Password
+                                                                <sup class="text-danger">*</sup>
+                                                            </strong>
+                                                            <input type="password" name="user_new_password" id="user_new_passowrd" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-2">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <strong>
+                                                                Confirm Password
+                                                                <sup class="text-danger">*</sup>
+                                                            </strong>
+                                                            <input type="password" name="confirm_new_password" id="confirm_new_password" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <button type="submit" class="btn btn-primary disabled" disabled>
+                                                            Change User password
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="body">
+                                            <h3>
+                                                Enrolled Program Detail
+                                            </h3>
+                                            <table class="table table-hover table-border">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No</th>
+                                                        <th>
+                                                            Program Name
+                                                        </th>
+                                                        <th>
+                                                            Program Type
+                                                        </th>
+                                                        <th>
+                                                            Paid Amount
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">This feature is coming soon.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="body">
+                                            <h3>
+                                                Donation History
+                                            </h3>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

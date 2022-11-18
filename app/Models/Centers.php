@@ -5,12 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Country extends Model
+class Centers extends Model
 {
     use HasFactory;
-
-    public function MemberByCountry()
-    {
-        return $this->hasMany(Member::class, 'country');
-    }
 }
