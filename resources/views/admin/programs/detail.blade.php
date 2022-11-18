@@ -253,13 +253,13 @@
                                         {{ $student->student->email }}
                                     </td>
                                     <td>
-                                        {{ $student->section }}
+                                        {{ $student->section->section_name }}
                                     </td>
                                     <td>
                                         {{ $student->batch->batch_name }}
                                     </td>
                                     <td>
-                                        <a href="">View Detail</a>
+                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">View Detail</a>
                                     </td>
                                 </tr>
                                 @empty
