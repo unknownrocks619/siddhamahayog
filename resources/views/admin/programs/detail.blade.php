@@ -132,10 +132,10 @@
         <div class="row clearfix">
             <div class="col-lg-3 col-md-12">
                 <div class="card">
+                    <div class="header">
+                        <h2><strong>Quick</strong> Navigation</h2>
+                    </div>
                     <div class="body activities">
-                        <div class="header">
-                            <h2><strong>Quick</strong> Navigation</h2>
-                        </div>
                         <div class="streamline b-accent">
                             <div class="sl-item">
                                 <div class="sl-content">
