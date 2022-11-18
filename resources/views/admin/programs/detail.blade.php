@@ -14,7 +14,7 @@
 @section("content")
 <!-- Main Content -->
 <section class="content">
-    <div class="container">
+    <div class="container-fluid">
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
