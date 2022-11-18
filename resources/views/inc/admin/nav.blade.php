@@ -14,6 +14,18 @@
                     <!-- <a href="javascript:void(0);" class="fullscreen" data-provide="fullscreen"><i class="zmdi zmdi-fullscreen"></i></a>
                     <a href="javascript:void(0);" class="btn_overlay"><i class="zmdi zmdi-sort-amount-desc"></i></a>
                     <a href="javascript:void(0);" class="js-right-sidebar"><i class="zmdi zmdi-settings zmdi-hc-spin"></i></a> -->
+                    <form method="get" action="{{ route('dashboard') }}" style="display:inline-block">
+                        @csrf
+                        <button type="submit" class='btn btn-outline-primary btn-sm'>
+                            <i class="zmdi zmdi-user"></i> Goto Dashboard
+                        </button>
+                    </form>
+
+                </li>
+                <li class="float-right">
+                    <!-- <a href="javascript:void(0);" class="fullscreen" data-provide="fullscreen"><i class="zmdi zmdi-fullscreen"></i></a>
+                    <a href="javascript:void(0);" class="btn_overlay"><i class="zmdi zmdi-sort-amount-desc"></i></a>
+                    <a href="javascript:void(0);" class="js-right-sidebar"><i class="zmdi zmdi-settings zmdi-hc-spin"></i></a> -->
                     <form method="post" action="{{ route('logout') }}" style="display:inline-block">
                         @csrf
                         <button type="submit" class='btn btn-danger btn-sm'>
