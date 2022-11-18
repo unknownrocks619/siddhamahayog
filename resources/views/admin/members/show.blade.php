@@ -133,7 +133,7 @@
                                     </h3>
 
                                     @foreach ($member->emergency_contact as $em_contact)
-                                    <form action="{{ route('admin.members.admin_update_for_program',[$member->id,$em_contact->id,$program->id]) }}" method="post">
+                                    <form action="{{ route('admin.members.admin_update_for_program',[$member->id,$em_contact->id]) }}" method="post">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12">
