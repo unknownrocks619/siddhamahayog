@@ -59,10 +59,11 @@
                                         use App\Models\Member;
 
                                         $users = Member::get();
-                                        foreach ($users as $user) :
-                                            echo "<option value='{$user->id}'>{$user->full_name} &lt;{$user->email}&gt;</option>";
-                                        endforeach
                                         ?>
+
+                                        @foreach ($users as $user)
+                                        <option value='{{ $user->id }}'>{{ $user->full_name }} &lt;{{ $user->email }}&gt;</option>";
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
