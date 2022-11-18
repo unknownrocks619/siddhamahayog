@@ -59,7 +59,7 @@ class EsewaController extends Controller
         if (!isset($this->payment_configs['scd'])) {
             $this->payment_configs["scd"] = $this->merchant_key;
         }
-        session()->put(auth()->id(), $this->payment_configs);
+        session()->put('user_' . auth()->id(), $this->payment_configs);
     }
 
     /**
@@ -130,15 +130,15 @@ class EsewaController extends Controller
 
     protected function payment_verification_config(): void
     {
-        if (session()->has(auth()->id())) {
-            $sessionData = session()->get(auth()->id());
+        if (session()->has('user_' . auth()->id())) {
+            $sessionData = session()->get('user_' . auth()->id());
             $this->set_config([
                 "scd" => $this->merchant_key,
                 "rid" => request()->get('refId'),
                 "amt" => $sessionData['amt'],
                 "pid" => $sessionData['pid']
             ]);
-            // session()->forget(auth()->id());
+            session()->forget('user_' . auth()->id());
         }
     }
 

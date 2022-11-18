@@ -66,6 +66,7 @@ class DonationController extends Controller
             $data['verified'] = true;
         }
         $data["amount"] = $esewa->get_configs("amt");
+
         $store_record = $this->store($request, $data);
 
         if ($store_record && $data["verified"]) {
