@@ -7,17 +7,23 @@ use App\Http\Requests\Frontend\Payment\StoreVoucherUploadRequest;
 use App\Models\Program;
 use App\Models\ProgramStudentFee;
 use App\Models\ProgramStudentFeeDetail;
+use Illuminate\Http\Request;
 use Upload\Media\Traits\FileUpload;
 use Illuminate\Support\Facades\DB;
 
 class VoucherController extends Controller
 {
     use FileUpload;
-    public function store(StoreVoucherUploadRequest $request, Program $program)
+    public function store(Request $request, Program $program)
     {
-        dd($request->file('voucherPhoto', true));
         $this->set_access('file');
         $this->set_upload_path('website/payments/programs');
+
+        $file = $request->file('file');
+        $name = $file->hashName();
+        dd($file);
+        dd($this->upload('file'));
+        // $file = $request->file('voucherPhoto')->hashName());
 
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
         $programStudentFee = ProgramStudentFee::where('student_id', auth()->id())->where('program_id', $program->id)->first();

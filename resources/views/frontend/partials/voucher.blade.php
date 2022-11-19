@@ -69,7 +69,7 @@
                                     <label for="voucherPhoto">Voucher Photo
                                         <sup class="text-danger">*</sup>
                                     </label>
-                                    <input type="file" required name="voucherPhoto" id="voucherPhoto" class="form-control @error('voucherPhoto') border border-danger @enderror" accept="image/*" />
+                                    <input type="file" required name="file" id="file" class="form-control @error('file') border border-danger @enderror" accept="image/*" />
                                     @error('voucherPhoto')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror

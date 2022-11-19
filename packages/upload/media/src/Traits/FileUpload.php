@@ -46,14 +46,11 @@ trait FileUpload
         if (!request()->hasFile($filename)) {
             throw new Exception($filename . " not found or doesn't exists.");
         }
-        dd(request()->file($filename));
-        dd(request()->file($filename)->store('avatars'));
 
-        // dd(request()->file($filename)->getPathname());
         $file_detail = [
             "original_filename" => request()->file($filename)->getClientOriginalName(),
             "file_type" => request()->file($filename)->getMimeType(),
-            "path" => Storage::putFile($this->_upload_path, new File(request()->file($filename)->getPathname())),
+            "path" => Storage::putFile($this->_upload_path, request()->file($filename)),
         ];
 
         if ($this->_access == "DB") {
