@@ -49,8 +49,9 @@ trait FileUpload
         $file_detail = [
             "original_filename" => request()->file($filename)->getClientOriginalName(),
             "file_type" => request()->file($filename)->getMimeType(),
-            "path" => Storage::putFile($this->_upload_path, request()->file($filename)->path()),
+            // "path" => Storage::disk('public')->($this->_upload_path, request()->file($filename)->path()),
         ];
+
         if ($this->_access == "DB") {
             $upload_model = new Media;
             $upload_model->media = $file_detail;
