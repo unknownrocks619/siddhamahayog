@@ -310,86 +310,88 @@
                                 <div class="body mt-3">
                                     @if($member->meta)
                                     <form action="{{ route('admin.members.admin_update_member_meta_info',[$member->id, $member->meta->id]) }}" method="post">
-                                        @else
-                                        <form action="{{ route('admin.members.admin_update_member_meta_info',[$member->id]) }}" method="post">
-                                            @endif
-                                            @csrf
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <b>
-                                                            Date of Birth
-                                                        </b>
-                                                        <input type="date" name="date_of_birth" id="date_of_birth" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->date_of_birth) ? $member->meta->personal->date_of_birth : '' }}" class="form-control" />
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <b>
-                                                            Place of Birth
-                                                        </b>
-                                                        <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->place_of_birth) ? $member->meta->personal->place_of_birth : null }}" />
-                                                    </div>
+                                        Member Meta information
+                                    </form>
+                                    @else
+                                    <form action="{{ route('admin.members.admin_update_member_meta_info',[$member->id]) }}" method="post">
+                                        @endif
+                                        @csrf
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <b>
+                                                        Date of Birth
+                                                    </b>
+                                                    <input type="date" name="date_of_birth" id="date_of_birth" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->date_of_birth) ? $member->meta->personal->date_of_birth : '' }}" class="form-control" />
                                                 </div>
                                             </div>
 
-                                            <div class="row mt-2">
-                                                <div class="col-md-12">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
                                                     <b>
-                                                        Gender
+                                                        Place of Birth
                                                     </b>
-                                                    <select name="gender" id="gender" class="form-control">
-                                                        <option value="male" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "male") selected @endif>Male</option>
-                                                        <option value="female" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "female") selected @endif>Female</option>
+                                                    <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" value="{{ ($member->meta && $member->meta->personal && $member->meta->personal->place_of_birth) ? $member->meta->personal->place_of_birth : null }}" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-12">
+                                                <b>
+                                                    Gender
+                                                </b>
+                                                <select name="gender" id="gender" class="form-control">
+                                                    <option value="male" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "male") selected @endif>Male</option>
+                                                    <option value="female" @if(($member->meta && $member->meta->personal && $member->meta->personal->gender) && $member->meta->personal->gender == "female") selected @endif>Female</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-4">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <b>
+                                                        Education
+                                                    </b>
+                                                    <select name="education" id="education" class="form-control">
+                                                        <option value="primary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="primary" ) selected @endif>Primary</option>
+                                                        <option value="secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="secondary" ) selected @endif>Secondary (1-20 Class)</option>
+                                                        <option value="higher_secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="higher_secondary" ) selected @endif>Higher Secondary (11 - 12 Class)</option>
+                                                        <option value="bachelor" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="bachelor" ) selected @endif>Bachelor</option>
+                                                        <option value="master" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="master" ) selected @endif>Masters</option>
+                                                        <option value="phd" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="phd" ) selected @endif>PhD</option>
+                                                        <option value="none" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="none" ) selected @endif>None</option>
                                                     </select>
                                                 </div>
                                             </div>
-
-                                            <div class="row mt-4">
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <b>
-                                                            Education
-                                                        </b>
-                                                        <select name="education" id="education" class="form-control">
-                                                            <option value="primary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="primary" ) selected @endif>Primary</option>
-                                                            <option value="secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="secondary" ) selected @endif>Secondary (1-20 Class)</option>
-                                                            <option value="higher_secondary" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="higher_secondary" ) selected @endif>Higher Secondary (11 - 12 Class)</option>
-                                                            <option value="bachelor" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="bachelor" ) selected @endif>Bachelor</option>
-                                                            <option value="master" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="master" ) selected @endif>Masters</option>
-                                                            <option value="phd" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="phd" ) selected @endif>PhD</option>
-                                                            <option value="none" @if(($member->meta && $member->meta->education && $member->meta->education->education) && $member->meta->education->education =="none" ) selected @endif>None</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group">
-                                                        <b>
-                                                            Education Major
-                                                        </b>
-                                                        <input type="text" value="{{ ($member->meta && $member->meta->education && $member->meta->education->education_major) ? $member->meta->education->education_major : null }}" name="education_major" id="form-control" class="form-control" />
-                                                    </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <b>
+                                                        Education Major
+                                                    </b>
+                                                    <input type="text" value="{{ ($member->meta && $member->meta->education && $member->meta->education->education_major) ? $member->meta->education->education_major : null }}" name="education_major" id="form-control" class="form-control" />
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="row mt-1">
-                                                <div class="col-md-12">
-                                                    <div class="form-group">
-                                                        <b>
-                                                            Profession
-                                                        </b>
-                                                        <input value="{{ ($member->meta && $member->meta->education && $member->meta->education->profession) ? $member->meta->education->profession : null }}" type="text" name="profession" id="profession" class="form-control" />
-                                                    </div>
+                                        <div class="row mt-1">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <b>
+                                                        Profession
+                                                    </b>
+                                                    <input value="{{ ($member->meta && $member->meta->education && $member->meta->education->profession) ? $member->meta->education->profession : null }}" type="text" name="profession" id="profession" class="form-control" />
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="row footer bg-light">
-                                                <div class="col-md-12">
-                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                </div>
+                                        <div class="row footer bg-light">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-primary">Update</button>
                                             </div>
-                                        </form>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -445,6 +447,9 @@
                                             <h3>
                                                 Enrolled Program Detail
                                             </h3>
+                                            <a href="#" data-toggle='modal' data-target='#add_user_to_program' class="btn btn-success btn-sm">
+                                                Add user to program
+                                            </a>
                                             <table class="table table-hover table-border">
                                                 <thead>
                                                     <tr>
@@ -453,17 +458,38 @@
                                                             Program Name
                                                         </th>
                                                         <th>
-                                                            Program Type
+                                                            Enrolled Date
                                                         </th>
                                                         <th>
-                                                            Paid Amount
+
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
+                                                    @forelse ($member->member_detail as $member_program)
                                                     <tr>
-                                                        <td colspan="4" class="text-center">This feature is coming soon.</td>
+                                                        <td>
+                                                            {{ $loop->iteration }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $member_program->program->program_name }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $member_program->created_at }}
+                                                        </td>
+                                                        <td>
+                                                            <form onsubmit=" return confirm('Are you sure you want remove this user from program. If there are any active transaction for his user in the program you must first remove transaction')" action="{{ route('admin.program.enroll.admin_remove_student_from_program',$member_program->id) }}" method="post">
+                                                                @csrf
+                                                                @method('delete')
+                                                                <button type="submit" href="" class="btn btn-danger btn-small">Remove</button>
+                                                            </form>
+                                                        </td>
                                                     </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center">Member not enrolled in any program.</td>
+                                                    </tr>
+                                                    @endforelse
                                                 </tbody>
                                             </table>
                                         </div>
@@ -478,8 +504,165 @@
                                             <h3>
                                                 Donation History
                                             </h3>
+                                            <table class="table table-hover table-bordred">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            S.No
+                                                        </th>
+                                                        <th>
+                                                            Donation Amount
+                                                        </th>
+                                                        <th>
+                                                            Source
+                                                        </th>
+                                                        <th>
+                                                            Date
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse ($member->donations as $member_donation)
+                                                    <tr>
+                                                        <td>
+                                                            {{ $loop->iteration }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $member_donation->amount }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $member_donation->type }}
+                                                        </td>
+                                                        <td>
+                                                            {{ $member_donation->created_at }}
+                                                        </td>
+                                                        <td>
+                                                            Remarks
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr>
+                                                        <td class="text-center" colspan="4">
+                                                            Donation not available
+                                                        </td>
+                                                    </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="header">
+                                    <h2>
+                                        Payment
+                                        <strong>
+                                            History
+                                        </strong>
+                                    </h2>
+                                </div>
+                                <div class="body">
+                                    <table class="table-border table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    Program Name
+                                                </th>
+                                                <th>
+                                                    Transaction Amount
+                                                </th>
+                                                <th>
+                                                    Source
+                                                </th>
+                                                <th>
+                                                    Status
+                                                </th>
+
+                                                <th>
+                                                    Action
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($member->transactions as $transaction)
+                                            <tr>
+                                                <td>
+                                                    {{ $transaction->program->program_name }}
+                                                </td>
+                                                <td>
+                                                    {{ ($transaction->source) }}
+                                                    <br />
+                                                    {{ $transaction->source_detail }}
+                                                </td>
+                                                <td>
+                                                    @if($transaction->rejected)
+                                                    <span class="badge bg-danger px-2">
+                                                        <a href="#" title="Rejected">
+                                                            <i class="text-white zmdi zmdi-minus-circle-outline"></i>
+                                                        </a>
+                                                    </span>
+                                                    @elseif ( ! $transaction->verified)
+                                                    <span class="badge bg-warning px-2">
+                                                        <a href="#" title="Unverified">
+                                                            <i class="text-white zmdi zmdi-minus-circle-outline"></i>
+                                                        </a>
+                                                    </span>
+                                                    @else
+                                                    <span class="badge bg-success px-2"><a href="#" title="Verified"><i class="text-white zmdi zmdi-check"></i></a></span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($transaction->source == 'online')
+                                                    @foreach ($transaction->remarks as $key => $remarks)
+                                                    <strong>
+                                                        {{ $key }} :
+                                                    </strong>
+                                                    {{ $remarks }}
+                                                    <br />
+                                                    @endforeach
+                                                    @elseif($transaction->source == 'Voucher Upload')
+                                                    Date : {{ $transaction->remarks->upload_date }}
+                                                    @if($transaction->file && isset($transaction->file->path))
+                                                    <br />
+                                                    [<a data-target="#imageFile" data-toggle="modal" href="{{ route('admin.program.fee.admin_display_fee_voucher', $transaction->id) }}">View File</a>]
+                                                    @endif
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <form style='display:inline' method='post' class='transaction_action_form' action="{{ route('admin.program.fee.api_update_fee_detail', [$transaction->id]) }}">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <input type='hidden' name='update_type' value='status' />
+                                                        @if ($transaction->verified)
+                                                        <button type='submit' class='btn btn-danger btn-sm'>Reject</button>
+                                                        @else
+                                                        <button type='submit' class='btn btn-success btn-sm'>Verify</button>
+                                                        @endif
+                                                    </form>
+
+                                                    <form style='display:inline' method='post' action="{{ route('admin.program.fee.api_delete_fee', $transaction->id) }}" class='transaction_delete_form'>
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <input type='hidden' name='update_type' value='status' />
+                                                        <button type='submit' class='btn btn-danger btn-sm'><i class='zmdi zmdi-delete'></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center">
+                                                    Payment not found.
+                                                </td>
+                                            </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -489,8 +672,139 @@
         </div>
     </div>
 </section>
+
+
+<x-modal modal='add_user_to_program'>
+    <div class="modal-header">
+        <h3 class="modal-header">
+            Link program
+            {{ route('admin.program.admin_modal_program_meta_information',2) }}
+        </h3>
+    </div>
+
+    <div class="modal-body">
+        <form action="{{ route('admin.program.enroll.admin_student_enroll_in_program',$member->id) }}" method="post" id="assign_program_to_user">
+            @csrf
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="program_name">Program Name</label>
+                        <select name="program_name" id="program_name" class="form-control">
+                            <option value="" selected>Select option</option>
+                            <sup class="text-danger">*</sup>
+                            @foreach (\App\Models\Program::get() as $program)
+                            <option value="{{$program->id}}">
+                                {{ $program->program_name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="appendElements">
+                <p>
+                    Please select program to select batch and section.
+                </p>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Enroll Student In Program</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</x-modal>
+
+<x-modal modal="imageFile">
+    <div class="modal-header">
+        <button type="button" style="z-index:999" class="btn btn-danger btn-simple btn-round waves-effect" data-dismiss="modal">CLOSE</button>
+    </div>
+    <div class="modal-body" id='imageContent'>
+        <p class="text-center">
+            Please wait.. loading image.
+        </p>
+    </div>
+</x-modal>
 @endsection
 
 @section("page_script")
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+
+<script type="text/javascript">
+    $("#program_name").change(function() {
+        if ($(this).find(':selected').val() != "") {
+            let parentNode = $(this).closest('form');
+            $("#appendElements").empty()
+            $.ajax({
+                method: "GET",
+                url: "/admin/programs/program/store/" + $(this).find(':selected').val(),
+                success: function(response) {
+                    $("#appendElements").append(response);
+                }
+            })
+        }
+    });
+
+    $("#imageFile").on("shown.bs.modal", function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            success: function(response) {
+                $("#imageContent").html(response);
+            }
+        })
+    });
+
+    $(document).on("click", ".transaction_action", function(event) {
+        event.preventDefault();
+        var confirm_action = confirm("You are about to change current status of transaction. Are you sure ?");
+        let cur_elem = $(this);
+        $(cur_elem).find('button').prop('disabled', true);
+        $.ajax({
+            url: $(this).attr("href"),
+            success: function(response) {
+                window.location.reload();
+            },
+            error: function() {
+                alert('Unable to update transaction detail');
+                $(cur_elem).find('button').prop('disabled', false);
+
+            }
+        })
+    })
+    $(document).on('submit', '.transaction_action_form', function(event) {
+        event.preventDefault();
+        // alert("prevented.");
+        $.ajax({
+            type: $(this).attr('method'),
+            data: $(this).serializeArray(),
+            url: $(this).attr("action"),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                window.location.reload();
+            }
+
+        })
+    })
+    $(document).on("click", '.transaction_delete_form', function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: $(this).attr('method'),
+            data: $(this).serializeArray(),
+            url: $(this).attr('action'),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                window.location.reload();
+            }
+        })
+
+    });
+</script>
 @endsection

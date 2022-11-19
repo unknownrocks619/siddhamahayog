@@ -108,17 +108,20 @@ Route::prefix('admin')
          */
         Route::prefix('programs')
             ->name("program.")
+            ->controller(AdminProgramController::class)
             ->group(function () {
-                Route::get("/list/{type?}", [AdminProgramController::class, "program_list"])->name("admin_program_list");
-                Route::get("/add/{type?}", [AdminProgramController::class, "new_program"])->name("admin_program_new");
-                Route::get("/edit/{program}", [AdminProgramController::class, "edit_program"])->name("admin_program_edit");
-                Route::get("/add/batch/modal/{program}", [AdminProgramController::class, "add_batch_modal"])->name("admin_program_add_batch_modal");
-                Route::get("/detail/{program}", [AdminProgramController::class, "program_detail"])->name("admin_program_detail");
-                Route::get("live-program/list", [AdminProgramController::class, "liveProgram"])->name('all-live-program');
-                Route::get("live-program/list/join-as-admin/{live}", [AdminProgramController::class, "rejoinSession"])->name('live-program-as-admin');
-                Route::get("live/{program}", [AdminProgramController::class, "goLiveCreate"])->name('live');
-                Route::post("/add/batch/{program}", [AdminProgramController::class, "store_batch_program"])->name("admin_program_store_batch_modal");
-                Route::post("/live/{program}", [AdminProgramController::class, "storeLive"])->name("store_live");
+
+                Route::get("/list/{type?}", "program_list")->name("admin_program_list");
+                Route::get("/add/{type?}", "new_program")->name("admin_program_new");
+                Route::get("/edit/{program}", "edit_program")->name("admin_program_edit");
+                Route::get('/program/store/{program}', 'programBatchAndSectionModal')->name('admin_modal_program_meta_information');
+                Route::get("/add/batch/modal/{program}", "add_batch_modal")->name("admin_program_add_batch_modal");
+                Route::get("/detail/{program}", "program_detail")->name("admin_program_detail");
+                Route::get("live-program/list", "liveProgram")->name('all-live-program');
+                Route::get("live-program/list/join-as-admin/{live}", "rejoinSession")->name('live-program-as-admin');
+                Route::get("live/{program}", "goLiveCreate")->name('live');
+                Route::post("/add/batch/{program}", "store_batch_program")->name("admin_program_store_batch_modal");
+                Route::post("/live/{program}", "storeLive")->name("store_live");
                 /**
                  * Courses
                  */
@@ -193,7 +196,9 @@ Route::prefix('admin')
                     ->name('enroll.')
                     ->group(function () {
                         Route::get("/student/detail/{program}", [ProgramStudentEnrollController::class, "program_student_enrollement"])->name('admin_program_member_enroll');
+                        Route::post("/student/enroll/{member}", [ProgramStudentEnrollController::class, "storeMemberInProgram"])->name('admin_student_enroll_in_program');
                         Route::post('/student/store/program/{program}/{member}', [ProgramStudentEnrollController::class, "enroll_student_in_program"])->name('admin_store_student_in_program');
+                        Route::delete('/student/remove/{programStudent}', [ProgramStudentEnrollController::class, "RemoveEnrolledUser"])->name('admin_remove_student_from_program');
                     });
 
 

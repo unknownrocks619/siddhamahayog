@@ -110,6 +110,9 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         //
+        $member->load(['transactions' => function ($query) {
+            return $query->with(['program']);
+        }, 'donations', 'member_detail']);
         return view('admin.members.show', compact("member"));
     }
 

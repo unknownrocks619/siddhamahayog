@@ -1,28 +1,35 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Programs;
+
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Batch;
 use App\Models\Member;
 use App\Models\Program;
+use App\Models\ProgramSection;
+use App\Models\ProgramStudent;
 use App\Models\ProgramStudentEnroll;
 use App\Models\ProgramStudentFee;
 use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
+use ProgramBatch;
 
 class ProgramStudentEnrollController extends Controller
 {
     //
 
-    public function program_student_enrollement(Request $request, Program $program) {
+    public function program_student_enrollement(Request $request, Program $program)
+    {
         $member = Member::find($request->member);
-        $enrollment = ProgramStudentEnroll::where('program_id',$program->id)->where('member_id', $member->id)->first();
-        $last_payment = ProgramStudentFeeDetail::where('program_id',$program->id)->where('student_id',$request->member)->orderBy("id","DESC")->first();
-        return view('admin.programs.fee.partial.student_detail',compact('program','member','enrollment',"last_payment"));
+        $enrollment = ProgramStudentEnroll::where('program_id', $program->id)->where('member_id', $member->id)->first();
+        $last_payment = ProgramStudentFeeDetail::where('program_id', $program->id)->where('student_id', $request->member)->orderBy("id", "DESC")->first();
+        return view('admin.programs.fee.partial.student_detail', compact('program', 'member', 'enrollment', "last_payment"));
     }
 
-    public function enroll_student_in_program(Request $request,Program $program, Member $member) {
+    public function enroll_student_in_program(Request $request, Program $program, Member $member)
+    {
         $request->validate([
             "enroll_date" => "required|date|date_format:Y-m-d",
             "admission" => "required|in:yes,no",
@@ -30,7 +37,7 @@ class ProgramStudentEnrollController extends Controller
             "scholarshop" => "required|in:yes,no"
         ]);
 
-        $validate_unique = ProgramStudentEnroll::where('program_id',$program->id)->where('member_id',$member->id)->first();
+        $validate_unique = ProgramStudentEnroll::where('program_id', $program->id)->where('member_id', $member->id)->first();
 
         if ($validate_unique) {
             return response([
@@ -43,16 +50,16 @@ class ProgramStudentEnrollController extends Controller
         $enroll_student->program_id = $program->id;
         $enroll_student->member_id = $member->id;
         $enroll_student->enroll_date = $request->enroll_date;
-        $enroll_student->scholarship =( $request->scholarship == 'yes' )? true : false;
+        $enroll_student->scholarship = ($request->scholarship == 'yes') ? true : false;
         $enroll_student->program_course_fee_id = $program->active_fees->id;
 
         $student_fee_detail = new ProgramStudentFeeDetail;
         $student_fee = new ProgramStudentFee;
 
-        $student_fee_check = $student_fee->where('program_id',$program->id)->where('student_id',$member->id)->first();
-        if (! $student_fee_check ) {
-            
-            
+        $student_fee_check = $student_fee->where('program_id', $program->id)->where('student_id', $member->id)->first();
+        if (!$student_fee_check) {
+
+
             $student_fee->program_id = $program->id;
             $student_fee->student_id = $member->id;
             $student_fee->total_amount = $program->active_fees->admission_fee;
@@ -64,17 +71,17 @@ class ProgramStudentEnrollController extends Controller
             $student_fee_detail->amount_category = "admission_fee";
             $student_fee_detail->verified = true;
             $student_fee_detail->rejected = false;
-            $student_fee_detail->remarks = "Admitted to program ". $program->program_name;
+            $student_fee_detail->remarks = "Admitted to program " . $program->program_name;
             $student_fee_detail->source = "Cash";
             $student_fee_detail->source_detail = "Bank Deposit";
         } else {
 
             // check if student under same category is already enrolled.
-            $check_student_fee = $student_fee_detail->where("program_id",$program->id)
-                                                    ->where('student_id',$member->id)
-                                                    ->where('amount_category','admission_fee')
-                                                    ->exists();
-            if ( ! $check_student_fee) {
+            $check_student_fee = $student_fee_detail->where("program_id", $program->id)
+                ->where('student_id', $member->id)
+                ->where('amount_category', 'admission_fee')
+                ->exists();
+            if (!$check_student_fee) {
                 // 
                 $student_fee_detail->program_id = $program->id;
                 $student_fee_detail->student_id = $member->id;
@@ -83,22 +90,22 @@ class ProgramStudentEnrollController extends Controller
                 $student_fee_detail->amount_category = "admission_fee";
                 $student_fee_detail->verified = true;
                 $student_fee_detail->rejected = false;
-                $student_fee_detail->remarks = "Admitted to program ". $program->program_name;
+                $student_fee_detail->remarks = "Admitted to program " . $program->program_name;
                 $student_fee_detail->source = "Cash";
                 $student_fee_detail->source_detail = "Bank Deposit";
 
                 $student_fee_check->total_amount = $student_fee_check->total_amount + $student_fee_detail->amount;
-            } 
+            }
         }
-        
-        
+
+
 
         try {
-            DB::transaction(function() use ($request,$enroll_student,$student_fee_detail,$student_fee,$student_fee_check) {
+            DB::transaction(function () use ($request, $enroll_student, $student_fee_detail, $student_fee, $student_fee_check) {
                 $enroll_student->save();
                 $student_payment = null;
-                if ( ! $enroll_student->scholarship) {
-                    if ( ! $student_fee_check ) {
+                if (!$enroll_student->scholarship) {
+                    if (!$student_fee_check) {
                         $student_fee->save();
                         $student_fee_detail->program_student_fees_id = $student_fee->id;
                         $student_fee_detail->save();
@@ -107,8 +114,7 @@ class ProgramStudentEnrollController extends Controller
                         $student_fee_detail->save();
                         $student_fee_check->save();
                         $student_payment = $student_fee_check;
-
-                    }    
+                    }
                 }
                 if ($request->monthly_fee) {
                     $add_monthly_fee = new ProgramStudentFeeDetail;
@@ -140,7 +146,7 @@ class ProgramStudentEnrollController extends Controller
         //     // 
 
         // }
-            
+
         return response([
             "success" => true,
             "message" => "Member Enrolled.",
@@ -149,5 +155,56 @@ class ProgramStudentEnrollController extends Controller
         ]);
     }
 
+    public function storeMemberInProgram(Request $request, Member $member)
+    {
+        $request->validate([
+            "program_name" => "required",
+            'batch' =>  "required",
+            'section' => "required"
+        ]);
 
+        if (ProgramStudent::where('program_id', $request->post('program_name'))->where('student_id', $member->id)->exists()) {
+            session()->flash('error', "User already in program.");
+            return redirect()->route('admin.members.show', $member->id);
+        }
+
+        $programStudent = new ProgramStudent;
+
+        $programStudent->program_id = $request->post('program_name');
+        $programStudent->program_section_id = $request->post('section');
+        $programStudent->batch_id = $request->post('batch');
+        $programStudent->student_id = $member->id;
+        $programStudent->active = true;
+
+        try {
+            $programStudent->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', 'Unable to enroll user. Error: ' . $th->getMessage());
+            return redirect()->route('admin.members.show', [$member->id]);
+        }
+        session()->flash('success', "User Enrollment was success.");
+        return redirect()->route('admin.members.show', [$member->id]);
+    }
+
+
+    public function RemoveEnrolledUser(ProgramStudent $programStudent)
+    {
+        // 
+        if (ProgramStudentFee::where('program_id', $programStudent->program_id)->where('student_id', $programStudent->student_id)->exists()) {
+            session()->flash('error', "Can not remove from the program. Member have active transaction history.");
+            return back();
+        }
+        try {
+            //code...
+            $programStudent->delete();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', 'Unable to remove user program. Error: ' . $th->getMessage());
+            return back();
+        }
+
+        session()->flash('success', 'Member removed from program.');
+        return back();
+    }
 }

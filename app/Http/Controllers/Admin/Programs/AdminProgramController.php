@@ -296,4 +296,12 @@ class AdminProgramController extends Controller
         $lives = Live::with(['zoomAccount', "program", 'programSection'])->where("live", true)->get();
         return view('admin.programs.live.list', compact('lives'));
     }
+
+    public function programBatchAndSectionModal(Program $program)
+    {
+        $program->load(['batches' => function ($query) {
+            return $query->with(['batch']);
+        }, 'sections']);
+        return view('admin.programs.modal.program_batch_and_section_modal', compact('program'));
+    }
 }

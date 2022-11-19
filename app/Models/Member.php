@@ -81,4 +81,14 @@ class Member extends Authenticatable
     {
         return $this->hasMany(Reference::class, "referenced_by");
     }
+
+    public function donations()
+    {
+        return $this->hasMany(Donation::class, 'member_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(ProgramStudentFeeDetail::class, 'student_id');
+    }
 }
