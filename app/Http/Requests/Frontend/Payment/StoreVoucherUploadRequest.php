@@ -36,7 +36,7 @@ class StoreVoucherUploadRequest extends FormRequest
             'payment_type' => "required",
             'bank_name' => "required|string|in:Garima Bikas Bank",
             "voucher_date" => "required|date|date_format:Y-m-d",
-            "voucherPhoto" => "required|mimes:png,jpg,gif,jpeg|max:5048"
+            // "voucherPhoto" => "required|mimes:png,jpg,gif,jpeg|max:5048"
         ];
     }
 

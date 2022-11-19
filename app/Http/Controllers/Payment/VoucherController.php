@@ -15,6 +15,7 @@ class VoucherController extends Controller
     use FileUpload;
     public function store(StoreVoucherUploadRequest $request, Program $program)
     {
+        dd($request->file('voucherPhoto', true));
         $this->set_access('file');
         $this->set_upload_path('website/payments/programs');
 
