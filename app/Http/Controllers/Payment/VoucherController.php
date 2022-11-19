@@ -22,7 +22,6 @@ class VoucherController extends Controller
         $file = $request->file('file');
         $name = $file->hashName();
 
-        dd($this->upload('file'));
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
         $programStudentFee = ProgramStudentFee::where('student_id', auth()->id())->where('program_id', $program->id)->first();
         if (!$programStudentFee) {
@@ -41,7 +40,6 @@ class VoucherController extends Controller
         $programStudentFeeDetail->verified = false;
         $programStudentFeeDetail->remarks = ['upload_date' => $request->post('voucher_date'), 'bank_name' => $request->post('bank_name')];
         $programStudentFeeDetail->file = $this->upload('voucherPhoto');
-        dd($programStudentFeeDetail);
         try {
             DB::transaction(function () use ($programStudentFeeDetail, $programStudentFee) {
                 if ($programStudentFee && $programStudentFee->isDirty()) $programStudentFee->save();

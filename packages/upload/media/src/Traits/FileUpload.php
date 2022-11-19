@@ -3,7 +3,6 @@
 namespace Upload\Media\Traits;
 
 use Exception;
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 use Upload\Media\Models\Media;
@@ -50,9 +49,8 @@ trait FileUpload
         $file_detail = [
             "original_filename" => request()->file($filename)->getClientOriginalName(),
             "file_type" => request()->file($filename)->getMimeType(),
-            "path" => Storage::putFile($this->_upload_path, request()->file($filename)),
+            "path" => Storage::putFile($this->_upload_path, request()->file($filename)->path()),
         ];
-
         if ($this->_access == "DB") {
             $upload_model = new Media;
             $upload_model->media = $file_detail;
