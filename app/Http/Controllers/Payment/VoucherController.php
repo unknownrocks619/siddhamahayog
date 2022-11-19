@@ -40,7 +40,6 @@ class VoucherController extends Controller
         $programStudentFeeDetail->verified = false;
         $programStudentFeeDetail->remarks = ['upload_date' => $request->post('voucher_date'), 'bank_name' => $request->post('bank_name')];
         $programStudentFeeDetail->file = $this->upload('file');
-        dd($programStudentFeeDetail);
         try {
             DB::transaction(function () use ($programStudentFeeDetail, $programStudentFee) {
                 if ($programStudentFee && $programStudentFee->isDirty()) $programStudentFee->save();
