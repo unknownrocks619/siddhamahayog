@@ -128,58 +128,41 @@
                     <div class="myform form ">
                         <div class="logo mb-3">
                             <div class="col-md-12 text-center">
-                                <h1>Register</h1>
+                                <h1>Login</h1>
+                                <?php
+                                $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->ip(), 3);
+                                ?>
+
                             </div>
+                            <!-- <div class="col-md-12 alert alert-danger">
+                                You can use your Arthapanchawk or Atirudri account to access the portal.
+                            </div> -->
                         </div>
-                        <form action="{{ route('register') }}" id="loginForm" method="post" name="login">
+                        @if( ! $rateLimit)
+                        <form action="{{ route('login') }}" id="loginForm" method="post" name="login">
                             @csrf
                             @google_captcha()
-                            <div class="row mb-2">
-                                <div class="col-md-12">
-                                    <label for="">Full Name
-                                        <sup class="text-danger">*</sup>
-                                    </label>
-                                    <input type="text" name="full_name" required id="full_name" class="form-control @error('full_name') border border-danger @enderror" />
-
-                                </div>
-                            </div>
                             <div class="form-group">
-                                <label for="eid">Email address
-                                    <sup class="text-danger">*</sup>
-                                </label>
+                                <label for="eid">Email address</label>
                                 <input required aria-required="true" type="email" name="email" class="form-control @error('email') border border-danger @enderror" id="eid" aria-describedby="emailHelp" placeholder="Enter email">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password
-                                    <sup class="text-danger">*</sup>
-
+                                    <sup>
+                                        <a class="text-info" title="reset password" href="{{ route('password.request') }}">
+                                            [?]
+                                        </a>
+                                    </sup>
                                 </label>
                                 <input required aria-required="true" type="password" name="password" id="pass" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
                             </div>
                             <div class="form-group">
-                                <label for="password_confirmation">Confirm Password
-                                    <sup class="text-danger">*</sup>
-
-                                </label>
-                                <input required aria-required="true" type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password') border border-danger @enderror" aria-describedby="password" placeholder="Enter Password">
-                            </div>
-
-                            <div class="form-group">
-                                <!-- <label for="reference_by">
-                                    Reference Code
-                                </label> -->
-
-                                <input type="hidden" name="sharing_code" id="sharing_code" class="form-control">
-                            </div>
-
-                            <div class="form-group">
                                 <p class="text-center">By signing up you accept our <a href="https://siddhamahayog.org/terms-and-condition">Terms Of Use</a></p>
                             </div>
                             <div class="col-md-12 text-center ">
-                                <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Register</button>
+                                <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Login</button>
                             </div>
                         </form>
-
                         <div class="col-md-12 ">
                             <div class="login-or">
                                 <hr class="hr-or">
@@ -187,29 +170,39 @@
                             </div>
                         </div>
                         <div class="col-md-12 mb-3">
-                            <form action="{{ route('social_login_redirect_google') }}" id="facebookForm" method="post">
+                            <form action="{{ route('social_login_redirect',['facebook']) }}" id="facebookForm" method="post">
                                 @csrf
                                 <p class="text-center">
                                     <button type="submit" class="btn mybtn w-100 btn-outline-primary"><i class="fa fa-facebook">
-                                        </i> Signup using Facebook
+                                        </i> Signin using Facebook
                                     </button>
                                 </p>
                             </form>
                         </div>
                         <div class="col-md-12 mb-3">
-
-                            <form action="{{ route('social_login_redirect',['facebook']) }} id=" googleForm" method="post">
+                            <form action="{{ route('social_login_redirect_google') }}" id="googleForm" method="post">
                                 @csrf
                                 <p class="text-center">
                                     <button type='submit' class=" btn mybtn btn-outline-danger w-100"><i class="fa fa-google-plus">
-                                        </i> Signup using Google
+                                        </i> Signin using Google
                                     </button>
                                 </p>
                             </form>
+
                         </div>
+
+
+
                         <div class="form-group">
-                            <p class="text-center">Already have an account? <a href="{{ route('login') }}" id="signup">Login</a></p>
+                            <p class="text-center">
+                                Don't have account? <a href="{{ route('register') }}" id="signup">Sign up here</a>
+                            </p>
                         </div>
+                        @else
+                        <div class="alert alert-danger">
+                            Too many invalid login attempt. Please try again after few minutes
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -217,21 +210,16 @@
     </div>
 
 </body>
-<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
-
 <script>
     $(document).ready(function() {
         $("#loginForm").validate({
             rules: {
-                "full_name": {
-                    required: true
-                },
                 "email": {
                     required: true,
                 },
                 "password": {
                     required: true
-                },
+                }
             },
             messages: {
                 "email": "Provide Valid Email.",
@@ -240,18 +228,20 @@
             onsubmit: true,
             onfocusout: true,
             validClass: "alert alert-success"
+
         });
     })
 </script>
-
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
 <script>
     grecaptcha.ready(function() {
         document.getElementById('loginForm').addEventListener("submit", function(event) {
             event.preventDefault();
             const inputs = [...$(this).find("input")];
+            inputs.every(input => input.reportValidity());
             let valid = inputs.every(input => input.reportValidity());
             if (valid) {
-                $(this).find("button").prop('disabled', true);
+                $("form#loginForm").find("button").prop('disabled', true);
                 grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
                         action: 'login'
                     })
@@ -260,6 +250,7 @@
                         document.getElementById('loginForm').submit();
                     });
             }
+
         });
     });
 </script>
