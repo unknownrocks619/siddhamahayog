@@ -149,6 +149,7 @@
                             <span class="input-group-text">.00</span>
                         </div>
                         <button type="submit" class="btn btn-success mt-2">E-Sewa Dakshina</button>
+                        <a href="{{-- route('donations.donate_get',['stripe']) --}}" type="submit" class="btn-sm btn btn-primary mt-2 disabled">Other Payment (Coming Soon)</a>
                     </form>
                     @endif
                 </div>

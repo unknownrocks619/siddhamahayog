@@ -183,3 +183,65 @@ function check_unicode_character($character, $exclude = null)
 function widgets_view($widgets)
 {
 }
+
+
+function getUserCountry()
+{
+    $userIp = "185.169.233.9"; // request()->ip();
+
+    if (session()->has('userIp')) {
+        return session()->get('userIp')->$userIp->isocode;
+    }
+
+
+    // ------------------------------
+    // SETTINGS
+    // ------------------------------
+
+    $API_Key = env('PROXYCHECK_API'); // Supply your API key between the quotes if you have one
+    $VPN = env("PROXYCHECK_VPN", false); // Change this to 1 if you wish to perform VPN Checks on your visitors
+    $TLS = env("PROXYCHECK_TLS", false); // Change this to 1 to enable transport security, TLS is much slower though!
+    $TAG = 0;
+
+    // ------------------------------
+    // END OF SETTINGS
+    // ------------------------------
+    $Custom_Tag = "";
+    // Setup the correct querying string for the transport security selected.
+    if ($TLS == 1) {
+        $Transport_Type_String = "https://";
+    } else {
+        $Transport_Type_String = "http://";
+    }
+
+
+    // However you can supply your own descriptive tag or disable tagging altogether above.
+    if ($TAG == 1 && $Custom_Tag == "") {
+        $Post_Field = "tag=" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+    } else if ($TAG == 1 && $Custom_Tag != "") {
+        $Post_Field = "tag=" . $Custom_Tag;
+    } else {
+        $Post_Field = "";
+    }
+
+    $http_build_query = [
+        'key' => env("PROXYCHECK_API"),
+        'vpn' => env("PROXYCHECK_VPN", false),
+        'asn' => env("PROXYCHECK_ASN", true),
+        'risk' => env('PROXYCHECK_RISK', 33)
+    ];
+    $ch = curl_init($Transport_Type_String . 'proxycheck.io/v2/' . $userIp . '?' . http_build_query($http_build_query));
+
+    $curl_options = [
+        CURLOPT_CONNECTTIMEOUT => 30,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $Post_Field,
+        CURLOPT_RETURNTRANSFER => true
+    ];
+
+    curl_setopt_array($ch, $curl_options);
+    $proxy_JSON_result = curl_exec($ch);
+    $result = json_decode($proxy_JSON_result);
+    session()->put('userIp', $result);
+    return $result->$userIp->isocode;
+}

@@ -16,29 +16,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $web_settings = [[
-            "name" => "logo",
-            "value" => "logo.jpg",
-        ],
-        [
-            "name" => "loading_bar",
-            "value" => true
-        ],
-        [
-            "name" => "cache",
-            "value" => true
-        ],
-        [
-            "name" => "online_payment",
-            "value" => true
-        ],
-        [
-            "name" => "donation",
-            "value" => true 
-        ]
+        $web_settings = [
+            [
+                "name" => "logo",
+                "value" => "logo.jpg",
+            ],
+            [
+                "name" => "loading_bar",
+                "value" => true
+            ],
+            [
+                "name" => "cache",
+                "value" => true
+            ],
+            [
+                "name" => "online_payment",
+                "value" => true
+            ],
+            [
+                "name" => "donation",
+                "value" => true
+            ],
         ];
         foreach ($web_settings as $value) {
-          DB::table('web_settings')->insert($value);  
+            DB::table('web_settings')->insert($value);
         }
     }
 }

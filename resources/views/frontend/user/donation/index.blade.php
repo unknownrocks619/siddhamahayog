@@ -26,12 +26,14 @@
                                     <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
                                     <span class="input-group-text">.00</span>
                                     <button type="submit" class=" ms-4 btn btn-success ">E-sewa Dakshina</button>
+                                    <a href="{{-- route('donations.donate_get',['stripe']) --}}" class="btn btn-primary ms-2 disabled">Other Payment (Coming soon)</a>
+
                                 </div>
                             </form>
                         </div>
                     </div>
 
-                    <table class="table table-border table-hover">
+                    <table class="table table-border table-hover" id="donationTable">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -48,6 +50,8 @@
                                 <td>
                                     @if(\Str::contains($donation->type, 'esewa', true))
                                     NRs . {{ number_format($donation->amount,2) }}
+                                    @elseif(\Str::contains($donation->type,'stripe',true) )
+                                    USD . {{ number_format($donation->amount,2) }}
                                     @else
                                     {{ number_format($donation->amount,2) }}
                                     @endif
@@ -89,7 +93,11 @@
 @endsection
 
 @push("custom_script")
+<script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
+    $(document).ready(function() {
+        $("#donationTable").DataTable();
+    })
     $("#resourceImage").on("shown.bs.modal", function(event) {
         $.ajax({
             method: "get",
@@ -100,4 +108,8 @@
         })
     });
 </script>
+@endpush
+
+@push('custom_css')
+<link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
 @endpush

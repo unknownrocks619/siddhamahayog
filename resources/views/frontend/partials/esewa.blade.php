@@ -6,10 +6,17 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
         <span class="text-muted fw-light">Program /</span>
-        <span class="text-muted fw-light"><a href="{{ route('user.account.programs.program.index') }}">{{ $program->program_name }}</a> /</span>
+        <span class="text-muted fw-light">
+            <a href="{{ route('user.account.programs.program.index') }}">
+                {{ $program->program_name }}
+            </a> /
+        </span>
         Payment
     </h4>
 
+    @if( ! $allow_access )
+    @include("frontend.partials.not-allowed",['program'=>$program])
+    @else
     <div class="row">
         <div class="col-md-12">
             <x-alert></x-alert>
@@ -61,6 +68,7 @@
             </form>
         </div>
     </div>
+    @endif
 </div>
 @endsection
 

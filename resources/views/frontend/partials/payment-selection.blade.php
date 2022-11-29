@@ -6,6 +6,9 @@
                 <select name="paymentOpt" id="payment" class="form-control">
                     <option value="esewa">E-Sewa</option>
                     <option value="voucher">Bank Voucher deposit</option>
+                    @if(user()->role_id == 1)
+                    <option value="stripe">Pay By Card</option>
+                    @endif
                     <option value="fonepay" disabled>F-One Scan</option>
                     <option value="ibs" disabled>Internet Banking</option>
                 </select>

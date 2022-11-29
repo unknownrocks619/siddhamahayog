@@ -44,8 +44,6 @@
     <!-- Preloader End -->
     @endif
 
-
-
     <!-- partial:partia/__sidenav.html -->
     <aside class="sigma_aside sigma_aside-right sigma_aside-right-panel sigma_aside-bg">
         <div class="sidebar">
@@ -113,11 +111,6 @@
 
         <!-- Menu -->
         <ul>
-            <li class="menu-item ">
-                <a href="/">
-                    Home
-                </a>
-            </li>
             @foreach (menus() as $menu)
             @if($menu->menu_position == "main_menu" && ! $menu->parent_menu )
             <li class="menu-item @if(menus()->where('parent_menu',$menu->id)->count()) menu-item-has-children @endif">
@@ -258,6 +251,7 @@
             -------------------------------------------------------------------------------*/
         $(window).on('load', function() {
             $('.sigma_preloader').addClass('hidden');
+
         });
     </script>
     @endif
@@ -277,6 +271,11 @@
         gtag('js', new Date());
 
         gtag('config', 'G-Z4K6SC5D6J');
+
+        $(window).ready(function() {
+            $(".sigma_header-top").show();
+
+        })
     </script>
 </body>
 

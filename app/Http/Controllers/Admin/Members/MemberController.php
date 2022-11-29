@@ -34,27 +34,27 @@ class MemberController extends Controller
             $datatable = DataTables::of($members)
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
-                    return $row->full_name;
+                    return htmlspecialchars(strip_tags($row->full_name));
                 })
                 ->addColumn('login_source', function ($row) {
-                    return ucwords($row->email);
+                    return strtolower(strip_tags($row->email));
                 })
                 ->addColumn('country', function ($row) {
                     // return $row->countries->country_name;
-                    return ($row->countries) ? $row->countries->name : "NaN";
+                    return ($row->countries) ? htmlspecialchars(strip_tags($row->countries->name)) : "NaN";
                 })
                 ->addColumn('phone', function ($row) {
                     $phone = "";
                     if ($row->phone_number) {
-                        $phone .= "Mo: " . $row->phone_number;
+                        $phone .= "Mo: " . htmlspecialchars(strip_tags($row->phone_number));
                     } else {
                         $phone .= "NaN";
                     }
                     if ($row->emergency) {
                         $phone .= "<br />";
-                        $phone .= "Ref Mo: " . $row->emergency->phone_number;
+                        $phone .= "Ref Mo: " . htmlspecialchars(strip_tags($row->emergency->phone_number));
                         $phone .= "<br />";
-                        $phone .= "Ref Name: " . $row->emergency->contact_person;
+                        $phone .= "Ref Name: " . htmlspecialchars(strip_tags($row->emergency->contact_person));
                     }
                     return $phone;
                 })
@@ -69,11 +69,14 @@ class MemberController extends Controller
                     }
                     return $program_involved;
                 })
+                ->addColumn('registered_date', function ($row) {
+                    return $row->created_at;
+                })
                 ->addColumn('action', function ($row) {
                     $action = "<a href='" . route('admin.members.show', $row->id) . "'>View Detail</a>";
                     return $action;
                 })
-                ->rawColumns(["full_name", "login_source", "country", "phone", "program_involved", "action"])
+                ->rawColumns(["country", "phone", "program_involved", "action"])
                 ->make(true);
             return $datatable;
         }

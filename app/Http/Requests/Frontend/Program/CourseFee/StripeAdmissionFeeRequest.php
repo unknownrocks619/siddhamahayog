@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Frontend\Payment;
+namespace App\Http\Requests\Frontend\Program\CourseFee;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class PaymentCreateRequest extends FormRequest
+class StripeAdmissionFeeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
+
     public function authorize()
     {
         return (auth()->check() && $this->program->students()->where('student_id', auth()->id())->exists()) ?? false;
@@ -22,18 +22,23 @@ class PaymentCreateRequest extends FormRequest
      *
      * @return array
      */
+    
     public function rules()
     {
         return [
-            'paymentOpt' => ['required', Rule::in(['esewa', 'voucher', 'stripe'])]
+            //
+            "amount" => 'required',
+            "card_holder_name" => "required|string",
+            "payment_method" => "required"
         ];
     }
 
     public function messages()
     {
         return [
-            'paymentOpt.required' => 'Please select your mode of payment from selection.',
-            'paymentOpt.in' => 'Invalid or payment option not support.'
+            "amount.required" => "Amount field is required.",
+            "card_holder_name.required" => "Please include your name printed on card.",
+            "payment_method.required" => "Payment Method is requried."
         ];
     }
 }

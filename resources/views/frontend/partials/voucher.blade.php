@@ -10,6 +10,10 @@
         Payment
     </h4>
 
+    @if( ! $allow_access )
+    @include("frontend.partials.not-allowed",['program'=>$program])
+    @else
+
     <div class="row">
         <div class="col-md-12">
             <x-alert></x-alert>
@@ -105,6 +109,8 @@
             </form>
         </div>
     </div>
+
+    @endif
 </div>
 @endsection
 

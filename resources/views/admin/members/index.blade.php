@@ -56,7 +56,7 @@ Program
                         </div>
                         @endif
                         <div class="table-responsive">
-                            <table id="program-table" class="table table-bordered table-striped table-hover dataTable">
+                            <table id="program-table" class="table table-bordered table-striped table-hover dataTable w-100">
                                 <thead>
                                     <tr>
                                         <th>S.No</th>
@@ -65,6 +65,7 @@ Program
                                         <th>Country</th>
                                         <th>Phone</th>
                                         <th>Subscription</th>
+                                        <th>Registered Date</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -99,9 +100,60 @@ Program
 
 
 <script>
+    $("#program-table thead tr").clone(true).addClass('filters').appendTo("#program-table thead")
+
     $('#program-table').DataTable({
         processing: true,
         serverSide: true,
+        fixedHeader: true,
+        orderCellsTop: true,
+        initComplete: function() {
+            var api = this.api();
+
+            api
+                .columns()
+                .eq(0)
+                .each(function(colIdx) {
+                    // Set the header cell to contain the input element
+                    var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                    );
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                    // On every keypress in this input
+                    $('input',
+                            $('.filters th').eq($(api.column(colIdx).header()).index())
+                        )
+                        .off('keyup change')
+                        .on('change', function(e) {
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != '' ?
+                                    regexr.replace('{search}', '(((' + this.value + ')))') :
+                                    '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        })
+                        .on('keyup', function(e) {
+                            e.stopPropagation();
+
+                            $(this).trigger('change');
+                            $(this)
+                                .focus()[0]
+                                .setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                });
+        },
         ajax: '{{url()->full()}}',
         columns: [{
                 data: 'DT_RowIndex',
@@ -126,6 +178,10 @@ Program
             {
                 data: "program_involved",
                 name: "program_involved"
+            },
+            {
+                data: "registered_date",
+                name: "registered_date"
             },
             {
                 data: "action",

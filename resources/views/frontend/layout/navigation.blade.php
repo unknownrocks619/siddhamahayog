@@ -1,5 +1,12 @@
 <!-- Menu -->
 <div class="sigma_header-inner">
+    <div class="row menu-gap d-none">
+        <div class="col-md-12">
+            <button class="btn btn-outline-primary">
+                Sign In
+            </button>
+        </div>
+    </div>
     <div class="sigma_header-top">
         <div class="sigma_header-top-inner">
             <ul class="sigma_header-top-links">

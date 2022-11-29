@@ -6,12 +6,29 @@
         </div>
         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
             <div class="me-2">
-                <small class="text-muted d-block mb-1">@if(\Str::contains($donation->type,'esewa',false)) Esewa @else Wallet @endif</small>
-                <h6 class="mb-0">Esewa</h6>
+                <small class="text-muted d-block mb-1">
+                    <?php
+                    if (\Str::contains($donation->type, 'esewa', true)) {
+                        $type = 'Esewa';
+                    } elseif (\Str::contains($donation->type, 'stripe', true)) {
+                        $type = "Stripe";
+                    } else {
+                        $type = "Wallet";
+                    }
+                    ?>
+                    {{-- $type --}}
+                </small>
+                <h6 class="mb-0">{{ $type }}</h6>
             </div>
             <div class="user-progress d-flex align-items-center gap-1">
-                <h6 class="mb-0">{{ $donation->amount }}</h6>
-                <span class="text-muted">NRs</span>
+                <h6 class="mb-0">{{ number_format($donation->amount,2) }}</h6>
+                <span class="text-muted">
+                    @if($type == "Stripe")
+                    USD
+                    @else
+                    NRs.
+                    @endif
+                </span>
             </div>
         </div>
     </li>

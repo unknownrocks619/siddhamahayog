@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend\Donation;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Payment\EsewaController;
+use App\Http\Controllers\Payment\StripeController;
 use App\Http\Requests\Frontend\User\Donation\AjaxDonationListRequest;
 use App\Models\Donation;
 use Illuminate\Http\Request;
@@ -25,6 +26,37 @@ class DonationController extends Controller
             abort(404);
         }
         return $this->$serviceProvider($request);
+    }
+
+
+    public function stripe(Request $request)
+    {
+        
+        $strip = new StripeController;
+        if ($request->getMethod() == "GET") {
+            return $strip->index();
+        }
+
+        if (!$strip->process_payment($request)) {
+            session()->flash('error', 'Unable to complete your payment. If your amount is deducted from the account please create support ticket with your transaction statement detail. Or you can try again.');
+            return back();
+        }
+        $data = [
+            "member_id" => user()->id,
+            "amount" => $request->amount,
+            "verified" => true,
+            "remarks" => ["partner" => "STRIPE", "currency" => "USD", "card_holder_name" => $request->post('card_holder_name')],
+            'type' => "Stripe Guru Sewa",
+        ];
+
+        if (!$this->store($request, $data)) {
+            session()->flash("error", 'Your payment was success, something went wrong. Please create support ticket to address the issue.');
+            return back();
+        }
+
+        session()->flash("success", 'Thank-you for your sewa.');
+        return redirect()->route('donations.list');
+        // let's store the information donation table.
     }
 
     public function esewa(Request $request)
@@ -96,7 +128,7 @@ class DonationController extends Controller
     public function ajaxDonationHistory(AjaxDonationListRequest $request)
     {
         if ($request->ajax()) {
-            $donations = Donation::where("member_id", auth()->id())->latest()->paginate(10);
+            $donations = Donation::where("member_id", auth()->id())->latest()->paginate(8);
             return view('frontend.user.donation.dashboard-donation', compact('donations'));
         }
         abort(404);

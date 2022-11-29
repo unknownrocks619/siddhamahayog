@@ -5,31 +5,27 @@
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Program /</span>
+        <span class="text-muted fw-light">Dashboard /</span>
         <span class="text-muted fw-light">
-            <a href="{{ route('user.account.programs.program.index') }}">
-                {{ $program->program_name }}
-            </a> /
-        </span>
-        Payment
+            <a href="{{ route('donations.list') }}">Donation</a> /</span>
+        Card Payment
     </h4>
 
     <div class="row">
-
         <div class="col-md-12">
             <x-alert></x-alert>
-            <form id="stripePaymentForm" enctype="multipart/form-data" action="{{route('user.account.programs.payment.stripe.process',[$program->id])}}" method="post">
+            <form id="stripePaymentForm" enctype="multipart/form-data" action="{{route('donations.donate_post','stripe')}}" method="post">
                 @csrf
                 <div class="card mb-4">
                     <div class="row d-flex justify-content-between mt-2">
                         <div class="col-md-8">
-                            <h5 class="card-header mt-0 pt-0">You are paying using<span class="fs-4 text-success">`Visa / Debit Card (Internation)`</span> </h5>
+                            <h5 class="card-header mt-0 pt-0">Dakshina </h5>
                         </div>
                         <div class="col-md-4">
-                            <button class="btn btn-sm btn-danger clickable" data-href="{{ route('user.account.programs.courses.fee.list',$program->id) }}">
+                            <button class="btn btn-sm btn-danger clickable" data-href="{{ route('donations.list') }}">
                                 <i class="bx bx-window-close">
                                 </i>
-                                Cancel Payment
+                                Cancel Donation
                             </button>
                         </div>
                     </div>
@@ -44,7 +40,7 @@
                                 <label for="amount">Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">USD</span>
-                                    <input name="amount" type="text" value="100" readonly required class="form-control" placeholder="Amount" aria-label="Amount">
+                                    <input name="amount" type="text" required class="form-control" placeholder="Amount" aria-label="Amount">
                                     <span class="input-group-text">.00</span>
                                 </div>
                             </div>
@@ -80,7 +76,7 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <button type="submit" class="btn btn-success pay">
-                                    Process My Admission Fee
+                                    Process Dakshina
                                 </button>
                             </div>
                         </div>

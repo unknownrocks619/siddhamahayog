@@ -24,7 +24,7 @@
                 <!-- Account -->
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-4 bg-footer-theme d-none d-md-block">
+                        <div class="col-md-4 bg-footer-theme d-none d-md-block" style="max-height: 100vh;overflow:scroll">
                             <div class="row pb-4">
                                 <div class="accordion mt-3 accordion-without-arrow" id="accordionExample">
                                     @forelse ($notifications as $notification)

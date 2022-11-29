@@ -143,6 +143,7 @@ Route::prefix("account")
                     ->name('payment.')
                     ->group(function () {
                         Route::get('process', [PaymentController::class, 'create'])->name('create.form');
+                        Route::post('process', [PaymentController::class, 'stripeAdmissionFeeControllerr'])->name('stripe.process');
                         Route::post("/voucher", [VoucherController::class, 'store'])->name('store.voucher');
                     });
             });

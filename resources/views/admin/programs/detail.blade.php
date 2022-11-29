@@ -213,27 +213,17 @@
                         </h2>
                     </div>
                     <div class="body">
-                        <table class="table table-bordered table-hover" id="studentTable">
+                        <table class="table table-bordered table-hover table-responsive w-100" id="studentTable">
                             <thead>
                                 <tr>
                                     <th>S.No</th>
+                                    <th>Full Name</th>
+                                    <th>Phone Number</th>
+                                    <th>Email</th>
+                                    <th>Section</th>
+                                    <th>Batch</th>
+                                    <th>Enrolled Date</th>
                                     <th>
-                                        Full Name
-                                    </th>
-                                    <th>
-                                        Phone Number
-                                    </th>
-                                    <th>
-                                        Email
-                                    </th>
-                                    <th>
-                                        Section
-                                    </th>
-                                    <th>
-                                        Batch
-                                    </th>
-                                    <th>
-
                                     </th>
                                 </tr>
                             </thead>
@@ -259,12 +249,15 @@
                                         {{ $student->batch->batch_name }}
                                     </td>
                                     <td>
+                                        {{ $student->created_at }}
+                                    </td>
+                                    <td>
                                         <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">View Detail</a>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="7">
+                                    <td colspan="8">
                                         Student Record not found...
                                     </td>
                                 </tr>
@@ -423,7 +416,59 @@
 @endif
 
 <script>
-    $("#studentTable").DataTable()
+    $("#studentTable thead tr").clone(true).addClass('filters').appendTo("#studentTable thead")
+
+    $("#studentTable").DataTable({
+        fixedHeader: true,
+        orderCellsTop: true,
+        initComplete: function() {
+            var api = this.api();
+
+            api
+                .columns()
+                .eq(0)
+                .each(function(colIdx) {
+                    // Set the header cell to contain the input element
+                    var cell = $('.filters th').eq(
+                        $(api.column(colIdx).header()).index()
+                    );
+                    var title = $(cell).text();
+                    $(cell).html('<input type="text" placeholder="' + title + '" />');
+
+                    // On every keypress in this input
+                    $('input',
+                            $('.filters th').eq($(api.column(colIdx).header()).index())
+                        )
+                        .off('keyup change')
+                        .on('change', function(e) {
+                            // Get the search value
+                            $(this).attr('title', $(this).val());
+                            var regexr = '({search})'; //$(this).parents('th').find('select').val();
+
+                            var cursorPosition = this.selectionStart;
+                            // Search the column for that value
+                            api
+                                .column(colIdx)
+                                .search(
+                                    this.value != '' ?
+                                    regexr.replace('{search}', '(((' + this.value + ')))') :
+                                    '',
+                                    this.value != '',
+                                    this.value == ''
+                                )
+                                .draw();
+                        })
+                        .on('keyup', function(e) {
+                            e.stopPropagation();
+
+                            $(this).trigger('change');
+                            $(this)
+                                .focus()[0]
+                                .setSelectionRange(cursorPosition, cursorPosition);
+                        });
+                });
+        },
+    })
 </script>
 <script>
     // $('#student-table').DataTable({

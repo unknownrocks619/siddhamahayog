@@ -198,13 +198,13 @@ class ProgramStudentFeeController extends Controller
                 })
                 ->addColumn('member_name', function ($row) {
                     $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
-                    $member .= $row->student->full_name;
+                    $member .= htmlspecialchars(strip_tags($row->student->full_name));
                     $member .= "</a>";
 
                     return $member;
                 })
                 ->addColumn('transaction_amount', function ($row) {
-                    return default_currency($row->amount);
+                    return strip_tags(default_currency($row->amount));
                 })
                 ->addColumn('category', function ($row) {
                     $seperate_category = explode("_", $row->amount_category);
@@ -234,22 +234,47 @@ class ProgramStudentFeeController extends Controller
                 })
                 ->addColumn('media', function ($row) {
                     if ($row->file) {
-                        return "<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>";
+                        $string =  "[<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>]";
+                        $string .= "<br />Deposit Date: " . $row->remarks->upload_date;
+                        return $string;
                     } else {
-                        return "N/A";
+                        $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);
+                        if ($searchString) {
+                            $string = "OID: " . $row->remarks->oid;
+                            $string .= "<br />";
+                            $string .= "refId: " . $row->remarks->refId;
+                            return $string;
+                        }
+
+                        $searchString = \Illuminate\Support\Str::contains($row->source, 'stripe', true);
+
+                        if ($searchString) {
+                            $string = "Rate : " . $row->remarks->rate->exchange_data->buy . 'NRs';
+                            $string .= "<br />";
+                            $string .= "Currency: " . $row->remarks->paid_currency;
+                            $string .= "<br />";
+                            $string .= "Amount: " . $row->remarks->paid_amount;
+                            return $string;
+                        }
+
+                        return "Media Not Available";
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $action = "";
-                    $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->id]) . "'>";
-                    $action .= "<input type='hidden' name='update_type' value='status' />";
 
-                    if ($row->verified) {
-                        $action .= "<button type='submit' class='btn btn-danger btn-sm'>Reject</button>";
-                    } else {
-                        $action .= "<button type='submit' class='btn btn-success btn-sm'>Verify</button>";
+                    $action = "";
+                    if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
+
+                        $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->id]) . "'>";
+                        $action .= "<input type='hidden' name='update_type' value='status' />";
+
+                        if ($row->verified) {
+                            $action .= "<button type='submit' class='btn btn-danger btn-sm'>Reject</button>";
+                        } else {
+                            $action .= "<button type='submit' class='btn btn-success btn-sm'>Verify</button>";
+                        }
+                        $action .= "</form>";
                     }
-                    $action .= "</form>";
 
                     $action .= "<form style='display:inline' method='DELETE' action='" . route('admin.program.fee.api_delete_fee', $row->id) . "' class='transaction_delete_form'>";
                     $action .= "<input type='hidden' name='update_type' value='status' />";
