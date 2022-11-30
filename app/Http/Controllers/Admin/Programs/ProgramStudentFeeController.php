@@ -160,7 +160,7 @@ class ProgramStudentFeeController extends Controller
             return DataTables::of($overview_payment)
                 ->addColumn('member_name', function ($row) {
                     $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "'>";
-                    $member .= $row->member->full_name;
+                    $member .= htmlspecialchars(strip_tags($row->member->full_name));
                     $member .= "</a>";
                     return $member;
                 })
@@ -282,7 +282,7 @@ class ProgramStudentFeeController extends Controller
                     $action .= "</form>";
                     return $action;
                 })
-                ->rawColumns(["transaction_amount", "media", "action", "source", "member_name", "status"])
+                ->rawColumns(["transaction_amount", "media", "action", "source", "status"])
                 ->make(true);
         }
         return view('admin.fees.program.transactions', compact('program'));

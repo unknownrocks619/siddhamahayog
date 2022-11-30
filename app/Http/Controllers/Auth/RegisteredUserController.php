@@ -48,7 +48,9 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
+            'first_name' => ["required", 'string', 'max:52'],
+            'last_name' => ['required', 'string', 'max:52'],
+            // 'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:members'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             "recaptcha_token" => ["required", new GoogleCaptcha()]
@@ -59,10 +61,10 @@ class RegisteredUserController extends Controller
         $last_name = isset($explode_name[1]) ? $explode_name[1] : null;
 
         $member = new Member;
-        $member->full_name = $request->full_name;
-        $member->first_name = $first_name;
+        $member->full_name = strip_tags($request->post('first_name')) . ' ' . strip_tags($request->post('last_name'));
+        $member->first_name = strip_tags($request->post('first_name'));
         $member->middle_name = null;
-        $member->last_name = $last_name;
+        $member->last_name = strip_tags($request->post('last_name'));
         $member->email = $request->email;
         $member->password = Hash::make($request->password);
         $member->role_id = 7;
