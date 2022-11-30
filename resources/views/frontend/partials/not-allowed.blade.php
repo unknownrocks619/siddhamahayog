@@ -29,7 +29,7 @@
                 <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'voucher']) }}" class="btn btn-primary">Voucher Upload</a>
                 <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'stripe']) }}" class="btn btn-outline-primary">Pay by Card</a>
                 @else
-                <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'stripe']) }}" class="btn btn-outline-primary">Pay by Card</a>
+                <a href="#{{-- route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'stripe']) --}}" class="btn btn-outline-primary disabled">Pay by Card</a>
                 @endif
             </div>
         </div>
