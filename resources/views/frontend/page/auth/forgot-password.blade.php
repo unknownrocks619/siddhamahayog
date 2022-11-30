@@ -1,198 +1,131 @@
-<html>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+<?php
+$rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->ip(), 3);
+?>
+<!DOCTYPE html>
+<html lang="en">
 
-<script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet">
-<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-<style>
-    body {
-        padding-top: 4.2rem;
-        padding-bottom: 4.2rem;
-        background: rgba(0, 0, 0, 0.76);
-    }
-
-    a {
-        text-decoration: none !important;
-    }
-
-    h1,
-    h2,
-    h3 {
-        font-family: 'Kaushan Script', cursive;
-    }
-
-    .myform {
-        position: relative;
-        display: -ms-flexbox;
-        display: flex;
-        padding: 1rem;
-        -ms-flex-direction: column;
-        flex-direction: column;
-        width: 100%;
-        pointer-events: auto;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid rgba(0, 0, 0, .2);
-        border-radius: 1.1rem;
-        outline: 0;
-        max-width: 500px;
-        /* height: 100%; */
-    }
-
-    .tx-tfm {
-        text-transform: uppercase;
-    }
-
-    .mybtn {
-        border-radius: 50px;
-    }
-
-    .login-or {
-        position: relative;
-        color: #aaa;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    .span-or {
-        display: block;
-        position: absolute;
-        left: 50%;
-        top: -2px;
-        margin-left: -25px;
-        background-color: #fff;
-        width: 50px;
-        text-align: center;
-    }
-
-    .hr-or {
-        height: 1px;
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }
-
-    .google {
-        color: #666;
-        width: 100%;
-        height: 40px;
-        text-align: center;
-        outline: none;
-        border: 1px solid lightgrey;
-    }
-
-    .facebook {
-        color: #065ad7;
-        width: 100%;
-        height: 40px;
-        text-align: center;
-        outline: none;
-        border: 1px solid skyblue;
-    }
-
-    .facebook:hover {
-        background: rgba(0, 0, 0, .2);
-    }
-
-    form .error {
-        color: #ff0000;
-    }
-
-    #second {
-        display: none;
-    }
-
-    .background {
-        height: 100vh;
-        width: 100vw;
-        background: url("https://img.freepik.com/free-vector/gradient-galaxy-background_23-2148965436.jpg?w=740&t=st=1660197732~exp=1660198332~hmac=fae0b9479541dd44f8a3ad9b9d541aeb7bff37f97f5fa89c10260b1cb7980d3b");
-        background-position: center;
-        background-size: cover;
-        opacity: 0.5;
-        position: fixed;
-        top: 0;
-        bottom: 0;
-    }
-</style>
+<head>
+    <title>Siddhamahayog Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="{{ site_settings('logo') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/bootstrap/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{
+    asset('assets/login/vendor/animate/animate.css" /') }}>
+    <link
+      rel=" stylesheet" type="text/css" href="{{ asset('vassets/login/vendor/css-hamburgers/hamburgers.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/animsition/css/animsition.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/select2/select2.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/daterangepicker/daterangepicker.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset ('assets/login/css/util.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset ('assets/login/css/main.css') }}" />
+</head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-5 mx-auto">
-                <x-alert></x-alert>
-                <div id="first">
-                    <div class="myform form ">
-                        <div class="logo mb-3">
-                            <div class="col-md-12 text-center">
-                                <h1>Reset Your Password</h1>
-                            </div>
-                            <!-- <div class="col-md-12 alert alert-danger">
-                                You can use your Arthapanchawk or Atirudri account to access the portal.
-                            </div> -->
-                        </div>
-                        <form action="{{ route('password.email') }}" id="loginForm" method="post" name="login">
-                            @csrf
-                            @google_captcha()
-                            <div class="form-group">
-                                <label for="eid">Email address</label>
-                                <input required aria-required="true" type="email" name="email" class="form-control @error('email') border border-danger @enderror" id="eid" aria-describedby="emailHelp" placeholder="Enter email">
-                            </div>
-                            <div class="col-md-12 text-center ">
-                                <button type="submit" class=" btn btn-block mybtn btn-primary tx-tfm">Submit</button>
-                            </div>
-                        </form>
-
-                        <div class="form-group">
-                            <p class="text-center">Don't have account? <a href="{{ route('register') }}" id="signup">Sign up here</a></p>
-                        </div>
+    <div class="limiter">
+        <div class="container-login100" style="background-image: url({{ asset('assets/login/images/login-background.png') }})">
+            <div class="wrap-login100 p-l-110 p-r-110 p-b-33">
+                <div class="d-flex justify-content-center">
+                    <div>
+                        <a href="/">
+                            <img src='{{ site_settings("logo") }}' class="text-center" />
+                        </a>
+                    </div>
+                    <div></div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-md-12 border-bottom" style="border-bottom:2px solid #ccc; padding-bottom:10px;">
+                        <h4 class="text-center p-b-20 border-bottom w-100"> Himalayan Siddhamahayog Spiritual Academy </h4>
+                        <h5 class="text-center text-info">
+                            Recover Account
+                        </h5>
                     </div>
                 </div>
+                <x-alert></x-alert>
+
+                @if( ! $rateLimit)
+
+                <form id="loginForm" class="validate-form" action="{{ route('password.email') }}" method="post">
+                    @csrf
+                    @google_captcha()
+                    <div class="p-t-31 p-b-9">
+                        <span class="txt1"> Email Address </span>
+                    </div>.
+                    <div class="wrap-input100 validate-input" autofocus="true" data-validate="Email is required" required="true">
+                        <input class="input100 " type="email" name="email" />
+                        <span class="focus-input100"></span>
+                        @error('email')
+                        <div class="text-danger">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 my-2">
+                            <a href="{{ route('login') }}" class="mb-3">Already Have Account ? Login Here</a>
+                        </div>
+                    </div>
+                    <div class="container-login100-form-btn m-t-17">
+                        <button class="login100-form-btn">Recover My Account</button>
+                    </div>
+                    <div class="d-flex justify-content-center pt-4 mt-4 text-secondary p-b-20"> Don't Have account ?</div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <form class="w-100" action="{{ route('social_login_redirect',['facebook']) }}" id="facebookForm" method="post">
+                                @csrf
+                                <button type="submit" class="w-100 btn btn-outline-primary px-5 py-3 m-b-20 px-4">
+                                    <i class="fa fa-facebook-official"></i>
+                                    Sign In Using Facebook
+                                    </a>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="col-md-12">
+                            <form action="{{ route('social_login_redirect_google') }}" id="googleForm" method="post">
+                                @csrf
+                                <button type="submit" class="w-100 btn btn-outline-danger py-2 px-5 m-b-20">
+                                    <img src="{{ asset ('assets/login/images/icons/icon-google.png') }}" alt="GOOGLE" />
+                                    Sign In Using Google
+                                    </a>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="w-full text-center">
+                        <a href="{{ route('register') }}" class=" btn btn-danger w-100 text-white py-3"> Sign Up with Email </a>
+                    </div>
+                </form>
+                @else
+                <div class="alert alert-danger">
+                    Too many invalid login attempt. Please try again after few minutes
+                </div>
+                @endif
             </div>
         </div>
     </div>
 
-</body>
-<script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
-<script>
-    grecaptcha.ready(function() {
-        document.getElementById('loginForm').addEventListener("submit", function(event) {
-            $(this).children("input").prop('disabled');
-            event.preventDefault();
-            grecaptcha.execute("{{ config('captcha.google.site_key') }}", {
-                    action: 'login'
-                })
-                .then(function(token) {
-                    document.getElementById("recaptcha_token").value = token;
-                    document.getElementById('loginForm').submit();
-                });
-        });
-    });
-</script>
-<script>
-    $(document).ready(function() {
-        $("#loginForm").validate({
-            rules: {
-                "email": {
-                    required: true,
-                },
-                "password": {
-                    required: true
-                }
-            },
-            messages: {
-                "email": "Provide Valid Email.",
-                "password": "Password Field is Required"
-            },
-            onsubmit: true,
-            onfocusout: true,
-            validClass: "alert alert-success"
+    <div id="dropDownSelect1"></div>
 
-        });
-    })
-</script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/jquery/jquery-3.2.1.min.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/animsition/js/animsition.min.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/bootstrap/js/popper.js') }}"></script>
+    <script src="{{ asset ('assets/login/vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/select2/select2.min.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/daterangepicker/moment.min.js') }}"></script>
+    <script src="{{ asset ('assets/login/vendor/daterangepicker/daterangepicker.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="{{ asset ('assets/login/vendor/countdowntime/countdowntime.js') }}"></script>
+    <!--===============================================================================================-->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
+
+    <script src="{{ asset ('assets/login/js/main.js') }}"></script>
+
+</body>
 
 </html>

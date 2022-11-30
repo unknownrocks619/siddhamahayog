@@ -26,11 +26,20 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
 <body>
     <div class="limiter">
         <div class="container-login100" style="background-image: url({{ asset('assets/login/images/login-background.png') }})">
-            <div class="wrap-login100 p-l-110 p-r-110 p-t-62 p-b-33">
+            <div class="wrap-login100 p-l-110 p-r-110 p-b-33">
                 <div class="d-flex justify-content-center">
-                    <a href="/"><img src='{{ site_settings("logo") }}' class="text-center" /></a>
+                    <a href="/">
+                        <img src='{{ site_settings("logo") }}' class="text-center" />
+                    </a>
                 </div>
-                <h5 class="text-center p-b-20 border-bottom w-100"> Himalayan Siddhamahayog Spiritual Academy </h5>
+                <div class="row mb-2">
+                    <div class="col-md-12 border-bottom" style="border-bottom:2px solid #ccc; padding-bottom:10px;">
+                        <h4 class="text-center p-b-20 border-bottom w-100"> Himalayan Siddhamahayog Spiritual Academy </h4>
+                        <h5 class="text-center text-info">
+                            Login
+                        </h5>
+                    </div>
+                </div>
                 <x-alert></x-alert>
 
                 @if( ! $rateLimit)

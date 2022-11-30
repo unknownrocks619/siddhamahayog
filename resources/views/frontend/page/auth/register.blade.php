@@ -28,7 +28,6 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
         <div class="container-login100" style="background-image: url({{ asset('assets/login/images/login-background.png') }})">
             <div class="wrap-login100 px-3 p-b-33">
                 <div class="d-flex justify-content-center">
-                    <div class=""></div>
                     <div>
                         <a href="/">
                             <img src='{{ site_settings("logo") }}' class="text-center" />
