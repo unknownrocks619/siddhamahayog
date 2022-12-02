@@ -188,7 +188,6 @@ function widgets_view($widgets)
 function getUserCountry()
 {
     $userIp = request()->ip();
-
     if (session()->has('userIp')) {
         return session()->get('userIp')->$userIp->isocode;
     }

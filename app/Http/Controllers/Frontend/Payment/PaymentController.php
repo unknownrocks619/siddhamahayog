@@ -42,7 +42,7 @@ class PaymentController extends Controller
             //code...
             user()->createOrGetStripeCustomer();
             user()->updateDefaultPaymentMethod($request->post('payment_method'));
-            user()->charge($request->post('amount') * 100, $request->post('payment_method'));
+            user()->charge(199 * 100, $request->post('payment_method'));
         } catch (\Throwable $th) {
             session()->flash('error', 'Unable to complete your payment. If your amount is deducted from the account please create support ticket with your transaction statement detail Or you can try again.');
             return back()->withInput();
@@ -50,7 +50,7 @@ class PaymentController extends Controller
 
         // exchange Rate.
         $rate = CurrencyExchange::getExchangeRateByDate(date("Y-m-d"));
-        $convert_rate = $rate->exchange_data->buy * 100;
+        $convert_rate = $rate->exchange_data->buy * 199;
         // store in database with very good remaks.
         $transaction_detail = new ProgramStudentFeeDetail();
         $transaction_detail->program_id = $program->id;
@@ -61,7 +61,7 @@ class PaymentController extends Controller
         $transaction_detail->remarks = [
             'rate' => $rate,
             'paid_currency' => "USD",
-            'paid_amount' => '100',
+            'paid_amount' => '199',
         ];
         $transaction_detail->source = "Stripe Transaction";
         $transaction_detail->verified = true;

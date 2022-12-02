@@ -21,6 +21,10 @@
                     Selected method is not supported in your country or region. Please use available alternate method
                     of payment.
                 </p>
+                <div class="alert alert-info">
+                    For More Information: <br />
+                    Please contact Your nearest <code>`Mahayogi Siddhababa Spiritual Academy`</code> center.
+                </div>
             </div>
 
             <div class="col-md-8 border-top mt-3 pt-3">

@@ -27,7 +27,25 @@
                                 <h3 class="text-center">
                                     Admission Fee Collection
                                 </h3>
-
+                                <div class="row">
+                                    @if(getUserCountry() != 'NP')
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="AdmissionFee">Admission Fee</label>
+                                            <input type="text" name="admission_fee" id="admission_fee" value="USD 199" class="form-control" />
+                                        </div>
+                                    </div>
+                                    @else
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="AdmissionFee">Admission Fee</label>
+                                            <input type="text" name="admission_fee" value="NRs 9000" id="admission_fee" class="form-control" />
+                                            <sup class="text-info">Above price is applicable only for people living in Nepal.</sup>
+                                        </div>
+                                    </div>
+                                    @endif
+                                </div>
+                                @if(getUserCountry() == 'NP')
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -41,20 +59,31 @@
                                         </div>
                                     </div>
                                 </div>
+                                @else
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="alert alert-info">
+                                            For More Information<br />
+                                            Please Contact Your nearest <code>`Mahayogi Siddhababa Spiritual Academy`</code> center.
+                                        </div>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row card-footer">
-                    <div class="col-md-12 text-end">
+                <div class="row card-footer d-flex justify-content-between">
+                    <div class="col-md-3 text-right">
+                        <a href="{{ route('dashboard') }}" class="text-muted">- Pay Later, Go To Dashboard</a>
+                    </div>
+                    @if((site_settings('online_payment') || user()->role_id == 1) && getUserCountry() == "NP")
+                    <div class="col-md-3 text-end">
                         <button type="submit" class="btn btn-primary">
-                            @if(site_settings('donation') || user()->role_id == 1)
                             Confirm Payment Method
-                            @else
-                            Pay Later, Continue To Dashboard
-                            @endif
                         </button>
                     </div>
+                    @endif
                 </div>
             </div>
         </form>

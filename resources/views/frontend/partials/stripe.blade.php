@@ -44,7 +44,7 @@
                                 <label for="amount">Amount</label>
                                 <div class="input-group">
                                     <span class="input-group-text">USD</span>
-                                    <input name="amount" type="text" value="100" readonly required class="form-control" placeholder="Amount" aria-label="Amount">
+                                    <input name="amount" type="text" value="199" readonly required class="form-control" placeholder="Amount" aria-label="Amount">
                                     <span class="input-group-text">.00</span>
                                 </div>
                             </div>
