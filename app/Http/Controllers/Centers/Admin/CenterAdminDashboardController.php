@@ -68,7 +68,7 @@ class CenterAdminDashboardController extends Controller
     {
         if ($member->country == 153) {
             session()->flash('error', "Member Not found.");
-            return back();
+            return redirect()->route('center.admin.member.show');
         }
 
         return view('centers.admin.members.show', compact('member'));
