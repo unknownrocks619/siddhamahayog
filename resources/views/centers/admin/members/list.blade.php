@@ -36,9 +36,9 @@
                                     @if($member->address && isset($member->address->street_address))
                                     {{ $member->address->street_address }}
                                     @endif
-                                    {{ $member->countries }}
+
                                     @if($member->countries)
-                                    {{ $member->countries->name }}
+                                    , {{ $member->countries->name }}
                                     @endif
                                 </td>
                                 <td>
