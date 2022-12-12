@@ -24,6 +24,9 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                            $members->load(['countries']);
+                            ?>
                             @foreach ($members as $member)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
@@ -33,8 +36,9 @@
                                     @if($member->address && isset($member->address->street_address))
                                     {{ $member->address->street_address }}
                                     @endif
+                                    {{ $member->countries }}
                                     @if($member->countries)
-                                    {{ $member->countries->country_name }}
+                                    {{ $member->countries->name }}
                                     @endif
                                 </td>
                                 <td>
