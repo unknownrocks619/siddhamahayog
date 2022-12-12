@@ -19,7 +19,15 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
                         <div class="button-wrapper mx-2">
-                            @if(site_settings('online_payment') || user()->role_id == 1)
+                            <?php
+                            $displayPaymentOption = true;
+                            $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
+
+                            if ($studentFee) {
+                                $displayPaymentOption = false;
+                            }
+                            ?>
+                            @if($displayPaymentOption && (site_settings('online_payment') || user()->role_id == 1))
                             <button type="submit" data-bs-toggle="modal" data-bs-target="#paymentSelection" class="btn btn-primary">
                                 <x-plus></x-plus>Choose Payment Options
                             </button>

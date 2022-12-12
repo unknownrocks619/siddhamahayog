@@ -8,10 +8,12 @@ use App\Http\Requests\Frontend\User\UpdatePersonalRequest;
 use App\Http\Requests\Frontend\User\Notifications\SingleNotificationRequest;
 use App\Http\Traits\UploadHandler;
 use App\Models\Live;
+use App\Models\Member;
 use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
@@ -100,5 +102,21 @@ class ProfileController extends Controller
 
         session()->flash("success", "Information Updated.");
         return back();
+    }
+
+    public function removeAdminAccess(Request $request)
+    {
+        if (!session()->has('adminAccount')) {
+            abort(404);
+        }
+
+        $adminUser = Member::findOrFail(session()->get('adminAccount'));
+        $user = user();
+        Auth::logout();
+
+        Auth::loginUsingId($adminUser->getKey());
+
+        session()->flash('success', 'Debug Mode Ended.');
+        return redirect()->route('admin.members.show', $user->id);
     }
 }

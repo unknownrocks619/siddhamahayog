@@ -64,13 +64,6 @@ class Member extends Authenticatable
         return $this->belongsTo(Country::class, "country");
     }
 
-    public function membersByCenters(array $countryIds)
-    {
-        $countr_ids = implode(', ', $countryIds);
-        $query = <<<SQL
-                    SELECT * FROM 
-                SQL;
-    }
 
     public function cities()
     {
@@ -90,5 +83,10 @@ class Member extends Authenticatable
     public function transactions()
     {
         return $this->hasMany(ProgramStudentFeeDetail::class, 'student_id');
+    }
+
+    public function studentFeeOverview()
+    {
+        return $this->hasOne(ProgramStudentFee::class, "student_id", 'id');
     }
 }

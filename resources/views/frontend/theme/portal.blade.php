@@ -40,16 +40,32 @@
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
-
             @include("inc.frontend.sidebar")
 
             <!-- Layout container -->
             <div class="layout-page">
+                @if(session()->has('adminAccount'))
+                <div class="row mx-2">
+                    <div class="col-md-12">
+                        <div class="alert alert-info">
+                            You are using debug mode for the user. Some action are being
+                            restricted to use.
+                            <hr />
+                            <form action="{{ route('user.account.end_debug_session') }}" method="post">
+                                @csrf
+                                <button class="w-100 btn btn-danger text-right">
+                                    End Debug
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 @include("inc.frontend.topbar")
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <!-- Content -->
-
                     @yield("content")
                     <!-- Footer -->
                     <footer class="content-footer footer bg-footer-theme">

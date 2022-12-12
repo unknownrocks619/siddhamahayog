@@ -115,7 +115,10 @@
                                                 <div class="media">
                                                     <img class="media-object " src="assets/images/xs/avatar4.jpg" alt="">
                                                     <div class="media-body">
-                                                        <span class="name">{{ ($member->meta && $member->meta->education && $member->meta->education->education) ? $member->meta->education->education : ""  }}</span>
+                                                        <form action="{{ route('admin.members.admin_login_as_user',$member->id) }}" method="post">
+                                                            @csrf
+                                                            <button type="submit" class="btn btn-danger">Debug Account</button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </a>
@@ -272,7 +275,7 @@
                                                     </b>
                                                     <select name="country" id="country" class="form-control">
                                                         @foreach (\App\Models\Country::cursor() as $country)
-                                                        <option value="{{ $country->id }}" @if($country->id == $member->country) selected @endif>{{ $country->name }}</option>
+                                                        <option value="{{ $country->id }}" @if($country->id == $member->country) selected @elseif($country->id == 153) selected @endif>{{ $country->name }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -403,8 +406,9 @@
                                             <h3>
                                                 Account Setting(s)
                                             </h3>
-                                            <form action="" onsubmit="return confirm('You are about to change the password for current user. Are you sure? this action cannot be undone')" method="post">
+                                            <form action="{{ route('admin.members.admin_change_user_password',$member->id) }}" onsubmit="return confirm('You are about to change the password for current user. Are you sure? this action cannot be undone')" method="post">
                                                 @csrf
+                                                @method("PUT")
                                                 <div class="row">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
@@ -412,7 +416,12 @@
                                                                 New Password
                                                                 <sup class="text-danger">*</sup>
                                                             </strong>
-                                                            <input type="password" name="user_new_password" id="user_new_passowrd" class="form-control" />
+                                                            <input type="password" name="password" id="user_new_passowrd" class="form-control" />
+                                                            @error('password')
+                                                            <div class="text-danger">
+                                                                {{ $message }}
+                                                            </div>
+                                                            @enderror
                                                         </div>
                                                     </div>
                                                 </div>
@@ -423,13 +432,18 @@
                                                                 Confirm Password
                                                                 <sup class="text-danger">*</sup>
                                                             </strong>
-                                                            <input type="password" name="confirm_new_password" id="confirm_new_password" class="form-control" />
+                                                            <input type="password" name="password_confirmation" id="confirm_new_password" class="form-control" />
+                                                            @error('password_confirmation')
+                                                            <div class="text-danger">
+                                                                {{ $message }}
+                                                            </div>
+                                                            @enderror
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <button type="submit" class="btn btn-primary disabled" disabled>
+                                                        <button type="submit" class="btn btn-primary">
                                                             Change User password
                                                         </button>
                                                     </div>

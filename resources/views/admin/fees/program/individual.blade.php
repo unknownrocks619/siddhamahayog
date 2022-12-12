@@ -83,6 +83,7 @@
                                     <td>
                                         {{ default_currency($all_detail_transaction->amount) }}
                                     </td>
+
                                     <td>
                                         @php
                                         $category_explode = explode('_',$all_detail_transaction->amount_category);
@@ -91,11 +92,13 @@
                                         endforeach
                                         @endphp
                                     </td>
+
                                     <td>
                                         {{ $all_detail_transaction->source }}
                                         <hr />
                                         {!! $all_detail_transaction->source_detail !!}
                                     </td>
+
                                     <td>
                                         @php
                                         $status = "";
@@ -109,14 +112,15 @@
                                             echo $status;
                                             @endphp
                                     </td>
+
                                     <td>
                                         <?php
-                                        if ($all_detail_transaction->file) {
-                                            $file_object = $all_detail_transaction->file;
-                                            echo "<a href='" . asset($file_object->path) . "'>" . $all_detail_transaction->type . "</a>";
-                                        } else {
-                                            echo "N/A";
-                                        }
+                                        // if ($all_detail_transaction->file) {
+                                        //     $file_object = $all_detail_transaction->file;
+                                        //     echo "<a href='" . asset($file_object->path) . "'>" . $all_detail_transaction->type . "</a>";
+                                        // } else {
+                                        //     echo "N/A";
+                                        // }
                                         ?>
                                     </td>
                                     <td>

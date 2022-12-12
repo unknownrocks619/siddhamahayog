@@ -44,7 +44,7 @@ Route::prefix("account")
         Route::post("/profile/detail", [ProfileController::class, "storeDetail"])->name("store.personal");
         Route::post('/user/notifications/{notification}', [ProfileController::class, "singleNotification"])->name('notification-body');
         Route::post('/user/notifications/{notification}/update', [ProfileController::class, "markNotification"])->name('notification-update');
-
+        Route::post('/user/end/', [ProfileController::class, 'removeAdminAccess'])->name('end_debug_session');
         Route::get("/dashboard", [ProfileController::class, "index"])->name("dashboard");
         Route::prefix("notes")
             ->controller(UserNoteController::class)
@@ -150,3 +150,4 @@ Route::prefix("account")
     });
 include __DIR__ . "/donation.php";
 include __DIR__ . "/support.php";
+include __DIR__ . "/memberSadhak.php";

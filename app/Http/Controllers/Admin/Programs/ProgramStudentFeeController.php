@@ -181,7 +181,7 @@ class ProgramStudentFeeController extends Controller
 
                     return $action;
                 })
-                ->rawColumns(["action", "amount", "last_transaction", "member_name"])
+                ->rawColumns(['member_name', "action", "amount", "last_transaction", "member_name"])
                 ->make(true);
         }
 
@@ -282,7 +282,7 @@ class ProgramStudentFeeController extends Controller
                     $action .= "</form>";
                     return $action;
                 })
-                ->rawColumns(["transaction_amount", "media", "action", "source", "status"])
+                ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
                 ->make(true);
         }
         return view('admin.fees.program.transactions', compact('program'));

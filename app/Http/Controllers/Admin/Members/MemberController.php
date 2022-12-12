@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use DataTables;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -436,5 +437,41 @@ class MemberController extends Controller
         }
         session()->flash('success', "Member information Updated.");
         return back();
+    }
+
+    public function updatePassword(Request $request, Member $member)
+    {
+        $request->validate([
+            'password' => 'required|confirmed'
+        ]);
+
+        $member->password = Hash::make($request->post('password'));
+
+        try {
+            $member->save();
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', 'Unable to update User password');
+            return back()->withInput();
+        }
+
+        session()->flash('success', "Password Updated for User.");
+        return back();
+    }
+
+    public function reauthUser(Member $member)
+    {
+        if ($member->role_id != 7) {
+            session()->flash('error', "Cannot debug non member account.");
+            return back();
+        }
+        session()->put('adminAccount', auth()->id());
+
+        if (!Auth::loginUsingId($member->id)) {
+            session()->flash('error', 'Oops ! Unable to use debug for this user.');
+            return back();
+        }
+
+        return redirect()->route('dashboard');
     }
 }
