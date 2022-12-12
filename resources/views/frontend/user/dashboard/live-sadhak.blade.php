@@ -8,11 +8,9 @@
                 <h6 class="mb-0">
                     Vedanta Darshan: Arthapanchak (Tattva Gyan) Course - First Batch
                 </h6>
-
                 <?php
                 $previousVedantaCheck = \DB::connection('sadhak')->table('zoom_settings')
                     ->find('5');
-
                 ?>
 
                 @if($previousVedantaCheck->is_active)

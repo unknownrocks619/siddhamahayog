@@ -406,4 +406,5 @@ class ArthapanchawkController extends Controller
         session()->flash("error", "Your admission fee for " . $program->program_name . " couldn't be completed. Please try again.");
         return redirect()->route('dashboard');
     }
+    
 }

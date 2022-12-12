@@ -6,7 +6,7 @@
             <i class="bx bx-menu bx-sm"></i>
         </a>
     </div>
-    
+
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <!-- Search -->
         <div class="navbar-nav align-items-center">
@@ -69,6 +69,15 @@
                     @if(\App\Models\Role::$roles[user()->role_id] == "Admin")
                     <li>
                         <a class="dropdown-item" href="{{ route('admin.admin_dashboard') }}">
+                            <i class="bx bx-cog me-2"></i>
+                            <span class="align-middle">Admin</span>
+                        </a>
+                    </li>
+                    @endif
+
+                    @if(\App\Models\Role::$roles[user()->role_id] == "CenterAdmin")
+                    <li>
+                        <a class="dropdown-item" href="{{ route('center.admin.dashboard') }}">
                             <i class="bx bx-cog me-2"></i>
                             <span class="align-middle">Admin</span>
                         </a>

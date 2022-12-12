@@ -34,7 +34,7 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
                 </div>
                 <div class="row mb-2">
                     <div class="col-md-12 border-bottom" style="border-bottom:2px solid #ccc; padding-bottom:10px;">
-                        <h4 class="text-center p-b-20 border-bottom w-100"> Himalayan Siddhamahayog Spiritual Academy </h4>
+                        <h4 class="text-center p-b-20 border-bottom w-100"> Mahayogi Siddhababa Spiritual Academy </h4>
                         <h5 class="text-center text-info">
                             Login
                         </h5>
