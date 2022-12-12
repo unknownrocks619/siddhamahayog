@@ -46,7 +46,12 @@ class CenterAdminDashboardController extends Controller
         $member->middle_name = $request->post('middle_name');
         $member->last_name = $request->post('last_name');
 
-        $member->full_name = $request->post('first_name') . ($request->post('middle_name')) ? $request->post('middle_name') . " " . $request->post('last_name') : " " . $request->post('last_name');
+        if ($request->post('middle_name ')) {
+            $member->full_name = $request->post('first_name') . " " . $request->post('middle_name') . " " . $request->last_name;
+        } else {
+            $member->full_name = $request->post('first_name') . " " . $request->post('last_name');
+        }
+
         $member->country = $request->post('country');
         $member->city = $request->post('state');
         $member->phone_number = $request->post('phone_number');
