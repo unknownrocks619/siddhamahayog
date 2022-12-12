@@ -121,7 +121,7 @@ if (!function_exists("register_participants")) {
             $last_name = (user()->middle_name) ?  " " . Str::ucfirst(Str::lower(Str::of(user()->middle_name)->trim())) . " " .  Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim())) : " " . Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim()));
         }
         $settings = [
-            "first_name" => trim($first_name),
+            "first_name" => trim($first_name) . "(#)",
             "last_name" => trim($last_name),
             "email" => time() . "_T_" . user()->email,
             "auto_approve" => true
