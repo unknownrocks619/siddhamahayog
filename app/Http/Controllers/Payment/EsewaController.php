@@ -59,6 +59,7 @@ class EsewaController extends Controller
         if (!isset($this->payment_configs['scd'])) {
             $this->payment_configs["scd"] = $this->merchant_key;
         }
+
         session()->put('user_' . auth()->id(), $this->payment_configs);
     }
 

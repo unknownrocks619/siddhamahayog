@@ -187,7 +187,15 @@ function widgets_view($widgets)
 
 function getUserCountry()
 {
+    $white_ip = [
+        '::1',
+        '127.0.0.1'
+    ];
     $userIp = request()->ip();
+
+    if (array_search($userIp, $white_ip, false)) {
+        return "NP";
+    }
     if (session()->has('userIp')) {
         return session()->get('userIp')->$userIp->isocode;
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Payment\EsewaController;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaEnrollStoreRequest;
 use App\Http\Requests\Frontend\User\Sadhana\SadhanaStoreRequest;
 use App\Http\Traits\CourseFeeCheck;
+use App\Models\EsewaPreProcess;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
 use App\Models\MemberNotification;
@@ -197,19 +198,33 @@ class ArthapanchawkController extends Controller
     {
         $url = config('services.esewa.redirect');
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
+        $pid = (string) Str::uuid();
         $data = [
             'amt' => $program->active_fees->$fee_type,
             'pdc' => 0,
             'psc' => 0,
             'txAmt' => 0,
             'tAmt' => $program->active_fees->$fee_type,
-            'pid' => (string) Str::uuid(),
+            'pid' => $pid,
             'scd' => config("services.esewa.merchant_code"),
             'su' => route('vedanta.payment.success', $program->id),
-            'fu' => route('vedanta.payment.failed', $program->id)
+            'fu' => route('vedanta.payment.failed', [$program->id, 'pid' => $pid])
         ];
         $esewaController = new EsewaController;
         $esewaController->set_config($data);
+
+        /**
+         * Store in Db
+         */
+        $storeInDb = new EsewaPreProcess();
+        $storeInDb->member_id = auth()->id();
+        $storeInDb->pid = $data['pid'];
+        $storeInDb->amount = $data['amt'];
+        $storeInDb->save();
+
+        /**
+         * End in Store
+         */
         return $esewaController->process_payment_html();
         $output =  "<form method='POST' action='{$url}' id='esewa_form' class='d-none'>";
         foreach ($data as $payment_key => $payment_value) :
@@ -236,6 +251,11 @@ class ArthapanchawkController extends Controller
     {
         $esewaController = new EsewaController;
         if (!$esewaController->verify_payment()) {
+            $storeInDb = EsewaPreProcess::where('pid', request()->get('oid'))->where('member_id', auth()->id())->first();
+            if ($storeInDb) {
+                $storeInDb->status = "cancelled";
+                $storeInDb->save();
+            }
             return $this->paymentFailed($program);
         }
         // now formally enroll user in program.
@@ -313,7 +333,11 @@ class ArthapanchawkController extends Controller
             $notification->save();
             return redirect()->route('dashboard');
         }
-
+        $storeInDb = EsewaPreProcess::where('pid', request()->get('oid'))->where('member_id', auth()->id())->first();
+        if ($storeInDb) {
+            $storeInDb->status = 'completed';
+            $storeInDb->save();
+        }
         session()->flash("success", 'Congratulation ! Your payment for ' . $program->program_name . ' has been paid.');
         return redirect()->route('dashboard');
     }
@@ -333,7 +357,11 @@ class ArthapanchawkController extends Controller
         $notification->type = "message";
         $notification->level = "notice";
         $notification->seen = false;
-
+        $storeInDb = EsewaPreProcess::where('pid', request()->get('pid'))->where('member_id', auth()->id())->first();
+        if ($storeInDb) {
+            $storeInDb->status = "cancelled";
+            $storeInDb->save();
+        }
         try {
             $notification->save();
 
@@ -373,6 +401,8 @@ class ArthapanchawkController extends Controller
             session()->flash("error", "Your admission fee for " . $program->program_name . " couldn't be completed. Please try again.");
             return redirect()->route('dashboard');
         }
+
+
         session()->flash("error", "Your admission fee for " . $program->program_name . " couldn't be completed. Please try again.");
         return redirect()->route('dashboard');
     }
