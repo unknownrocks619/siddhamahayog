@@ -19,6 +19,32 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
+                        <div class="sigma_box">
+                            <div class="row border-bottom">
+                                <div class="col-md-12 my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <h3 class="title">
+                                            ! सुचना !
+                                        </h3>
+                                        <h3 class="title">
+                                            ! सुचना !
+                                        </h3>
+                                        <h3 class="title">
+                                            ! सुचना !
+                                        </h3>
+                                    </div>
+                                    <p class="fs-5">
+                                        आज मिति २०७९/0८/२७ का दिन बेलुका ८:३० बजे (नेपाली समय अनुसार) हिमालयन सिद्धमहायोग तथा वेदान्त दर्शन साधना प्रशिक्षण - दोस्रो संस्करणको परिचयात्मक कक्षामा सहभागीता जनाउनका लागि निम्न उल्लिखित लिङ्कमा थिच्नुहोस।
+                                    </p>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <a href="https://siddhamahayog.org" class="btn btn-danger w-100">
+                                        यहाँ थिच्नुहोस्
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         <div class="sigma_box m-0">
                             <h4 class="title">हिमालयन सिद्घमहायोग - वेदान्त दर्शन </h4>
                             <p class="m-0 fs-5">

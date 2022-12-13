@@ -14,7 +14,7 @@ class SadhanaStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->check() ? true : false;
+        return true;
     }
 
     /**
@@ -24,13 +24,13 @@ class SadhanaStoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             //
             "first_name" => "required|alpha|min:3",
             "middle_name" => "nullable|alpha_dash",
             "last_name" => "required",
             "gender" => "required|in:male,female",
-            "phone_number" => "required",
+            "phone_number" => "required|min:9|max:11",
             "country" => "required|exists:countries,id",
             "state" => "required",
             "street_address" => "required|min:5",
@@ -42,8 +42,18 @@ class SadhanaStoreRequest extends FormRequest
             "emergency_contact_person" => "required",
             "emergency_phone" => "required|size:10",
             "emergency_contact_person_relation" => "required",
-            "recaptcha_token" => ["required", new GoogleCaptcha()],
+            // "recaptcha_token" => ["required", new GoogleCaptcha()],
         ];
+
+        if (!auth()->check()) {
+            $user_rules = [
+                'email' => "required|email|unique:members,email",
+                'password' => "required|confirmed"
+            ];
+            $rules = array_merge($rules, $user_rules);
+        }
+
+        return $rules;
     }
     public function messages()
     {
@@ -57,6 +67,7 @@ class SadhanaStoreRequest extends FormRequest
             "phone_number.required" => "Phone number is required.",
             "phone_number.numeric" => "Please include only numbers.",
             "phone_number.max" => "Invalid Phone number.",
+            "phone_number.min" => "Invalid Phone number.",
             "country.required" => "Country field is required.",
             "country.exists" => "Please select proper country.",
             "state.required" => "State field is required",
@@ -76,7 +87,11 @@ class SadhanaStoreRequest extends FormRequest
             "emergency_phone.numeric" => "Please include only numbers.",
             "emergency_phone" => "Invalid Phone number.",
             "emergency_contact_person_relation.reation" => "Your relation with the person.",
-
+            'email.required' => "Email Address is Required.",
+            'email.email' => "Invalid Email Address.",
+            'email.unique' => "Invalid Email Address.",
+            'password.required' => "password is required.",
+            'password.confirmed' => "Confirm Password doesn't match.",
         ];
     }
 }

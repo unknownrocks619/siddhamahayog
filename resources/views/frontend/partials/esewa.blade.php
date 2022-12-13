@@ -13,8 +13,10 @@
         </span>
         Payment
     </h4>
-
-    @if( ! $allow_access )
+    <?php
+    $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
+    ?>
+    @if( ! $allow_access || $studentFee)
     @include("frontend.partials.not-allowed",['program'=>$program])
     @else
     <div class="row">

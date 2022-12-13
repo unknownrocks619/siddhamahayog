@@ -35,7 +35,6 @@
 </head>
 
 <body>
-
     @if(site_settings("loading_bar") )
     <!-- Preloader Start -->
     <div class="sigma_preloader">

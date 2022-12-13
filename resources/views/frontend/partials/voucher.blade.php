@@ -9,8 +9,10 @@
         <span class="text-muted fw-light"><a href="{{ route('user.account.programs.program.index') }}">{{ $program->program_name }}</a> /</span>
         Payment
     </h4>
-
-    @if( ! $allow_access )
+    <?php
+    $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
+    ?>
+    @if( ! $allow_access || $studentFee)
     @include("frontend.partials.not-allowed",['program'=>$program])
     @else
 

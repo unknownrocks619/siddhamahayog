@@ -18,8 +18,8 @@
                     Oops ! Something is not right.
                 </h5>
                 <p class="text-danger">
-                    Selected method is not supported in your country or region. Please use available alternate method
-                    of payment.
+                    There seems to problem for selected payment method or you might have already paid
+                    for the course.
                 </p>
                 <div class="alert alert-info">
                     For More Information: <br />

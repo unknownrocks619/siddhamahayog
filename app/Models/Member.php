@@ -29,6 +29,7 @@ class Member extends Authenticatable
 
     // ]
 
+
     public function member_role()
     {
         return $this->hasOne(Role::class, 'id', 'role_id');

@@ -172,7 +172,7 @@ function check_unicode_character($character, $exclude = null)
             if (mb_detect_encoding($value, "auto") == "UTF-8") {
                 // echo (mb_detect_encoding($value, "auto") == "UTF-8") ?  $value . " is encoding" : $value  . "  is not encoding";
                 // echo "<br />";
-                $unicodes[$key] = "Unicode is not supported.";
+                $unicodes[$key] = "Invalid characters.";
             }
         }
     }
