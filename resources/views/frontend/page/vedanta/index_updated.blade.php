@@ -175,10 +175,31 @@
 
                 @endguest
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="https://siddhamahayog.org">Home</a>
+                    <a class="nav-link active" aria-current="page" href="https://siddhamahayog.org">होम पेज</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://siddhamahayog.org">About Us</a>
+                    <a class="nav-link" href="https://siddhamahayog.org">हाम्रो बारे</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="https://siddhamahayog.org" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        कार्यक्रमहरू
+                    </a>
+                    <ul class="dropdown-menu theme-text py-2" style="background-color: var(--nav-background);">
+                        <li><a class="dropdown-item py-2" style="color:var(--nav-link)" href="https://siddhamahayog.org">जगद्गुरू श्रीरामानन्दाचार्य सेवा पीठ​</a></li>
+                        <li><a class="dropdown-item" style="color:var(--nav-link)" href="https://siddhamahayog.org">वेदान्त दर्शन</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">ग्यालेरी</a>
+                </li>
+                <li class="nav-item" href="#">
+                    विशेष कार्यक्रमहरू
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">सम्पर्क</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Donate</a>
                 </li>
                 <li class="nav-item mt-3 border-top">
                     <form action="{{ route('logout') }}" method="post">
