@@ -35,7 +35,16 @@ class MemberController extends Controller
             $datatable = DataTables::of($members)
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
-                    return htmlspecialchars(strip_tags($row->full_name));
+                    $full_name = htmlspecialchars($row->first_name);
+
+                    if ($row->middle_name) {
+                        $full_name .= " ";
+                        $full_name .= $row->middle_name;
+                    }
+                    $full_name .= " ";
+                    $full_name . $row->last_name;
+
+                    return $full_name;
                 })
                 ->addColumn('login_source', function ($row) {
                     return strtolower(strip_tags($row->email));

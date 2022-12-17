@@ -130,8 +130,8 @@ class CenterAdminDashboardController extends Controller
         $programStudentFeeDetail->amount_category = "admission_fee";
         $programStudentFeeDetail->amount = $request->post('amount');
         $programStudentFeeDetail->source = "Voucher";
-        $programStudentFeeDetail->source_detail = "Voucher Uploaded By " . auth()->user()->full_name;
-        $programStudentFeeDetail->verified = false;
+        $programStudentFeeDetail->source_detail = "Voucher Uploaded By " . htmlspecialchars(auth()->user()->full_name);
+        $programStudentFeeDetail->verified = $request->post('verified');
         $programStudentFeeDetail->rejected = false;
         $programStudentFeeDetail->student_id = $member->getKey();
         $programStudentFeeDetail->remarks = [

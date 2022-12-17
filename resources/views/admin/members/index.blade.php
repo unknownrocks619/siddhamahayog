@@ -107,6 +107,7 @@ Program
         serverSide: true,
         fixedHeader: true,
         orderCellsTop: true,
+        aaSorting: [],
         initComplete: function() {
             var api = this.api();
 

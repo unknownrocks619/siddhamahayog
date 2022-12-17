@@ -70,13 +70,6 @@
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="alert alert-danger">
-                        Please Note: Transaction will be on pending state. Transaction can only be approved by Super Admin
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
                     <div class="form-group">
                         <label for="enrolledProgram">Select Program
                             <sup class="text-danger">*</sup>
@@ -131,6 +124,18 @@
                         <div class="text-info">
                             Use Actual transaction that reflects in bank statement.
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="verified">Verification Status</label>
+                        <select name="verified" id="verified">
+                            <option value="0">Pending</option>
+                            <option value="1">Verified</option>
+                        </select>
                     </div>
                 </div>
             </div>

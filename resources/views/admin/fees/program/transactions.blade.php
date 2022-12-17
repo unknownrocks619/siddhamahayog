@@ -106,6 +106,7 @@
             processing: true,
             serverSide: true,
             ajax: '{{url()->full()}}',
+            aaSorting: [],
             columns: [{
                     data: 'transaction_date',
                     name: "transaction_date"

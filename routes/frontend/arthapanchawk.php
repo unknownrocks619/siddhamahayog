@@ -9,9 +9,9 @@ Route::prefix('vedanta-philosophy')
     ->name('vedanta.')
     ->group(function () {
         Route::get("/", "index")->name("index");
+        Route::post("/signup", 'store')->name('store');
+        Route::get("/signup", 'create')->name('create');
         Route::middleware(['auth'])->group(function () {
-            Route::post("/signup", 'store')->name('store');
-            Route::get("/signup", 'create')->name('create');
             Route::get("/signup/history", 'createTwo')->name('create_two');
             Route::get('/payment', "payment")->name("payment.create");
             Route::post("/signup/history", 'storeTwo')->name('store_two');

@@ -16,7 +16,7 @@ class CenterAdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->role_id = 9) {
+        if (auth()->check() && auth()->user()->role_id == 9) {
             return $next($request);
         }
         return redirect()->route('dashboard');

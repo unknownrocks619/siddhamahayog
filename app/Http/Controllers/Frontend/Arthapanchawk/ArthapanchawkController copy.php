@@ -34,45 +34,41 @@ class ArthapanchawkController extends Controller
     {
         $user_record = [];
 
-        if (!auth()->check()) {
+        if (auth()->check()) {
+            $user = auth()->user();
+            $userMeta = $user->meta;
+            $emergencyInfo = $user->emergency;
+
+            $user_record = [
+                "first_name" => $user->first_name,
+                "middle_name" => $user->middle_name,
+                "last_name" => $user->last_name,
+                'phone_number' => $user->phone_number,
+                'gender' => ($user->gemder) ? $user->gender : (($userMeta && $userMeta->persona && isset($userMeta->personal->gender)) ? $userMeta->personal->gender : ''),
+                'date_of_birth' => ($user->date_of_birth) ? $user->date_of_birth : (($userMeta && $userMeta->persona && isset($userMeta->personal->date_of_birth)) ? $userMeta->personal->date_of_birth : ''),
+                'place_of_birth' => ($userMeta && $userMeta->personal && isset($userMeta->personal->place_of_birth)) ? $userMeta->personal->place_of_birth : '',
+                'country' => ($user->country) ?? '153',
+                "state" => $user->city ? $user->city  : (($userMeta && $userMeta->persona && isset($userMeta->personal->state)) ? $userMeta->personal->state : ''),
+                'street_address' => ($user->address && isset($user->address->street_address)) ? $user->address->street_address : (($userMeta && $userMeta->persona && isset($userMeta->personal->street_address)) ? $userMeta->personal->street_address : ''),
+                'education' => ($userMeta && $userMeta->education && isset($userMeta->education->education)) ? $userMeta->education->education : '',
+                'education_major' => ($userMeta && $userMeta->education && isset($userMeta->education->education_major)) ? $userMeta->education->education_major : '',
+                'profession'  => ($userMeta && $userMeta->education && isset($userMeta->education->profession)) ? $userMeta->education->profession : '',
+                'referer_person' => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_person)) ? $userMeta->remarks->referer_person : '',
+                'referer_relation' => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_relation)) ? $userMeta->remarks->referer_relation : '',
+                "referer_contact"  => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_contact)) ? $userMeta->remarks->referer_contact : '',
+                'emmergency_contact_name' => ($emergencyInfo) ? $emergencyInfo->contact_person : "",
+                'emmergency_contact_relation' => ($emergencyInfo) ? $emergencyInfo->relation : "",
+                'emmergency_contact_number' => ($emergencyInfo) ? $emergencyInfo->phone_number : "",
+            ];
 
             return view("frontend.page.vedanta.index_updated", compact('user_record'));
         }
-        $user = auth()->user();
 
-        $userMeta = $user->meta;
-        $emergencyInfo = $user->emergency;
-
-        $user_record = [
-            "first_name" => $user->first_name,
-            "middle_name" => $user->middle_name,
-            "last_name" => $user->last_name,
-            'phone_number' => $user->phone_number,
-            'gender' => ($user->gemder) ? $user->gender : (($userMeta && $userMeta->persona && isset($userMeta->personal->gender)) ? $userMeta->personal->gender : ''),
-            'date_of_birth' => ($user->date_of_birth) ? $user->date_of_birth : (($userMeta && $userMeta->persona && isset($userMeta->personal->date_of_birth)) ? $userMeta->personal->date_of_birth : ''),
-            'place_of_birth' => ($userMeta && $userMeta->personal && isset($userMeta->personal->place_of_birth)) ? $userMeta->personal->place_of_birth : '',
-            'country' => ($user->country) ?? '153',
-            "state" => $user->city ? $user->city  : (($userMeta && $userMeta->persona && isset($userMeta->personal->state)) ? $userMeta->personal->state : ''),
-            'street_address' => ($user->address && isset($user->address->street_address)) ? $user->address->street_address : (($userMeta && $userMeta->persona && isset($userMeta->personal->street_address)) ? $userMeta->personal->street_address : ''),
-            'education' => ($userMeta && $userMeta->education && isset($userMeta->education->education)) ? $userMeta->education->education : '',
-            'education_major' => ($userMeta && $userMeta->education && isset($userMeta->education->education_major)) ? $userMeta->education->education_major : '',
-            'profession'  => ($userMeta && $userMeta->education && isset($userMeta->education->profession)) ? $userMeta->education->profession : '',
-            'referer_person' => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_person)) ? $userMeta->remarks->referer_person : '',
-            'referer_relation' => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_relation)) ? $userMeta->remarks->referer_relation : '',
-            "referer_contact"  => ($userMeta && $userMeta->remarks && isset($userMeta->remarks->referer_contact)) ? $userMeta->remarks->referer_contact : '',
-            'emmergency_contact_name' => ($emergencyInfo) ? $emergencyInfo->contact_person : "",
-            'emmergency_contact_relation' => ($emergencyInfo) ? $emergencyInfo->relation : "",
-            'emmergency_contact_number' => ($emergencyInfo) ? $emergencyInfo->phone_number : "",
-        ];
-
-        return view("frontend.page.vedanta.index_updated", compact('user_record'));
+        return view("frontend.page.vedanta.index", compact('user_record'));
     }
 
     public function create()
     {
-        if (!request()->header('X-CSRF-TOKEN')) {
-            return response(['message' => "Bearer Token missing"], 401);
-        }
         if (ProgramStudent::where('program_id', $this->_id)->where('student_id', auth()->id())->exists() && auth()->user()->meta && auth()->user()->emergency) {
             session()->flash("success", "You have already subscribed this program.");
             return redirect()->route('dashboard');
@@ -82,14 +78,14 @@ class ArthapanchawkController extends Controller
 
     public function store(SadhanaStoreRequest $request)
     {
-        if (!$request->header('X-CSRF-TOKEN')) {
-            return response(['message' => "Bearer Token Missing."], 401);
-        }
-
         $unicode_character = check_unicode_character($request->all());
 
         if ($unicode_character) {
-            return response(['errors' => $unicode_character, 'message' => "Unicode Characters are not supported."], 422);
+            if (auth()->user()->role_id == 1) {
+                return response(['errors' => $unicode_character, 'message' => "Unicode Characters are not supported."], 422);
+            }
+            session()->flash('error', "Unicode Not Supported.");
+            return back()->withInput()->withErrors($unicode_character);
         }
 
         if (!auth()->check()) {
@@ -169,10 +165,13 @@ class ArthapanchawkController extends Controller
                 }
             });
         } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash("error", 'Oops ! Something went wrong.');
             return response(['errors' => [], 'message' => "Error: Please Try Again."]);
         }
-        $userMeta = $user->meta;
+        session()->flash('success', "Information Updated.");
 
+        $userMeta = $user->meta;
         $user_record = [
             'midicine_history' => ($userMeta && $userMeta->history && isset($userMeta->history->medicine_history)) ? $userMeta->history->medicine_history : "no",
             'mental_health_history' => ($userMeta && $userMeta->history && isset($userMeta->history->mental_health_history)) ? $userMeta->history->mental_health_history : "no",
@@ -180,10 +179,15 @@ class ArthapanchawkController extends Controller
             'mental_health_detail_problem' => ($userMeta && $userMeta->history && isset($userMeta->history->mental_health_detail_problem)) ? $userMeta->history->mental_health_detail_problem : null,
         ];
 
-        return view('frontend.page.vedanta.form-step-two', compact("user_record"));
+        if (auth()->user()->role_id == 1) {
+            return view('frontend.page.vedanta.form-step-two', compact("user_record"));
+        }
+        return redirect()->route('vedanta.create_two');
     }
 
-
+    /**
+     * 
+     */
     private function nonAutheticatedUser(Request $request): \Illuminate\Http\Response
     {
         $user = new Member();
@@ -198,7 +202,6 @@ class ArthapanchawkController extends Controller
             $full_name .= " ";
             $full_name .=  $request->post('middle_name');
         }
-
         $full_name .= " ";
         $full_name .= $request->post('last_name');
         $user->full_name = $full_name;
@@ -209,7 +212,6 @@ class ArthapanchawkController extends Controller
         $user->city = $request->post('state');
         $user->address = ['street_address' => $request->post('street_address')];
         $user->date_of_birth = $request->post('date_of_birth');
-
         $user->email = $request->post('email');
         $user->password = Hash::make($request->post('password'));
         $user->phone_number = $request->post('phone_number');
@@ -219,11 +221,11 @@ class ArthapanchawkController extends Controller
         try {
             $user->save();
         } catch (\Throwable $th) {
-
+            //throw $th;
             return response(['errors' => [], 'message' => "Error: Please try again later " . $th->getMessage(), "success" => false], 422);
         }
-
         Auth::login($user);
+
         return response(['errors' => [], 'message' => "User Record Created", "success" => true], 200);
     }
 
@@ -240,10 +242,11 @@ class ArthapanchawkController extends Controller
     {
         $unicode_character = check_unicode_character($request->all());
         if ($unicode_character) {
-
-            return response(['errors' => $unicode_character, 'message' => "Invalid character."]);
+            if (auth()->user()->role_id == 1) {
+                return response(['errors' => $unicode_character, 'message' => "Invalid character."]);
+            }
+            return back()->withInput()->withErrors($unicode_character);
         }
-
         $user = auth()->user();
 
         $history = [
@@ -259,36 +262,33 @@ class ArthapanchawkController extends Controller
 
         $user->meta->history = $history;
         $programStudent = new ProgramStudent();
-
         $vedantaProgram = Program::with(["active_batch", "active_fees", "active_sections"])->where('status', "active")->where('id', $this->_id)->first();
         $complete_url = URL::temporarySignedRoute("vedanta.payment.create", now()->addMinute(10));
 
         try {
             $user->meta->save();
-
             $user->save();
-
             if (!$vedantaProgram || !$vedantaProgram->active_batch  || !$vedantaProgram->active_sections) {
-                return response(['errors' => [], 'message' => "Unable to enroll at the moment. Please try again later"], 422);
+                if (auth()->user()->role_id == 7) {
+                    return response(['errors' => [], 'message' => "Unable to enroll at the moment. Please try again later"], 422);
+                }
+                session()->flash('error', "Unable to enroll at the moment. Please try again later.");
+                return back()->withInput();
             }
 
             if (ProgramStudent::where('student_id', auth()->id())->where('program_id', $vedantaProgram->id)->exists()) {
-
-                if (!$this->checkFeeDetail($vedantaProgram, 'admission_fee')) {
-                }
-
                 if (!$this->checkFeeDetail($vedantaProgram, "admission_fee")) {
-
                     session()->flash("success", "Information Updated.");
                     return redirect()->to($complete_url);
                 }
-
-                $program = Program::find($this->_id);
-                $alreadyEnrolled = true;
-
-                return view('frontend.page.vedanta.form-step-final', compact('program', 'alreadyEnrolled'));
+                if (auth()->user()->role_id == 1) {
+                    $program = Program::find($this->_id);
+                    $alreadyEnrolled = true;
+                    return view('frontend.page.vedanta.form-step-final', compact('program', 'alreadyEnrolled'));
+                }
+                session()->flash("success", 'You have already subscribed.');
+                return redirect()->route("dashboard");
             }
-
             $programStudent->program_id = $vedantaProgram->id;
             $programStudent->student_id = auth()->id();
             $programStudent->batch_id = $vedantaProgram->active_batch->id;
@@ -296,15 +296,30 @@ class ArthapanchawkController extends Controller
             $programStudent->active = true;
             $programStudent->save();
         } catch (\Throwable $th) {
-
-            return response(['errors' => [], 'message' => $th->getMessage()], 422);
+            //throw $th;
+            if (auth()->user()->role_id == 1) {
+                return response(['errors' => [], 'message' => $th->getMessage()], 422);
+            }
+            session()->flash("error", "Oops ! Something went wrong. Please try again.");
+            return back()->withInput();
         }
 
+        if (auth()->user()->role_id == 1) {
+            if (!ProgramStudent::where('program_id', $this->_id)->where('student_id', user()->id)->exists()) {
+                return response(['errors' => [], 'message' => 'Oops ! Something went wrong. Please try again.'], 422);
+            }
+        }
         if (!ProgramStudent::where('program_id', $this->_id)->where('student_id', user()->id)->exists()) {
-            return response(['errors' => [], 'message' => 'Oops ! Something went wrong. Please try again.'], 422);
+            session()->flash('error', "Oops ! Something went wrong. Please Try agian.");
+            return back()->withInput();
+            // return response(['errors' => [], 'message' => 'Oops ! Something went wrong. Please try again.'], 422);
         }
         $program = Program::find($this->_id);
-        return view('frontend.page.vedanta.form-step-final', compact('program'));
+
+        if (auth()->user()->role_id == 1) {
+            return view('frontend.page.vedanta.form-step-final', compact('program'));
+        }
+        return redirect()->to($complete_url);
     }
 
     public function payment()

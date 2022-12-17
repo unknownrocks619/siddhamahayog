@@ -33,40 +33,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        // role id = 1
-        // admin
-        // dd(auth()->user());
-        if (auth()->user()->role_id == 1) {
-            // return redirect()->route('admin.admin_dashboard');
-        }
 
-        return redirect()->intended();
-        /**
-         * Center
-         */
-        if (auth()->user()->role_id == 2) {
-        }
-
-        /**
-         * Lecturer
-         */
-        if (auth()->user()->role_id == 3) {
-        }
-
-        /**
-         * Dharmashala
-         */
-        if (auth()->user()->role_id == 3) {
-        }
-
-        /**
-         * 
-         */
-        if (auth()->user()->role_id == 4) {
-        }
-
-        // return redirect()->route("dashboard");
-        return redirect()->route('vedanta.index');
+        return redirect()->route("dashboard");
+        // return redirect()->route('vedanta.index');
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 
