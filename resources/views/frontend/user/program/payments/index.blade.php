@@ -24,7 +24,7 @@
                             $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
 
                             if ($studentFee) {
-                                // $displayPaymentOption = false;
+                                $displayPaymentOption = false;
                             }
                             ?>
                             @if($displayPaymentOption && (site_settings('online_payment') || user()->role_id == 1))

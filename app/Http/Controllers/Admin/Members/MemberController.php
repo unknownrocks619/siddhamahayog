@@ -28,7 +28,7 @@ class MemberController extends Controller
     {
         //
         if (request()->ajax() && request()->wantsJson()) {
-            $members = Member::with(["emergency", "countries", "member_detail" => function ($query) {
+            $members = Member::with(["emergency", "countries", 'meta', "member_detail" => function ($query) {
                 return $query->with(["program"]);
             }])->get();
 
@@ -43,6 +43,8 @@ class MemberController extends Controller
                     }
                     $full_name .= " ";
                     $full_name . $row->last_name;
+                    
+                    
 
                     return $full_name;
                 })
@@ -62,9 +64,9 @@ class MemberController extends Controller
                     }
                     if ($row->emergency) {
                         $phone .= "<br />";
-                        $phone .= "Ref Mo: " . htmlspecialchars(strip_tags($row->emergency->phone_number));
+                        $phone .= "Emergency Contact: " . htmlspecialchars(strip_tags($row->emergency->phone_number));
                         $phone .= "<br />";
-                        $phone .= "Ref Name: " . htmlspecialchars(strip_tags($row->emergency->contact_person));
+                        $phone .= "Emergency Person: " . htmlspecialchars(strip_tags($row->emergency->contact_person));
                     }
                     return $phone;
                 })
