@@ -208,26 +208,23 @@ class ProgramStudentFeeController extends Controller
                     return date("Y-m-d", strtotime($row->created_at));
                 })
                 ->addColumn('member_name', function ($row) {
-                    // $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
-                    // // $full_name = htmlspecialchars($row->student->first_name);
-                    // // if ($row->student->middle_name) {
-                    // //     $full_name .= " ";
-                    // //     $full_name .= htmlspecialchars($row->middle_name);
-                    // // }
-                    // // $full_name .= ' ';
-                    // // $full_name .= htmlspecialchars($row->student->last_name);
-                    // // $member .= htmlspecialchars($full_name);
-                    // $member .= "</a>";
+                    $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
+                    $full_name = htmlspecialchars($row->student->first_name);
+                    if ($row->student->middle_name) {
+                        $full_name .= " ";
+                        $full_name .= htmlspecialchars($row->middle_name);
+                    }
+                    $full_name .= ' ';
+                    $full_name .= htmlspecialchars($row->student->last_name);
+                    $member .= htmlspecialchars($full_name);
+                    $member .= "</a>";
 
-                    // return $member;
-                    return "";
+                    return $member;
                 })
                 ->addColumn('transaction_amount', function ($row) {
-                    return "";
                     return strip_tags(default_currency($row->amount));
                 })
                 ->addColumn('category', function ($row) {
-                    return "";
                     $seperate_category = explode("_", $row->amount_category);
                     $category_text = "";
                     foreach ($seperate_category as $value) {
@@ -239,11 +236,7 @@ class ProgramStudentFeeController extends Controller
                 ->addColumn('source', function ($row) {
                     $source = "<strong>" . $row->source . "</strong>";
                     $source .= "<hr />";
-                    if (Str::contains($row->source_detail, 'hello', true)) {
-                        $source = $row->id;
-                    } else {
-                        $source .= $row->source_detail;
-                    }
+                    $source .= htmlspecialchars($row->source_detail);
                     return $source;
                 })
                 ->addColumn('status', function ($row) {
@@ -259,9 +252,8 @@ class ProgramStudentFeeController extends Controller
                 })
                 ->addColumn('media', function ($row) {
                     if ($row->file) {
-                        $string = "";
-                        // $string =  "[<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>]";
-                        // $string .= "<br />Deposit Date: " . isset($row->remarks->upload_date) ? $row->remarks->upload_date : ' ';
+                        $string =  "[<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>]";
+                        $string .= "<br /> Deposit Date: " . isset($row->remarks->upload_date) ? $row->remarks->upload_date : ' ';
                         return $string;
                     } else {
                         $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);

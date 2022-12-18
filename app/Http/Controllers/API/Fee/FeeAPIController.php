@@ -18,13 +18,13 @@ class FeeAPIController extends Controller
         if ($request->update_type) {
             $fee_detail->verified =  !$fee_detail->verified;
             $fee_detail->rejected =  !$fee_detail->verified;
-
+            
             if ($fee_detail->rejected) {
-                $fee_detail->student_fee->total_amount = $fee_detail->student_fee->total_amount - $fee_detail->amount;
+                // $fee_detail->student_fee->total_amount = $fee_detail->student_fee->total_amount - $fee_detail->amount;
             }
 
             if ($fee_detail->verified) {
-                $fee_detail->student_fee->total_amount = $fee_detail->student_fee->total_amount + $fee_detail->amount;
+                // $fee_detail->student_fee->total_amount = $fee_detail->student_fee->total_amount + $fee_detail->amount;
             }
             try {
                 DB::transaction(function () use ($fee_detail) {
