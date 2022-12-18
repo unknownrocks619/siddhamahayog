@@ -42,9 +42,9 @@ class MemberController extends Controller
                         $full_name .= $row->middle_name;
                     }
                     $full_name .= " ";
-                    $full_name . $row->last_name;
-                    
-                    
+                    $full_name .= $row->last_name;
+
+
 
                     return $full_name;
                 })
