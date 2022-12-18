@@ -56,6 +56,13 @@ class RegisteredUserController extends Controller
             "recaptcha_token" => ["required", new GoogleCaptcha()]
         ]);
 
+        $unicode_character = check_unicode_character($request->all());
+        if ($unicode_character) {
+            session()->flash('error', 'Unicode Character not Supported');
+            return back()->withInput()->withErrors($unicode_character);
+        }
+
+
         $explode_name = explode(" ", $request->full_name);
         $first_name = $explode_name[0];
         $last_name = isset($explode_name[1]) ? $explode_name[1] : null;
