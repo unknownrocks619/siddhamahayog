@@ -30,7 +30,7 @@ class MemberController extends Controller
         if (request()->ajax() && request()->wantsJson()) {
             $members = Member::with(["emergency", "countries", "member_detail" => function ($query) {
                 return $query->with(["program"]);
-            }])->latest()->get();
+            }])->get();
 
             $datatable = DataTables::of($members)
                 ->addIndexColumn()
