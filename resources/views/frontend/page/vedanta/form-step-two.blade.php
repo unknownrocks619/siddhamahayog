@@ -45,7 +45,7 @@
                             <label for="label-control">
                                 Please describe your health problem in detail.
                             </label>
-                            <textarea class="form-control @if($user_record['midicine_history'] =='no') d-none  @endif detailBox" id="regural_medicine_history_detail" name="regular_medicine_history_detail" @if($user_record['midicine_history']=='yes' ) required @endif>{{ $user_record['regular_medicine_history_detail'] }}</textarea>
+                            <textarea style="resize:none" class="form-control @if($user_record['midicine_history'] =='no') d-none  @endif detailBox" id="regural_medicine_history_detail" name="regular_medicine_history_detail" @if($user_record['midicine_history']=='yes' ) required @endif>{{ $user_record['regular_medicine_history_detail'] }}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6 mt-2">
@@ -53,7 +53,7 @@
                             <label for="label-control">
                                 Please describe your mental health problem in detail.
                             </label>
-                            <textarea class="form-control @if($user_record['mental_health_history'] =='no') d-none  @endif detailBox " name="mental_health_detail_problem" id="mental_health_history_detail" @if($user_record['mental_health_history']=='yes' ) required @endif>{{ $user_record['mental_health_detail_problem']}}</textarea>
+                            <textarea style="resize:none" class="form-control @if($user_record['mental_health_history'] =='no') d-none  @endif detailBox " name="mental_health_detail_problem" id="mental_health_history_detail" @if($user_record['mental_health_history']=='yes' ) required @endif>{{ $user_record['mental_health_detail_problem']}}</textarea>
                         </div>
                     </div>
                 </div>
