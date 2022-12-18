@@ -239,7 +239,7 @@
                                             @if($student->student->middle_name)
                                             {{ $student->student->middle_name }}
                                             @endif
-                                            $student->student->last_name
+                                            {{ $student->student->last_name }}
                                         </a>
                                     </td>
                                     <td>
