@@ -234,7 +234,13 @@
                                         {{ $loop->iteration }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">{{ $student->student->full_name }}</a>
+                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">
+                                            {{ $student->student->first_name }}
+                                            @if($student->student->middle_name)
+                                            {{ $student->student->middle_name }}
+                                            @endif
+                                            $student->student->last_name
+                                        </a>
                                     </td>
                                     <td>
                                         {{ $student->student->phone_number }}
