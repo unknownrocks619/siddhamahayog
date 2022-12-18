@@ -354,7 +354,7 @@
                                 </div>
                                 <div class="col-md-4 mt-2">
                                     <div class="form-group"><label for="address">Street Address</label>
-                                        <textarea name="street_address" id="street_address" class="form-control">{{ $user_record['street_address'] ?? '' }}</textarea>
+                                        <textarea name="street_address" id="street_address" style="resize: none;" class="form-control">{{ $user_record['street_address'] ?? '' }}</textarea>
                                     </div>
                                 </div>
                             </div>
