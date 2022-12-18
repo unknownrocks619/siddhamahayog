@@ -336,7 +336,7 @@
                                             $countries = \App\Models\Country::get();
                                             ?>
                                             @foreach ($countries as $country)
-                                            <option value="{{ $country->getKey() }}" @if(isset($user_record['country']) && $user_record['country']==$country->getKey()) selected @endif>
+                                            <option value="{{ $country->getKey() }}" @if(isset($user_record['country']) && $user_record['country']==$country->getKey()) selected @elseif($country->getKey() == 153) selected @endif>
                                                 {{ $country->name }}
                                             </option>
                                             @endforeach
