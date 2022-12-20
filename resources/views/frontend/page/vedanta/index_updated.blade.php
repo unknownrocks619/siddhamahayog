@@ -492,7 +492,7 @@
                                     <p class="text-danger">
                                         <em>
                                             Remember this information !
-                                            This is the login (email) and password for your protal 
+                                            This is the login (email) and password for your portal
                                             - where class zoom link will be
                                         </em>
                                     </p>
