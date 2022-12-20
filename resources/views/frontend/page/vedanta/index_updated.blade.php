@@ -489,6 +489,13 @@
                                     <h4 class="teheme-text">
                                         Login Detail
                                     </h4>
+                                    <p class="text-danger">
+                                        <em>
+                                            Remember this information !
+                                            This is the login (email) and password for your protal 
+                                            - where class zoom link will be
+                                        </em>
+                                    </p>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12 mt-2">
