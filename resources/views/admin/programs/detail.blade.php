@@ -234,12 +234,35 @@
                                         {{ $loop->iteration }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">
+                                        <a class="fs-3" href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">
                                             {{ $student->student->first_name }}
                                             @if($student->student->middle_name)
                                             {{ $student->student->middle_name }}
                                             @endif
                                             {{ $student->student->last_name }}
+
+                                            @if($student->student->transactions)
+                                            <?php
+                                            $last_transaction = $student->student->transactions()->first();
+
+                                            if (!$last_transaction) {
+                                                echo "<span style='font-size:10px;' class='py-2 text-sm bg-dark text-white px-2'>UNPAID</span>";
+                                            } else {
+
+                                                if ($last_transaction->amount  < 9000) {
+                                                    echo "<span style='font-size:10px;' class='bg-info text-white  px-2 py-2'>PARITAL PAYMENT</span>";
+                                                } else {
+                                                    if ($last_transaction->rejected) {
+                                                        echo "<span style='font-size:10px;' class='bg-danger text-white px-2 py-2'>REJECTED</span>";
+                                                    } else {
+                                                        echo "<span style='font-size:10px;'  class='bg-success px-2 py-2 text-white'>PAID</span>";
+                                                    }
+                                                }
+                                            }
+
+                                            ?>
+                                            @else
+                                            @endif
                                         </a>
                                     </td>
                                     <td>

@@ -43,9 +43,6 @@ class MemberController extends Controller
                     }
                     $full_name .= " ";
                     $full_name .= $row->last_name;
-
-
-
                     return $full_name;
                 })
                 ->addColumn('login_source', function ($row) {

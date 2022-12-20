@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\Widget\WidgetController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomAccountController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomMeetingController;
 use App\Http\Controllers\API\Fee\FeeAPIController;
+use App\Models\Member;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +39,30 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(["auth", "admin"])
     ->group(function () {
+
+
+        Route::get('/re-run/full-name', function () {
+
+            $members = Member::select(['first_name', 'last_name', 'middle_name', 'id'])->cursor();
+
+            foreach ($members as $member) {
+                $full_name = $member->first_name;
+
+                if ($member->middle_name) {
+                    $full_name .= " ";
+                    $full_name .= $member->middle_name;
+                }
+                $full_name .= " ";
+                $full_name .= $member->last_name;
+
+                $member->full_name = $full_name;
+
+                $member->save();
+            }
+
+            echo "DONE !";
+        });
+
 
         Route::get("/dashboard", function () {
             return view("admin.dashboard");

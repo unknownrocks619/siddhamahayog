@@ -34,4 +34,17 @@ class ProgramStudent extends Model
     {
         return $this->belongsTo(Live::class, "program_id", "program_id")->where('live', true);
     }
+
+    /**
+     * @param int $programID
+     * @param int $userID
+     * @return bool
+     */
+    public static function studentExists(int $programID, int $userID): bool
+    {
+
+        return ProgramStudent::where('program_id', $programID)
+            ->where('student_id', $userID)
+            ->exists();
+    }
 }

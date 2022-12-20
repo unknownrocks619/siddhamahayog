@@ -97,7 +97,8 @@ Support Ticket
                                             {!! __("support.".$ticket->status) !!}
                                         </td>
                                         <td>
-                                            {{ $ticket->user->full_name }}
+                                            {{ $ticket->user->first_name }} {{ $ticket->middle_name }}
+                                            {{ $ticket->user->last_name }}
                                         </td>
                                         <td>
                                             <a href="{{ route('admin.suppports.tickets.show',$ticket->id) }}">View</a>

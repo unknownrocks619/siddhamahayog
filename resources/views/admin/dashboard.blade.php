@@ -174,7 +174,7 @@
                                 <tbody>
                                     @forelse ($tickets as $ticket)
                                     <tr>
-                                        <td>{{ $ticket->user->full_name }}</td>
+                                        <td>{{ $ticket->user->first_name }} {{ $ticket->user->middle_name }} {{ $ticket->user->last_name }}</td>
                                         <td> {!! __("support.".$ticket->priority) !!} </td>
                                         <td> {!! __("support.".$ticket->category) !!} </td>
                                         <td>

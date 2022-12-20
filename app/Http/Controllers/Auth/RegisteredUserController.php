@@ -64,11 +64,12 @@ class RegisteredUserController extends Controller
 
 
         $explode_name = explode(" ", $request->full_name);
-        $first_name = $explode_name[0];
-        $last_name = isset($explode_name[1]) ? $explode_name[1] : null;
-
+        // $first_name = $explode_name[0];
+        // $last_name = isset($explode_name[1]) ? $explode_name[1] : null;
+        $full_name = $request->post('first_name');
+        $full_name .=  " " . $request->post('last_name');
         $member = new Member;
-        $member->full_name = strip_tags($request->post('first_name')) . ' ' . strip_tags($request->post('last_name'));
+        $member->full_name = $full_name;
         $member->first_name = strip_tags($request->post('first_name'));
         $member->middle_name = null;
         $member->last_name = strip_tags($request->post('last_name'));
@@ -111,7 +112,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($member);
 
-        return redirect()->intended(RouteServiceProvider::HOME);
-        // return redirect(RouteServiceProvider::HOME);
+        // return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->route('dashboard');
     }
 }

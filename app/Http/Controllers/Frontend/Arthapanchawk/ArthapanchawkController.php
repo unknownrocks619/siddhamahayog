@@ -38,6 +38,13 @@ class ArthapanchawkController extends Controller
 
             return view("frontend.page.vedanta.index_updated", compact('user_record'));
         }
+
+        $studentEnroll = ProgramStudent::studentExists($this->_id, auth()->id());
+
+        if ($studentEnroll) {
+            return view('frontend.page.vedanta.user_already_exists');
+        }
+
         $user = auth()->user();
 
         $userMeta = $user->meta;
