@@ -234,7 +234,7 @@
                                     </td>
                                     <td>
                                         <a class="fs-3" href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">
-                                            $student->full_name
+                                            {{ $student->full_name }}
 
                                         </a>
                                     </td>
