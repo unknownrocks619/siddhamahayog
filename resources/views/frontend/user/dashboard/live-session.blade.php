@@ -50,6 +50,7 @@
                             <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
                                 Join Now
                             </button>
+
                         </form>
 
                         <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">
