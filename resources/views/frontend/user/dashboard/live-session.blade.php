@@ -1,3 +1,7 @@
+<?php
+
+use App\Models\Scholarship;
+?>
 <div class="card-body">
     <ul class="p-0 m-0 mt-3 list-unstyled">
         @forelse ($enrolledPrograms as $program)
@@ -12,9 +16,6 @@
                         @if($program->live)
                         <small class="text-muted">Started at {{ date('H:i A', strtotime($program->live->created_at)) }}</small>
                         <?php
-
-                        use App\Models\Scholarship;
-
                         $user_section = null;
                         if ($program->live->merge) {
                             $user_section = user()->section->program_section_id;
