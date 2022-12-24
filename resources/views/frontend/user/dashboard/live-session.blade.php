@@ -1,7 +1,3 @@
-<?php
-
-use App\Models\Scholarship;
-?>
 <div class="card-body">
     <ul class="p-0 m-0 mt-3 list-unstyled">
         @forelse ($enrolledPrograms as $program)
@@ -44,13 +40,21 @@ use App\Models\Scholarship;
                     <div class="user-progress">
 
                         <?php
-
-                        $scholarship = Scholarship::where('program_id', $program->program_id ?? 0)
+                        $scholarship = \App\Models\Scholarship::where('program_id', $program->program_id ?? 0)
                             ->where('student_id', $program->student_id)
                             ->first();
 
                         ?>
-                        <?php if ($program->program && $program->program->program_type == "paid" && !$program->program->student_admission_fee && \App\Models\UnpaidAccess::totalAccess(user(), $program->program) <= site_settings('unpaid_access')) : ?>
+                        <?php if ($program->program && $program->program->program_type == "paid" && $program->live && $scholarship) : ?>
+
+                            <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                @csrf
+                                <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
+                                    Join Now
+                                </button>
+                            </form>
+
+                        <?php elseif ($program->program && $program->program->program_type == "paid" && !$program->program->student_admission_fee && \App\Models\UnpaidAccess::totalAccess(user(), $program->program) <= site_settings('unpaid_access')) : ?>
                             <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
                                 @csrf
                                 <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
