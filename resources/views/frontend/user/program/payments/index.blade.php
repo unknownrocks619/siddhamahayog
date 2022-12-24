@@ -147,7 +147,17 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-        @include('frontend.partials.payment-selection')
+        <div class="row">
+            <div class="col-md-12">
+                <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'esewa']) }}" class="btn btn-success clickable py-2 px-2 ">
+                    Esewa Payment
+                </a>
+                <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'voucher']) }}" class="btn btn-primary clickable py-2 px-2">
+                    Voucher Payment
+                </a>
+            </div>
+        </div>
+        {{-- @include('frontend.partials.payment-selection') --}}
     </div>
 </x-modal>
 @endif
