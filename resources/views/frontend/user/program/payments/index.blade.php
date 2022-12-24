@@ -20,6 +20,12 @@
                     <div class="d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
                         <div class="button-wrapper mx-2">
                             <?php
+                            $checkVoidScholarship =  \App\Models\Scholarship::where('program_id', $program->getKey())->where('student_id', auth()->id())->first();
+
+                            //$url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
+                            ?>
+                            <?php
+
                             $displayPaymentOption = true;
                             $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
 
@@ -43,10 +49,7 @@
                     </div>
 
                     @if(! $paymentHistories && $program->program_type == "paid")
-                    <?php
 
-                    //$url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
-                    ?>
                     <!-- <button data-href="{{-- $url --}}" type="button" class="mt-2 mb-2 btn btn-outline-danger clickable">Clear Admission Payment</button> -->
                     @endif
                     <table class="table table-border table-hover">
@@ -82,18 +85,51 @@
                                 </td>
                             </tr>
                             @empty
+                            @if($checkVoidScholarship)
                             <tr>
-                                <td colspan="5" class="text-center text-muted fs-4">
-                                    Transaction not found.
+                                <td>{{ date("Y-m-d",strtotime($checkVoidScholarship->created_at)) }}</td>
+                                <td>
+                                    {{ $program->program_name }}
+                                </td>
+                                <td> {{ __("payment.admission_fee") }} </td>
+                                <td>
+                                    NRs. {{ number_format(9000,2,",") }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-label-success">Verified</span>
                                 </td>
                             </tr>
-                            @endforelse
                             @else
                             <tr>
                                 <td colspan="5" class="text-center text-muted fs-4">
                                     Transaction not found.
                                 </td>
                             </tr>
+                            @endif
+                            @endforelse
+                            @else
+
+                            @if (! $checkVoidScholarship)
+                            <tr>
+                                <td colspan="5" class="text-center text-muted fs-4">
+                                    Transaction not found.
+                                </td>
+                            </tr>
+                            @else
+                            <tr>
+                                <td>{{ date("Y-m-d",strtotime($checkVoidScholarship->created_at)) }}</td>
+                                <td>
+                                    {{ $program->program_name }}
+                                </td>
+                                <td> {{ __("payment.admission_fee") }} </td>
+                                <td>
+                                    NRs. {{ number_format(9000,2,",") }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-label-success">Verified</span>
+                                </td>
+                            </tr>
+                            @endif
                             @endif
                         </tbody>
                     </table>

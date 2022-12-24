@@ -27,7 +27,7 @@
                         <h2><strong>Member</strong> Fee Collection </h2>
                         <ul class="header-dropdown">
                             <li class="remove">
-                                <button type="button" onclick="window.location.href='{{route('admin.program.admin_program_detail',[$program->id])}}'" class="btn btn-danger btn-sm boxs-close">
+                                <button type="button" onclick="window.location.href='{{route('admin.program.admin_program_detail',$program->id)}}'" class="btn btn-danger btn-sm boxs-close">
                                     <i class="zmdi zmdi-close"></i> Close</button>
                             </li>
                         </ul>

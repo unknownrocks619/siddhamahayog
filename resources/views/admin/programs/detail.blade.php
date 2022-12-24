@@ -168,6 +168,15 @@
                             <div class="sl-item b-warning">
                                 <div class="sl-content">
                                     <div class="text-muted">
+                                        <a href="{{ route('admin.program.scholarship.list',$program->id) }}" class="text-info text-link">
+                                            Scholar / Special Access
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
                                         <a href="{{ route('admin.members.admin_add_assign_member_to_program',$program->id) }}">
                                             Assign Student
                                         </a>
@@ -211,6 +220,7 @@
                             </strong>
                             student
                         </h2>
+                        
                     </div>
                     <div class="body">
                         <table class="table table-bordered table-hover table-responsive w-100" id="studentTable">

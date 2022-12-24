@@ -4,6 +4,7 @@ namespace App\Http\Requests\Frontend\Event;
 
 use App\Http\Traits\CourseFeeCheck;
 use App\Models\MemberNotification;
+use App\Models\Scholarship;
 use App\Models\UnpaidAccess;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,6 +42,15 @@ class LiveEventRequest extends FormRequest
         if ($this->program->program_type  != 'paid') {
             return true;
         }
+
+        $scholarship = Scholarship::where('program_id', $this->program->getKey())
+            ->where('student_id', auth()->id())
+            ->first();
+
+        if ($scholarship) {
+            return true;
+        }
+
         if (!$this->checkFeeDetail($this->program, "admission_fee") && UnpaidAccess::totalAccess(user(), $this->program) <= site_settings('unpaid_access')) {
 
             $unpaidAccess = UnpaidAccess::where('program_id', $this->program->getKey())->where('member_id', user()->getKey())->first();

@@ -50,10 +50,16 @@ class EventController extends Controller
 
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
+        if (!$live->live) {
+            session()->flash('error', 'Live session for `' . $program->program_name . "` is already over.");
+            return back();
+        }
+
         $attendance = $this->checkAndUpdateAttendance($program, $live);
         if ($attendance) {
             return $attendance;
         }
+
 
         $lock = $this->isLiveLock($live);
         if ($lock) {

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Programs\ProgramBatchController;
 use App\Http\Controllers\Admin\Programs\ProgramCourseResourceController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentEnrollController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
+use App\Http\Controllers\Admin\Scholarship\StudentProgramScholarShipController;
 use App\Http\Controllers\Admin\Support\SupportTicketController;
 use App\Http\Controllers\Admin\Website\Events\WebsiteEventController;
 use App\Http\Controllers\Admin\Website\Menus\MenuController;
@@ -234,6 +235,16 @@ Route::prefix('admin')
                     ->controller(AdminProgramAttendanceController::class)
                     ->group(function () {
                         Route::get("/attendance/{program}", "index")->name('list');
+                    });
+
+                Route::prefix("scholarship")
+                    ->name('scholarship.')
+                    ->controller(StudentProgramScholarShipController::class)
+                    ->group(function () {
+
+                        Route::get('{program}/list', 'index')->name('list');
+                        Route::post('{program}/list', 'storeScholarShip')->name('store');
+                        Route::post('{program}/{student}/remove', 'removeStudent')->name('remove');
                     });
             });
 

@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Scholarship extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    public static function studentByProgram(Program $program)
+    {
+        $query = self::where('program_id', $program->getKey())
+            ->with(['students'])
+            ->get();
+
+        return $query;
+    }
+
+    public function students()
+    {
+        return $this->belongsTo(Member::class, 'student_id');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        return static::creating(function ($item) {
+            return $item['created_by_user'] = auth()->id();
+        });
+    }
+}
