@@ -12,6 +12,9 @@
                         @if($program->live)
                         <small class="text-muted">Started at {{ date('H:i A', strtotime($program->live->created_at)) }}</small>
                         <?php
+
+                        use App\Models\Scholarship;
+
                         $user_section = null;
                         if ($program->live->merge) {
                             $user_section = user()->section->program_section_id;
@@ -40,7 +43,8 @@
                     <div class="user-progress">
 
                         <?php
-                        $scholarship = \App\Models\Scholarship::where('program_id', $program->program_id ?? 0)
+
+                        $scholarship = Scholarship::where('program_id', $program->program_id ?? 0)
                             ->where('student_id', $program->student_id)
                             ->first();
 
