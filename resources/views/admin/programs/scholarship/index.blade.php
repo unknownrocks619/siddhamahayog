@@ -27,7 +27,7 @@
                         </ul>
                     </div>
                     <div class="body">
-                        <table class="table table-border table-hover">
+                        <table id="datatable" class="table table-border table-hover">
                             <thead>
                                 <tr>
                                     <th>
@@ -62,7 +62,7 @@
                                         <form action="{{ route('admin.program.scholarship.remove',[$program->getKey(),$student->students->getKey()]) }}" method="post">
                                             @csrf
                                             <button type="submit" class="btn btn-danger">
-                                                Delete Member
+                                                Delete
                                             </button>
                                         </form>
                                     </td>
@@ -99,7 +99,7 @@
                             Select Student
                             <sup class="text-danger">*</sup>
                         </label>
-                        <select name="student" id="student" class="form-control">
+                        <select name="student" id="studentList" class="form-control">
                             @foreach ($enrolledStudent as $en_student)
                             <option value="{{ $en_student->student->getKey() }}">
                                 {{ $en_student->student->full_name }} ( {{ $en_student->student->email }})
@@ -110,12 +110,12 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <div class="form-group">
                         <label for="Scholar Type">
                             Scholarship Type
                         </label>
-                        <select name="scholarship_type" id="scholarTyp" class="form-control">
+                        <select name="scholarship_type" id="scholarTyp" class="">
                             <option value="full">Full</option>
                             <option value="vip">VIP</option>
                             <option value="void">VOID</option>
@@ -140,8 +140,16 @@
 @endsection
 
 @section("page_script")
-<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script src="{{ asset ('assets/plugins/momentjs/moment.js') }}"></script> <!-- Moment Plugin Js -->
 
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#datatable").DataTable()
+    });
+</script>
 @endsection
 
 
@@ -150,5 +158,7 @@
 @endsection
 
 @section("page_css")
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
+
 @endsection
