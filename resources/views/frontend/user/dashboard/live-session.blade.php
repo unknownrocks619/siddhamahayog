@@ -54,7 +54,7 @@
                                 </button>
                             </form>
 
-                        <?php elseif ($program->program && $program->program->program_type == "paid" && !$program->program->student_admission_fee && \App\Models\UnpaidAccess::totalAccess(user(), $program->program) <= site_settings('unpaid_access')) : ?>
+                        <?php elseif (\App\Models\UnpaidAccess::totalAccess(user(), $program->program) <= site_settings('unpaid_access')) : ?>
                             <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
                                 @csrf
                                 <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
