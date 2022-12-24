@@ -29,7 +29,7 @@ Ticket > {{ $ticket->title }}
                     <div class="card-text ms-4">{!! $ticket->issue !!}</div>
                     @if($ticket->media && isset($ticket->media->path))
                     <div class="border p-3 ms-4">
-                        <a target="_blank" href="{{ asset($ticket->media->path)  }}"> {{ $reply->media->original_filename }}</a>
+                        <a target="_blank" href="{{ asset($ticket->media->path)  }}"> {{ $ticket->media->original_filename }}</a>
                     </div>
                     @endif
                 </div>

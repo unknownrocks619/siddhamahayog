@@ -25,12 +25,16 @@ Ticket > {{ $ticket->title }}
             <div class="card-body">
                 <div class="col-md-4">
                     <h4 class="card-header">{{ $ticket->title }}</h4>
-                    <div class="card-text ms-4">{!! (strip_tags($ticket->issue,"<blockquote><b><em><strong><span>
+                    <div class="card-text ms-4">
+                        {!! (strip_tags($ticket->issue,
+                        "<blockquote><b><em><strong><span>
                                             <p>
-                                            <div>")) !!}</div>
+                                            <div>")) !!}
+
+                                            </div>
                                             @if($ticket->media && isset($ticket->media->path))
                                             <div class="border p-3 ms-4">
-                                                <a target="_blank" href="{{ asset($ticket->media->path)  }}"> {{ $reply->media->original_filename }}</a>
+                                                <a target="_blank" href="{{ asset($ticket->media->path)  }}"> {{ $ticket->media->original_filename }}</a>
                                             </div>
                                             @endif
                     </div>

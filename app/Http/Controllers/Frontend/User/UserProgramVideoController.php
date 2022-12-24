@@ -33,6 +33,11 @@ class UserProgramVideoController extends Controller
 
     public function videos(ProgramVideoLessionWatchRequest $request, Program $program, ProgramCourse $course, ProgramChapterLession $lession)
     {
+
+        if (!$request->header('X-CSRF-TOKEN')) {
+            return response(['message' => "Bearer Token Missing."], 403);
+        }
+
         return view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'));
     }
 

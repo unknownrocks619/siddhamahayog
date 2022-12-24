@@ -113,7 +113,7 @@ if (!function_exists("register_participants")) {
     function register_participants(ZoomAccount $zoomAccount, $meeting_id)
     {
         // dd(request()->all());
-        if (user()->role_id == 8 && request()->role == "ram-das") {
+        if (user()->role_id == 1 || user()->role_id == 8) {
             $first_name = 'Ram';
             $last_name = 'Das(' . substr(time(), 7, 3) . ')';
         } else {
@@ -123,7 +123,7 @@ if (!function_exists("register_participants")) {
         $settings = [
             "first_name" => trim($first_name) . "(#)",
             "last_name" => trim($last_name),
-            "email" => time() . "_T_" . user()->email,
+            "email" => "T_" . time()  . trim(user()->email),
             "auto_approve" => true
         ];
         $signature = $zoomAccount->api_token;

@@ -87,15 +87,17 @@
                             </div>
                         </div>
                         <div class="col-md-8 border-end border-bottom border-top">
-                            <div class="progress mt-5 d-none" style="height:25px">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:25px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <div id="videoContent">
-                                @if($program->last_video_history)
-                                @include("frontend.user.program.videos.modal.history",["watchHistory" => $program->last_video_history])
-                                @else
-                                @include("frontend.user.program.videos.modal.no-history")
-                                @endif
+                            <div style="position:relative" class="w-100 h-100">
+                                <div class="progress mt-5" style="height:25px;position:absolute;z-index:9">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:25px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div id="videoContent">
+                                    @if($program->last_video_history)
+                                    @include("frontend.user.program.videos.modal.history",["watchHistory" => $program->last_video_history])
+                                    @else
+                                    @include("frontend.user.program.videos.modal.no-history")
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-4 bg-footer-theme d-sm-none">
@@ -181,6 +183,9 @@
         $.ajax({
             type: "get",
             url: $(this).data("href"),
+            headers: {
+                'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr('content')
+            },
             success: function(response) {
                 $("#videoContent").html(response);
             }
