@@ -4,6 +4,8 @@ namespace App\Http\Requests\Frontend\Event;
 
 use App\Http\Traits\CourseFeeCheck;
 use App\Models\MemberNotification;
+use App\Models\UnpaidAccess;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LiveEventRequest extends FormRequest
@@ -16,10 +18,8 @@ class LiveEventRequest extends FormRequest
      */
     public function authorize()
     {
-        $access = false;
-        $access = auth()->check() ? true : false;
+        $access = auth()->check() && $this->isPaid() ? true : false;
 
-        $access =  ($this->isPaid()) ? true : false;
         return $access;
     }
 
@@ -38,7 +38,32 @@ class LiveEventRequest extends FormRequest
     public function isPaid()
     {
 
-        if ($this->program->program_type == "paid" && !$this->checkFeeDetail($this->program, "admission_fee")) {
+        if ($this->program->program_type  != 'paid') {
+            return true;
+        }
+        if (!$this->checkFeeDetail($this->program, "admission_fee") && UnpaidAccess::totalAccess(user(), $this->program) <= site_settings('unpaid_access')) {
+
+            $unpaidAccess = UnpaidAccess::where('program_id', $this->program->getKey())->where('member_id', user()->getKey())->first();
+
+            if ($unpaidAccess) {
+                $currentDate = Carbon::parse($unpaidAccess->updated_at);
+
+                if (!$currentDate->isToday()) {
+                    $unpaidAccess->total_joined++;
+                    $unpaidAccess->save();
+                }
+            } else {
+                $storeAccess = new UnpaidAccess();
+                $storeAccess->member_id = user()->getKey();
+                $storeAccess->program_id = $this->program->getKey();
+                $storeAccess->total_joined = 1;
+                $storeAccess->save();
+            }
+
+            return true;
+        }
+
+        if (!$this->checkFeeDetail($this->program, "admission_fee")) {
             $notification = new MemberNotification;
             $notification->member_id = auth()->id();
             $notification->title =  'Unable to access ' . $this->program->program_name;
@@ -48,6 +73,7 @@ class LiveEventRequest extends FormRequest
             $notification->seen = false;
             $notification->save();
             session()->flash("error", 'Unable to join session, Your payment is due.');
+            return false;
         }
 
         return true;

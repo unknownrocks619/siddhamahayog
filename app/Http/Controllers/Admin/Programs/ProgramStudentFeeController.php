@@ -253,7 +253,13 @@ class ProgramStudentFeeController extends Controller
                 ->addColumn('media', function ($row) {
                     if ($row->file) {
                         $string =  "[<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>]";
-                        $string .= "<br /> Deposit Date: " . isset($row->remarks->upload_date) ? $row->remarks->upload_date : ' ';
+                        $string .= "<br /> Deposit Date: ";
+                        if ($row->remarks && isset($row->remarks->upload_date)) {
+                            $string .= $row->remarks->upload_date;
+                        } else {
+                            $string .= "N/A";
+                        }
+
                         return $string;
                     } else {
                         $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);

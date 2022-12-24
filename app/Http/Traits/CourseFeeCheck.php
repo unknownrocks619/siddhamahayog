@@ -31,13 +31,13 @@ trait CourseFeeCheck
     public function checkFeeDetail(Program $program, $fee_type = null)
     {
 
-        if (!$program->overdue_allowed) return true;
 
         $this->studentFees($program);
 
         if (!$this->data) return  false;
 
         if (!$fee_type) return $this->data;
+
         return ($this->data->transactions()->where('amount_category', $fee_type)->first()) ? true : false;
     }
 }

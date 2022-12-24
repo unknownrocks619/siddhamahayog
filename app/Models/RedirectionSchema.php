@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Models\Sadhak;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SadhakMember extends Model
+class RedirectionSchema extends Model
 {
     use HasFactory;
-
-    protected $connection = "sadhak";
 }

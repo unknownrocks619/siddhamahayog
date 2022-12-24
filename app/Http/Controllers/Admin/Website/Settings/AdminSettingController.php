@@ -49,6 +49,8 @@ class AdminSettingController extends Controller
         $settings->where('name', "live_show")->first()->value = ($request->live_show) ? true : false;
         $settings->where('name', "official_email")->first()->value = ($request->official_email) ? $request->official_email : "info@siddhamahayog.org";
         $settings->where('name', "company_address")->first()->value = ($request->company_address) ? $request->company_address : "Hanuman Mandir, Dharan, Nepal";
+        $settings->where('name', "unpaid_access")->first()->value = ($request->unpaid_access) ? $request->unpaid_access : 5;
+
         if ($settings->where('name', 'website_name')->first() && $settings->where('name', 'website_name')->first()->isDirty()) {
             $settings->where('name', 'website_name')->first()->save();
             $this->writeEnvironmentFile("APP_NAME", ($settings->where('name', 'website_name')->first()->value));
@@ -88,6 +90,9 @@ class AdminSettingController extends Controller
         }
         if ($settings->where('name', "main_contact")->first() && $settings->where('name', "main_contact")->first()->isDirty()) {
             $settings->where("name", 'main_contact')->first()->save();
+        }
+        if ($settings->where('name', "unpaid_access")->first() && $settings->where('name', "unpaid_access")->first()->isDirty()) {
+            $settings->where("name", 'unpaid_access')->first()->save();
         }
 
         Cache::put("web_settings", $settings);

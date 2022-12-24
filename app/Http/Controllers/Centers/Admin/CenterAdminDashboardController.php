@@ -135,7 +135,7 @@ class CenterAdminDashboardController extends Controller
         $programStudentFeeDetail->rejected = false;
         $programStudentFeeDetail->student_id = $member->getKey();
         $programStudentFeeDetail->remarks = [
-            "upload-date" => $request->post('transaction_date'),
+            "upload_date" => $request->post('transaction_date'),
             "bank_name" => "International Center",
         ];
         $programStudentFeeDetail->fee_added_by_user = auth()->id();

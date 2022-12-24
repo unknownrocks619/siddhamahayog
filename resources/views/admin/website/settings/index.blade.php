@@ -1,11 +1,11 @@
 @extends("layouts.portal.app")
 
 @section("page_title")
-    Program
+Program
 @endsection
 
 @section("page_css")
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
 <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
 
 
@@ -18,7 +18,7 @@
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
-                    <h2>Programs</h2> 
+                    <h2>Programs</h2>
                     <small>
                         <a href="{{ route('admin.program.admin_program_new') }}">[Create New Batch]</a>
                     </small>
@@ -66,20 +66,20 @@
                             </div>
 
                             @if($settings->where('name','loading_bar')->first()->value)
-                                <div class="row mt-3 border-top border-primary">
-                                    <div class="col-md-8 mt-3 border-right border-primary">
-                                        <div class="form-group">
-                                            <strong>Loading Bar / Image
-                                                <sup class="text-danger">*</sup>
-                                            </strong>
-                                            <input type="file" name="loading_bar_image" id="favicon">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 bg-grey">
-                                        <strong>Current Loading Image</strong>
-                                        <img src="{{ asset($settings->where('name','loading_bar_image')->first()->value) }}" class="" />
+                            <div class="row mt-3 border-top border-primary">
+                                <div class="col-md-8 mt-3 border-right border-primary">
+                                    <div class="form-group">
+                                        <strong>Loading Bar / Image
+                                            <sup class="text-danger">*</sup>
+                                        </strong>
+                                        <input type="file" name="loading_bar_image" id="favicon">
                                     </div>
                                 </div>
+                                <div class="col-md-4 bg-grey">
+                                    <strong>Current Loading Image</strong>
+                                    <img src="{{ asset($settings->where('name','loading_bar_image')->first()->value) }}" class="" />
+                                </div>
+                            </div>
 
                             @endif
                         </div>
@@ -140,7 +140,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <strong>Theme</strong>
-                                        <input type="text" name="theme" value="Siddhamahayog-OM" class="form-control" disabled  />
+                                        <input type="text" name="theme" value="Siddhamahayog-OM" class="form-control" disabled />
                                     </div>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <strong>Website URL</strong>
-                                        <input type="text" name="website_url" value="{{ $settings->where('name','website_url')->first()->value }}" class="form-control"   />
+                                        <input type="text" name="website_url" value="{{ $settings->where('name','website_url')->first()->value }}" class="form-control" />
                                     </div>
                                 </div>
                             </div>
@@ -156,7 +156,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <strong>Website Name</strong>
-                                        <input type="text" name="website_name" value="{{ $settings->where('name','website_name')->first()->value }}" class="form-control"   />
+                                        <input type="text" name="website_name" value="{{ $settings->where('name','website_name')->first()->value }}" class="form-control" />
                                     </div>
                                 </div>
                             </div>
@@ -177,6 +177,16 @@
                                             Company Address
                                         </strong>
                                         <textarea name="company_address" id="company_address" class="form-control">{{$settings->where('name','company_address')->first()->value}}</textarea>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <strong>Unpaid Account Access Days</strong>
+                                        <input type="text" name="unpaid_access" value="{{ $settings->where('name','unpaid_access')->first()->value }}" class="form-control" />
                                     </div>
                                 </div>
                             </div>

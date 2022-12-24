@@ -69,7 +69,7 @@ Route::prefix("account")
                 Route::get('/calendar', "calendar")->name('calendar');
                 Route::post('/join/admin/{live}', 'join_as_admin')->name('live_as_admin');
                 Route::post('/join/{program}/{live}', "liveEvent")->name('live');
-                Route::post('/join/{program}/{live}', "joinOpenEvent")->name('live_open');
+                Route::post('/join/open/{program}/{live}', "joinOpenEvent")->name('live_open');
             });
 
         Route::prefix("dharmashala")
@@ -153,3 +153,4 @@ include __DIR__ . "/donation.php";
 include __DIR__ . "/support.php";
 include __DIR__ . "/memberSadhak.php";
 include __DIR__ . '/centerAdmin.php';
+include __DIR__ . "/sadhak.php";
