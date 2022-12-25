@@ -120,7 +120,8 @@ class EventController extends Controller
         $attendance->meta = [
             "zoom" => $register_member, //,
             "ip" => request()->ip(),
-            "browser" => request()->header("User-Agent")
+            "browser" => request()->header("User-Agent"),
+            'additional_info' => [getUserLocation()]
         ];
         // 
 
