@@ -52,6 +52,11 @@ class LiveEventRequest extends FormRequest
         if ($this->checkFeeDetail($this->program, 'admission_fee')) {
             return true;
         }
+
+        if (user()->email == 'unknownrocks619@outlook.com') {
+            dd(site_settings('unpaid_access'));
+        }
+        
         if (UnpaidAccess::totalAccess(user(), $this->program) <= site_settings('unpaid_access')) {
 
             $unpaidAccess = UnpaidAccess::where('program_id', $this->program->getKey())->where('member_id', user()->getKey())->first();
