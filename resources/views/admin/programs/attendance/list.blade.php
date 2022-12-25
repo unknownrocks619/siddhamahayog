@@ -145,21 +145,21 @@
     });
 
     $(document).ready(function() {
-        let table = $("#attendance").DataTable({
-            dom: 'Blfrtip',
-            lengthChange: true,
-            buttons: [{
-                'extend': 'csv',
-                'split': ['copy', 'excel', 'pdf'],
-            }, 'colvis'],
-            scrollX: true,
-            columnDefs: [{
-                orderable: false,
-                targets: [2, 3, 4, 5] //Here we disable sorting fearure for few cols
-            }],
-        });
-        table.buttons().container()
-            .appendTo('#example_wrapper .col-md-6:eq(0)')
+        // let table = $("#attendance").DataTable({
+        //     dom: 'Blfrtip',
+        //     lengthChange: true,
+        //     buttons: [{
+        //         'extend': 'csv',
+        //         'split': ['copy', 'excel', 'pdf'],
+        //     }, 'colvis'],
+        //     scrollX: true,
+        //     columnDefs: [{
+        //         orderable: false,
+        //         targets: [2, 3, 4, 5] //Here we disable sorting fearure for few cols
+        //     }],
+        // });
+        // table.buttons().container()
+        //     .appendTo('#example_wrapper .col-md-6:eq(0)')
 
     });
     $(".studentList").on("click", function(event) {
