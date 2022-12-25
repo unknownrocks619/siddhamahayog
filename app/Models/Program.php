@@ -104,6 +104,16 @@ class Program extends Model
         return $this->hasOne(ProgramStudentFeeDetail::class, $this->foreignKey)->where('student_id', auth()->id())->where('amount_category', 'admission_fee')->where('verified', true);
     }
 
+
+    /**
+     * Retrieve admission fee for the student.
+     */
+    public function admission_fee()
+    {
+        return $this->hasOne(ProgramStudentFeeDetail::class, $this->foreignKey)->where('student_id', auth()->id())->where('amount_category', 'admission_fee')->latest();
+    }
+
+
     public function liveProgram()
     {
         return $this->hasMany(Live::class, "program_id")->where('live', true);

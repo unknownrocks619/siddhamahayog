@@ -113,15 +113,15 @@ if (!function_exists("register_participants")) {
     function register_participants(ZoomAccount $zoomAccount, $meeting_id)
     {
         // dd(request()->all());
-        if (user()->role_id == 1 || user()->role_id == 8) {
+        if (user()->role_id == 1 || user()->role_id == 9) {
             $first_name = 'Ram';
-            $last_name = 'Das(' . substr(time(), 7, 3) . ')';
+            $last_name = 'Das (' . substr(time(), 7, 3) . ')';
         } else {
             $first_name = Str::ucfirst(Str::lower(Str::of(user()->first_name)->trim()));
             $last_name = (user()->middle_name) ?  " " . Str::ucfirst(Str::lower(Str::of(user()->middle_name)->trim())) . " " .  Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim())) : " " . Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim()));
         }
         $settings = [
-            "first_name" => trim($first_name) . "(#)",
+            "first_name" => trim($first_name), // . "(#)",
             "last_name" => trim($last_name),
             "email" => "T_" . time()  . trim(user()->email),
             "auto_approve" => true

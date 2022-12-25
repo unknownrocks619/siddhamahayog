@@ -208,12 +208,13 @@ class AdminProgramController extends Controller
         $zoom_account_detail = ZoomAccount::find($request->zoom_account);
         // dd($zoom_account_detail);
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name);
-        // dd($meeting);
+
         if (!$meeting) {
             // dd("unable to create meeting");
             session()->flash('error', "Unable to create zoom meeting at the moment.");
             return redirect()->route('admin.program.admin_program_list');
         }
+
 
         $liveProgram->meeting_id = $meeting->id;
         $liveProgram->admin_start_url = $meeting->start_url;
