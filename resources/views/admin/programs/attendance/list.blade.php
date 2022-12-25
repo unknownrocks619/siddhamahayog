@@ -68,7 +68,6 @@
                     <div class="body">
                         <table class="table table-bordered table-hover   w-100" id="attendance">
                             <thead>
-
                                 <tr>
                                     <th>
                                         Sadhak Name
@@ -78,7 +77,6 @@
                                         {{ date('Y-m-d',strtotime($dateLoop->created_at)) }}
                                     </th>
                                     @endforeach
-
                                 </tr>
                             </thead>
                             <tbody>
@@ -106,6 +104,8 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="footer">
                     </div>
                 </div>
             </div>
@@ -146,10 +146,6 @@
                 'split': ['copy', 'excel', 'pdf'],
             }, 'colvis'],
             scrollX: true,
-            columnDefs: [{
-                orderable: false,
-                targets: [2, 3, 4, 5] //Here we disable sorting fearure for few cols
-            }],
         });
         table.buttons().container()
             .appendTo('#example_wrapper .col-md-6:eq(0)')
