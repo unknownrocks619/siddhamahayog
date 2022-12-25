@@ -75,6 +75,7 @@
                                     <th colspan="{{ $presentList->count() }}">
                                         Date
                                     </th>
+                                </tr>
                                 <tr>
                                     <th>
 
