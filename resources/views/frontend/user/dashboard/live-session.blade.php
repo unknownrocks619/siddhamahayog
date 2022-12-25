@@ -1,3 +1,7 @@
+<?php
+
+use App\Models\Scholarship;
+?>
 <div class="card-body">
     <ul class="p-0 m-0 mt-3 list-unstyled">
         @forelse ($enrolledPrograms as $program)
@@ -43,16 +47,71 @@
                         $scholarship = \App\Models\Scholarship::where('program_id', $program->program_id ?? 0)
                             ->where('student_id', $program->student_id)
                             ->first();
-
                         ?>
-                        <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
-                            @csrf
-                            <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
-                                Join Now
+                        <?php if ($program->program && $program->program->program_type == "paid" && $scholarship) : ?>
+                            <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                @csrf
+                                <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
+                                    Join Now
+                                </button>
+                            </form>
+
+                        <?php elseif ($program->program && $program->program->program_type == "paid" && !$program->program->student_admission_fee && \App\Models\UnpaidAccess::totalAccess(user(), $program->program) <= site_settings('unpaid_access')) : ?>
+
+                            <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                @csrf
+                                <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
+                                    Join Now
+                                </button>
+                            </form>
+
+                        <?php
+                        elseif ($program->program && $program->program->program_type == "paid" && !$program->program->student_admission_fee) :
+                            $url = route('user.account.programs.courses.fee.list', $program->program->id);
+                        ?>
+                            <button type="button" data-href="{{ $url }}" class="fw-semibold btn btn-sm btn-success clickable">
+                                Pay now
                             </button>
+                        <?php else : ?>
+                            @if( $program->live && $program->live->section_id == $program->program_section_id)
+                            <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                @csrf
+                                <button type="submit" class="join_button fw-semibold btn btn-sm btn-success">
+                                    Join Now
+                                </button>
+                            </form>
+                            @elseif($program->live && !$program->live->section_id)
+                            <form id="joinSessionForm" action="{{ route('user.account.event.live',[$program->program->id,$program->live->id]) }}" method="post">
+                                @csrf
+                                <button type="submit" class="fw-semibold btn btn-sm btn-success join_button">
+                                    Join Now
+                                </button>
+                            </form>
+                            @else
+                            <?php
+                            if (isset($user_section) && $user_section) {
+                                $program_section_id = (isset($program->live) && isset($program->live->section_id)) ? $program->live->section_id : null;
+                                if (isset($program->live->merge->$user_section) && $program->live || ($program->live->section_id == NULL || $program->live->section_id == $user_section)) :
+                                    echo '<form id="joinSessionForm" action="' . route('user.account.event.live', [$program->program->id, $program->live->id]) . '" method="post">';
+                                    echo csrf_field();
+                                    echo '<button type="submit" class="fw-semibold btn btn-sm btn-success">';
+                                    echo 'Join Now';
+                                    echo '</button>';
+                                    echo '</form>';
+                                else :
+                                    echo '<small class="fw-semibold btn btn-sm btn-secondary">';
+                                    echo 'Not Available';
+                                    echo '</small>';
+                                endif;
+                            } else {
+                                echo '<small class="fw-semibold btn btn-sm btn-secondary">';
+                                echo 'Not Available';
+                                echo '</small>';
+                            }
+                            ?>
 
-                        </form>
-
+                            @endif
+                        <?php endif; ?>
                         <button data-href="{{ route('user.account.programs.program.request.create',$program->program->id) }}" class="clickable fw-semibold btn btn-sm btn-outline-warning d-inline mt-2">
                             Absent Form
                         </button>

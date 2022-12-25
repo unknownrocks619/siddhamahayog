@@ -19,8 +19,7 @@ class LiveEventRequest extends FormRequest
      */
     public function authorize()
     {
-        // $access = auth()->check() && $this->isPaid() ? true : false;
-        $access = auth()->check();
+        $access = auth()->check() && $this->isPaid() ? true : false;
         return $access;
     }
 
