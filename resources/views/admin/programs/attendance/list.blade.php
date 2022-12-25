@@ -58,6 +58,12 @@
                         <h2>
                             <strong>Attendance</strong> List
                         </h2>
+                        <ul class="header-dropdown">
+                            <li class="remove">
+                                <button type="button" onclick="window.location.href='{{route('admin.program.admin_program_detail',[$program->id])}}'" class="btn btn-danger btn-sm boxs-close">
+                                    <i class="zmdi zmdi-close"></i> Close</button>
+                            </li>
+                        </ul>
                     </div>
                     <div class="body">
                         <table class="table table-bordered table-hover   w-100" id="attendance">
