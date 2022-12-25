@@ -19,53 +19,40 @@
                 <x-alert></x-alert>
             </div>
         </div>
-        <div class="row clearfix">
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="header">
-                        <h2>
-                            <strong>Filter</strong> Result
-                        </h2>
-                    </div>
-                    <div class="body">
-                        <form action="{{ route('admin.program.attendances.list',[$program->id]) }}" method="get">
+
+        <form action="{{ route('admin.program.attendances.list',[$program->id]) }}" method="get">
+            <div class="row clearfix">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                <strong>Filter</strong>
+                                Result
+                            </h2>
+                        </div>
+                        <div class="body">
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="form-group">
-                                        <b>
-                                            Start Date
-                                        </b>
-                                        <input type="date" name="start_date" id="start_date" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mt-2">
-                                    <div class="form-group">
-                                        <b>
-                                            End Date
-                                        </b>
-                                        <input type="date" name="end_date" id="end_date" class="form-control">
-                                    </div>
-                                </div>
-                                <div class="col-md-12 mt-2">
-                                    <div class="form-group">
-                                        <b>
-                                            Section
-                                        </b>
+                                        <label for="dates">Date Range</label>
+                                        <input type="text" name="dates" id="dates" class="form-control" />
                                     </div>
                                 </div>
                             </div>
-                            <div class="row bg-light">
-                                <div class="col-md-12">
-                                    <button type="submit" class="btn btn-primary">
-                                        Filter Result
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                        </div>
+                        <div class="footer d-flex justify-content-space">
+                            <button type="submit" class="btn btn-primary">Filter Result</button>
+                            @if(request()->dates)
+                            <a href="{{ route('admin.program.attendances.list',$program->getKey()) }}" class="btn btn-danger">Clear Filter</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8">
+        </form>
+
+        <div class="row clearfix">
+            <div class="col-lg-12">
                 <div class="card">
                     <div class="header">
                         <h2>
@@ -73,31 +60,25 @@
                         </h2>
                     </div>
                     <div class="body">
-                        <table class="table table-bordered table-hover">
+                        <table class="table table-bordered table-hover   w-100" id="attendance">
                             <thead>
                                 <tr>
                                     <th>
                                         Sadhak Name
                                     </th>
-                                    <th colspan="{{ $program->allLivePrograms->count() }}">
+                                    <th colspan="{{ $presentList->count() }}">
                                         Date
                                     </th>
-                                    <th colspan="2">
-                                        Attendance
-                                    </th>
-                                    <th>
-                                        Action
-                                    </th>
-                                </tr>
                                 <tr>
-                                    <th></th>
-                                    @foreach ($program->allLivePrograms as $program_date)
-                                    <th>{{ date("Y-m-d",strtotime($program_date->created_at)) }}</th>
-                                    @endforeach
                                     <th>
-                                        Present
+
                                     </th>
-                                    <th>Absent</th>
+                                    @foreach ($presentList as $dateLoop)
+                                    <th>
+                                        {{ date('Y-m-d',strtotime($dateLoop->created_at)) }}
+                                    </th>
+                                    @endforeach
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -105,12 +86,22 @@
                                 <tr>
                                     <td>
                                         {{ $students->student->full_name }}
+                                        ( {{ $students->student->email }} )
                                     </td>
-                                    <td>
-                                        <?php
-
-                                        ?>
+                                    @foreach ($presentList as $liveMeetingRecord)
+                                    <?php
+                                    $record = route('admin.program.attendances.detail', [$program->getKey(), $students->student->getKey(), $liveMeetingRecord->meeting_id]);
+                                    $currentStudentId = $students->student->getKey();
+                                    $present = $liveMeetingRecord->attendances()->where('student', $currentStudentId)->exists() ?? false
+                                    ?>
+                                    <td class="text-white bg-{{ ($present) ? 'success' : 'danger' }}">
+                                        @if( $present )
+                                        <button type='button' class="btn-link text-white" data-href="{{ $record }}">Present (view)</button>
+                                        @else
+                                        Absent
+                                        @endif
                                     </td>
+                                    @endforeach
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -125,6 +116,11 @@
 
 @section("page_script")
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.colVis.min.js"></script>
 <script type="text/javascript">
     $("#edit_create_section").on("shown.bs.modal", function(event) {
         $.ajax({
@@ -135,6 +131,12 @@
             }
         })
     });
+    $("#attendance").DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'colvis'
+        ]
+    })
     $(".studentList").on("click", function(event) {
         event.preventDefault();
         $.ajax({
@@ -145,5 +147,12 @@
             }
         })
     })
+    $('input[name="dates"]').daterangepicker();
 </script>
+@endsection
+
+@section('page_css')
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css">
 @endsection

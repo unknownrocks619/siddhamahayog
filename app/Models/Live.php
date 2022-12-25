@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Live extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $casts = [
         "merge" => "object"
@@ -36,5 +37,10 @@ class Live extends Model
     public function programCordinate()
     {
         return $this->guessBelongsToRelation(Member::class, "started_by");
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(ProgramStudentAttendance::class, 'meeting_id', 'meeting_id');
     }
 }

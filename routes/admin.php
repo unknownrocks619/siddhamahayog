@@ -235,6 +235,7 @@ Route::prefix('admin')
                     ->controller(AdminProgramAttendanceController::class)
                     ->group(function () {
                         Route::get("/attendance/{program}", "index")->name('list');
+                        Route::get("/attendance/{program}/{student}/{live}", "index")->name('detail');
                     });
 
                 Route::prefix("scholarship")

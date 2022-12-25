@@ -1,4 +1,4 @@
-    <nav class="navbar">
+    <nav class="navbar" style="min-height: 60px !important;">
         <div class="container">
             <ul class="nav navbar-nav">
                 <li>
