@@ -126,7 +126,12 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
 <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.bootstrap4.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript">
     $("#edit_create_section").on("shown.bs.modal", function(event) {
         $.ajax({
@@ -137,12 +142,25 @@
             }
         })
     });
-    $("#attendance").DataTable({
-        dom: 'Bfrtip',
-        buttons: [
-            'colvis'
-        ]
-    })
+
+    $(document).ready(function() {
+        let table = $("#attendance").DataTable({
+            dom: 'Blfrtip',
+            lengthChange: true,
+            buttons: [{
+                'extend': 'csv',
+                'split': ['copy', 'excel', 'pdf'],
+            }, 'colvis'],
+            scrollX: true,
+            columnDefs: [{
+                orderable: false,
+                targets: [2, 3, 4, 5] //Here we disable sorting fearure for few cols
+            }],
+        });
+        table.buttons().container()
+            .appendTo('#example_wrapper .col-md-6:eq(0)')
+
+    });
     $(".studentList").on("click", function(event) {
         event.preventDefault();
         $.ajax({
@@ -154,6 +172,16 @@
         })
     })
     $('input[name="dates"]').daterangepicker();
+
+    $(document).on('click', 'a.dt-button', function(event) {
+        if (!$(this).hasClass('active')) {
+            $(this).css('background', '#a59a9a !important');
+            $(this).removeClass('bg-info');
+        } else {
+            $(this).addClass('bg-info');
+            $(this).css('background', 'red !important');
+        }
+    });
 </script>
 @endsection
 
@@ -161,4 +189,18 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap4.min.css">
+
+<style type="text/css">
+    a.buttons-columnVisibility {
+        background-color: red !important;
+        color: #fff !important;
+    }
+
+    a.dt-button {
+        background: red !important;
+        color: #fff !important;
+    }
+</style>
 @endsection
