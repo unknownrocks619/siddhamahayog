@@ -14,6 +14,7 @@ $scholarship = Scholarship::where('program_id', $program->getKey())
     ->where('student_id', user()->getKey())
     ->first();
 $unpaidAccess = UnpaidAccess::totalAccess(user(), $program);
+
 if ($scholarship || (int) user()->role_id === 1) {
 
     $allowJoin = true;
@@ -26,9 +27,8 @@ if (!$allowJoin) {
         // check for grace period.
         if ($unpaidAccess <= site_settings('unpaid_access')) {
             $allowJoin = true;
-        } else {
-            $showPayment = true;
         }
+        $showPayment = true;
     }
 
     if ($admission) {
@@ -60,7 +60,6 @@ if (!$live) {
     $allowJoin =  false;
 } else {
     if ($allowJoin) {
-
         $showPayment = false;
         $showPending = false;
     }

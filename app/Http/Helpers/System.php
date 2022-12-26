@@ -32,7 +32,7 @@ if (!function_exists("create_zoom_meeting")) {
             //     "end_date_time" => "2022-12-30T12:00:00Z"
             // ],
             "settings" => [
-                "approval_type" => 0,
+                "approval_type" => 1,
                 "allow_multiple_devices" => 0,
                 "show_share_button" => 0,
                 "registrants_confirmation_email" => false,
@@ -41,7 +41,7 @@ if (!function_exists("create_zoom_meeting")) {
                 "participant_video" => true,
                 "private_meeting" => true,
                 "focus_mode" => true,
-                "registration_type" => 1,
+                "registration_type" => 2,
                 "watermark" => true,
                 // "meeting_authentication" => true,
                 "authentication_name" => "Signed-in users in my account"

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\Program;
 use App\Models\ProgramStudent;
-use App\Models\ScholarShip;
+use App\Models\Scholarship;
 use Illuminate\Http\Request;
 
 class StudentProgramScholarShipController extends Controller
@@ -15,7 +15,7 @@ class StudentProgramScholarShipController extends Controller
 
     public function index(Program $program)
     {
-        $students = ScholarShip::studentByProgram($program);
+        $students = Scholarship::studentByProgram($program);
         $enrolledStudent = ProgramStudent::where('program_id', $program->getKey())->with(['student'])->get();
         return view('admin.programs.scholarship.index', compact('program', 'students', 'enrolledStudent'));
     }
@@ -23,7 +23,7 @@ class StudentProgramScholarShipController extends Controller
     public function storeScholarShip(Request $request, Program $program)
     {
 
-        $exists = ScholarShip::where('program_id', $program->getKey())
+        $exists = Scholarship::where('program_id', $program->getKey())
             ->where('student_id', $request->student)
             ->first();
 
@@ -32,7 +32,7 @@ class StudentProgramScholarShipController extends Controller
             return back();
         }
 
-        $scholarship = new ScholarShip();
+        $scholarship = new Scholarship();
         $scholarship->program_id = $program->getKey();
         $scholarship->student_id = $request->get('student');
         $scholarship->scholar_type = $request->get('scholarship_type');
@@ -55,7 +55,7 @@ class StudentProgramScholarShipController extends Controller
     public function removeStudent(Program $program, Member $student)
     {
 
-        $scholarship = ScholarShip::where('program_id', $program->getKey())
+        $scholarship = Scholarship::where('program_id', $program->getKey())
             ->where('student_id', $student->getKey())
             ->first();
 
@@ -68,6 +68,4 @@ class StudentProgramScholarShipController extends Controller
         session()->flash('error', "Unable to remove Student from scholarship.");
         return back();
     }
-
-    
 }
