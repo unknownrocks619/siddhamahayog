@@ -33,6 +33,15 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest');
 
+Route::get('/access-code', [AuthenticatedSessionController::class, 'createKey'])
+    ->middleware('guest')
+    ->name('access_key_create');
+Route::post('/access-code', [AuthenticatedSessionController::class, 'storeKey'])
+    ->middleware('guest')
+    ->name('access_key_store');
+
+
+
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
     ->middleware('guest')
     ->name('password.request');

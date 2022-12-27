@@ -9,7 +9,7 @@
     grecaptcha.ready(function() {
         $('.validate-form').on('submit',function(){
             var check = true;
-    
+            var form = this;
             for(var i=0; i<input.length; i++) {
                 if(validate(input[i]) == false){
                     showValidate(input[i]);
@@ -26,7 +26,7 @@
                 .then(function(token) {
                     document.getElementById("recaptcha_token").value = token;
                     if (token) {
-                        document.getElementById('loginForm').submit();
+                        document.getElementById($('form').attr("id")).submit();
                     }
                 });
             }

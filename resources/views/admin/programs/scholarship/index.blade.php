@@ -15,12 +15,12 @@
                     <div class="header">
                         <h2><strong>Quick</strong> Navigation</h2>
                         <ul class="header-dropdown">
-                            <li class="remove">
-                                <button type="button" onclick="window.location.href='{{route('admin.program.admin_program_detail',[$program->id])}}'" class="btn btn-danger btn-sm boxs-close">
-                                    <i class="zmdi zmdi-close"></i> Close</button>
+                            <li>
+                                <a href="{{route('admin.program.admin_program_detail',[$program->id])}}" class="btn btn-danger btn-sm boxs-close">
+                                    <i class="zmdi zmdi-close"></i> Close</a>
                             </li>
-                            <li class="remove">
-                                <button data-target="#scholarship" data-toggle="modal" type="button" class="btn btn-success btn-sm boxs-close">
+                            <li>
+                                <button data-target="#selectScholarShipList" data-toggle="modal" class="btn btn-success btn-sm ">
                                     <i class="zmdi zmdi-plus"></i> Add New Student</button>
                             </li>
 
@@ -51,7 +51,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($students as $student)
+                                @foreach ($students as $student)
                                 <tr>
                                     <td>{{-- $loop->iteration --}}</td>
                                     <td>{{ $student->students->full_name }} </td>
@@ -67,13 +67,8 @@
                                         </form>
                                     </td>
                                 </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        Scholarship Entry is Empty
-                                    </td>
-                                </tr>
-                                @endforelse
+
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -83,13 +78,16 @@
 
     </div>
 </section>
-<x-modal modal="scholarship">
+<x-modal modal="selectScholarShipList">
     <form action="{{ route('admin.program.scholarship.store',$program->getKey()) }}" method="post">
         @csrf
         <div class="modal-header">
             <h4>
                 Add New Scholar Student
             </h4>
+            <button type="button" class="btn-close btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
+                Close
+            </button>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -115,7 +113,7 @@
                         <label for="Scholar Type">
                             Scholarship Type
                         </label>
-                        <select name="scholarship_type" id="scholarTyp" class="">
+                        <select name="scholarship_type" id="scholarTyp" class="form-control">
                             <option value="full">Full</option>
                             <option value="vip">VIP</option>
                             <option value="void">VOID</option>
@@ -140,12 +138,13 @@
 @endsection
 
 @section("page_script")
-<script src="{{ asset ('assets/plugins/momentjs/moment.js') }}"></script> <!-- Moment Plugin Js -->
-
-<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
+<script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
 <script>
+    $("#studentList").select2({
+        width: "100%"
+    })
     $(document).ready(function() {
         $("#datatable").DataTable()
     });

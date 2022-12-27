@@ -19,4 +19,9 @@ class UnpaidAccess extends Model
         }
         return 1;
     }
+
+    public function student()
+    {
+        return $this->belongsTo(Member::class, "member_id");
+    }
 }

@@ -12,10 +12,8 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/bootstrap/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{
-    asset('assets/login/vendor/animate/animate.css" /') }}>
-    <link
-      rel=" stylesheet" type="text/css" href="{{ asset('vassets/login/vendor/css-hamburgers/hamburgers.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/animate/animate.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('vassets/login/vendor/css-hamburgers/hamburgers.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/animsition/css/animsition.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/select2/select2.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/login/vendor/daterangepicker/daterangepicker.css') }}" />
@@ -36,7 +34,7 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
                     <div class="col-md-12 border-bottom" style="border-bottom:2px solid #ccc; padding-bottom:10px;">
                         <h4 class="text-center p-b-20 border-bottom w-100">Mahayogi Siddhababa Spiritual Academy </h4>
                         <h5 class="text-center text-info">
-                            Login
+                            SSO LIVE PROGRAM
                         </h5>
                     </div>
                 </div>
@@ -44,39 +42,24 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
 
                 @if( ! $rateLimit)
 
-                <form id="loginForm" class="validate-form" action="{{ route('login') }}" method="post">
+                <form id="accessCode" class="validate-form" action="{{ route('access_key_store') }}" method="post">
                     @csrf
                     @google_captcha()
                     <div class="p-t-31 p-b-9">
-                        <span class="txt1"> Email Address </span>
+                        <span class="txt1"> Access Code </span>
                     </div>
-                    <div class="wrap-input100 validate-input" autofocus="true" data-validate="Email is required" required="true">
-                        <input class="input100 " type="email" name="email" />
+                    <div class="wrap-input100  validate-input " data-validate="Access Code is Required" required="true">
+                        <input class="input100" type="text" name="access_code" id="access_code" autofocus="true" />
                         <span class="focus-input100"></span>
-                        @error('email')
+
+                        @error('access_code')
                         <div class="text-danger">
                             {{ $message }}
                         </div>
                         @enderror
                     </div>
-
-                    <div class="p-t-13 p-b-9">
-                        <span class="txt1"> Password </span>
-
-                        <a href="{{ route('password.request') }}" class="txt2 bo1 m-l-5"> Forgot? </a>
-                    </div>
-                    <div class="wrap-input100 validate-input" required="true" data-validate="Password is required">
-                        <input class="input100" type="password" name="password" />
-                        <span class="focus-input100"></span>
-                        @error('password')
-                        <div class="text-danger">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
-
                     <div class="container-login100-form-btn m-t-17">
-                        <button class="login100-form-btn">Sign In</button>
+                        <button type="submit" class="login100-form-btn">Validate Key</button>
                     </div>
                 </form>
                 <div class="d-flex justify-content-center pt-4 mt-4 text-secondary p-b-20"> Don't Have account ?</div>
@@ -84,6 +67,17 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
                     <a href="{{ route('register') }}" class=" btn btn-danger w-100 text-white py-3"> Sign up now </a>
                 </div>
                 <div class="row mt-4">
+
+                    <div class="col-md-12">
+                        <form action="{{ route('login') }}" id="specialPermission" method="get">
+                            <button type="submit" class="w-100 btn btn-info  py-3 px-5 m-b-20">
+                                <i class="fa fas fa-key"></i>
+                                Login
+                            </button>
+                        </form>
+
+                    </div>
+
                     <div class="col-md-12">
                         <form class="w-100" action="{{ route('social_login_redirect',['facebook']) }}" id="facebookForm" method="post">
                             @csrf
@@ -101,16 +95,6 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
                                 Sign In Using Google
                             </button>
                         </form>
-                    </div>
-
-                    <div class="col-md-12">
-                        <form action="{{ route('access_key_create') }}" id="specialPermission" method="get">
-                            <button type="submit" class="w-100 btn btn-outline-warning py-2 px-5 m-b-20">
-                                <i class="fa fas fa-key"></i>
-                                Join using Access Key
-                            </button>
-                        </form>
-
                     </div>
                 </div>
                 @else
@@ -140,7 +124,6 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
     <script src="{{ asset ('assets/login/vendor/countdowntime/countdowntime.js') }}"></script>
     <!--===============================================================================================-->
     <script src="https://www.google.com/recaptcha/api.js?render={{ config('captcha.google.site_key') }}"></script>
-
     <script src="{{ asset ('assets/login/js/main.js') }}"></script>
 
 </body>

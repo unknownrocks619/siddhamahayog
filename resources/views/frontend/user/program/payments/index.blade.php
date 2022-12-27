@@ -20,7 +20,9 @@
                     <div class="d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
                         <div class="button-wrapper mx-2">
                             <?php
-                            $checkVoidScholarship =  \App\Models\Scholarship::where('program_id', $program->getKey())->where('student_id', auth()->id())->first();
+                            $checkVoidScholarship =  \App\Models\Scholarship::where('program_id', $program->getKey())->where('student_id', auth()->id())
+                                ->where('scholar_type', 'void')
+                                ->first();
 
                             //$url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
                             ?>
@@ -30,6 +32,10 @@
                             $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
 
                             if ($studentFee) {
+                                $displayPaymentOption = false;
+                            }
+
+                            if ($checkVoidScholarship) {
                                 $displayPaymentOption = false;
                             }
                             ?>

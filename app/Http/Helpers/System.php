@@ -154,6 +154,37 @@ if (!function_exists("register_participants")) {
 }
 
 
+if (!function_exists("register_participants_guest")) {
+    function register_participants_guest(ZoomAccount $zoomAccount, $meeting_id, $settings)
+    {
+
+        $signature = $zoomAccount->api_token;
+        $curl_url = "https://api.zoom.us/v2/meetings/{$meeting_id}/registrants";
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $curl_url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POSTFIELDS => json_encode($settings),
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_HTTPHEADER => array(
+                "authorization: Bearer {$signature}",
+                "content-type: application/json"
+            ),
+        ));
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        // if ($err) {
+        //     return false;
+        // }
+        return ($response);
+    }
+}
+
+
 function check_unicode_character($character, $exclude = null)
 {
     if (is_string($character)) {
@@ -191,7 +222,7 @@ function getUserCountry()
         '::1',
         '127.0.0.1'
     ];
-    $userIp = request()->ip();
+    $userIp = request()->getClientIp();
 
     if (array_search($userIp, $white_ip, false)) {
         return "NP";

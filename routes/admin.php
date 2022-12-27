@@ -10,8 +10,10 @@ use App\Http\Controllers\Admin\Post\PostController;
 use App\Http\Controllers\Admin\Programs\AdminProgramAttendanceController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
 use App\Http\Controllers\Admin\Programs\AdminProgramCourseController;
+use App\Http\Controllers\Admin\Programs\AdminProgramGuestListController;
 use App\Http\Controllers\Admin\Programs\AdminProgramHolidayController;
 use App\Http\Controllers\Admin\Programs\AdminProgramSectionController;
+use App\Http\Controllers\Admin\Programs\AdminProgramUnpaidAccessController;
 use App\Http\Controllers\Admin\Programs\ProgramBatchController;
 use App\Http\Controllers\Admin\Programs\ProgramCourseResourceController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentEnrollController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\Admin\Widget\WidgetController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomAccountController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomMeetingController;
 use App\Http\Controllers\API\Fee\FeeAPIController;
+use App\Http\Traits\SMS;
 use App\Models\Member;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -40,7 +43,6 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(["auth", "admin"])
     ->group(function () {
-
 
         Route::get('/re-run/full-name', function () {
 
@@ -246,6 +248,27 @@ Route::prefix('admin')
                         Route::get('{program}/list', 'index')->name('list');
                         Route::post('{program}/list', 'storeScholarShip')->name('store');
                         Route::post('{program}/{student}/remove', 'removeStudent')->name('remove');
+                    });
+
+                Route::prefix('guest')
+                    ->name('guest.')
+                    ->controller(AdminProgramGuestListController::class)
+                    ->group(function () {
+                        Route::get('list/{program}', 'index')->name('list');
+                        Route::post('store-guest/{program}', 'store')->name('store');
+                        Route::post('delete/{program}/{guest}', 'delete')->name('delete');
+                    });
+
+                /**
+                 * Unpaid Access
+                 */
+                Route::prefix("unpaid/access")
+                    ->name('unpaid.access.')
+                    ->controller(AdminProgramUnpaidAccessController::class)
+                    ->group(function () {
+                        Route::get('list/{program}', 'index')->name('list');
+                        Route::get('list-view/{program}/{member}', 'joinedMeta')->name('list-view');
+                        Route::post('reset/{access}', 'resetMeta')->name('reset');
                     });
             });
 

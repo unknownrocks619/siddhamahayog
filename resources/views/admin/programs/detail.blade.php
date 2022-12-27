@@ -112,6 +112,9 @@
                                             @csrf
                                             <button class="btn btn-sm btn-danger">End Session</button>
                                         </form>
+                                        <button data-toggle="modal" data-target="#guestList" type="button" class="btn btn-success btn-sm">
+                                            Add Guest List
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -206,6 +209,24 @@
                                     <div class="text-muted">Exam Center</div>
                                 </div>
                             </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.program.unpaid.access.list',$program->id) }}" class="text-info text-link">
+                                            Unpaid Access List
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sl-item b-warning">
+                                <div class="sl-content">
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.program.guest.list',$program->id) }}" class="text-info text-link">
+                                            Guest List
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,7 +241,7 @@
                             </strong>
                             student
                         </h2>
-                        
+
                     </div>
                     <div class="body">
                         <table class="table table-bordered table-hover table-responsive w-100" id="studentTable">
@@ -430,12 +451,76 @@
 <div class="modal fade" id="addBatch" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="modal_content">
-            <div class="moda-body">
+            <div class="modal-body">
                 <p>Please wait...loading your data</p>
             </div>
         </div>
     </div>
 </div>
+
+
+<x-modal modal="guestList">
+    <form id="guestListForm" action="{{ route('admin.program.guest.store',[$program->getKey()]) }}" method="post">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>
+                    Add Guest List
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="first_name">First Name
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <input type="text" name="first_name" id="first_name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="middle_name">Middle Name
+                            </label>
+                            <input type="text" name="middle_name" id="middle_name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="last_name">Last Name
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <input type="text" name="last_name" id="last_name" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="remarks">Remarks
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <textarea name="remarks" id="remarks" class="form-control border"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="access_code">
+                                Accecss Code
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <input type="text" required name="access_code" value="{{ \Str::uuid() }}" min="8" id="" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Add Guest List</button>
+            </div>
+        </div>
+    </form>
+</x-modal>
 
 @endsection
 
@@ -501,6 +586,82 @@
                 });
         },
     })
+
+
+    $('form#guestListForm').submit(function(event) {
+        event.preventDefault();
+        return formSubmit(this);
+    })
+
+    function formSubmit(formElement) {
+        $.ajax({
+            method: $(formElement).attr('method'),
+            url: $(formElement).attr('action'),
+            data: $(formElement).serializeArray(),
+            beforeSend: function() {
+                removeErrorFields(formElement);
+                propStatus(formElement, true);
+            },
+            headers: {
+                'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr("content")
+            },
+            success: function(response) {
+                propStatus(formElement, false);
+                let parentElem = $(formElement).parent();
+                $(parentElem).empty().html(response);
+
+            },
+            error: function(response) {
+                propStatus(formElement, false)
+
+                if (response.status == 419) {
+                    window.location.reload();
+                }
+
+                if (response.status == 422) {
+                    return errorFields(response.responseJSON.errors, formElement);
+                }
+            }
+        })
+    }
+
+
+    function errorFields(errors, elem) {
+        var noMessagebox = false;
+        $.each(errors, function(index, error) {
+            let inputElement = $(elem).find(`[name="${index}"]`);
+            if ($(inputElement).length) {
+                $(inputElement).addClass('border border-danger');
+                // also create new element.
+                let errorElement = `<div class='text-danger formError' data-id="${index}">${error}</div>`
+                $(inputElement).closest('div.form-group').append(errorElement);
+            } else {
+                noMessagebox = true
+            }
+
+        })
+
+        if (noMessagebox) {
+            $("#errorMessage").html("Oops ! something went wrong please try again.");
+        }
+
+    }
+
+    function removeErrorFields(elem) {
+        $("#errorMessage").empty().addClass('d-none');
+        $(elem).find('input').removeClass('border border-danger');
+        $(elem).find('textarea').removeClass('border border-danger');
+        $(elem).find('select').removeClass('border border-danger');
+        $(elem).find('div.formError').remove();
+    }
+
+    function propStatus(elem, value) {
+        $(elem).find('input').prop('disabled', value);
+        $(elem).find('select').prop('disabled', value);
+        $(elem).find('button').prop('disabled', value);
+        $(elem).find('textarea').prop('disabled', value);
+    }
+</script>
 </script>
 <script>
     // $('#student-table').DataTable({
