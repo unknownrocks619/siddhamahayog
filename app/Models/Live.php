@@ -14,6 +14,13 @@ class Live extends Model
         "merge" => "object"
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'admin_start_url',
+        'program_id'
+    ];
+
     public function zoomAccount()
     {
         return $this->belongsTo(ZoomAccount::class, "zoom_account_id");

@@ -50,5 +50,8 @@ class Role extends Model
      * 5 => ADMIN_TEACHER
      * 6 => MARKETING
      * 7 => MEMBERS
+     * 8 => "Support",
+     * 9 => "CenterAdmin",
+     * 10 => "Dharmashala"
      */
 }

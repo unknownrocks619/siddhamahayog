@@ -21,14 +21,34 @@ class Member extends Authenticatable
         "remarks" => "object"
     ];
 
-    // public $fillable = [
-    //     "full_name",
-    //     "first_name",
-    //     "middle_name",
-    //     "last_name",
+    protected $fillable = [
+        "full_name",
+        "first_name",
+        "middle_name",
+        "last_name",
+        "country",
+        'city',
+        'address',
+        'date_of_birth',
+        'email',
+        'remember_token',
+        'sharing_code',
+        'phone_number',
+        'profile',
+        'gender',
+        'street_address'
+    ];
 
-    // ]
-
+    protected $hidden = [
+        'stripe_id',
+        'pm_last_four',
+        'trial_ends_at',
+        'password',
+        'created_at',
+        'updated_at',
+        'pm_type',
+        'remember_token'
+    ];
 
     public function member_role()
     {

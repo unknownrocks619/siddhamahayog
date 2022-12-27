@@ -11,6 +11,26 @@ class Program extends Model
 
     protected string $foreignKey = "program_id";
 
+    protected $auditable = [
+        'program_name' => 'Program Name'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'program_duration',
+        'program_access',
+        'admission_fee',
+        'monthly_fee'
+    ];
+
+    protected $alias = [
+        'id' => "Program ID"
+    ];
+
+    
+
     public function students()
     {
         return $this->hasMany(ProgramStudent::class, $this->foreignKey);

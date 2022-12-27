@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
 Route::prefix("v1")
     ->middleware('auth')
     ->group(function () {
@@ -82,3 +83,7 @@ Route::prefix("v1")
                 Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
             });
     });
+
+
+
+require base_path('routes/api/v1/api.php');
