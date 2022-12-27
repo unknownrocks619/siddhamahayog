@@ -26,7 +26,7 @@
                 .then(function(token) {
                     document.getElementById("recaptcha_token").value = token;
                     if (token) {
-                        document.getElementById($('form').attr("id")).submit();
+                        document.getElementById('loginForm').submit();
                     }
                 });
             }

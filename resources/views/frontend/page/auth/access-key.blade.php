@@ -42,7 +42,7 @@ $rateLimit = Illuminate\Support\Facades\RateLimiter::tooManyAttempts(request()->
 
                 @if( ! $rateLimit)
 
-                <form id="accessCode" class="validate-form" action="{{ route('access_key_store') }}" method="post">
+                <form id="loginForm" class="validate-form" action="{{ route('access_key_store') }}" method="post">
                     @csrf
                     @google_captcha()
                     <div class="p-t-31 p-b-9">
