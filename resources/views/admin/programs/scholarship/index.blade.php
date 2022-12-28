@@ -9,7 +9,7 @@
         </div>
 
         <div class="row clearfix">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <x-alert></x-alert>
                 <div class="card">
                     <div class="header">
@@ -18,10 +18,6 @@
                             <li>
                                 <a href="{{route('admin.program.admin_program_detail',[$program->id])}}" class="btn btn-danger btn-sm boxs-close">
                                     <i class="zmdi zmdi-close"></i> Close</a>
-                            </li>
-                            <li>
-                                <button data-target="#selectScholarShipList" data-toggle="modal" class="btn btn-success btn-sm ">
-                                    <i class="zmdi zmdi-plus"></i> Add New Student</button>
                             </li>
 
                         </ul>
@@ -74,67 +70,72 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <form action="{{ route('admin.program.scholarship.store',$program->getKey()) }}" method="post">
+                                @csrf
+                                <div class="header">
+                                    <h2>
+                                        <strong>Add New</strong> Scholar Student
+                                    </h2>
+                                </div>
+                                <div class="body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="student">
+                                                    Select Student
+                                                    <sup class="text-danger">*</sup>
+                                                </label>
+                                                <select name="student" id="studentList" class="form-control">
+                                                    @foreach ($enrolledStudent as $en_student)
+                                                    <option value="{{ $en_student->student->getKey() }}">
+                                                        {{ $en_student->student->full_name }} ( {{ $en_student->student->email }})
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="Scholar Type">
+                                                    Scholarship Type
+                                                </label>
+                                                <select name="scholarship_type" id="scholarTyp" class="form-control">
+                                                    <option value="full">Full</option>
+                                                    <option value="vip">VIP</option>
+                                                    <option value="void">VOID</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="Scholar Type">
+                                                    Remarks
+                                                </label>
+                                                <textarea name="remarks" class="form-control border border-primary"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="footer">
+                                    <button type="submit" class="btn btn-primary">Add Scholarship Information</button>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
 </section>
-<x-modal modal="selectScholarShipList">
-    <form action="{{ route('admin.program.scholarship.store',$program->getKey()) }}" method="post">
-        @csrf
-        <div class="modal-header">
-            <h4>
-                Add New Scholar Student
-            </h4>
-            <button type="button" class="btn-close btn-danger btn-sm" data-dismiss="modal" aria-label="Close">
-                Close
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="student">
-                            Select Student
-                            <sup class="text-danger">*</sup>
-                        </label>
-                        <select name="student" id="studentList" class="form-control">
-                            @foreach ($enrolledStudent as $en_student)
-                            <option value="{{ $en_student->student->getKey() }}">
-                                {{ $en_student->student->full_name }} ( {{ $en_student->student->email }})
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="Scholar Type">
-                            Scholarship Type
-                        </label>
-                        <select name="scholarship_type" id="scholarTyp" class="form-control">
-                            <option value="full">Full</option>
-                            <option value="vip">VIP</option>
-                            <option value="void">VOID</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="Scholar Type">
-                            Remarks
-                        </label>
-                        <textarea name="remarks" class="form-control"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Add Scholarship Information</button>
-        </div>
-    </form>
-</x-modal>
 @endsection
 
 @section("page_script")

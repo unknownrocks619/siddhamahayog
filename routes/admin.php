@@ -148,6 +148,7 @@ Route::prefix('admin')
                 Route::get("/add/batch/modal/{program}", "add_batch_modal")->name("admin_program_add_batch_modal");
                 Route::get("/detail/{program}", "program_detail")->name("admin_program_detail");
                 Route::get("live-program/list", "liveProgram")->name('all-live-program');
+                Route::get('live-program/list/{live}/ramdas', 'ramdasList')->name('live-program-ramdas');
                 Route::get("live-program/list/join-as-admin/{live}", "rejoinSession")->name('live-program-as-admin');
                 Route::get("live/{program}", "goLiveCreate")->name('live');
                 Route::post("/add/batch/{program}", "store_batch_program")->name("admin_program_store_batch_modal");

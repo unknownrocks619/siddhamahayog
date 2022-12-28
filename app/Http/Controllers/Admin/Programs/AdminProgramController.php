@@ -6,14 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use App\Models\Batch;
 use App\Models\Live;
+use App\Models\Member;
 use App\Models\Program;
 use App\Models\ProgramBatch;
 use App\Models\ProgramCourse;
 use App\Models\ProgramCourseFee;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
+use App\Models\Ramdas;
 use App\Models\ZoomAccount;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use DataTables;
 use Illuminate\Support\Facades\DB;
 
@@ -203,19 +206,37 @@ class AdminProgramController extends Controller
         $liveProgram->program_id = $program->id;
         $liveProgram->section_id = ($request->section) ? $request->section : null;
         $liveProgram->zoom_account_id = $request->zoom_account;
+        $domain = str_shuffle('siddhamahayog') . ".org";
+
+
+        $members = Member::select(['email'])->where('role_id', 1)
+            ->orWhere('role_id', 11)
+            ->get();
+
+        $cohost = "";
+        if ($members) {
+
+            $emails = [];
+            foreach ($members as $member) {
+                $email_prefix = Str::before($member->email, "@");
+                $email = $email_prefix . "@" . $domain;
+                $emails[] = $email;
+            }
+            $cohost = implode(";", $emails);
+        }
 
         // now let's retrieve zoom account detail.
         $zoom_account_detail = ZoomAccount::find($request->zoom_account);
         // dd($zoom_account_detail);
-        $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name);
+        $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name, $domain);
 
-        if (!$meeting) {
+        if (!$meeting || isset($meeting->code)) {
             // dd("unable to create meeting");
             session()->flash('error', "Unable to create zoom meeting at the moment.");
             return redirect()->route('admin.program.admin_program_list');
         }
 
-
+        $liveProgram->domain = $domain;
         $liveProgram->meeting_id = $meeting->id;
         $liveProgram->admin_start_url = $meeting->start_url;
         $liveProgram->join_url = $meeting->join_url;
@@ -297,6 +318,15 @@ class AdminProgramController extends Controller
         $lives = Live::with(['zoomAccount', "program", 'programSection'])->where("live", true)->get();
         return view('admin.programs.live.list', compact('lives'));
     }
+
+    public function ramdasList(Live $live)
+    {
+        $ramdas = Ramdas::where('meeting_id', $live->meeting_id)->get();
+        return view('admin.programs.live.modal.list', compact('live', 'ramdas'));
+    }
+
+
+
 
     public function programBatchAndSectionModal(Program $program)
     {

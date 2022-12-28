@@ -20,7 +20,8 @@ class Role extends Model
         7 => "Members",
         8 => "Support",
         9 => "CenterAdmin",
-        10 => "Dharmashala"
+        10 => "Dharmashala",
+        11 => "Co-Host"
     ];
 
     protected $casts = [

@@ -31,7 +31,7 @@ Support Ticket
                     <div class="body">
                         <x-alert></x-alert>
                         <div class="table-responsive">
-                            <table id="program-table" class="table table-bordered table-striped table-hover dataTable">
+                            <table id="program" class="table table-bordered table-striped table-hover dataTable">
                                 <thead>
                                     <tr>
                                         <th>Zoom Account</th>
@@ -51,6 +51,8 @@ Support Ticket
                                         <td>
 
                                             {{ $live->zoomAccount->account_username }}
+                                            <br />
+                                            <a href="{{ route('admin.program.live-program-ramdas',$live->getKey()) }}" class="btn btn-danger btn-sm" data-toggle='modal' data-target="#addBatch">[RamDas List]</a>
                                         </td>
                                         <td>
                                             {{ $live->program->program_name }}
@@ -116,10 +118,16 @@ Support Ticket
 
 @section("page_script")
 <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.js"></script>
-
 
 <script>
-    $('#program-table').DataTable();
+    $("#addBatch").on("shown.bs.modal", function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            success: function(response) {
+                $("#modal_content").html(response);
+            }
+        })
+    });
 </script>
 @endsection

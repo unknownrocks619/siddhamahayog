@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Member;
+use App\Models\Role;
 use App\Models\ZoomAccount;
 use Illuminate\Support\Str;
 
@@ -14,7 +15,7 @@ if (!function_exists("default_currency")) {
 
 if (!function_exists("create_zoom_meeting")) {
 
-    function create_zoom_meeting(ZoomAccount $zoom_account, $meeting_name = "Siddhamahayog, Test Case 01")
+    function create_zoom_meeting(ZoomAccount $zoom_account, $meeting_name = "Siddhamahayog, Test Case 01", $domain = 'siddhamahayog.org', $cohost = "")
     {
         $token = $zoom_account->api_token;
         $username = $zoom_account->account_username;
@@ -25,12 +26,6 @@ if (!function_exists("create_zoom_meeting")) {
             "start_time" => date("Y-m-dT15:30:00"),
             "timezone" => "Asia/Kathmandu",
             "duration" => 300,
-            // "recurrence" => [
-            //     'type' => '1',
-            //     'weekly_days' => '1,2,3,4,5,6,7',
-            //     // "repeat_interval" => 90,
-            //     "end_date_time" => "2022-12-30T12:00:00Z"
-            // ],
             "settings" => [
                 "approval_type" => 1,
                 "allow_multiple_devices" => 0,
@@ -43,8 +38,9 @@ if (!function_exists("create_zoom_meeting")) {
                 "focus_mode" => true,
                 "registration_type" => 2,
                 "watermark" => true,
-                // "meeting_authentication" => true,
-                "authentication_name" => "Signed-in users in my account"
+                "authentication_name" => "Signed-in users in my account",
+                "focus_mode" => true,
+                'authentication_domains' => $domain
             ],
             "language_interpretation" => [
                 "show_share_button" => 0,
@@ -110,22 +106,8 @@ if (!function_exists('meeting_details')) {
 }
 
 if (!function_exists("register_participants")) {
-    function register_participants(ZoomAccount $zoomAccount, $meeting_id)
+    function register_participants(ZoomAccount $zoomAccount, $meeting_id, $settings, $domain = 'siddhamahayog.org')
     {
-        // dd(request()->all());
-        if (user()->role_id == 1 || user()->role_id == 9) {
-            $first_name = 'Ram';
-            $last_name = 'Das (' . substr(time(), 7, 3) . ')';
-        } else {
-            $first_name = Str::ucfirst(Str::lower(Str::of(user()->first_name)->trim()));
-            $last_name = (user()->middle_name) ?  " " . Str::ucfirst(Str::lower(Str::of(user()->middle_name)->trim())) . " " .  Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim())) : " " . Str::ucfirst(Str::lower(Str::of(user()->last_name)->trim()));
-        }
-        $settings = [
-            "first_name" => trim($first_name), // . "(#)",
-            "last_name" => trim($last_name),
-            "email" => "T_" . time()  . trim(user()->email),
-            "auto_approve" => true
-        ];
         $signature = $zoomAccount->api_token;
 
         $curl_url = "https://api.zoom.us/v2/meetings/{$meeting_id}/registrants";

@@ -247,7 +247,7 @@
                         <table class="table table-bordered table-hover table-responsive w-100" id="studentTable">
                             <thead>
                                 <tr>
-                                    <th>S.No</th>
+                                    <th>Roll Number</th>
                                     <th>Full Name</th>
                                     <th>Phone Number</th>
                                     <th>Email</th>
@@ -262,12 +262,18 @@
                                 @forelse ($students as $student)
                                 <tr>
                                     <td>
-                                        {{ $loop->iteration }}
+                                        @if($student->roll_number)
+                                        - {{ $student->roll_number }} (Change)
+                                        @else
+                                        <button data-toggle="modal" data-target="#addBatch" class="btn btn-sm btn-outline-danger">+ (Add Roll Number)</button>
+                                        @endif
                                     </td>
                                     <td>
                                         <a class="fs-3" href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">
                                             {{ $student->student->full_name }}
                                         </a>
+                                        <br />
+
                                     </td>
                                     <td>
                                         {{ $student->student->phone_number }}
@@ -540,7 +546,6 @@
         orderCellsTop: true,
         initComplete: function() {
             var api = this.api();
-
             api
                 .columns()
                 .eq(0)

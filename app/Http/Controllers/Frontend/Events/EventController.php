@@ -12,6 +12,7 @@ use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudentAttendance;
+use App\Models\Ramdas;
 use App\Models\WebsiteEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -50,6 +51,7 @@ class EventController extends Controller
 
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
+
         if (!$live->live) {
             session()->flash('error', 'Live session for `' . $program->program_name . "` is already over.");
             return back();
@@ -111,7 +113,30 @@ class EventController extends Controller
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
 
-        $register_member = json_decode(register_participants($live->zoomAccount, $live->meeting_id));
+        $settings = [
+            'first_name' => ucfirst(trim(user()->first_name)),
+            'last_name' => (user()->middle_name) ? ucfirst(trim(user()->middle_name)) . " " . ucfirst(trim(user()->last_name)) : ucfirst(trim(user()->last_name)),
+            'email' => "T_" . time() . "_rand_" . user()->getKey() . "@" . $live->domain,
+            'auto_approve' => true
+        ];
+
+        if (user()->role_id == 1 || user()->role_id == 11) {
+
+            $number = substr(time(), 7, 3);
+            $settings = [
+                'first_name' => "Ram",
+                'last_name' => "Das ({$number})",
+                'email' => Str::slug(trim(user()->first_name), "_") . time() . "_key_" . user()->getKey() . "@" . $live->domain,
+                'auto_approve' => true
+            ];
+
+            $insertRamdasInfo = new Ramdas();
+            $insertRamdasInfo->member_id = user()->getKey();
+            $insertRamdasInfo->full_name = user()->full_name;
+            $insertRamdasInfo->role_id = user()->role_id;
+            $insertRamdasInfo->reference_number = $number;
+        }
+        $register_member = json_decode(register_participants($live->zoomAccount, $live->meeting_id, $settings, $live->domain));
         if (isset($register_member->code)) {
             session()->flash('error', "Unable to join session. " . $register_member->message);
             return back();
@@ -128,7 +153,13 @@ class EventController extends Controller
         try {
             //code...
             $attendance->save();
+
+            if (isset($insertRamdasInfo)) {
+                $insertRamdasInfo->meeting_id = $live->meeting_id;
+                $insertRamdasInfo->save();
+            }
         } catch (\Throwable $th) {
+            dd($th->getMessage());
             //throw $th;
             $notification = new MemberNotification;
             $notification->member_id = auth()->id();

@@ -68,7 +68,7 @@ class AuthenticatedSessionController extends Controller
         $request->validate(
             [
                 "access_code" => 'required|uuid',
-                "recaptcha_token" => ["required", new GoogleCaptcha()]
+                // "recaptcha_token" => ["required", new GoogleCaptcha()]
             ]
         );
 
