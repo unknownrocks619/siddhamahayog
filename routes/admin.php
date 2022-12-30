@@ -153,6 +153,7 @@ Route::prefix('admin')
                 Route::get("live/{program}", "goLiveCreate")->name('live');
                 Route::post("/add/batch/{program}", "store_batch_program")->name("admin_program_store_batch_modal");
                 Route::post("/live/{program}", "storeLive")->name("store_live");
+
                 /**
                  * Courses
                  */
@@ -227,6 +228,8 @@ Route::prefix('admin')
                     ->name('enroll.')
                     ->group(function () {
                         Route::get("/student/detail/{program}", [ProgramStudentEnrollController::class, "program_student_enrollement"])->name('admin_program_member_enroll');
+                        Route::get('/student/roll/{programStudent}', [ProgramStudentEnrollController::class, "enrollmentDetail"])->name('admin_program_student_enroll_roll_number');
+                        Route::post("/student/roll/{programStudent}", [ProgramStudentEnrollController::class, "storeEnrollmentDetail"])->name('admin_store_student_enroll_roll_number');
                         Route::post("/student/enroll/{member}", [ProgramStudentEnrollController::class, "storeMemberInProgram"])->name('admin_student_enroll_in_program');
                         Route::post('/student/store/program/{program}/{member}', [ProgramStudentEnrollController::class, "enroll_student_in_program"])->name('admin_store_student_in_program');
                         Route::delete('/student/remove/{programStudent}', [ProgramStudentEnrollController::class, "RemoveEnrolledUser"])->name('admin_remove_student_from_program');

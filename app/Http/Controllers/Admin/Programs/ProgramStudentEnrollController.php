@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Programs;
 
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProgramStudentAPIResource;
 use App\Models\Batch;
 use App\Models\Member;
 use App\Models\Program;
@@ -15,12 +16,14 @@ use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use ProgramBatch;
+use DataTables;
+
 
 class ProgramStudentEnrollController extends Controller
 {
     //
 
-    public function program_student_enrollement(Request $request, Program $program)
+    public function program_student_enrollement(Request $request, Program $program, Member $member)
     {
         $member = Member::find($request->member);
         $enrollment = ProgramStudentEnroll::where('program_id', $program->id)->where('member_id', $member->id)->first();
@@ -206,5 +209,94 @@ class ProgramStudentEnrollController extends Controller
 
         session()->flash('success', 'Member removed from program.');
         return back();
+    }
+
+    public function enrollmentDetail(ProgramStudent $programStudent)
+    {
+        return view('admin.programs.modal.add_role_number', compact('programStudent'));
+    }
+
+    public function storeEnrollmentDetail(Request $request, ProgramStudent $programStudent)
+    {
+        $request->validate([
+            'roll_number' => "required"
+        ]);
+        $exists = ProgramStudent::where('roll_number', $request->roll_number)->first();
+
+        if ($exists && $exists->getKey() != $programStudent->getKey()) {
+            return response([
+                'errors' => ['roll_number' => ["Roll Number already exists."]],
+                'message' => 'Roll Number already exists.'
+            ], 422);
+        }
+        $programStudent->roll_number = $request->roll_number;
+        $programStudent->save();
+
+        return response([
+            'errors' => [],
+            'message' => "Roll Number Saved."
+        ]);
+    }
+
+    public function studentList(Program $program)
+    {
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->get();
+        $members = Member::wherIn('id', array_keys($programStudent->groupBy('student_id')->toArray()))->get();
+        $datatable = DataTables::of($members->student)
+            ->addIndexColumn()
+            ->addColumn('full_name', function ($row) {
+                $full_name = htmlspecialchars($row->first_name);
+
+                if ($row->middle_name) {
+                    $full_name .= " ";
+                    $full_name .= $row->middle_name;
+                }
+                $full_name .= " ";
+                $full_name .= $row->last_name;
+                return $full_name;
+            })
+            ->addColumn('login_source', function ($row) {
+                return strtolower(strip_tags($row->email));
+            })
+            ->addColumn('country', function ($row) {
+                // return $row->countries->country_name;
+                return ($row->countries) ? htmlspecialchars(strip_tags($row->countries->name)) : "NaN";
+            })
+            ->addColumn('phone', function ($row) {
+                $phone = "";
+                if ($row->phone_number) {
+                    $phone .= "Mo: " . htmlspecialchars(strip_tags($row->phone_number));
+                } else {
+                    $phone .= "NaN";
+                }
+                if ($row->emergency) {
+                    $phone .= "<br />";
+                    $phone .= "Emergency Contact: " . htmlspecialchars(strip_tags($row->emergency->phone_number));
+                    $phone .= "<br />";
+                    $phone .= "Emergency Person: " . htmlspecialchars(strip_tags($row->emergency->contact_person));
+                }
+                return $phone;
+            })
+            ->addColumn('program_involved', function ($row) {
+
+                if (!$row->member_detail->count()) {
+                    return "NaN";
+                }
+                $program_involved = "";
+                foreach ($row->member_detail as $programs) {
+                    $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs->program->program_name . "</span>";
+                }
+                return $program_involved;
+            })
+            ->addColumn('registered_date', function ($row) {
+                return $row->created_at;
+            })
+            ->addColumn('action', function ($row) {
+                $action = "<a href='" . route('admin.members.show', $row->id) . "'>View Detail</a>";
+                return $action;
+            })
+            ->rawColumns(["country", "phone", "program_involved", "action"])
+            ->make(true);
+        return $datatable;
     }
 }

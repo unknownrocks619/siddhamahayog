@@ -15,6 +15,7 @@
 <!-- Main Content -->
 <section class="content">
     <div class="container-fluid">
+
         <div class="block-header">
             <div class="row clearfix">
                 <div class="col-lg-5 col-md-5 col-sm-12">
@@ -22,6 +23,7 @@
                 </div>
             </div>
         </div>
+
         <div class="row clearfix">
             <div class="col-lg-4 col-md-12">
                 <div class="card project_widget">
@@ -132,6 +134,7 @@
             </div>
             @endif
         </div>
+
         <div class="row clearfix">
             <div class="col-lg-3 col-md-12">
                 <div class="card">
@@ -260,12 +263,14 @@
                             <tbody>
 
                                 @forelse ($students as $student)
-                                <tr>
-                                    <td>
+                                <tr class="">
+                                    <td data-student="{{ $student->getKey() }}" class="student_{{ $student->getKey() }}">
                                         @if($student->roll_number)
-                                        - {{ $student->roll_number }} (Change)
+                                        - {{ $student->roll_number }} (
+                                        <a href="{{ route('admin.program.enroll.admin_program_student_enroll_roll_number',$student->getKey()) }}" data-toggle="modal" data-target="#addBatch">Change</a>
+                                        )
                                         @else
-                                        <button data-toggle="modal" data-target="#addBatch" class="btn btn-sm btn-outline-danger">+ (Add Roll Number)</button>
+                                        <a href="{{ route('admin.program.enroll.admin_program_student_enroll_roll_number',$student->getKey()) }}" data-toggle="modal" data-target="#addBatch" class="btn btn-sm btn-outline-danger">+ (Add Roll Number)</a>
                                         @endif
                                     </td>
                                     <td>
@@ -448,6 +453,7 @@
 
             </div>
         </div>
+        
     </div>
 </section>
 @endsection
@@ -592,6 +598,10 @@
         },
     })
 
+    $(document).on('submit', 'form.ajax-form', function(event) {
+        event.preventDefault();
+        return formSubmit(this);
+    });
 
     $('form#guestListForm').submit(function(event) {
         event.preventDefault();
@@ -614,6 +624,13 @@
                 propStatus(formElement, false);
                 let parentElem = $(formElement).parent();
                 $(parentElem).empty().html(response);
+                $("#addBatch").modal('toggle');
+
+                let formKey = $(formElement).data('key');
+                let inputform = $(formElement).find("input#roll_number");
+                let text = $(inputform).val();
+
+                $("td.student_" + formKey).text($(inputform).val());
 
             },
             error: function(response) {
@@ -667,7 +684,20 @@
         $(elem).find('textarea').prop('disabled', value);
     }
 </script>
+
+
+<script>
+    $("#addBatch").on("shown.bs.modal", function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            success: function(response) {
+                $("#modal_content").html(response);
+            }
+        })
+    });
 </script>
+
 <script>
     // $('#student-table').DataTable({
     //     processing: true,

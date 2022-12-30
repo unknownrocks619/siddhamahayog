@@ -67,6 +67,7 @@ class EventController extends Controller
         if ($lock) {
             return $lock;
         }
+
         $access = true;
         if ($live->section_id) {
             $user_section = user()->section->program_section_id;
@@ -95,11 +96,13 @@ class EventController extends Controller
             ->first();
 
         if ($attendance) {
+
             $meta = (array)$attendance->meta;
             $meta[date("Y-m-d H:i:s")] = "Re-joined";
             $attendance->meta = $meta;
             $attendance->save();
             return redirect()->to($attendance->join_url);
+            
         }
     }
 
