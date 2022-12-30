@@ -15,7 +15,17 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->string('product_name');
+            $table->string("slug");
+            $table->string('product_type')->default('digital')->comment('digital', 'physical', 'both', 'services');
+            $table->boolean('active')->default(false);
+            $table->longText("short_description")->nullable();
+            $table->longText('full_description')->nullable();
+            $table->string('price');
+            $table->longText("remarks");
+            $table->boolean("allow_download")->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
