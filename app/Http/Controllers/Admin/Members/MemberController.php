@@ -155,11 +155,22 @@ class MemberController extends Controller
      */
     public function update(Request $request, Member $member)
     {
+
         //
         $member->first_name = $request->first_name;
         $member->middle_name = $request->middle_name;
         $member->last_name = $request->last_name;
         $member->phone_number = $request->phone_number;
+
+        if ($request->email) {
+            $check_email = Member::where('email', $request->email)->where('id', '!=', $member->getKey())->exists();
+
+            if ($check_email) {
+                session()->flash('Email Already exists. Unable to save record.');
+                return back()->withInput();
+            }
+        }
+        $member->email = $request->email;
         $member->role = $request->role;
         $member->country = $request->country;
         $member->city = $request->city;
