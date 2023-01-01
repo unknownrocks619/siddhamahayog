@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('program_id')->index();
             $table->longText('title');
+            $table->longText('slug');
             $table->boolean('enable_time')->default(false);
             $table->boolean('active')->default(true);
             $table->string('start_date')->nullable();

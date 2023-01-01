@@ -15,11 +15,11 @@
                     @forelse ($programs as $program )
                     <div class="card accordion-item mb-2">
                         <h2 class="accordion-header fs-3" id="{{ $program->program->slug }}Heading">
-                            <button type="button" class="accordion-button fs-3 collapsed" data-bs-toggle="collapse" data-bs-target="#{{ $program->program->slug }}" aria-expanded="true" aria-controls="{{ $program->program->slug }}">
+                            <button type="button" class="accordion-button fs-3 {{ ($loop->iteration == 1) ?  '' : 'collapsed' }}" data-bs-toggle="collapse" data-bs-target="#{{ $program->program->slug }}" aria-expanded="true" aria-controls="{{ $program->program->slug }}">
                                 {{$program->program->program_name}}
                             </button>
                         </h2>
-                        <div id="{{ $program->program->slug }}" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
+                        <div id="{{ $program->program->slug }}" class="accordion-collapse {{ ($loop->iteration == 1) ? 'show' : 'collapse' }} " data-bs-parent="#accordionExample">
                             <div class="accordion-body">
                                 <button class="btn btn-primary mx-3 clickable" data-href="{{ route('user.account.programs.resources.index',$program->program->id) }}">Reading Material</button>
                                 <button class="btn btn-info mx-2 clickable" data-href="{{ route('user.account.programs.videos.index',$program->program->id) }}">Offline Videos</button>

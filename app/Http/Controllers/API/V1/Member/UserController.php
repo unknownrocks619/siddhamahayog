@@ -21,7 +21,7 @@ class UserController extends Controller
 
         $member = Member::where('email', $request->post('email'))->first();
 
-        if (!$member || Hash::check($request->post('password'), $member->password)) {
+        if (!$member || !Hash::check($request->post('password'), $member->password)) {
             return response(['errors' => ['email' => ['The provided credentials are incorrect.']]], 422);
         }
 

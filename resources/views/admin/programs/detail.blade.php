@@ -209,7 +209,11 @@
                             </div>
                             <div class="sl-item b-warning">
                                 <div class="sl-content">
-                                    <div class="text-muted">Exam Center</div>
+                                    <div class="text-muted">
+                                        <a href="{{ route('admin.program.exam.list',[$program->getKey()]) }}">
+                                            Exam Center
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                             <div class="sl-item b-warning">
@@ -453,7 +457,7 @@
 
             </div>
         </div>
-        
+
     </div>
 </section>
 @endsection

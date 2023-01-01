@@ -304,6 +304,7 @@ Route::prefix('admin')
         /**
          * Exams
          */
+        include __DIR__ . "/admin/exam-center.php";
         /**
          * Website
          */

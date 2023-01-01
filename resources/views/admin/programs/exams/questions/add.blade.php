@@ -23,9 +23,8 @@
                     <div class="header">
                         <h2>
                             <strong>
-                                Exam
+                                Questions
                             </strong>
-                            Center
                         </h2>
                         <ul class="header-dropdown">
                             <li class="remove">
@@ -34,7 +33,7 @@
                             </li>
                             <li class="remove">
                                 <a type="button" data-target="#addExam" data-toggle="modal" class=" btn btn-info btn-sm boxs-close">
-                                    <i class="zmdi zmdi-plus"></i> Create New Exam</a>
+                                    <i class="zmdi zmdi-plus"></i> Add New Question</a>
                             </li>
                         </ul>
                     </div>
@@ -56,82 +55,13 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($exams as $exam)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $exam->title }}</td>
-                                    <td> {{ $exam->total_questions }} </td>
-                                    <td>
-                                        <a href="" class="btn btn-primary btn-sm">View</a>
-                                        <a href="" class="btn btn-sm-btn-info">Edit</a>
-                                        <a href="" class="btn btn-danger btn-sm">Delete</a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
-@endsection
-
-@section("modal")
-<x-modal modal="addExam">
-    <div class="modal-header">
-        <h4 class="modal-title">
-            Exam Detail.
-        </h4>
-    </div>
-    <form action="{{ route('admin.program.exam.exam.store',$program->getKey()) }}" method="post" class="ajax-form">
-        @csrf
-        <div class="modal-body">
-            <div class="messageBox"></div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="exam_name">
-                            Exam Name / Title
-                            <sup class="text-danger">*</sup>
-                        </label>
-                        <input type="text" name="exam_title" id="exam_name" class="form-control" />
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea name="description" id="description" class="form-control"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="start-date">Start Date
-                            <sup class="text-danger">*</sup>
-                        </label>
-                        <input type="date" name="start_date" id="start-date" class="form-control" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="end_date">End Date</label>
-                        <input type="date" name="end_date" id="end_date" class="form-control" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modalfooter d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary">
-                Submit
-            </button>
-        </div>
-    </form>
-</x-modal>
 @endsection
 
 @section("page_script")
