@@ -43,14 +43,14 @@ use App\Models\Scholarship;
                     </h6>
                 </div>
                 <div class="user-progress">
-                    <a href="{{ route('vedanta.create') }}" class="fw-semibold btn btn-primary clickable">
+                    <a href="{{ route('vedanta.index') }}" class="fw-semibold btn btn-primary clickable">
                         Sign Up
                     </a>
                 </div>
             </div>
         </li>
         @endforelse
-        
+
         @foreach ($openProgram as $open_program)
         @foreach($open_program->liveProgram as $live)
         <li class=" mb-4 pb-1 border-bottom @if($loop->iteration % 2 ) bg-light @endif">

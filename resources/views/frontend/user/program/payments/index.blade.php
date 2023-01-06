@@ -20,26 +20,36 @@
                     <div class="d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
                         <div class="button-wrapper mx-2">
                             <?php
-                            $checkVoidScholarship =  \App\Models\Scholarship::where('program_id', $program->getKey())->where('student_id', auth()->id())
-                                ->where('scholar_type', 'void')
+                            $checkVoidScholarship =  \App\Models\Scholarship::where('program_id', $program->getKey())
+                                ->where('student_id', auth()->id())
                                 ->first();
 
                             //$url = url()->temporarySignedRoute('vedanta.payment.create', now()->addMinute(10), $program->id);
                             ?>
                             <?php
 
-                            $displayPaymentOption = true;
-                            $studentFee = user()->studentFeeOverview()->where('program_id', $program->id)->first();
+                            $displayPaymentOption = false;
+                            $studentFee = user()->transactions()->where('program_id', $program->id)
+                                ->where('amount_category', 'admission_fee')
+                                ->sum('amount');
+                            
+                            if (!$studentFee) {
+                                $displayPaymentOption = true;
+                            } else {
 
-                            if ($studentFee) {
-                                $displayPaymentOption = false;
+                                if ($studentFee < $program->active_fees->admission_fee) {
+                                    $displayPaymentOption = true;
+                                } else {
+                                    $displayPaymentOption = false;
+                                }
                             }
 
                             if ($checkVoidScholarship) {
                                 $displayPaymentOption = false;
                             }
+
                             ?>
-                            @if($displayPaymentOption && (site_settings('online_payment') || user()->role_id == 1))
+                            @if($displayPaymentOption)
                             <button type="submit" data-bs-toggle="modal" data-bs-target="#paymentSelection" class="btn btn-primary">
                                 <x-plus></x-plus>Choose Payment Options
                             </button>
@@ -54,10 +64,6 @@
                         </div>
                     </div>
 
-                    @if(! $paymentHistories && $program->program_type == "paid")
-
-                    <!-- <button data-href="{{-- $url --}}" type="button" class="mt-2 mb-2 btn btn-outline-danger clickable">Clear Admission Payment</button> -->
-                    @endif
                     <table class="table table-border table-hover">
                         <thead>
                             <tr>
@@ -91,7 +97,7 @@
                                 </td>
                             </tr>
                             @empty
-                            @if($checkVoidScholarship)
+                            @if($checkVoidScholarship && $checkVoidScholarship->scholar_type == 'void')
                             <tr>
                                 <td>{{ date("Y-m-d",strtotime($checkVoidScholarship->created_at)) }}</td>
                                 <td>

@@ -18,7 +18,7 @@ class FeeAPIController extends Controller
         if ($request->update_type) {
             $fee_detail->verified =  !$fee_detail->verified;
             $fee_detail->rejected =  !$fee_detail->verified;
-            
+
             if ($fee_detail->rejected) {
                 // $fee_detail->student_fee->total_amount = $fee_detail->student_fee->total_amount - $fee_detail->amount;
             }
@@ -76,11 +76,7 @@ class FeeAPIController extends Controller
     public function delete_fee_transaction(ProgramStudentFeeDetail $fee)
     {
         // check if fee is verified. deduct the amount from overview as well.
-
-        if ($fee->verified) {
-            $fee->student_fee->total_amount = $fee->student_fee->total_amount - $fee->amount;
-        }
-
+        $fee->student_fee->total_amount = $fee->student_fee->total_amount - $fee->amount;
         try {
             DB::transaction(function () use ($fee) {
                 if ($fee->student_fee->isDirty()) {

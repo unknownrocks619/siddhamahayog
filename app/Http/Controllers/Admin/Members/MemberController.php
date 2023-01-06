@@ -164,17 +164,16 @@ class MemberController extends Controller
 
         if ($request->email) {
             $check_email = Member::where('email', $request->email)->where('id', '!=', $member->getKey())->exists();
-
             if ($check_email) {
                 session()->flash('Email Already exists. Unable to save record.');
                 return back()->withInput();
             }
+            $member->email = $request->email;
         }
-        $member->email = $request->email;
-        $member->role = $request->role;
+        $member->role_id = $request->role;
         $member->country = $request->country;
         $member->city = $request->city;
-        $member->street_addres = ["street_address" => $request->street_address];
+        $member->address = ["street_address" => $request->street_address];
 
         if ($member->isDirty(["first_name", "middle_name", "last_name"])) {
             $member->full_name = $request->first_name . ($request->middle_name) ? $request->middle_name . " " . $request->last_name : " " . $request->last_name;

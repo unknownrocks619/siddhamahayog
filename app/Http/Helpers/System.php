@@ -204,6 +204,7 @@ function getUserCountry()
         '::1',
         '127.0.0.1'
     ];
+
     $userIp = request()->getClientIp();
 
     if (array_search($userIp, $white_ip, false)) {

@@ -93,6 +93,13 @@ class ArthapanchawkController extends Controller
             return response(['message' => "Bearer Token Missing."], 401);
         }
 
+        //check if this student is enrolled in session.
+        $studentEnroll = ProgramStudent::where('student_id', user()->getKey())->where('program_id', $this->_id)->first();
+
+        if ($studentEnroll) {
+            return view('frontend.page.vedanta.user_already_exists_response');
+        }
+
         $unicode_character = check_unicode_character($request->all());
 
         if ($unicode_character) {
@@ -329,6 +336,18 @@ class ArthapanchawkController extends Controller
     {
         $url = config('services.esewa.redirect');
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
+
+        $studentFee = user()->transactions()->where('program_id', $program->id)
+            ->where('amount_category', 'admission_fee')
+            ->sum('amount');
+        // check
+        $toBePaid = $program->active_fees->admission_fee;
+        if ($studentFee >= $program->active_fees->$fee_type) {
+            session()->flash('error', 'You have already paid your fee.');
+            return redirect()->route('user.account.programs.courses.fee.list', [$program->getKey()]);
+        }
+
+        dd("dump and die.");
         $pid = (string) Str::uuid();
         $data = [
             'amt' => $program->active_fees->$fee_type,

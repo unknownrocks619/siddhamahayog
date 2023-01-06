@@ -91,7 +91,7 @@ Route::prefix('admin')
                 Route::post('/add/{program}', "store_member_to_program")->name("admin_store_member_to_program");
                 Route::post("/assign/{program}", "store_member_to_class")->name('admin_store_assign_member_to_program');
                 Route::post("/show/program/{member}/{emergencyMeta}/{program?}", "programUpdate")->name('admin_update_for_program');
-                Route::post("/update/{member}", "upate")->name("admin_update_member_basic_info");
+                Route::post("/update/{member}", 'update')->name("admin_update_member_basic_info");
                 Route::post("/update/member/meta/{member}/{memberInfo?}", "updatePersonal")->name("admin_update_member_meta_info");
                 Route::post("/reauth-as-user/{member}", "reauthUser")->name("admin_login_as_user");
             });
