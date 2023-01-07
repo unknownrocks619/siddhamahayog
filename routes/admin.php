@@ -304,6 +304,9 @@ Route::prefix('admin')
         /**
          * Exams
          */
+
+
+
         /**
          * Website
          */
@@ -498,3 +501,6 @@ Route::prefix('admin')
          */
         Route::resource("widget", WidgetController::class);
     });
+
+
+include(__DIR__ . "/admin/exam.php");
