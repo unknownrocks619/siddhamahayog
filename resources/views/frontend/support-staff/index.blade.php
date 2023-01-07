@@ -19,17 +19,29 @@ Support Ticket
                 <small class="text-muted">Response your customer tickets</small>
             </div>
             <div class="dropdown">
+                @if(request()->status)
+                <a href="{{ route('supports.staff.tickets.index') }}" class='btn btn-sm btn-warning ms-2'>
+                    <i class="bx bx-filter"></i>
+                    Clear Filter
+                </a>
+                @endif
                 <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bx bx-dots-vertical-rounded"></i>
+                    Filter By:
                 </button>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status'=>'open']) }}">Open Ticket</a>
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status'=>'waiting_response']) }}">Customer Response</a>
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status' => 'completed']) }}">Closed Ticket</a>
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['category'=>'technical_support']) }}">Technical Issue</a>
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['category' => 'admission']) }}">Admission Issue</a>
-                    <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['category' => 'other']) }}">Other Issue</a>
-                </div>
+                <!-- <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics"> -->
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['status'=>'open']) }}">
+                    <i class="bx bx-filter-alt"></i>Open Ticket</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['status'=>'waiting_response']) }}">
+                    <i class="bx bx-filter-alt"></i>Customer Response</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['status' => 'completed']) }}">
+                    <i class="bx bx-filter-alt"></i>Closed Ticket</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['category'=>'technical_support']) }}">
+                    <i class="bx bx-filter-alt"></i>Technical Issue</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['category' => 'admission']) }}">
+                    <i class="bx bx-filter-alt"></i>Admission Issue</a>
+                <a class="btn btn-primary btn-sm" href="{{ route('supports.staff.tickets.index',['category' => 'other']) }}">
+                    <i class="bx bx-filter-alt"></i>Other Issue</a>
+                <!-- </div> -->
             </div>
         </div>
 
