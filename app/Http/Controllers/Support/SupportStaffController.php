@@ -62,10 +62,11 @@ class SupportStaffController extends Controller
             session()->flash("error", $th->getMessage());
             return back()->withInput();
         }
+
         MemberNotification::create([
             "member_id" => $ticket->member_id,
             "title" => "Support Ticket : #" . $ticket->id,
-            "body" => $request->issue,
+            "body" => $request->message,
             "notification_type" => "\App\Models\SupporTicket",
             "notification_id" => $ticket->id,
             "type" => "message",
