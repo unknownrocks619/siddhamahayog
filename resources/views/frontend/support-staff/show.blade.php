@@ -10,7 +10,7 @@ Ticket > {{ $ticket->title }}
         <span class="text-muted fw-light">
             <a href="{{ route('dashboard') }}">Dashboard</a> /</span>
         <span class="text-muted fw-light">
-            <a href="{{ route('user.account.support.ticket.index') }}">Support</a> /
+            <a href="{{ route('supports.staff.tickets.index') }}">Support</a> /
         </span>
         {{ $ticket->title }}
     </h4>
@@ -19,7 +19,7 @@ Ticket > {{ $ticket->title }}
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between pb-0">
                 <div class="card-header mb-0 p-0">
-                    <a href="{{ route('user.account.support.ticket.index') }}" class="btn btn-success">Go Back</a>
+                    <a href="{{ route('supports.staff.tickets.index') }}" class="btn btn-success">Go Back</a>
                 </div>
             </div>
             <div class="card-body">
@@ -56,6 +56,7 @@ Ticket > {{ $ticket->title }}
                     <div class="col-md-3">
                         <div class="card-text ms-4 text-muted">
                             Owner: {{ $reply->user->full_name }}
+                            <span class="text-primary">&lt;{{ $reply->user->email }}&gt;</span>
                         </div>
                     </div>
                     @endif

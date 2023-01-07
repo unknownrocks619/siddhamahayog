@@ -22,7 +22,7 @@ Support Ticket
                 <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="bx bx-dots-vertical-rounded"></i>
                 </button>
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics" style="">
+                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
                     <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status'=>'open']) }}">Open Ticket</a>
                     <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status'=>'waiting_response']) }}">Customer Response</a>
                     <a class="dropdown-item" href="{{ route('supports.staff.tickets.index',['status' => 'completed']) }}">Closed Ticket</a>
