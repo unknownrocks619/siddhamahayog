@@ -57,17 +57,14 @@ Program
             @endif
 
             @foreach ($courses as $course)
-            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 parent-Delete">
                 <div class="card">
                     <div class="header">
                         <h2><strong>{{ $course->course_name }}</strong> </h2>
                         <ul class="header-dropdown">
                             <li class="dropdown"> <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> <i class="zmdi zmdi-more"></i> </a>
                                 <ul class="dropdown-menu dropdown-menu-right">
-                                    <li><a href="javascript:void(0);">Add Video</a></li>
-                                    <li><a href="javascript:void(0);">Add Resources</a></li>
-                                    <li><a href="javascript:void(0);">View Access List</a></li>
-                                    <li><a href="javascript:void(0);" class="boxs-close">Delete</a></li>
+                                    <li><a data-href="{{ route('admin.program.courses.admin_program_course_delete',[$course->getKey()]) }}" href="#" data-course="{{ $course->getKey() }}" class="delete">Delete</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -239,5 +236,18 @@ Program
             }
         })
     });
+    $(document).on('click', '.delete', function(event) {
+        event.preventDefault();
+        $.ajax({
+            method: "post",
+            url: $(this).data('href'),
+            headers: {
+                'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr('content')
+            },
+            success: function(response) {}
+        })
+        $(this).closest('div.parent-Delete').fadeOut('fast');
+
+    })
 </script>
 @endsection

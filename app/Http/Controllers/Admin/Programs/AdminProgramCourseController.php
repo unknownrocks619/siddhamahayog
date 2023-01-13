@@ -12,6 +12,7 @@ use App\Models\ProgramCourse;
 use Illuminate\Http\Request;
 
 use DataTables;
+use Illuminate\Support\Facades\DB;
 
 class AdminProgramCourseController extends Controller
 {
@@ -48,10 +49,10 @@ class AdminProgramCourseController extends Controller
             $program_course->save();
         } catch (\Throwable $th) {
             //throw $th;
-            $request->session()->flash("error", "Error: " . $th->getMessage());
+            session()->flash("error", "Error: " . $th->getMessage());
             return back()->withInput();
         }
-        $request->session()->flash("success", "New Course Created.");
+        session()->flash("success", "New Course Created.");
         return back();
     }
 
@@ -61,7 +62,20 @@ class AdminProgramCourseController extends Controller
 
     public function delete_course(ProgramCourse $course)
     {
-        // check if this have any lession and resources.
+        // check if this have any lession and resources
+        try {
+            DB::transaction(function () use ($course) {
+                $course->videoWatchHistory()->delete();
+                $course->resources()->delete();
+                $course->lession()->delete();
+                $course->delete();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', 'Unable to remove Course. Error: ' . $th->getMessage());
+            return back();
+        }
+        return back();
     }
 
     public function create_video_modal(ProgramCourse $course)
