@@ -12,6 +12,7 @@ use App\Models\Program;
 use App\Models\ProgramChapterLession;
 use App\Models\ProgramCourse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class UserProgramVideoController extends Controller
 {
@@ -69,13 +70,39 @@ class UserProgramVideoController extends Controller
         return view('frontend.user.program.videos.modal.history', compact("watchHistory"));
     }
 
-    public function allowedToWatch(VideoAllowedToWatchRequest $request, Program $program)
+    public function allowedToWatch(VideoAllowedToWatchRequest $request, Program $program, ProgramChapterLession $lession)
     {
-        // check if user have paid admission fee or not for the moment.
+
+
+        if (!$request->header('X-CSRF-TOKEN')) {
+            return response(['message' => "Bearer Token Missing."], 403);
+        }
 
         if (!$this->checkFeeDetail($program, "admission_fee")) {
-            return view("frontend.user.program.videos.modal.payment");
+            return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
+            // return view("frontend.user.program.videos.modal.payment");
         }
+
+        // get video
+        if ($lession->course->lock) {
+            // entire thing lock,
+            return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
+        }
+
+        if ($lession->video_lock && !$lession->lock_after) {
+            // lock video watch.
+        }
+
+        if ($lession->lock_after) {
+            $parseDate = Carbon::parse($lession->created_at);
+            $now = Carbon::now();
+
+            if ($parseDate->diffInDays($now) > $lession->lock_after) {
+                // lock video watch
+                return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
+            }
+        }
+
         return;
     }
 }

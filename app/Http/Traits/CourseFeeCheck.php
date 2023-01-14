@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 
 use App\Models\Program;
 use App\Models\ProgramStudentFee;
+use App\Models\Scholarship;
 
 trait CourseFeeCheck
 {
@@ -30,13 +31,23 @@ trait CourseFeeCheck
 
     public function checkFeeDetail(Program $program, $fee_type = null)
     {
+        
+        $scholarship = Scholarship::where('program_id', $program->getKey())
+            ->where('student_id', auth()->id())
+            ->first();
 
+        if ($scholarship) {
+            return true;
+        }
 
         $this->studentFees($program);
 
         if (!$this->data) return  false;
 
         if (!$fee_type) return $this->data;
+
+
+
 
         return ($this->data->transactions()->where('amount_category', $fee_type)->first()) ? true : false;
     }

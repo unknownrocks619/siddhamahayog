@@ -30,7 +30,6 @@
             url: "{{ route('user.account.programs.videos.store.history',[$program->id,$course->id,$lession->id]) }}",
         })
     }, 5000);
-
     setTimeout(() => {
         $.ajax({
             type: "POST",
@@ -45,5 +44,5 @@
                 }
             }
         })
-    }, 20000)
+    },100)
 </script>

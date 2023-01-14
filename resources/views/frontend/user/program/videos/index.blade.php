@@ -42,6 +42,11 @@
                                     <div class="card accordion-item">
                                         <h2 class="accordion-header">
                                             <button type="button" class="accordion-button border-bottom bg-secondary text-white" data-bs-toggle="collapse" data-bs-target="#{{ $courses->slug }}" aria-expanded="true" aria-controls="accordionTwo">
+                                                @if($courses->lock)
+                                                <span class="text-right me-2">
+                                                    <i class='bx bxs-lock-alt text-danger'></i>
+                                                </span>
+                                                @endif
                                                 {{ $courses->course_name }}
                                             </button>
                                         </h2>
@@ -51,9 +56,7 @@
                                                 <ul class="list-group lms-list">
                                                     @endif
                                                     @forelse ($courses->lession as $lession)
-                                                    <li class="list-group-item border-bottom-1 border-start-0 border-end-0 border-top-0 rounded-0">
-                                                        <button class="btn btn-link ps-0 watchLession" data-href="{{ route('user.account.programs.videos.show',[$program->id,$courses->id,$lession->id]) }}" type="button"><i class='bx bxs-movie-play me-2'></i> {{ $lession->lession_name }}</button>
-                                                    </li>
+                                                        @include('frontend.user.program.videos.partials.lister',compact('lession','courses'))
                                                     @empty
                                                     <div class="alert alert-danger mt-3">
                                                         Lessions for {{ $courses->course_name }} is currently unavailable.

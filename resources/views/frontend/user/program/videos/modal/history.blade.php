@@ -11,6 +11,22 @@
     </div>
 </div>
 
-<script type="text/javascript">
-
+<script type="text/javascript"  defer>
+    window.onload = function(){
+        setTimeout(() => {
+            $.ajax({
+                type: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                global: false,
+                url: "{{ route('user.account.programs.videos.video-permission', [$program->id, $lession->getKey()])}}",
+                success: function(response) {
+                    if (response) {
+                        $("#videoContent").html(response);
+                    }
+                }
+            })
+        },100)
+    }
 </script>

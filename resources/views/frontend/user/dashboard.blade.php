@@ -1,6 +1,6 @@
 @extends("frontend.theme.portal")
 
-
+<b:img></b:img>
 @section("content")
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -147,7 +147,6 @@
                                 <div class="me-2">
                                     <h6 class="mb-0">You don't have any assignment</h6>
                                 </div>
-
                             </div>
                         </li>
                     </ul>
@@ -160,9 +159,6 @@
 
 <!-- Content wrapper -->
 @endsection
-
-
-
 
 @push("custom_css")
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">

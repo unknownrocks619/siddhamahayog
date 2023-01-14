@@ -17,7 +17,8 @@ class ProgramVideoLessionWatchRequest extends FormRequest
         if (!auth()->check()) return false;
 
         // check if user is enrolled in give progam.
-        if (!ProgramStudent::where('program_id', $this->program->id)->where('student_id', auth()->id())->exists()) return false;
+        if (!ProgramStudent::where('program_id', $this->program->id)
+                    ->where('student_id', auth()->id())->exists()) return false;
 
         // if ($this->lession->video_lock || $this->lession->status != "active") return false;
 
