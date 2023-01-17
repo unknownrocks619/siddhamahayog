@@ -433,9 +433,9 @@
   <script src="{{ asset ('themes/om/assets/js/plugins/slick.min.js') }}"></script>
   <script src="{{ asset ('themes/om/assets/js/plugins/ion.rangeSlider.min.js') }}"></script>
   <script src="{{ asset ('themes/om/assets/js/plugins/audio_custome.js') }}"></script>
-  @if(site_settings('loading_bar') ) 
+  @if(site_settings('loading_bar') )
     <script type="text/javascript">
-        
+
         /*-------------------------------------------------------------------------------
         Preloader
             -------------------------------------------------------------------------------*/

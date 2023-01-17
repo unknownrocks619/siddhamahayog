@@ -21,8 +21,12 @@ class Role extends Model
         8 => "Support",
         9 => "CenterAdmin",
         10 => "Dharmashala",
-        11 => "Co-Host"
+        11 => "Co-Host",
+        12 => 'Acting-Admin'
     ];
+
+    public const ACTING_ADMIN = 12;
+    public const ADMIN = 1;
 
     protected $casts = [
         'role_category' => 'array'

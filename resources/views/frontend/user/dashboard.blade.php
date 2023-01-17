@@ -1,6 +1,5 @@
 @extends("frontend.theme.portal")
 
-<b:img></b:img>
 @section("content")
 
 <div class="container-xxl flex-grow-1 container-p-y">
@@ -168,8 +167,8 @@
 @endpush
 
 @push("custom_script")
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script> --}}
 <script type="text/javascript">
     // document.addEventListener('DOMContentLoaded', function() {
     //     var calendarEl = document.getElementById('calendar');
@@ -179,23 +178,23 @@
     //     calendar.render();
     // });
 
-    document.getElementsByClassName('refresh-donation')[0].addEventListener("click", (event) => {
-        event.preventDefault();
-        donation();
-    })
+    // document.getElementsByClassName('refresh-donation')[0].addEventListener("click", (event) => {
+    //     event.preventDefault();
+    //     donation();
+    // })
 
-    setTimeout(function() {
-        donation();
-    }, 10000);
+    // setTimeout(function() {
+    //     donation();
+    // }, 10000);
 
-    function donation() {
-        $.ajax({
-            url: "{{ route('donations.dashboard') }}",
-            success: function(response) {
-                $("#dontaionTable").html(response);
-            }
-        })
-    }
+    // function donation() {
+    //     $.ajax({
+    //         url: "{{-- route('donations.dashboard') --}}",
+    //         success: function(response) {
+    //             $("#dontaionTable").html(response);
+    //         }
+    //     })
+    // }
 </script>
 @if(user()->role_id == 8)
 <script type='text/javascript'>
@@ -215,6 +214,23 @@
         $("form#joinSessionForm")[0].submit();
     });
 </script>
-
 @endif
+
+
+@if(\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::ADMIN == user()->role_id)
+<script type="text/javascript">
+    $('#goLive').on('shown.bs.modal', function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            dataType: 'html',
+            success: function(success) {
+                $("#modal_content").html(success);
+            }
+        })
+    })
+</script>
+@endif
+
+
 @endpush

@@ -25,9 +25,12 @@ use App\Models\Scholarship;
             </div>
             @if($program->program && $program->program->program_type == "paid" && ! $program->program->student_admission_fee)
             <p class="text-danger w-100 text-end">
-
                 Your admission for `{{ $program->program->program_name }}` is pending. Please submit your admission fee.
             </p>
+            @endif
+
+            @if(\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::ADMIN == user()->role_id)
+                @include('frontend.user.dashboard.buttons.admin',compact('program'))
             @endif
         </li>
         @empty

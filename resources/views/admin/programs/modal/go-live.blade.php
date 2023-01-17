@@ -1,7 +1,7 @@
 <form method="post" action="{{ route('admin.program.admin_program_store_batch_modal',[$program->id]) }}">
     @csrf
     <div class="modal-header">
-        <h4 class="title" id="largeModalLabel">Go Live</h4>
+        <h4 class="title" id="largeModalLabel">Go Live  </h4>
     </div>
     <div class="modal-body">
         <div class="row">
@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
+            <div class="col-md-12 my-2">
                 <div class="form-group">
                     <b>
                         Select Group / Section

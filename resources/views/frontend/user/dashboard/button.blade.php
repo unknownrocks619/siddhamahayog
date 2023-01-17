@@ -70,3 +70,4 @@ if (!$live) {
 @includeWhen($showPayment,'frontend.user.dashboard.buttons.pay-now',compact('program','live'))
 @includeWhen($showPending,'frontend.user.dashboard.buttons.pending')
 @includeWhen(( ! $showPending && ! $allowJoin && ! $showPayment),'frontend.user.dashboard.buttons.not-available')
+

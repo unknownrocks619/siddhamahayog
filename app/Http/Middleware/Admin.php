@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->role_id == 1) {
+        if (auth()->check() && (Role::ADMIN == user()->role_id || Role::ACTING_ADMIN == user()->role_id)) {
             return $next($request);
         }
         return redirect()->route('login');

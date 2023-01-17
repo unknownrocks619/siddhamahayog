@@ -278,11 +278,11 @@ Route::prefix('admin')
 
 
         /**
-         * Finance 
+         * Finance
          */
 
         /**
-         * Vimeo Video 
+         * Vimeo Video
          */
         Route::prefix("videos")
             ->name("videos.")
@@ -432,9 +432,9 @@ Route::prefix('admin')
             });
 
         /**
-         * 
+         *
          * Support Tickets
-         *  
+         *
          * */
         Route::prefix('supports')
             ->name("suppports.")
@@ -458,16 +458,16 @@ Route::prefix('admin')
                 Route::post('update/{holiday}', 'update')->name('holiday.update');
             });
         /**
-         * 
+         *
          * Category
-         * 
+         *
          */
         Route::prefix("categories")
             ->resource("category", CategoryController::class);
         /**
-         * 
+         *
          * Post
-         * 
+         *
          */
         Route::prefix("posts")
             ->controller(PostController::class)
@@ -480,9 +480,9 @@ Route::prefix('admin')
                 Route::resource("post", PostController::class);
             });
         /**
-         * 
+         *
          * Page
-         * 
+         *
          */
         Route::prefix("pages")
             ->name('page.')

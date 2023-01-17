@@ -187,8 +187,14 @@ class AdminProgramController extends Controller
 
     public function goLiveCreate(Program $program)
     {
-        $program->load(["sections"]);
-        return view("admin.programs.live.index", compact("program"));
+        if (!request()->ajax()) {
+            return response(['message' => 'Bearer token missing.']);
+        }
+        if (user()->role_id == \App\Models\Role::ADMIN || user()->role_id == \App\Models\Role::ACTING_ADMIN) {
+            $program->load(["sections"]);
+            return view("admin.programs.live.index", compact("program"));
+        }
+        abort(403);
     }
 
     public function storeLive(Request $request, Program $program)
@@ -277,8 +283,8 @@ class AdminProgramController extends Controller
     }
 
     /**
-     * Merge two different section together.However you 
-     * cannot merge different program 
+     * Merge two different section together.However you
+     * cannot merge different program
      */
     public function mergeSessionView(Program $program, Live $live)
     {

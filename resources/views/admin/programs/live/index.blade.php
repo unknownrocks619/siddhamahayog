@@ -1,6 +1,6 @@
 <div class="modal-header">
     <h4>
-        Live Seetings
+        Live Program Settings
     </h4>
 </div>
 <div class="modal-body">
@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row my-2">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="">Select Section</label>
