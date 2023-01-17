@@ -102,7 +102,6 @@ class EventController extends Controller
             $attendance->meta = $meta;
             $attendance->save();
             return redirect()->to($attendance->join_url);
-            
         }
     }
 
@@ -116,9 +115,13 @@ class EventController extends Controller
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
 
+        $last_name = ucfirst(trim(user()->last_name));
+        if (user()->middle_name) {
+            $last_name = ucfirst(trim(user()->middle_name)) . ' ' . ucfirst(trim(user()->last_name));
+        }
         $settings = [
             'first_name' => ucfirst(trim(user()->first_name)),
-            'last_name' => (user()->middle_name) ? ucfirst(trim(user()->middle_name)) . " " . ucfirst(trim(user()->last_name)) : ucfirst(trim(user()->last_name)),
+            'last_name' => $last_name,
             'email' => "T_" . time() . "_rand_" . user()->getKey() . "@" . $live->domain,
             'auto_approve' => true
         ];
@@ -151,7 +154,7 @@ class EventController extends Controller
             "browser" => request()->header("User-Agent"),
             'additional_info' => [getUserLocation()]
         ];
-        // 
+        //
 
         try {
             //code...
