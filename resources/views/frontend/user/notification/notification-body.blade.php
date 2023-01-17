@@ -5,7 +5,7 @@
         </h4>
     </div>
     <div class="col-md-12 border pt-3 ps-3">
-        <p class="fs-4">{{ $notification->body }}</p>
+        <p class="fs-4">{!! strip_tags($notification->body,"<p>,<b>,<div>,<span>") !!}</p>
     </div>
 </div>
 

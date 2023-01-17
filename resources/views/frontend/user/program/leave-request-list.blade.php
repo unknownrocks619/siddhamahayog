@@ -12,6 +12,7 @@
             Absent List
         </span>
     </h4>
+    <x-alert></x-alert>
     <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between pb-0">
             <div class="card-title mb-0">
