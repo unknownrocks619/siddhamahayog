@@ -190,10 +190,8 @@ class AdminProgramController extends Controller
         if (!request()->ajax()) {
             return response(['message' => 'Bearer token missing.']);
         }
-        if (user()->role_id == \App\Models\Role::ADMIN || user()->role_id == \App\Models\Role::ACTING_ADMIN) {
-            $program->load(["sections"]);
-            return view("admin.programs.live.index", compact("program"));
-        }
+        $program->load(["sections"]);
+        return view("admin.programs.live.index", compact("program"));
         abort(403);
     }
 
