@@ -1,4 +1,4 @@
-@foreach ($widget->fields sa $field)
+@foreach ($widget->fields as $field)
 <div class="sigma_subheader dark-overlay dark-overlay-2" style="background-image: url({{ asset($field->image->path) }})">
     <div class="container">
         <div class="sigma_subheader-inner">
