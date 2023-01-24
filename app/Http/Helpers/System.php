@@ -9,6 +9,7 @@ if (!function_exists("default_currency")) {
 
     function default_currency($number, $prefix = "NRs", $suffig = null)
     {
+        $number = str_replace(',', '', $number);
         return $prefix . " " . number_format($number, 2) . $suffig;
     }
 }

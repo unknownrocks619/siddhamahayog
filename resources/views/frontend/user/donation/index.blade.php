@@ -95,9 +95,11 @@
 @push("custom_script")
 <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
+    @if( $donations && $donations->count())
     $(document).ready(function() {
         $("#donationTable").DataTable();
     })
+    @endif
     $("#resourceImage").on("shown.bs.modal", function(event) {
         $.ajax({
             method: "get",
