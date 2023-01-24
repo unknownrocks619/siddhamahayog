@@ -267,7 +267,7 @@
                             <tbody>
 
                                 @forelse ($students as $student)
-                                <tr class="">
+                                <tr @if( !$student->active) class="bg-warning" @endif>
                                     <td data-student="{{ $student->getKey() }}" class="student_{{ $student->getKey() }}">
                                         @if($student->roll_number)
                                         - {{ $student->roll_number }} (
@@ -320,7 +320,14 @@
                                         {{ $student->created_at }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('admin.members.admin_show_for_program',[$student->student->id,$program->id]) }}">View Detail</a>
+                                        @if( $student->active)
+                                            <form action="{{route('admin.members.subscription.admin_cancel_user_subscription',[$program->getKey(),$student->student_id])}}" method="post">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    Cancel Subscription
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
                                 </tr>
                                 @empty

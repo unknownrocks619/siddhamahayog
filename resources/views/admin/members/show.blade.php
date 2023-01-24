@@ -119,11 +119,19 @@
                                                             @csrf
                                                             <button type="submit" class="btn btn-danger">Debug Account</button>
                                                         </form>
+
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
                                     </ul>
+                                </div>
+                                <div class="footer">
+                                        <form action="{{ route('admin.members.admin_user_delete',$member->id) }}" onsubmit="return confirm('You are about to delete this user, You cannot undo this action, Also Please note same email address will not able to sign up or register in the program.')" method="post">
+                                            @csrf
+                                            @method("DELETE")
+                                            <button type="submit" class="btn btn-danger">Delete Account</button>
+                                        </form>
                                 </div>
                             </div>
                         </div>

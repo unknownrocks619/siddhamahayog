@@ -19,11 +19,11 @@ use App\Models\Scholarship;
                     </div>
                     <div class="user-progress">
                         @include('frontend.user.dashboard.button',compact('program'))
-                        @include('frontend.live.dashboard.absent-form',compact('program'))
+                        @includeWhen($program->active,'frontend.live.dashboard.absent-form',compact('program'))
                     </div>
                 </div>
             </div>
-            @if($program->program && $program->program->program_type == "paid" && ! $program->program->student_admission_fee)
+            @if( $program->active && $program->program && $program->program->program_type == "paid" && ! $program->program->student_admission_fee)
             <p class="text-danger w-100 text-end">
                 Your admission for `{{ $program->program->program_name }}` is pending. Please submit your admission fee.
             </p>

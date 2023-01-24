@@ -19,7 +19,9 @@
     } else {
         $toBePaid = 0;
     }
-
+    if (! \App\Models\ProgramStudent::where('program_id',$program->getKey())->where('student_id',user()->getKey())->where('active',true)->exists() ) {
+        $allow_access = false;
+    }
     ?>
     @if( ! $allow_access || ! $toBePaid)
     @include("frontend.partials.not-allowed",['program'=>$program])

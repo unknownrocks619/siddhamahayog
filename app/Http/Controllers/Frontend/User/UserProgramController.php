@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 
 class UserProgramController extends Controller
 {
+
     //
     public function index()
     {
@@ -23,17 +24,35 @@ class UserProgramController extends Controller
 
     public function requestLeaveList(LeaveCreateRequest $request, Program $program)
     {
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->where('student_id', user()->getKey())->where('active', true)->exists();
+
+        if (!$programStudent) {
+            return view('frontend.user.program.cancelled', compact('program'));
+        }
+
         $leave_requests = ProgramHoliday::where('program_id', $program->id)->where('student_id', auth()->id())->latest()->get();
         return view("frontend.user.program.leave-request-list", compact("program", "leave_requests"));
     }
 
     public function requestLeaveCreate(LeaveCreateRequest $request, Program $program)
     {
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->where('student_id', user()->getKey())->where('active', true)->exists();
+
+        if (!$programStudent) {
+            return view('frontend.user.program.cancelled', compact('program'));
+        }
+
         return view("frontend.user.program.leave-request-create", compact("program"));
     }
 
     public function requestLeaveStore(LeaveStoreRequest $request, Program $program)
     {
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->where('student_id', user()->getKey())->where('active', true)->exists();
+
+        if (!$programStudent) {
+            return view('frontend.user.program.cancelled', compact('program'));
+        }
+
         $leaveRequest = new ProgramHoliday;
         $leaveRequest->program_id = $program->id;
         $leaveRequest->student_id = auth()->id();

@@ -52,6 +52,11 @@ class EventController extends Controller
     public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
 
+        if (!$program->program_active_student()) {
+            session()->flash('error', "Live session for ` {$program->program_name}` is not available.");
+            return back();
+        }
+
         if (!$live->live) {
             session()->flash('error', 'Live session for `' . $program->program_name . "` is already over.");
             return back();

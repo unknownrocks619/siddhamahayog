@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\Member\UserController;
 use App\Http\Controllers\Dharmashala\DharmashalaController;
 use App\Http\Controllers\Frontend\Events\EventController;
 use App\Http\Controllers\Frontend\Exams\ExamCenterController;

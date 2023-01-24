@@ -7,6 +7,7 @@ use App\Http\Requests\Frontend\User\Program\ProgramResourceIndexRequest;
 use App\Http\Requests\Frontend\User\Program\ProgramResourceViewRequest;
 use App\Models\Program;
 use App\Models\ProgramCourseResources;
+use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,6 +19,12 @@ class UserProgramResourceController extends Controller
     {
         $program->load(["courses"]);
         // $resources = $program->courses;
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->where('student_id', user()->getKey())->where('active', true)->exists();
+
+        if (!$programStudent) {
+            return view('frontend.user.program.cancelled', compact('program'));
+        }
+
         return view('frontend.user.program.resources.index', compact('program'));
     }
 

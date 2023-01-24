@@ -29,11 +29,16 @@ class Program extends Model
         'id' => "Program ID"
     ];
 
-    
+
 
     public function students()
     {
         return $this->hasMany(ProgramStudent::class, $this->foreignKey);
+    }
+
+    public function program_active_student()
+    {
+        return $this->hasOne(ProgramStudent::class, $this->foreignKey)->where('student_id', user()->getKey())->where('active', true)->first();
     }
 
     /**

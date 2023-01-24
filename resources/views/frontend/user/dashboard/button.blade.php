@@ -2,7 +2,7 @@
 
 use App\Models\Scholarship;
 use App\Models\UnpaidAccess;
-
+$enroll= $program;
 $showPayment = false;
 $showPending = false;
 $allowJoin = false;
@@ -66,8 +66,9 @@ if (!$live) {
 }
 
 ?>
-@includeWhen($allowJoin,'frontend.user.dashboard.buttons.join-now',compact('program','live'))
-@includeWhen($showPayment,'frontend.user.dashboard.buttons.pay-now',compact('program','live'))
-@includeWhen($showPending,'frontend.user.dashboard.buttons.pending')
+@includeWhen(! $enroll->active ,'frontend.user.dashboard.buttons.cancel-subscription')
+@includeWhen(($allowJoin && $enroll->active) ,'frontend.user.dashboard.buttons.join-now',compact('program','live'))
+@includeWhen(($showPayment && $enroll->active),'frontend.user.dashboard.buttons.pay-now',compact('program','live'))
+@includeWhen(($showPending && $enroll->active),'frontend.user.dashboard.buttons.pending')
 @includeWhen(( ! $showPending && ! $allowJoin && ! $showPayment),'frontend.user.dashboard.buttons.not-available')
 

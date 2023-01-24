@@ -32,7 +32,7 @@
                             $studentFee = user()->transactions()->where('program_id', $program->id)
                                 ->where('amount_category', 'admission_fee')
                                 ->sum('amount');
-                            
+
                             if (!$studentFee) {
                                 $displayPaymentOption = true;
                             } else {
@@ -47,7 +47,9 @@
                             if ($checkVoidScholarship) {
                                 $displayPaymentOption = false;
                             }
-
+                            if (! \App\Models\ProgramStudent::where('program_id',$program->getKey())->where('student_id',user()->getKey())->where('active',true)->exists()) {
+                                $displayPaymentOption = false;
+                            }
                             ?>
                             @if($displayPaymentOption)
                             <button type="submit" data-bs-toggle="modal" data-bs-target="#paymentSelection" class="btn btn-primary">

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UnpaidAccess extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public static function totalAccess(Member $member, Program $program)
     {

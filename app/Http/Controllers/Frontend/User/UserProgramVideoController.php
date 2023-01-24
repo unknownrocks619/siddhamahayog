@@ -11,6 +11,7 @@ use App\Models\LessionWatchHistory;
 use App\Models\Program;
 use App\Models\ProgramChapterLession;
 use App\Models\ProgramCourse;
+use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -21,6 +22,12 @@ class UserProgramVideoController extends Controller
 
     public function index(ProgramVideoListRequest $request, Program $program)
     {
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())->where('student_id', user()->getKey())->where('active', true)->exists();
+
+        if (!$programStudent) {
+            return view('frontend.user.program.cancelled', compact('program'));
+        }
+
         $program->load(["videoCourses" => function ($query) {
             return $query->with(["lession"]);
         }, "last_video_history"]);

@@ -6,11 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
+use App\Models\MemberNotes;
 use App\Models\Program;
 use App\Models\ProgramBatch;
+use App\Models\ProgramHoliday;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
+use App\Models\ProgramStudentAttendance;
 use App\Models\ProgramStudentEnroll;
+use App\Models\ProgramStudentFee;
+use App\Models\ProgramStudentFeeDetail;
+use App\Models\Reference;
+use App\Models\Role;
+use App\Models\Scholarship;
+use App\Models\SupportTicket;
+use App\Models\UnpaidAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -290,7 +300,7 @@ class MemberController extends Controller
             return back()->withInput();
         }
 
-        // 
+        //
 
         session()->flash("success", "New Record Created.");
         return back();
@@ -491,5 +501,93 @@ class MemberController extends Controller
         }
 
         return redirect()->route('dashboard');
+    }
+
+    public function calcel_subscription(Program $program, Member $member)
+    {
+
+        $enroll = ProgramStudent::where('program_id', $program->getKey())->where('student_id', $member->getKey())
+            ->first();
+
+        // check of transactions for this program
+        $studentFeeDetail = ProgramStudentFeeDetail::where('student_id', $member->getKey())
+            ->where('program_id', $program->getKey())
+            ->get();
+
+        try {
+
+            DB::transaction(function () use ($studentFeeDetail, $enroll, $member, $program) {
+
+                // $totalAmount = $studentFeeDetail->sum('amount');
+                // $fee = $studentFeeDetail->student_fee();
+                // $fee->delete();
+                // $studentFeeDetail->delete();
+                /**
+                 * @todo Infuture just incase we have different amount from main
+                 * account
+                 */
+                // if ($totalAmount == $fee->total_amount) {
+                //     $studentFeeDetail->delete();
+                //     $fee->delete();
+                // } else {
+                //     $fee->total_amount = $fee->total_amount - $totalAmount;
+                //     $fee->save();
+                //     $studentFeeDetail->delete();
+                // }
+
+                $enroll->active = false;
+                $enroll->save();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            session()->flash('error', 'Unble to update enrollment status');
+            return back();
+        }
+
+        session()->flash('success', 'Student Enrolment has been marked as inactive.');
+        return back();
+    }
+
+    /**
+     * Delete user
+     * @param Member $member
+     * @return \Illuminate\Http\RedirectResponse|mixed
+     */
+    public function deleteUser(Member $member)
+    {
+
+        if (Role::ADMIN != user()->role_id) {
+            session()->flash('error', 'You are not allowed to perform this action.');
+            return back();
+        }
+
+        try {
+            //code...
+            DB::transaction(function () use ($member) {
+                // search for
+                \App\Models\Donation::where('member_id', $member->getKey())->delete();
+                MemberEmergencyMeta::where('member_id', $member->getKey())->delete();
+                MemberInfo::where('member_id', $member->getKey())->delete();
+                ProgramHoliday::where('student_id', $member->getKey())->delete();
+                ProgramStudentAttendance::where('student', $member->getKey())->delete();
+                ProgramStudent::where('student_id', $member->getKey())->delete();
+                ProgramStudentEnroll::where('member_id', $member->getKey())->delete();
+                ProgramStudentFeeDetail::where('student_id', $member->getKey())->delete();
+                ProgramStudentFee::where('student_id', $member->getKey())->delete();
+                Reference::where('referenced_to', $member->getKey())->orWhere('referenced_by', $member->getKey())->delete();
+                Scholarship::where('student_id', $member->getKey())->delete();
+                SupportTicket::where('member_id', $member->getKey())->delete();
+                UnpaidAccess::where('member_id', $member->getKey())->delete();
+                $member->delete();
+            });
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd($th->getMessage());
+            session()->flash('error', 'Unable to remove user: ' . $th->getMessage());
+            return back();
+        }
+
+        session()->flash('success', 'User information has been deleted.');
+        return redirect()->route('admin.members.all');
     }
 }

@@ -94,6 +94,13 @@ Route::prefix('admin')
                 Route::post("/update/{member}", 'update')->name("admin_update_member_basic_info");
                 Route::post("/update/member/meta/{member}/{memberInfo?}", "updatePersonal")->name("admin_update_member_meta_info");
                 Route::post("/reauth-as-user/{member}", "reauthUser")->name("admin_login_as_user");
+                Route::delete('/delete/{member}', 'deleteUser')->name('admin_user_delete');
+                Route::prefix('subscription')
+                    ->name('subscription.')
+                    ->controller(MemberController::class)
+                    ->group(function () {
+                        Route::post('/cancel/{program}/{member}', 'calcel_subscription')->name('admin_cancel_user_subscription');
+                    });
             });
         /**
          * Zoom & Meetings

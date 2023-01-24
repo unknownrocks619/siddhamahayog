@@ -20,6 +20,9 @@
 
     $toBePaid = $program->active_fees->admission_fee;
 
+    if (! \App\Models\ProgramStudent::where('program_id',$program->getKey())->where('student_id',user()->getKey())->where('active',true)->exists() ) {
+        $allow_access = false;
+    }
     if ($studentFee < $toBePaid) {
         $toBePaid =  (!$studentFee) ? 9000 : ($toBePaid - $studentFee);
     } else {
