@@ -1,5 +1,4 @@
 <li class="list-group-item border-bottom-1 border-start-0 border-end-0 border-top-0 rounded-0">
-
     @if ($courses->lock )
         <button class="btn btn-link ps-0 text-muted " type="button">
             <i class='bx bxs-movie-play me-2'></i>
@@ -35,6 +34,10 @@
                 <i class='bx bxs-lock-alt text-danger'></i>
             </span>
             @endif
+        </button>
+        @elseif ( ! $lession->video_lock )
+        <button class="btn btn-link ps-0 watchLession "  data-href="{{ route('user.account.programs.videos.show',[$program->id,$courses->id,$lession->id]) }}" type="button">
+            <i class='bx bxs-movie-play me-2'></i> {{ $lession->lession_name }}
         </button>
     @endif
 </li>
