@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin\Programs;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminProgramSectionRequest;
+use App\Models\Member;
 use App\Models\Program;
 use App\Models\ProgramSection;
+use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +22,9 @@ class AdminProgramSectionController extends Controller
     public function index(Request $request, Program $program)
     {
         //
-        $all_sections = ProgramSection::where('program_id', $program->id)->latest()->get();
+        $all_sections = ProgramSection::where('program_id', $program->id)
+            ->with(['programStudents'])
+            ->latest()->get();
         return view('admin.programs.section.index', compact("all_sections", "program"));
     }
 
@@ -31,7 +35,7 @@ class AdminProgramSectionController extends Controller
      */
     public function create(Program $program = null)
     {
-        // 
+        //
     }
 
     /**
@@ -49,7 +53,7 @@ class AdminProgramSectionController extends Controller
         $program_section->slug = Str::slug($request->section_name, '-');
         $program_section->default = ($request->default) ? true : false;
 
-        // check slug 
+        // check slug
         $slug = $program_section->where('slug', Str::slug($request->section_name))->where('program_id', $program->id)->exists();
         if ($slug) {
             session()->flash('error', "Section Name Already Exists.");
@@ -65,7 +69,7 @@ class AdminProgramSectionController extends Controller
                         $check_previous->default = false;
                     }
 
-                    if ( $check_previous && $check_previous->isDrity()) {
+                    if ($check_previous && $check_previous->isDrity()) {
                         $check_previous->save();
                     }
                 }
@@ -115,7 +119,6 @@ class AdminProgramSectionController extends Controller
     {
         //
         $section->section_name = $request->section_name;
-
         if ($section->isDirty("section_name")) {
             // check for slug exists.
             $slug_exits = ProgramSection::where('slug', Str::slug($request->section_name))->where('program_id', $section->program_id)->exists();
@@ -130,7 +133,7 @@ class AdminProgramSectionController extends Controller
         try {
             DB::transaction(function () use ($section) {
                 if ($section->isDirty("default")) {
-                    // check 
+                    // check
                     $check_previous = ProgramSection::where("program_id", $section->program_id)->where('default', true)->first();
 
                     if ($check_previous) {
@@ -163,5 +166,39 @@ class AdminProgramSectionController extends Controller
     {
         //
 
+    }
+
+
+    public function sectionStudent(Request $request, Program $program, ProgramSection $section)
+    {
+
+        //
+        $all_students = ProgramStudent::with(["section", "batch", 'student'])->where('program_id', $program->id)->where('program_section_id', $section->getKey())->get();
+        return view("admin.programs.section.section-student", compact("all_students", "section", "program"));
+    }
+
+    public function changeSection(Request $request, Program $program, Member $member, ProgramSection $section)
+    {
+        $program = $program->load(["sections"]);
+        return view("admin.programs.section.modal.change-section", compact("program", "member", 'section'));
+    }
+
+    public function updateSection(Request $request, Program $program, Member $member)
+    {
+        $programBatch = ProgramStudent::where('program_id', $program->id)
+            ->where('student_id', $member->id)
+            ->first();
+        $programBatch->program_section_id = $request->section;
+
+        try {
+            $programBatch->save();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            session()->flash('error', "Error: " . $th->getMessage());
+            return redirect()->route('admin.program.sections.admin_list_all_section', [$program->id]);
+        }
+
+        session()->flash('success', "Student data updated.");
+        return redirect()->route('admin.program.sections.admin_list_all_section', [$program->id]);
     }
 }

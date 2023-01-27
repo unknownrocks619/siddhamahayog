@@ -198,9 +198,12 @@ Route::prefix('admin')
                     ->controller(AdminProgramSectionController::class)
                     ->group(function () {
                         Route::get("/list/{program}", "index")->name('admin_list_all_section');
+                        Route::get('/list/{program}/{section}', 'sectionStudent')->name('admin_list_student_section');
+                        Route::get('/modal/list/{program}/{member}/{section}', 'changeSection')->name('admin_change_student_section');
                         Route::get("/edit/{section}", [AdminProgramSectionController::class, "edit"])->name('admin_edit_section');
                         Route::post('/store/{program}', [AdminProgramSectionController::class, "store"])->name("admin_store_section");
                         Route::put("/edit/{section}", [AdminProgramSectionController::class, "update"])->name('admin_update_section');
+                        Route::put("/list/student/modal/{program}/{member}", "updateSection")->name("admin_update_students_update");
                     });
 
                 Route::prefix("batches")

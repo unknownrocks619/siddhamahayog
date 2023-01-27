@@ -60,10 +60,10 @@
                                         {{ $section->section_name }}
                                     </td>
                                     <td>
-                                        19
+                                        {{$section->programStudents->count()}}
                                     </td>
                                     <td>
-                                        <a href="http://">View Students</a>
+                                        <a href="{{ route('admin.program.sections.admin_list_student_section',[$program->id,$section->getKey()]) }}" class="studentList">View Students</a>
                                         <br />
                                         <a href="{{ route('admin.program.sections.admin_edit_section',$section->id) }}" data-toggle="modal" data-target="#edit_create_section">Edit</a>
                                         |
@@ -171,5 +171,15 @@
             }
         })
     });
+    $(".studentList").on("click", function(event) {
+        event.preventDefault();
+        $.ajax({
+            method: "get",
+            url: $(this).attr("href"),
+            success: function(response) {
+                $("#student_list_section").html(response);
+            }
+        })
+    })
 </script>
 @endsection
