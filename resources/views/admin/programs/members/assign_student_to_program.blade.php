@@ -31,7 +31,7 @@
                                 <div class="col-md-11 px-0 mx-0">
                                     <div class="form-group">
                                         <strong>
-                                            Search Member 
+                                            Search Member
                                         </strong>
                                         (Email or Phone)
                                         <input type="text" placeholder="Search Member by Email or phone" name="member" id="member" class="form-control" />
@@ -56,7 +56,6 @@
     <script src="{{ asset ('assets/bundles/mainscripts.bundle.js') }}"></script>
     <script type="text/javascript">
         $("form#member_search_form").submit(function(event) {
-            alert("hello");
             event.preventDefault();
             $.ajax({
                 url : $(this).attr("action"),
