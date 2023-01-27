@@ -14,6 +14,7 @@
 
         <div class="row clearfix">
             <div class="col-md-12">
+                <x-alert></x-alert>
                 <div class="card">
                     <div class="header">
                         <h2>
@@ -53,6 +54,9 @@
                                     </th>
                                 </tr>
                             </thead>
+                            <tbody>
+
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -62,7 +66,7 @@
 </section>
 
 <x-modal modal='addExamTerm'>
-    <form action="" method="post">
+    <form action="{{route('admin.exam.store',[$program->getKey()])}}" method="post">
         @csrf
         <div class="modal-header">
             <h4>
@@ -76,7 +80,7 @@
                         <label for="term">Exam Term
                             <sup class="text-danger">*</sup>
                         </label>
-                        <input type="text" name="term_name" id="term" class="form-control">
+                        <input type="text" name="exam_title" id="term" class="form-control">
                     </div>
                 </div>
             </div>

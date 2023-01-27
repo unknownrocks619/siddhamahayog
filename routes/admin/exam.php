@@ -12,7 +12,7 @@ Route::middleware(['auth', 'admin'])
             ->name('exam.')
             ->group(function () {
                 Route::get('/', 'index')->name('list');
-                Route::get('/{exam}/edit/', 'index')->name('edit');
+                Route::get('/{exam}/edit/', 'edit')->name('edit');
                 Route::post('/', 'store')->name('store');
             });
     });
