@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
-class ArthapanchawkController extends Controller
+class ArthapanchawkControllerCopy extends Controller
 {
     use CourseFeeCheck;
     //
@@ -186,7 +186,7 @@ class ArthapanchawkController extends Controller
     }
 
     /**
-     * 
+     *
      */
     private function nonAutheticatedUser(Request $request): \Illuminate\Http\Response
     {

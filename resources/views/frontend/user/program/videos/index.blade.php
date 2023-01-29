@@ -51,7 +51,7 @@
                                             </button>
                                         </h2>
                                         <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
+                                            <div class="accordion-body" style="max-height: 300px; overflow:hidden;overflow-y:scroll">
                                                 @if($courses->lession)
                                                 <ul class="list-group lms-list">
                                                     @endif

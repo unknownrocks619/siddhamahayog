@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 
 use App\Models\Program;
 use App\Models\ProgramStudentFee;
+use App\Models\Role;
 use App\Models\Scholarship;
 
 trait CourseFeeCheck
@@ -31,7 +32,11 @@ trait CourseFeeCheck
 
     public function checkFeeDetail(Program $program, $fee_type = null)
     {
-        
+
+        if (Role::ADMIN == user()->role_id) {
+            return true;
+        }
+
         $scholarship = Scholarship::where('program_id', $program->getKey())
             ->where('student_id', auth()->id())
             ->first();
