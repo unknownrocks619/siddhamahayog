@@ -128,7 +128,7 @@ class AdminProgramSectionController extends Controller
             }
         }
 
-        $section->default = ($request->default) ? true : false;
+        $section->default = ($request->default) ? $request->defult : $section->default;
 
         try {
             DB::transaction(function () use ($section) {
