@@ -2,51 +2,36 @@ $.isset = function (variable) {
     return (variable) && (typeof variable !== 'undefined');
 }
 
-class QuestionBank {
-
-    collections = [];
-    index = 0
-    insertQuestion() {
-        let formElements = $('form.questionForm');
-        let items = $(formElements).serializeArray();
-
-        let coll = {}
-        $.each(items, function (index, item) {
-            console.log('items', item);
-            coll[item.name] = item.value;
-        })
-        window.questionLister(coll, this.index)
-        this.collections.push(coll);
-        this.index++;
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $("meta[name=csrf-token]").attr('content')
     }
+})
 
-    updateQuestion(index) {
-        let formElements = $('form.questionForm');
-        let items = $(formElements).serializeArray();
-        let coll = {}
-        $.each(items, function (index, item) {
-            coll[item.name] = item.value;
-        })
-        console.log('current coll', coll);
-        window.updateLister(index, coll)
-        this.collections[index] = coll;
-    }
-
-    addQuestion(index, items) {
-        this.collections[index] = items;
-    }
-
-    deleteQuestion(index) {
-        let gcollection = [];
-        $.each(this.collections, function (_cindex, items) {
-            if (index != _cindex) {
-                gcollection[_cindex] = items
-            }
-        });
-        console.log('collection', gcollection);
-        this.collections = gcollection;
-    }
-}
+$(document).on('submit', 'form.ajax-form', function (event) {
+    event.preventDefault();
+    $('.form-success-text').remove();
+    let form = this;
+    $.ajax({
+        type: "POST",
+        method: $(this).attr('method'),
+        url: $(this).attr('action'),
+        data: $(this).serializeArray(),
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name=csrf-token]').attr('content')
+        },
+        success: function (response) {
+            $('.js-question-lister').html(response)
+            let question = $(form).filter('div.footer');
+            $(form).closest('div').find('div.footer').append('<span class="text-success form-success-text"> Success !!</span>');
+            $(form)[0].reset();
+            $('select').find('option :eq(0)').attr('selected', true);
+        },
+        error: function (response) {
+            console.log('response error: ');
+        }
+    })
+})
 
 window.updateLister = function (index, items) {
     let background = '#fff';
@@ -58,8 +43,7 @@ window.updateLister = function (index, items) {
 
     let selectedDiv = $(`.js-question-lister .js-item[data-index="${index}"]`);
     $(selectedDiv).empty();
-    let template = `
-                        <div class='col-md-12'>
+    let template = `<div class='col-md-12'>
                             <h5><span data-title='${items.question}'>${items.question}</span> -  <span data-question-type='${items.question_type}'>[${items.question_type}]</span></h5>
                         </div>
                         <div class='col-md-12 mt-3'> <div class='blockquote'>${items.description}</div></div >
@@ -77,7 +61,7 @@ window.updateLister = function (index, items) {
                                     Edit
                                 </a>
                             </span>
-    `
+                        </div>`
     $(selectedDiv).html(template);
 }
 
@@ -113,82 +97,6 @@ window.questionLister = function (items, index) {
     `
     $(".js-question-lister").append(template);
 }
-
-$(document).on('click', '.js-edit-question', function (event) {
-    event.preventDefault();
-
-    if ($.isset(window.QBBank.collections[$(this).data('edit-index')])) {
-        let selectedQuestion = window.QBBank.collections[$(this).data('edit-index')];
-
-        if (selectedQuestion.question_type == 'subjective') {
-            subjectAnswerEdit(selectedQuestion);
-        }
-        currentItem = this;
-        $(".js-queue-questions").fadeOut('medium', function () {
-            let parent = $(this).closest('.footer');
-            let updateButton = `
-                <div class='row js-update-question-row'>
-                    <div class='col-md-4'>
-                        <button class='btn btn-danger btn-sm js-update-question-cancel'>Cancel Edit</button>
-                    </div>
-                    <div class='col-md-8 text-right'>
-                        <button type='button' data-update-index='${$(currentItem).data('edit-index')}' class='btn btn-warning js-update-question'>Update Question</button>
-                    </div>
-                </div>
-                `
-            $(parent).append(updateButton);
-        })
-    } else {
-        conosle.log('not found: ', $(this));
-    }
-
-})
-
-$(document).on('click', '.js-update-question', function (event) {
-    event.preventDefault();
-    console.log('clicked here.', $(this).data('update-index'));
-    QBBank.updateQuestion($(this).data('update-index'));
-    $('form.questionForm')[0].reset();
-    $('.richtext').summernote('reset')
-    $(".js-update-question-row").fadeOut('medium', function () {
-        $(this).remove();
-        $('.js-queue-questions').fadeIn('fast');
-    })
-})
-
-$(document).on('click', '.js-update-question-cancel', function (event) {
-    event.preventDefault();
-    $('form.questionForm')[0].reset();
-    $('.richtext').summernote('reset');
-    $(".js-update-question-row").fadeOut('medium', function () {
-        $(this).remove();
-        $('.js-queue-questions').fadeIn('fast');
-    })
-})
-
-function subjectAnswerEdit(question) {
-    let formElem = $('form.questionForm');
-    $(formElem).find('input[name=question]').val(question.question);
-    $(formElem).find('input[name=marks]').val(question.marks);
-    $(formElem).find('textarea.richtext').summernote('code', question.description);
-}
-
-$(document).on('click', '.js-delete-question', function (event) {
-    event.preventDefault();
-    let parent = $(this).closest('.js-item');
-    $(parent).fadeOut('medium');
-    QBBank.deleteQuestion($(this).closest('.js-item').data('index'));
-});
-
-window.QBBank = new QuestionBank();
-
-$(document).on('click', '.js-queue-questions', function (event) {
-    event.preventDefault();
-    QBBank.insertQuestion();
-    $('form.questionForm')[0].reset();
-    $('.richtext').summernote('reset');
-})
-
 
 $(document).on('change', 'select[name=question_type]', function (event) {
 
@@ -278,3 +186,62 @@ $(document).on('click', '.js-subjective-plus', function (event) {
 $(document).on('click', '.js-subjective-remove', function (event) {
     $(this).closest('.row').remove();
 });
+
+$(document).on('click', '.js-delete-question', function (event) {
+    event.preventDefault();
+    let button = this;
+    $.ajax({
+        url: $(this).data('action'),
+        type: 'POST',
+        data: '_method=DELETE',
+
+        success: function (response) {
+            // console.log($(button).closest('div.card'));
+            $(button).closest('div.card').fadeOut('medium', function () {
+                $(this).remove();
+            });
+
+        },
+        error: function (response) {
+            console.log(' Error: Unable to remove question.');
+        }
+    })
+})
+
+$(document).on('click', '.js-question-edit-question', function (event) {
+    event.preventDefault();
+    $(".footer-success").remove();
+    $.ajax({
+        url: $(this).data('action'),
+        type: 'GET',
+        success: function (response) {
+            $("#questionForm").empty().html(response);
+            $('.richtext').summernote({
+                height: 275,
+                popover: {
+                    image: [],
+                    link: [],
+                    air: []
+                }
+            });
+
+        },
+        error: function (response) {
+            console.log(' Error: Unable to remove question.');
+        }
+    })
+})
+
+// $(document).on('click', '.js-update-question', function (event) {
+//     event.preventDefault();
+//     $.ajax({
+//         url: $(this).data('action'),
+//         type: "POST",
+
+//         success: function (response) {
+//             $('.js-question-lister').html(response);
+//         }
+//     })
+// });
+
+

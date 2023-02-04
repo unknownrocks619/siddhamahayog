@@ -50,12 +50,83 @@
                                         Total Questions
                                     </th>
                                     <th>
+                                        Status
+                                    </th>
+                                    <th>
+                                        Timer
+                                    </th>
+                                    <th>
 
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($exams as $exam)
+                                    <tr>
+                                        <td>
+                                            {{$loop->iteration}}
+                                        </td>
+                                        <td>
+                                            {{$exam->title}}
+                                        </td>
+                                        <td>
+                                            {{$exam->questions->count()}}
+                                        </td>
+                                        <td>
+                                            @if($exam->active)
+                                                <span class="badge badge-success">
+                                                    Active
+                                                </span>
+                                                @else
+                                                <span class="badge badge-danger">
+                                                    Inactive
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($exam->enable_time)
+                                                <span class="badge badge-success">
+                                                    Enabled
+                                                </span>
+                                                @else
+                                                <span class="badge badge-danger">
+                                                    Disabled
+                                                </span>
+                                            @endif
 
+                                            @if ($exam->start_date)
+                                                <p>
+                                                    <span style="font-weight: bold">Start Date: </span>
+                                                    {{ $exam->start_date}}
+                                                </p>
+                                            @endif
+
+                                            @if($exam->end_date)
+                                                <p>
+                                                    <span style="font-weight: bold">End Date: </span>
+                                                    {{ $exam->end_date}}
+                                                </p>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <a href="{{route('admin.exam.edit-primary-question',[$program->getKey(),$exam->getKey()])}}" data-target="#editQuestion" data-toggle="modal" class="btn btn-primary btn-sm">
+                                                <x-pencil class="text-primary">
+                                                    Edit
+                                                </x-pencil>
+                                            </a>
+                                            <form class="d-inline" action="{{route('admin.exam.delete-primary-question',[$program->getKey(),$exam->getKey()])}}" method="post">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <x-trash>
+                                                        Delete
+                                                    </x-trash>
+                                                </button>
+                                            </form>
+
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -65,6 +136,7 @@
     </div>
 </section>
 
+<x-modal modal='editQuestion'></x-modal>
 <x-modal modal='addExamTerm'>
     <form action="{{route('admin.exam.store',[$program->getKey()])}}" method="post">
         @csrf
@@ -139,6 +211,17 @@
                 image: [],
                 link: [],
                 air: []
+            }
+        })
+    });
+</script>
+<script type="text/javascript">
+    $("#editQuestion").on("shown.bs.modal", function(event) {
+        $.ajax({
+            method: "get",
+            url: event.relatedTarget.href,
+            success: function(response) {
+                $("#modal-content").html(response);
             }
         })
     });
