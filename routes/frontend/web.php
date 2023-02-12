@@ -146,6 +146,11 @@ Route::prefix("account")
                         Route::post('process', [PaymentController::class, 'stripeAdmissionFeeControllerr'])->name('stripe.process');
                         Route::post("/voucher", [VoucherController::class, 'store'])->name('store.voucher');
                     });
+
+                /**
+                 * Exam
+                 */
+                include __DIR__ . '/exam.php';
             });
     });
 

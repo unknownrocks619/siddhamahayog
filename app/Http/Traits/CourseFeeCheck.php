@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 
 use App\Models\Program;
 use App\Models\ProgramStudentFee;
+use App\Models\Scholarship;
 
 trait CourseFeeCheck
 {
@@ -28,9 +29,26 @@ trait CourseFeeCheck
         $this->data = $this->data->first();
     }
 
-    public function checkFeeDetail(Program $program, $fee_type = null)
+    /**
+     * Check if user has paid their due.
+     * @param Program $program
+     * @param mixed $fee_type
+     * @return bool
+     */
+    public function checkFeeDetail(Program $program, $fee_type = null): bool
     {
 
+        if ($program->program_type  != 'paid') {
+            return true;
+        }
+
+        $scholarship = Scholarship::where('program_id', $program->getKey())
+            ->where('student_id', auth()->id())
+            ->first();
+
+        if ($scholarship) {
+            return true;
+        }
 
         $this->studentFees($program);
 

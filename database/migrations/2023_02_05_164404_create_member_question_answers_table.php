@@ -13,19 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('member_question_answers', function (Blueprint $table) {
-            $table->id();
+        Schema::create('member_question_answers_detail', function (Blueprint $table) {
+            $table->id('id');
             $table->string('program_id');
-            $table->string('member_id');
+            $table->string('member_id')->nullable();
             $table->string('program_exam_id');
             $table->string('program_exam_question_id');
+            $table->string('member_answer_overview_id')->nullable();
             $table->longText('exam_deail')->comment('cachel all exam detail.');
             $table->longText('question_detail')->comment('cache all questions');
             $table->longText('answer')->nullable();
             $table->string('status')->default('draft')->comment('available options: draft, discard, completed.');
             $table->longText('result')->nullable();
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes()->nullable();
         });
     }
 
@@ -36,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_question_answers');
+        Schema::dropIfExists('member_question_answers_detail');
     }
 };
