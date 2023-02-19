@@ -50,6 +50,11 @@ class Member extends Authenticatable
         'remember_token'
     ];
 
+
+    public function diskshya()
+    {
+        return $this->hasMany(MemberDikshya::class);
+    }
     public function member_role()
     {
         return $this->hasOne(Role::class, 'id', 'role_id');

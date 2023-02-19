@@ -92,14 +92,6 @@ class ArthapanchawkController extends Controller
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 401);
         }
-
-        //check if this student is enrolled in session.
-        $studentEnroll = ProgramStudent::where('student_id', user()->getKey())->where('program_id', $this->_id)->first();
-
-        if ($studentEnroll) {
-            return view('frontend.page.vedanta.user_already_exists_response');
-        }
-
         $unicode_character = check_unicode_character($request->all());
 
         if ($unicode_character) {
@@ -108,6 +100,13 @@ class ArthapanchawkController extends Controller
 
         if (!auth()->check()) {
             $this->nonAutheticatedUser($request);
+        }
+
+        //check if this student is enrolled in session.
+        $studentEnroll = ProgramStudent::where('student_id', user()->getKey())->where('program_id', $this->_id)->first();
+
+        if ($studentEnroll) {
+            return view('frontend.page.vedanta.user_already_exists_response');
         }
 
         $user = auth()->user();

@@ -155,3 +155,4 @@ include __DIR__ . "/support.php";
 include __DIR__ . "/memberSadhak.php";
 include __DIR__ . '/centerAdmin.php';
 include __DIR__ . "/sadhak.php";
+include __DIR__ . "/dikshya.php";
