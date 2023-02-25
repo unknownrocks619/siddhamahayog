@@ -44,9 +44,11 @@
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-md-12 d-flex justify-content-end align-items-center">
-                                <button type="submit" class="btn btn-danger ms-2">
-                                    End
-                                </button>
+                                @if ($memberAnswer && !empty($memberAnswer))
+                                    <button type="submit" class="btn btn-danger ms-2">
+                                        End
+                                    </button>
+                                @endif
                                 <button type="submit" class="btn btn-primary ms-2">
                                     Start My Exam
                                 </button>

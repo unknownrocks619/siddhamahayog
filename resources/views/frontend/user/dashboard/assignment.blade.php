@@ -53,7 +53,7 @@
                     </td>
                     <td>
                         <button type="submit" class="btn btn-info btn-sm clickable"
-                            data-href="{{ route('user.account.programs.exam.overview.', [$question->program_id, $question->getKey()]) }}">Start
+                            data-href="{{ route('user.account.programs.exam.overview', [$question->program_id, $question->getKey()]) }}">Start
                             Exam
                         </button>
                     </td>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Exam\ExamAttendValidationRequest;
 use App\Http\Traits\CourseFeeCheck;
+use App\Models\MemberAnswerOverview;
 use App\Models\MemberQuestionAnswerDetail;
 use App\Models\Program;
 use App\Models\ProgramExam;
@@ -37,7 +38,10 @@ class ExamController extends Controller
         if (!session()->has('exam_start')) {
             session()->put('exam_start', time());
         }
-        return view('frontend.user.exam.start', compact('program', 'exam'));
+        $memberAnswer = MemberAnswerOverview::where('question_collection_id', $exam->getKey())
+            ->where('member_id', auth()->id())
+            ->first();
+        return view('frontend.user.exam.start', compact('program', 'exam','memberAnswer'));
     }
 
     public function fetchQuestions(ExamAttendValidationRequest $request, Program $program, ProgramExam $exam, ProgramExamQuestion $question = null)

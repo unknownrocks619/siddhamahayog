@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-lg-10 mx-auto">
+    <div class="col-lg-12 mx-auto">
         <div class="career-search mb-60">
             <div class="filter-result">
                 @foreach ($exams as $exam)
@@ -32,7 +32,10 @@
                             </div>
                         </div>
                         <div class="job-right my-4 flex-shrink-0">
-                            <a href="#" class="btn d-block w-100 d-sm-inline-block btn-primary">Start Exam</a>
+
+                            <button href="#"
+                                data-href="{{ route('user.account.programs.exam.start', [$exam->program_id, $exam->getKey()]) }}"
+                                class="btn d-block w-100 d-sm-inline-block btn-primary clickable">Start Exam</button>
                         </div>
                     </div>
                 @endforeach
