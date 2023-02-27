@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('program_exam_id');
             $table->string('program_exam_question_id');
             $table->string('member_answer_overview_id')->nullable();
-            $table->longText('exam_deail')->comment('cachel all exam detail.');
+            $table->longText('exam_detail')->comment('cachel all exam detail.');
             $table->longText('question_detail')->comment('cache all questions');
             $table->longText('answer')->nullable();
             $table->string('status')->default('draft')->comment('available options: draft, discard, completed.');

@@ -1,5 +1,5 @@
 <div class="card">
-    <div class="card-body">
+    <div class="card-body" data-question-id='{{ $question->getKey() }}'>
         @if ($question->question_title)
             <div class=" d-flex justify-content-start">
                 <h5 class="card-title">
@@ -14,5 +14,6 @@
                 {!! $question->description !!}
             </div>
         @endif
+        @include('frontend.user.exams.types.' . $question->question_type)
     </div>
 </div>

@@ -13,5 +13,6 @@ Route::prefix('{program}/exam')
                 Route::get('/overview', 'overview')->name('overview');
                 Route::get('/start', 'start')->name('start');
                 Route::post('/start/{question?}', 'getQuestion')->name('fetch-start');
+                Route::post('/save-answer/{question}', 'saveAnswer')->name('save-answer');
             });
     });

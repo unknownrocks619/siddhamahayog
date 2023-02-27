@@ -10,4 +10,10 @@ class MemberQuestionAnswerDetail extends Model
     use HasFactory;
 
     protected $table = 'member_question_answers_detail';
+
+    protected $casts = [
+        'result' => 'object',
+        'exam_detail' => 'array',
+        'question_detail' => 'array'
+    ];
 }
