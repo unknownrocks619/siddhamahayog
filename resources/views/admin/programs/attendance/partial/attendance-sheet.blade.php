@@ -6,7 +6,7 @@
         <tr>
 
             <td>
-                {{ $member->full_name }} {{ $member->user_id }}
+                {{ $member->full_name }}
 
             </td>
             @foreach ($dateSheet as $date)
