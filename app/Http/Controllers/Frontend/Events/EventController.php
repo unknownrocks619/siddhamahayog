@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Event\LiveEventJoinAsAdminRequest;
 use App\Http\Requests\Frontend\Event\LiveEventRequest;
 use App\Http\Traits\CourseFeeCheck;
+use App\Models\AttendanceDateSheet;
 use App\Models\Live;
 use App\Models\MemberNotes;
 use App\Models\MemberNotification;
@@ -119,6 +120,11 @@ class EventController extends Controller
         $attendance->live_id = $live->id;
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
+
+        $date = date('Y-m-d');
+        $dateID = AttendanceDateSheet::select(['id'])->where('attendance_date', $date)->first();
+        $attendance->attendance_date_id = $dateID->getKey();
+
 
         $last_name = ucfirst(trim(user()->last_name));
         if (user()->middle_name) {
