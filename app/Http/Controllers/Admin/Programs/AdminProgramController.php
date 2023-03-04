@@ -18,6 +18,7 @@ use App\Models\ZoomAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use DataTables;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class AdminProgramController extends Controller
@@ -180,9 +181,16 @@ class AdminProgramController extends Controller
 
     public function program_detail(Request $request, Program $program)
     {
+
+
         $sections = ProgramSection::where('program_id', $program->id)->get();
-        $students = ProgramStudent::with(["section", "batch", "student"])->where('program_id', $program->id)->lazy();
-        return view("admin.programs.detail", compact("program", "sections", "students"));
+        $students = ProgramStudent::all_program_student($program);
+        $paymentDetail = ProgramStudent::studentPaymentDetail('admission_fee', array_keys(Arr::keyBy($students, 'user_id')));
+        // $students = ProgramStudent::with(["section", "batch", "student"])
+        //     ->where('program_id', $program->id)
+        //     ->get();
+
+        return view("admin.programs.detail", compact("program", "sections", "students", "paymentDetail"));
     }
 
     public function goLiveCreate(Program $program)
