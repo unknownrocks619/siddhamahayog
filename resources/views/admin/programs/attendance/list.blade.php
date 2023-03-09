@@ -1,3 +1,6 @@
+@php
+    $storedCount = [];
+@endphp
 @extends('layouts.portal.app')
 
 @section('content')
@@ -96,15 +99,43 @@
                                         <th>
                                             Sadhak Name
                                         </th>
+                                        <th>
+                                            Contact
+                                        </th>
                                         @include('admin.programs.attendance.partial.dynamic-header')
+                                        <th>
+                                            Info
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @include('admin.programs.attendance.partial.attendance-sheet')
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>
+                                        </th>
+                                        <th>
+                                            Total Count:
+                                        </th>
+                                        @php $storedCount = $GLOBALS['attendance']; @endphp
+                                        @foreach ($dateSheet as $date_sheet)
+                                            <th>
+                                                @if (isset($storedCount[$date_sheet->attendance_id]))
+                                                    <span class="badge badge-success px-2 text-white">P :
+                                                        {{ $storedCount[$date_sheet->attendance_id]['present'] }}</span>
+                                                    <br />
+                                                    <span class="badge badge-danger px-2 text-white">A :
+                                                        {{ $storedCount[$date_sheet->attendance_id]['absent'] }}</span>
+                                                @endif
+                                            </th>
+                                        @endforeach
+                                        <th>
+
+                                        </th>
+                                    </tr>
+                                </tfoot>
                             </table>
-                        </div>
-                        <div class="footer">
                         </div>
                     </div>
                 </div>
@@ -146,6 +177,7 @@
                 }, 'colvis'],
                 scrollX: true,
             });
+
             table.buttons().container()
                 .appendTo('#example_wrapper .col-md-6:eq(0)')
 

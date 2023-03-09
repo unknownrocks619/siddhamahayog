@@ -63,6 +63,7 @@ class AdminProgramAttendanceController extends Controller
     {
         $sql = "
             SELECT `members`.`full_name`, `program_students`.`student_id` AS `user_id`,
+             `members`.`phone_number`,`members`.`email`,
              `program_students`.`program_id` AS `pro_id`,
              `program_sections`.`section_name` FROM
              `program_students` INNER JOIN `members`
