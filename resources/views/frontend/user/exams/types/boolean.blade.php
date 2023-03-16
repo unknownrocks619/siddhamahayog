@@ -1,5 +1,4 @@
 <?php
-dd($program, $exam, $question);
 $disabled = false;
 $checkBoxClass = 'form-check';
 $userAnswer = null;
@@ -29,7 +28,7 @@ if (isset($answer)) {
                     <label
                         class="form-check-label @if ($disabled == true && $correctAnswer == 1) text-success @elseif($disabled == true && $correctAnswer == 0 && $userAnswer == 1) text-danger @endif"
                         for="answer_correct">
-                        True (ठिक) {{ $correctAnswer }}
+                        True (ठिक)
                     </label>
                 </div>
                 <div
@@ -57,6 +56,14 @@ if (isset($answer)) {
                     Wrong Answer
                 </h3>
             @endif
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4>
+                Mark Obtained: {{ $answer->result->marks_obtained }}
+            </h4>
         </div>
     </div>
 @endif

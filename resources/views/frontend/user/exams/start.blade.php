@@ -17,7 +17,6 @@
                         <!-- Connections -->
                         @foreach ($exam->questions as $question)
                             <div class="d-flex mb-3">
-
                                 <div class="flex-grow-1 row">
                                     <div class="col-12 mb-sm-0 mb-2">
                                         <h6 class="mb-0">
@@ -27,7 +26,7 @@
                                             </a>
                                         </h6>
                                         <small class="text-muted type">{{ ucwords($question->question_type) }}</small>
-                                        <small class="text-danger status">Draft</small>
+                                        {{-- <small class="text-danger status">Draft</small> --}}
                                     </div>
                                 </div>
                             </div>
@@ -77,6 +76,7 @@
 
 @push('custom_script')
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
     <script type="text/javascript">
         class UserAnswer {
 
@@ -226,8 +226,9 @@
                 data: userData,
                 success: function(response) {
                     handleOKResponse(response);
+                    summerNote();
                 },
-                error: function() {
+                error: function(response) {
                     let fallBack = `<div class='card'>
                                         <div class='card-body'>
                                             <div class='text-center'>
@@ -239,8 +240,37 @@
                                         </div>
                                     </div>`
                     $('.actual-question').html(fallBack)
+                    messageBox(response.state, response.msg);
+
                 }
             });
+        }
+
+        const summerNote = function enableSummerNote() {
+            if ($('textarea').length) {
+                $.each($('textarea'), function(index, element) {
+                    let status = $(element).data('disabled');
+                    status = (status) ? 'disable' : 'enable';
+                    $(element).summernote({
+                        height: 500,
+                        placeholder: 'Type your answer...',
+                        disableDragAndDrop: false,
+                        codeviewFilter: true,
+                        codeviewIframeFilter: true,
+
+                        toolbar: [
+                            ['font', ['bold', 'underline', 'clear']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['table', ['table']],
+                            ['view', ['fullscreen']]
+                        ]
+                    });
+
+                    $(element).summernote(status);
+
+                })
+            }
         }
 
         const saveAnswer = function saveUserAnswer(userData, url) {
@@ -250,6 +280,7 @@
                 data: userData,
                 success: function(response) {
                     handleOKResponse(response);
+                    summerNote();
                 },
                 error: function() {
                     let fallBack = `<div class='card'>
@@ -280,6 +311,7 @@
                 displayQuestion({
                     html: questions
                 })
+                summerNote();
                 return;
             }
             formData = {
@@ -291,6 +323,7 @@
 
         $(document).on('click', '.draft', function(event) {
             event.preventDefault();
+
             // get question
             let currentForm = $(this).closest('form');
             let wrapperElement = $(this).closest('div.card');
@@ -304,9 +337,21 @@
                 stateContent[key] = value;
                 answerState.push(stateContent);
             });
+
             question.saveAnswerPerQuestion($(wrapperElement).find('div.card-body').data("question-id"),
                 answerState);
 
+            //
+            let formUrl = $(this).closest('form.form-answer');
+            let url = $(formUrl).attr('action');
+
+            formData = $(formUrl).serializeArray();
+            console.log('formdata', formData);
+            formData.push({
+                'name': 'type',
+                'value': 'draft'
+            });
+            saveAnswer(formData, url);
         })
 
         $(document).on('submit', 'form.form-answer', function(event) {
@@ -332,7 +377,7 @@
 
         function displayAnswer(index) {
             answers = question.getAnswerByIndex(index);
-            console.log('this is index: ', index);
+
             let wraper = $('div[data-question-id="' + index + '"]');
             if (answers.length >= 1) {
                 $.each(answers, function(index, element) {
@@ -344,7 +389,7 @@
             }
         }
 
-        function booleanResponseAnswer(htmlRender) {
+        function responseAnswer(htmlRender) {
             $('.actual-question').html(htmlRender.html);
             question.updateQuestionState(htmlRender.question_index, htmlRender.html);
         }
@@ -367,4 +412,5 @@
             box-shadow: 0 2px 4px 0 rgb(113 221 55 / 40%);
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
 @endpush

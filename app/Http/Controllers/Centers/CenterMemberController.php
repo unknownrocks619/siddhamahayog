@@ -10,6 +10,6 @@ class CenterMemberController extends Controller
     //
 
     public function index() {
-        $allMembers
+        
     }
 }
