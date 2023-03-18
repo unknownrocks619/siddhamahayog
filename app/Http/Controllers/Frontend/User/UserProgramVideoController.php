@@ -12,6 +12,7 @@ use App\Models\Program;
 use App\Models\ProgramChapterLession;
 use App\Models\ProgramCourse;
 use App\Models\ProgramStudent;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -32,6 +33,10 @@ class UserProgramVideoController extends Controller
             return $query->with(["lession"]);
         }, "last_video_history"]);
 
+        if (user()->role_id == Role::ADMIN) {
+            return view("frontend.user.program.videos.folder-view", compact("program"));
+        }
+
         return view("frontend.user.program.videos.index", compact("program"));
     }
 
@@ -45,7 +50,10 @@ class UserProgramVideoController extends Controller
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 403);
         }
-
+        if (user()->role_id == Role::ADMIN) {
+            $content = view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'))->render();
+            return $this->json(true, '', '', ['content' => $content, 'modalID' => 'videoModal']);
+        }
         return view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'));
     }
 
@@ -80,16 +88,16 @@ class UserProgramVideoController extends Controller
     public function allowedToWatch(VideoAllowedToWatchRequest $request, Program $program, ProgramChapterLession $lession)
     {
 
-
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 403);
         }
 
         if (!$this->checkFeeDetail($program, "admission_fee")) {
-            return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
-            // return view("frontend.user.program.videos.modal.payment");
+            if (user()->role_id == Role::ADMIN) {
+                return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
+            }
+            return view("frontend.user.program.videos.modal.payment");
         }
-
         // get video
         if ($lession->course->lock) {
             // entire thing lock,

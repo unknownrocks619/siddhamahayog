@@ -19,7 +19,6 @@ class CourseControllerAPI extends Controller
         } else {
             $result = $course->lession;
         }
-
         return response($result);
     }
 }

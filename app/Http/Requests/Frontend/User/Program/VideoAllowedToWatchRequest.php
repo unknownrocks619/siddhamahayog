@@ -14,6 +14,7 @@ class VideoAllowedToWatchRequest extends FormRequest
      */
     public function authorize()
     {
+
         // return auth()->check() ? true : false;
         return ProgramStudent::where('program_id', $this->program->id)->where('student_id', auth()->id())->exists();
     }

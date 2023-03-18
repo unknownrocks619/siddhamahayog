@@ -11,12 +11,13 @@ class ProgramChapterLession extends Model
     use HasFactory, SoftDeletes;
 
     protected $hidden = [
-        'id',
         'program_course_id',
         'program_id',
         'created_at',
         'updated_at',
         'deleted_at',
+        'video_link',
+        
     ];
 
     protected $alias = [
