@@ -1,198 +1,158 @@
-@extends("frontend.theme.portal")
+@extends('frontend.theme.portal')
 
-@section("content")
-<!-- Content -->
+@section('content')
+    <!-- Content -->
 
-<div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Program /</span>
-        <span class="text-muted fw-light"><a href="{{ route('user.account.programs.program.index') }}">{{ $program->program_name }}</a> /</span>
-        Offline Videos
-    </h4>
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-4">
-                <div class="card-header d-flex align-items-start align-items-sm-center gap-4 justify-content-between">
-                    <h5>
-                        Available Videos for <span class="fs-4 text-primary">`{{ $program->program_name }}`</span>
-                    </h5>
-                    <div class="dropdown">
-                        <button data-href="{{ route('user.account.programs.program.index') }}" class="clickable btn btn-danger" type="button" id="orederStatistics">
-                            <i class="bx bx-block"></i>
-                            Close
-                        </button>
-                    </div>
-                </div>
-                <!-- Account -->
-                <div class="card-body">
-                    <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <div class="button-wrapper">
-                            <p class="text-muted mb-0">Offline Videos for {{$program->program_name}} will be available here.</p>
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-4 bg-footer-theme d-none d-md-block">
-                            <h4 class="pt-4 ps-3">Courses</h4>
-                            <div class="row pb-4">
-                                <div class="accordion mt-3" id="accordionExample">
-                                    @forelse ($program->videoCourses as $courses)
-                                    <div class="card accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button type="button" class="accordion-button border-bottom bg-secondary text-white" data-bs-toggle="collapse" data-bs-target="#{{ $courses->slug }}" aria-expanded="true" aria-controls="accordionTwo">
-                                                @if($courses->lock)
-                                                <span class="text-right me-2">
-                                                    <i class='bx bxs-lock-alt text-danger'></i>
-                                                </span>
-                                                @endif
-                                                {{ $courses->course_name }}
-                                            </button>
-                                        </h2>
-                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body" style="max-height: 300px; overflow:hidden;overflow-y:scroll">
-                                                @if($courses->lession)
-                                                <ul class="list-group lms-list">
-                                                    @endif
-                                                    @forelse ($courses->lession as $lession)
-                                                        @include('frontend.user.program.videos.partials.lister',compact('lession','courses'))
-                                                    @empty
-                                                    <div class="alert alert-danger mt-3">
-                                                        Lessions for {{ $courses->course_name }} is currently unavailable.
-
-                                                    </div>
-                                                    @endforelse
-                                                    @if($courses->lession)
-                                                </ul>
-                                                @endif
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @empty
-                                    <div class="card accordion-item active">
-                                        <h2 class="accordion-header bg-primary">
-                                            <button type="button" class="accordion-button bg-primary text-white" data-bs-toggle="collapse" data-bs-target="#accordionTwo" aria-expanded="true" aria-controls="accordionTwo">
-                                                {{ $program->program_name }}
-                                            </button>
-                                        </h2>
-                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
-                                                <div class="alert alert-info">
-                                                    Videos for {{ $program->program_name }} is currently unavailable.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforelse
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-8 border-end border-bottom border-top">
-                            <div style="position:relative" class="w-100 h-100">
-                                <div class="progress mt-5" style="height:25px;position:absolute;z-index:9">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-dark" role="progressbar" style="width: 100%;height:25px" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <div id="videoContent">
-                                    @if($program->last_video_history)
-                                    @include("frontend.user.program.videos.modal.history",["watchHistory" => $program->last_video_history])
-                                    @else
-                                    @include("frontend.user.program.videos.modal.no-history")
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 bg-footer-theme d-sm-none">
-                            <h4 class="pt-4 ps-3">Courses</h4>
-                            <div class="row">
-                                <div class="accordion mt-3" id="accordionExample">
-                                    @forelse ($program->videoCourses as $courses)
-                                    <div class="card accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button type="button" class="accordion-button border-bottom bg-secondary text-white" data-bs-toggle="collapse" data-bs-target="#{{ $courses->slug }}" aria-expanded="true" aria-controls="accordionTwo">
-                                                {{ $courses->course_name }}
-                                            </button>
-                                        </h2>
-                                        <div id="{{ $courses->slug }}" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
-                                                @if($courses->lession)
-                                                <ul class="list-group">
-                                                    @endif
-                                                    @forelse ($courses->lession as $lession)
-                                                    <li class="list-group-item border-bottom-1 border-start-0 border-end-0 border-top-0 rounded-0">
-                                                        <button class="btn btn-link ps-0 watchLession" data-href="{{ route('user.account.programs.videos.show',[$program->id,$courses->id,$lession->id]) }}" type="button"><i class='bx bxs-movie-play me-2'></i> {{ $lession->lession_name }}</button>
-                                                    </li>
-                                                    @empty
-                                                    <div class="alert alert-danger mt-3">
-                                                        Lessions for {{ $courses->course_name }} is currently unavailable.
-
-                                                    </div>
-                                                    @endforelse
-                                                    @if($courses->lession)
-                                                </ul>
-                                                @endif
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @empty
-                                    <div class="card accordion-item active">
-                                        <h2 class="accordion-header bg-primary">
-                                            <button type="button" class="accordion-button bg-primary" data-bs-toggle="collapse" data-bs-target="#accordionTwo" aria-expanded="true" aria-controls="accordionTwo">
-                                                {{ $program->program_name }}
-                                            </button>
-                                        </h2>
-                                        <div id="accordionTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                                            <div class="accordion-body">
-                                                <div class="alert alert-info">
-                                                    Videos for {{ $program->program_name }} is currently unavailable.
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endforelse
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr class="my-0" />
-                <!-- /Account -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <!-- BreadCrumb -->
+        <div class="row">
+            <div class="col-8">
+                <h4 class="fw-bold py-3 mb-4">
+                    <span class="text-muted fw-light">Program /</span>
+                    <span class="text-muted fw-light"><a
+                            href="{{ route('user.account.programs.program.index') }}">{{ $program->program_name }}</a>
+                        /</span>
+                    Offline Videos
+                </h4>
+            </div>
+            <div class="col-4 text-end">
+                <button data-href="{{ route('user.account.programs.program.index') }}"
+                    class="clickable btn btn-danger text-right " type="button" id="orederStatistics">
+                    <i class="bx bx-block"></i>
+                    Close
+                </button>
             </div>
         </div>
+
+        <!-- Folder View -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row couser-lister">
+                            @forelse ($program->videoCourses as $courses)
+                                <div class="col-md-6 mb-5 pb-2 lister-name" data-slug="{{ $courses->slug }}"
+                                    data-name="{{ $courses->course_name }}" data-item="{{ $courses->getKey() }}">
+                                    <div class="row">
+                                        <div class="col-md-12 text-center">
+                                            <img src="{{ asset('folder.png') }}" class="img-fluid w-50" />
+                                        </div>
+                                        <div class="col-md-12 text-center fs-5">
+                                            <a href="" class="course-selection">{{ $courses->course_name }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            @empty
+                                <div class="col-md-12">
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 video-content" id='videoContent'>
+
+            </div>
+        </div>
+
+
     </div>
-</div>
-<!-- /Content -->
+    <!-- /Content -->
 @endsection
 
-@push("custom_script")
-<script type="text/javascript">
-    $(document).ajaxStart(function() {
-        $('.progress').fadeIn('fast', function() {
-            $(this).removeClass('d-none');
+@push('custom_script')
+    <script type="text/javascript">
+        class CourseList {
+            _courses = [];
+
+            function setCourses(course_key, course_name, course_index, lessions = []) {
+                let courses = {
+                    course_key: course_name,
+                    lessions: lessions
+                }
+
+                if (this._courses[course_index] === undefined) {
+                    this._courses.push(course_index);
+                }
+                this._courses[course_index] = courses;
+            }
+
+
+            function getCourses(index) {
+                if (this._courses[index] !== undefined) {
+                    return this._courses[index];
+                }
+                return;
+            }
+
+            function getLessions(courseIndex, lessionIndex = null) {
+                if (this._courses[index] !== undefined) {
+                    let lession = this._courses.lessions;
+
+                    if (lessionIndex != null) {
+                        return lession[lessionIndex];
+                    }
+                    return lession;
+                }
+            }
+
+            function saveLessions(courseIndex, lession = []) {
+
+            }
+        }
+
+        window.courses = new CourseList;
+
+        $(document).ready(function() {
+            $.each($('.lister-item'), function(index, element) {
+                let params = {
+                    "course_key": $(element).data('slug'),
+                    'course_name': $(element).data('name'),
+                    'course_index': $(element).data('item')
+                }
+                window.courses.push(params.course_key, params.course_name);
+            })
+        })
+
+        $(document).on('click', '.course-selection', function(event) {
+            event.preventDefault();
+            let _this = this;
+            let parentDiv = $(_this).closest('div.lister-item');
+            let params = {
+                "course_key": $(parentDiv).data('slug'),
+                'course_name': $(parentDiv).data('name'),
+                'course_index': $(parentDiv).data('item')
+            }
+            let currentCourses = courses.getCourses(params.course_index);
+            console.log(currentCourses);
+        })
+
+        $(document).ajaxStart(function() {
+            $('.progress').fadeIn('fast', function() {
+                $(this).removeClass('d-none');
+            });
+
+        }).ajaxStop(function() {
+            $(".progress").fadeOut('medium', function() {
+                $(this).addClass("d-none");
+            })
         });
 
-    }).ajaxStop(function() {
-        $(".progress").fadeOut('medium', function() {
-            $(this).addClass("d-none");
+        $(".watchLession").click(function(event) {
+            event.preventDefault();
+            $("ul.lms-list li").removeClass("text-success")
+            $(this).addClass('text-success');
+            $.ajax({
+                type: "get",
+                url: $(this).data("href"),
+                headers: {
+                    'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr('content')
+                },
+                success: function(response) {
+                    $("#videoContent").html(response);
+                }
+            })
         })
-    });
-
-    $(".watchLession").click(function(event) {
-        event.preventDefault();
-        $("ul.lms-list li").removeClass("text-success")
-        $(this).addClass('text-success');
-        $.ajax({
-            type: "get",
-            url: $(this).data("href"),
-            headers: {
-                'X-CSRF-TOKEN': $("meta[name='csrf-token']").attr('content')
-            },
-            success: function(response) {
-                $("#videoContent").html(response);
-            }
-        })
-    })
-</script>
+    </script>
 @endpush

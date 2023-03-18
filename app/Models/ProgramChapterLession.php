@@ -10,7 +10,21 @@ class ProgramChapterLession extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public function course(){
-        return $this->belongsTo(ProgramCourse::class,"program_course_id");
+    protected $hidden = [
+        'id',
+        'program_course_id',
+        'program_id',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    protected $alias = [
+        'lession_name' => 'name'
+    ];
+
+    public function course()
+    {
+        return $this->belongsTo(ProgramCourse::class, "program_course_id");
     }
 }

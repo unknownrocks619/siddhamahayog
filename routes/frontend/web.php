@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\V1\Courses\CourseControllerAPI;
 use App\Http\Controllers\API\V1\Member\UserController;
 use App\Http\Controllers\Dharmashala\DharmashalaController;
 use App\Http\Controllers\Frontend\Events\EventController;
@@ -123,6 +124,7 @@ Route::prefix("account")
                         Route::get("/list/{program}/{course}/{lession}", "videos")->name("show");
                         Route::post("/watch/history/{program}/{course}/{lession}", 'storeHistory')->name('store.history');
                         Route::post("/video/check/permission/{program}/{lession?}", "allowedToWatch")->name('video-permission');
+                        Route::get('/lession/{course}/{lessionID?}', [CourseControllerAPI::class, 'lession'])->name('video-lession');
                     });
 
                 /**
