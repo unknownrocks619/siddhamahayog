@@ -7,6 +7,7 @@ $showPayment = false;
 $showPending = false;
 $allowJoin = false;
 $live = $program->live;
+
 $program = $program->program;
 $admission = $program->admission_fee()->first();
 

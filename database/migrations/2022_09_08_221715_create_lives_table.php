@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("program_id")->constrained("programs", "id");
             $table->boolean("live")->default(true);
-            $table->foreignId("section_id")->constrained("program_sections", "id")->nullable();
+            $table->foreignId("section_id")->nullable()->constrained("program_sections", "id");
             $table->string("meeting_id")->nullable();
             $table->foreignId("zoom_account_id")->constrained('zoom_accounts', "id");
             $table->longText("admin_start_url")->nullable();

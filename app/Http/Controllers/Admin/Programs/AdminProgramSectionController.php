@@ -28,6 +28,20 @@ class AdminProgramSectionController extends Controller
         return view('admin.programs.section.index', compact("all_sections", "program"));
     }
 
+    public function student_list_per_section(Program $program, $section = null)
+    {
+        $sectionStudent = ProgramStudent::with(['student', 'section'])->where('program_id', $program->getKey());
+
+        if ($section && $section != 'all') {
+            $sectionStudent->where('program_section_id', $section);
+        } elseif (!$section) {
+            $sectionStudent->where('allow_all', true);
+        }
+        $selectedSection = $section;
+        $sectionStudent = $sectionStudent->get();
+        return view('admin.programs.all-access-list.index', compact('sectionStudent', 'program', 'selectedSection'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -118,13 +132,14 @@ class AdminProgramSectionController extends Controller
     public function update(Request $request, ProgramSection $section)
     {
         //
+        $current_section = $section->section_name;
         $section->section_name = $request->section_name;
         if ($section->isDirty("section_name")) {
             // check for slug exists.
             $slug_exits = ProgramSection::where('slug', Str::slug($request->section_name))->where('program_id', $section->program_id)->exists();
             if ($slug_exits) {
                 session()->flash('error', "Section already exists.");
-                return redirect()->route('admin.program.sections.admin_list_all_section', [$section->program_id]);
+                return redirect()->route('admin.program.section.index', [$section->program_id, $current_section]);
             }
         }
 
@@ -153,7 +168,7 @@ class AdminProgramSectionController extends Controller
             return back();
         }
         session()->flash('success', "Section updated.");
-        return redirect()->route('admin.program.sections.admin_list_all_section', $section->program_id);
+        return redirect()->route('admin.program.section.index', [$section->program_id, $current_section]);
     }
 
     /**
@@ -188,6 +203,8 @@ class AdminProgramSectionController extends Controller
         $programBatch = ProgramStudent::where('program_id', $program->id)
             ->where('student_id', $member->id)
             ->first();
+
+        $current_section = $programBatch->program_section_id;
         $programBatch->program_section_id = $request->section;
 
         try {
@@ -199,6 +216,12 @@ class AdminProgramSectionController extends Controller
         }
 
         session()->flash('success', "Student data updated.");
-        return redirect()->route('admin.program.sections.admin_list_all_section', [$program->id]);
+        return redirect()->route('admin.program.sections.admin_list_all_section', [$program->id, $current_section]);
+    }
+
+    public function fullSectionAccess(Request $request, ProgramStudent $studentID)
+    {
+        $studentID->allow_all = !$studentID->allow_all;
+        $studentID->save();
     }
 }

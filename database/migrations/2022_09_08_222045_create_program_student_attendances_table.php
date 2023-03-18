@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("program_id")->constrained("programs", "id");
             $table->foreignId("student")->constrained("members", "id");
-            $table->foreignId("section_id")->constrained("program_sections", "id")->nullable();
+            $table->foreignId("section_id")->nullable()->constrained("program_sections", "id");
             $table->foreignId("live_id")->constrained("lives", "id")->nullable();
             $table->string("meeting_id")->nullable();
             $table->boolean("active")->defaul(true);

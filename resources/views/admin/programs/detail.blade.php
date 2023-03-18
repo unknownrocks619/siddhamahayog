@@ -46,8 +46,8 @@
                         <div class="footer">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <a href="{{ route('admin.program.sections.admin_list_all_section', [$program->id]) }}"
-                                        class='btn btn-info btn-block btn-sm'>Manage Section</a>
+                                    {{-- <a href="{{-- route('admin.program.sections.admin_list_all_section', [$program->id]) --"
+                                    class='btn btn-info btn-block btn-sm'>Manage Section</a> --}}
                                 </div>
                             </div>
                         </div>
@@ -248,6 +248,14 @@
                                             </a>
                                         </div>
                                     </div>
+                                    <div class="sl-content">
+                                        <div class="text-muted">
+                                            <a href="{{ route('admin.program.section.index', $program->id) }}"
+                                                class="text-info text-link">
+                                                Manage Section
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -322,11 +330,11 @@
                                                 $class = 'border border-danger';
                                                 if (isset($keyByStudent[$student->user_id])) {
                                                     $paymentInformation = $keyByStudent[$student->user_id];
-                                                
+
                                                     if (is_array($paymentInformation)) {
                                                         $paymentInformation = $paymentInformation[count($paymentInformation) - 1];
                                                     }
-                                                
+
                                                     if ($paymentInformation->verified == true && $paymentInformation->amount >= 9000) {
                                                         $info = 'PAID';
                                                         $class = 'border border-success';

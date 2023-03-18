@@ -50,10 +50,13 @@ class EventController extends Controller
         return $this->markAttendance($program, $live);
     }
 
-    public function liveEvent(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
+
+    public function liveEventAjax(LiveEventRequest $request, Program $program, Live $live, ProgramSection $programSection)
     {
+        $studentDetail = $program->program_active_student();
 
         if (!$program->program_active_student()) {
+
             session()->flash('error', "Live session for ` {$program->program_name}` is not available.");
             return back();
         }
@@ -92,7 +95,82 @@ class EventController extends Controller
         return $this->markAttendance($program, $live);
     }
 
-    protected function checkAndUpdateAttendance(Program $program, Live $live)
+    public function liveEvent(LiveEventRequest $request, Program $program, $live, ProgramSection $programSection)
+    {
+        $studentDetail = $program->program_active_student();
+
+
+        // get live based on user section.
+        $live = Live::where('program_id', $program->getKey())
+            ->where('live', true)
+            ->where(function ($query) use ($studentDetail, $request) {
+                if (!$studentDetail->allow_all) {
+
+                    $query->where('section_id', $studentDetail->program_section_id);
+                } elseif ($request->has('select_section')) {
+                    $query->where('section_id', $request->get('select_section'));
+                }
+            })
+            ->first();
+
+        if (!$studentDetail || !$live) {
+            return $this->json(false, "Live session for `{$program->program_name}` is not available.");
+        }
+        if ($live->section_id) {
+
+            if ($studentDetail->allow_all && !$request->has('select_section')) {
+                $renderHtml = view('frontend.user.modals.multiple-join-section', compact('program', 'live'))->render();
+                return $this->json(true, 'Please select your desired section.', 'popModalWithHTML', ['modalID' => 'responsiveContent', 'content' => $renderHtml]);
+            }
+
+            /**
+             * Need to validate
+             * if allowed.
+             */
+            if ($studentDetail->allow_all && $request->has('join_as') && $request->get('join_as')) {
+                return $this->json(true, '', 'redirect', ['location' => $live->admin_start_url]);
+            }
+
+            if ($studentDetail->allow_all && $request->has('select_section') && $request->get('select_section')) {
+                $studentDetail->section_id  = $request->get('select_section');
+                $live->section_id = $request->get('select_section');
+            }
+        }
+        $attendance = $this->checkAndUpdateAttendance($program, $live, true, $studentDetail);
+
+        if ($attendance) {
+
+            return $attendance;
+        }
+
+        if ($live->lock) {
+            return $this->json(false, $live->lock_text ?? 'Sorry ! This meeting has been locked. Pelase contact support to get access.');
+        }
+
+        $access = true;
+
+
+        if ($live->section_id) {
+
+            $user_section = ($studentDetail->allow_all && $request->has('select_section'))  ? $live->section_id :  $studentDetail->program_section_id;
+            $access = ($user_section == $live->section_id) ? true : false;
+
+            if (!$access) {
+                $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+            }
+        }
+        if (!$access && $live->merge) {
+            $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+        }
+
+        if (!$access) {
+            return $this->json(false, "You are not allowed to join this session. Please contact support or create a support ticket to address this issue.");
+        }
+
+        return $this->markAttendance($program, $live, true);
+    }
+
+    protected function checkAndUpdateAttendance(Program $program, Live $live, bool $ajaxResponse = false, $userSection = null)
     {
         $attendance = ProgramStudentAttendance::where('live_id', $live->id)
             ->where('program_id', $program->id)
@@ -107,16 +185,20 @@ class EventController extends Controller
             $meta[date("Y-m-d H:i:s")] = "Re-joined";
             $attendance->meta = $meta;
             $attendance->save();
+
+            if ($ajaxResponse) {
+                return $this->json(true, '', 'redirect', ['location' => $attendance->join_url]);
+            }
             return redirect()->to($attendance->join_url);
         }
     }
 
-    protected function markAttendance(Program $program, Live $live)
+    protected function markAttendance(Program $program, Live $live, bool $ajaxResponse = false)
     {
         $attendance = new ProgramStudentAttendance;
         $attendance->program_id = $program->id;
         $attendance->student = auth()->id();
-        $attendance->section_id = ($program->program_type == "open") ? $program->active_sections->id :  auth()->user()->section->program_section_id;
+        $attendance->section_id = ($program->program_type == "open") ? $program->active_sections->id : (($live->section_id) ? $live->section_id : auth()->user()->section->program_section_id);
         $attendance->live_id = $live->id;
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
@@ -176,7 +258,6 @@ class EventController extends Controller
                 $insertRamdasInfo->save();
             }
         } catch (\Throwable $th) {
-            dd($th->getMessage());
             //throw $th;
             $notification = new MemberNotification;
             $notification->member_id = auth()->id();
@@ -187,8 +268,15 @@ class EventController extends Controller
             $notification->seen = false;
             $notification->save();
 
+            if ($ajaxResponse) {
+                return $this->json(false, "Oops ! Something went wrong. Please try again later.");
+            }
             session()->flash('error', "Oops ! Something went wrong. Please try again later.");
             return back();
+        }
+
+        if ($ajaxResponse) {
+            return $this->json(true, '', 'redirect', ['location' => $register_member->join_url]);
         }
         return redirect()->to($register_member->join_url);
     }
@@ -202,8 +290,12 @@ class EventController extends Controller
         }
     }
 
-    public function join_as_admin(LiveEventJoinAsAdminRequest $request, Live $live)
+    public function join_as_admin(LiveEventJoinAsAdminRequest $request, Live $live, bool $ajaxResponse = false)
     {
+
+        if ($ajaxResponse) {
+            return $live->admin_start_url;
+        }
         return redirect()->to($live->admin_start_url);
     }
 }

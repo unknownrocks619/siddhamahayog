@@ -284,6 +284,17 @@ Route::prefix('admin')
                         Route::get('list-view/{program}/{member}', 'joinedMeta')->name('list-view');
                         Route::post('reset/{access}', 'resetMeta')->name('reset');
                     });
+
+                /**
+                 * Full section action
+                 */
+                Route::prefix('section/list')
+                    ->name('section.')
+                    ->controller(AdminProgramSectionController::class)
+                    ->group(function () {
+                        Route::get('{program}/full-list/{section?}', 'student_list_per_section')->name('index');
+                        Route::post('{studentID}/update-access', 'fullSectionAccess')->name('section-access');
+                    });
             });
 
 

@@ -346,7 +346,6 @@ class ArthapanchawkController extends Controller
             return redirect()->route('user.account.programs.courses.fee.list', [$program->getKey()]);
         }
 
-        dd("dump and die.");
         $pid = (string) Str::uuid();
         $data = [
             'amt' => $program->active_fees->$fee_type,
@@ -359,6 +358,7 @@ class ArthapanchawkController extends Controller
             'su' => route('vedanta.payment.success', $program->id),
             'fu' => route('vedanta.payment.failed', [$program->id, 'pid' => $pid])
         ];
+
         $esewaController = new EsewaController;
         $esewaController->set_config($data);
 

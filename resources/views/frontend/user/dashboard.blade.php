@@ -41,6 +41,7 @@
                             <h5 class="m-0 me-2">Live Sessions</h5>
                         </div>
                     </div>
+
                     @include('frontend.user.dashboard.live-session', [
                         'enrolledPrograms' => $enrolledPrograms,
                     ])
@@ -168,8 +169,8 @@
             <!--/ Transactions -->
         </div>
     </div>
-
     <!-- Content wrapper -->
+    <x-modal modal='responsiveContent'></x-modal>
 @endsection
 
 @push('custom_css')
@@ -194,6 +195,8 @@
 @push('custom_script')
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -345,4 +348,135 @@
             })
         </script>
     @endif
+    <script type="text/javascript">
+        function JoinLiveSession(submissionMethod, submissionUrl, SubmissionData = []) {
+            $.ajax({
+                method: submissionMethod,
+                url: submissionUrl,
+                data: SubmissionData,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    handleOKResponse(response)
+                },
+                error: function(response) {
+                    handleBadResponse(response);
+
+                }
+            })
+        }
+
+        function revertText(element, originalText, disable = false) {
+            $(element).text(originalText).prop('disable', disable);
+        }
+
+        $(document).on('submit', 'form.confirm-join-session', function(event) {
+            event.preventDefault();
+            $(this).find('button').prop('disabled', true);
+            JoinLiveSession($(this).attr('method'), $(this).attr('action'), $(this).serializeArray());
+        })
+
+        $(document).on('click', '.live-session-button', function(event) {
+            event.preventDefault();
+            let _this = this;
+            let previousText = $(_this).text();
+            $(_this).prop('disabled', true).text('please wait...');
+            JoinLiveSession($(_this).data('method'), $(_this).data('action'));
+            setTimeout(() => {
+                $(_this).prop('disabled', false).text(previousText);
+            }, 2000);
+
+        })
+
+        window.handleOKResponse = function(response) {
+            if (response.status == 200) {
+                messageBox(response.state, response.msg);
+
+                if ((response.callback !== null || response.callback !== '')) {
+                    let fn = window[response.callback];
+
+                    if (typeof(fn) === 'function') {
+                        fn(response.params);
+                    }
+                }
+            }
+        }
+
+        window.handleBadResponse = function(response) {
+            clearAllErrors();
+            if (response.status == 422) {
+                handle422Case(response.responseJSON);
+            }
+        }
+
+        window.handle422Case = function(data) {
+            messageBox(false, data.msg ? data.msg : data.message);
+            $.each(data.errors, function(index, error) {
+                let inputElement = $(`input[name="${index}"]`);
+                let parentDiv = $(inputElement).closest('div.form-group');
+
+                if (parentDiv.length) {
+                    let element = `<div class='text-danger ajax-response-error'>${error}</div>`
+                    parentDiv.append(element);
+                }
+            });
+        }
+
+        window.redirect = function(param) {
+
+            if (typeof param.location !== 'undefined' || param.location !== null) {
+                window.location.href = param.location
+            }
+        }
+
+        window.reload = function() {
+            window.location.reload();
+        }
+
+        window.messageBox = function(status, message, icon = null) {
+            if (!message || message == null || message == undefined) {
+                return;
+            }
+            if (!icon && status == false) {
+                icon = "<i class='fa fa-warning'></i>";
+            } else if (!icon && status == true) {
+                icon = "<i class='fa fa-check-square'></i>";
+            }
+
+
+            $.notify(`${icon}<strong>${message}</strong>`, {
+                type: (status) ? 'success' : 'danger',
+                allow_dismiss: true,
+                showProgressbar: true,
+                autoHide: false,
+                timer: 100,
+                animate: {
+                    enter: 'animated fadeInDown',
+                    exit: 'animated fadeOutUp'
+                }
+            });
+        }
+
+        window.popModalWithHTML = function(params) {
+            let _targetID = params.modalID;
+            if (!$('#' + _targetID).length) {
+                messageBox(false, 'Unable to complete your action.');
+                return;
+            }
+
+            let _modalElement = $('#' + _targetID);
+            $(_modalElement).find('#modal-content').empty().html(params.content);
+            // now trigger modal pop.
+            $("#" + _targetID).modal('toggle');
+
+            if (params.clearButton) {
+                $('.' + params.clearButton).prop('disable', false).text(params.label ?? 'Join Now');
+            }
+        }
+
+        window.clearAllErrors = function() {
+            $('.ajax-response-error').remove();
+        }
+    </script>
 @endpush
