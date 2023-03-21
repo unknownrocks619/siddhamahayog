@@ -98,20 +98,27 @@ class EventController extends Controller
     public function liveEvent(LiveEventRequest $request, Program $program, $live, ProgramSection $programSection)
     {
         $studentDetail = $program->program_active_student();
-
-
         // get live based on user section.
         $live = Live::where('program_id', $program->getKey())
             ->where('live', true)
             ->where(function ($query) use ($studentDetail, $request) {
                 if (!$studentDetail->allow_all) {
-
                     $query->where('section_id', $studentDetail->program_section_id);
                 } elseif ($request->has('select_section')) {
                     $query->where('section_id', $request->get('select_section'));
                 }
             })
             ->first();
+
+        if (!$live) {
+
+            $live = Live::where('program_id', $program->getKey())
+                ->where('live', true)
+                ->where('section_id', NULL)
+                ->latest()
+                ->first();
+        }
+
 
         if (!$studentDetail || !$live) {
             return $this->json(false, "Live session for `{$program->program_name}` is not available.");
@@ -136,6 +143,7 @@ class EventController extends Controller
                 $live->section_id = $request->get('select_section');
             }
         }
+
         $attendance = $this->checkAndUpdateAttendance($program, $live, true, $studentDetail);
 
         if ($attendance) {
@@ -150,9 +158,8 @@ class EventController extends Controller
         $access = true;
 
 
+        $user_section = ($studentDetail->allow_all && $request->has('select_section'))  ? $live->section_id :  $studentDetail->program_section_id;
         if ($live->section_id) {
-
-            $user_section = ($studentDetail->allow_all && $request->has('select_section'))  ? $live->section_id :  $studentDetail->program_section_id;
             $access = ($user_section == $live->section_id) ? true : false;
 
             if (!$access) {
