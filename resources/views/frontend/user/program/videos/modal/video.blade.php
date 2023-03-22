@@ -5,7 +5,7 @@
         </h5>
         <button type="button" class="btn-close bg-danger text-white" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
-    <div class="moda-body">
+    <div class="modal-body">
 @endif
 <div class="row mt-2">
     <div class="col-md-12">

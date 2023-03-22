@@ -17,7 +17,7 @@ class CourseControllerAPI extends Controller
         if ($lessionID) {
             $result = $course->lession()->where('id', $lessionID)->first();
         } else {
-            $result = $course->lession;
+            $result = $course->lession()->orderBy('sort', 'asc')->get();
         }
         return response($result);
     }

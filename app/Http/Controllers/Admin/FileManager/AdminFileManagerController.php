@@ -15,6 +15,7 @@ class AdminFileManagerController extends Controller
 
     public function update_video(AdminProgramCourseLessionRequest $request, ProgramChapterLession $video)
     {
+
         $video->lession_name = $request->lession_name;
         $video->total_duration = $request->total_video_duration;
         $video->total_credit = 0;
@@ -91,6 +92,9 @@ class AdminFileManagerController extends Controller
     }
     public function edit_media_by_program(Request $request, Program $program, ProgramChapterLession $video)
     {
+        if ($request->ajax()) {
+            return view('admin.programs.modal.edit_lession_video', compact('program', 'video'));
+        }
         return view("admin.filemanager.video.edit", compact('program', 'video'));
     }
 

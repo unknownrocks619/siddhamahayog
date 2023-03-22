@@ -135,7 +135,7 @@ class ProgramCourseResourceController extends Controller
         // store safely and than allow download only or view only.
     }
 
-    public function list_resource_modal_admin(Request $request, ProgramCourse $course)
+    public function list_resource_modal_admin(Request $request, Program $program, ProgramCourse $course)
     {
         if ($request->ajax() && $request->wantsJson()) {
             $all_resources = $course->load(["resources"]);
@@ -156,12 +156,15 @@ class ProgramCourseResourceController extends Controller
                     return "0";
                 })
                 ->addColumn("view", function ($row) {
-                    return "<a href='#'>Download</a>";
+                    // $action = "<a href='#'>Download</a>";
+                    // $action .= " | ";
+                    $action = "<a class='remove-resource-content' href='" . route("admin.resources.admin_delete_resource", ['file_id' => $row->id, 'file_address' => 'program_resources']) . "'>Delete Resource</a>";
+                    return $action;
                 })
                 ->rawColumns(["view", "resource_type"])
                 ->make(true);
         }
-        return view("admin.programs.modal.detail_lession_resource", compact("course"));
+        return view("admin.programs.modal.detail_lession_resource", compact("course", "program"));
     }
 
     public function edit_doc_by_program(Request $request, ProgramCourseResources $course)

@@ -44,19 +44,20 @@
                                 <div id="courses_list" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                                     data-bs-parent="#course_list_accordian">
                                     <div class="accordion-body">
-                                        @forelse ($program->videoCourses as $courses)
+                                        @forelse ($program->videoCourses()->orderBy('sort','asc')->get() as $courses)
                                             <div class="col-md-6 mb-5 pb-2 lister-name mobile-view"
                                                 data-slug="{{ $courses->slug }}" data-name="{{ $courses->course_name }}"
                                                 data-item="{{ $courses->getKey() }}"
                                                 data-action="{{ route('user.account.programs.videos.video-lession', [$courses->getKey()]) }}">
                                                 <div class="row">
-                                                    <div class="col-md-12 text-center">
-                                                        <img src="{{ asset('folder.png') }}" class="img-fluid w-50" />
-                                                    </div>
-                                                    <div class="col-md-12 text-center fs-5">
-                                                        <a href=""
-                                                            class="course-selection">{{ $courses->course_name }}</a>
-                                                    </div>
+                                                    <a href="" class="course-selection">
+                                                        <div class="col-md-12 text-center">
+                                                            <img src="{{ asset('folder.png') }}" class="img-fluid w-50" />
+                                                        </div>
+                                                        <div class="col-md-12 text-center fs-5">
+                                                            {{ $courses->course_name }}
+                                                        </div>
+                                                    </a>
                                                 </div>
                                             </div>
 
@@ -98,17 +99,19 @@
                 <div class="card d-none d-md-block md-lg-block d-xl-block">
                     <div class="card-body">
                         <div class="row course-lister">
-                            @forelse ($program->videoCourses as $courses)
+                            @forelse ($program->videoCourses()->orderBy('sort','asc')->get() as $courses)
                                 <div class="col-md-6 mb-5 pb-2 lister-name" data-slug="{{ $courses->slug }}"
                                     data-name="{{ $courses->course_name }}" data-item="{{ $courses->getKey() }}"
                                     data-action="{{ route('user.account.programs.videos.video-lession', [$courses->getKey()]) }}">
                                     <div class="row">
-                                        <div class="col-md-12 text-center">
-                                            <img src="{{ asset('folder.png') }}" class="img-fluid w-50" />
-                                        </div>
-                                        <div class="col-md-12 text-center fs-5">
-                                            <a href="" class="course-selection">{{ $courses->course_name }}</a>
-                                        </div>
+                                        <a href="" class="course-selection">
+                                            <div class="col-md-12 text-center">
+                                                <img src="{{ asset('folder.png') }}" class="img-fluid w-50" />
+                                            </div>
+                                            <div class="col-md-12 text-center fs-5">
+                                                {{ $courses->course_name }}
+                                            </div>
+                                        </a>
                                     </div>
                                 </div>
 
@@ -210,7 +213,7 @@
                                             </h5>
                                     </div>`
                         if (element.video_description != null) {
-                            _content += `<div class='col-md-12 description text-muted'>
+                            _content += `<div class='col-md-12 description text-dark'>
                                     ${element.video_description}
                                     </div>`
                         }
@@ -479,5 +482,14 @@
             });
             MyModal.show();
         }
+
+        $(document).on('click', '.btn-close', function(event) {
+            console.log('hello');
+            let _modal = $(this).closest('div.modal');
+            if ($(_modal).find('iframe').length) {
+                $(_modal).find('div.modal-body').remove();
+                $(_modal).find('script').remove();
+            }
+        })
     </script>
 @endpush

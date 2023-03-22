@@ -1,4 +1,5 @@
-<form enctype="multipart/form-data" name="course_form" id="new_resource" method="post" action="{{ route('admin.program.courses.admin_program_course_store_resource_modal',[$course->id]) }}">
+<form enctype="multipart/form-data" class="add_course_resource_form" name="course_form" id="new_resource" method="post"
+    action="{{ route('admin.program.courses.admin_program_course_store_resource_modal', [$course->id]) }}">
     @csrf
     <div class="modal-header bg-dark text-white">
         <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small>Add Resource</small></h4>
@@ -42,18 +43,19 @@
                         Resource File
                         <sub class="text-danger">Required Only if Resource type is PDF or Image</sub>
                     </b>
-                    <input type="file" class="form-control" name="resource_file" placeholder="" />
-                    <div id="resource_file_error" class='text-danger'></div>                      
+                    <input type="file" class="form-control" id='resourceFile' name="resource_file" placeholder="" />
+                    <div id="resource_file_error" class='text-danger'></div>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <div class="form-group">
                     <b>
                         Lock Resource After
                     </b>
                     <sub class='text-info'>(Number of Days)</sub>
-                    <input name='lock_after_days' type="number" class='form-control' class="form-control" value="0" />
+                    <input name='lock_after_days' type="number" class='form-control' class="form-control"
+                        value="0" />
                     <div id="lock_after_days_error" class='text-danger'></div>
 
                 </div>
@@ -74,12 +76,10 @@
             </div>
         </div>
     </div>
-    <div class="modal-footer">
-        <div class="row">
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-primary btn-block btn-sm ">Create New Course</button>
-            </div>
-        </div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button type="button" class="close-button btn btn-danger btn-simple btn-round waves-effect"
+            data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary btn-block ">Create New Course</button>
     </div>
 </form>
 
@@ -89,9 +89,27 @@
         $("#resource_text").summernote();
     })
     $.ajaxSetup({
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-});
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
+    $('form.add_course_resource_form').submit(function(event) {
+        event.preventDefault();
+        var formData = new FormData($(this)[0]);
+        formData.append('resource_file', $("#resourceFile")[0].files[0]);
+        $(this).find('input').prop('readonly', true);
+        $(this).find('button').prop('disabled', true);
+        $.ajax({
+            method: $(this).attr('method'),
+            url: $(this).attr('action'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                $('.close-button').prop('disabled', false).trigger('click');
+                window.resouceDataTableList.ajax.reload();
+            }
+        })
+    })
 </script>

@@ -171,15 +171,17 @@ Route::prefix('admin')
                         Route::get('/add/{program}', [AdminProgramCourseController::class, "create"])->name("admin_program_course_add");
                         Route::get("/edit/{course}", [AdminProgramCourseController::class, "edit"])->name("admin_program_course_edit");
                         Route::get("/add/lession/{course}", [AdminProgramCourseController::class, "create_video_modal"])->name("admin_program_course_add_lession_modal");
-                        Route::get("/list/lession/video/{course}", [AdminProgramCourseController::class, "list_video_modal"])->name("admin_program_video_list_lession_modal");
-                        Route::get("/list/lession/resources/{course}", [ProgramCourseResourceController::class, "list_resource_modal_admin"])->name("admin_program_course_list_lession_modal");
+                        Route::get("/list/lession/video/{program}/{course}", [AdminProgramCourseController::class, "list_video_modal"])->name("admin_program_video_list_lession_modal");
+                        Route::get("/list/lession/resources/{program}/{course}", [ProgramCourseResourceController::class, "list_resource_modal_admin"])->name("admin_program_course_list_lession_modal");
                         Route::get("/add/resources/{course}", [ProgramCourseResourceController::class, "create_program_resource_modal"])->name('admin_program_course_add_resource_modal');
 
                         Route::post("/add/{program}", [AdminProgramCourseController::class, "store_course"])->name('admin_program_course_add');
-                        Route::post("/edit/{course}", [AdminProgramCourseController::class, "update_course"])->name("admin_program_course_edit");
+                        Route::post("/edit/{course}", [AdminProgramCourseController::class, "update_course"])->name("admin_program_course_update");
                         Route::post("/delete/{course}", [AdminProgramCourseController::class, "delete_course"])->name('admin_program_course_delete');
                         Route::post("/add/lession/{course}", [AdminProgramCourseController::class, "store_course_lession_video"])->name("admin_program_course_store_lession_modal");
                         Route::post("/add/resources/{course}", [ProgramCourseResourceController::class, "store_program_resource"])->name('admin_program_course_store_resource_modal');
+                        Route::post('/reorder/{program}', [AdminProgramCourseController::class, 're_order_course'])->name('admin_program_redorder_course');
+                        Route::post('/reorder/{program}/{course}', [AdminProgramCourseController::class, 're_order_lession'])->name('admin_program_redorder_lession');
                     });
 
                 Route::prefix("live")

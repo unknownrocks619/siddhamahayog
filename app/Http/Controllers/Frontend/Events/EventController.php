@@ -29,6 +29,7 @@ class EventController extends Controller
      * @param String $slug
      * @return view
      */
+    
     public function event($slug)
     {
         $event = WebsiteEvents::where('slug', $slug)->firstOrFail();
