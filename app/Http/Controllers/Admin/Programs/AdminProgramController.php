@@ -109,6 +109,7 @@ class AdminProgramController extends Controller
     {
 
         $program->promote = ($program->promote) ? "yes" : "no";
+        
         if ($program->program_duration) {
             $start_date = explode("-", $program->program_duration);
             $program->program_duration_start = $start_date[0];

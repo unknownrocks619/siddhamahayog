@@ -20,11 +20,11 @@ class ProgramEvent
      *
      * @return void
      */
+    public $program;
     public function __construct(Program $program)
     {
         //
         $this->program = $program;
-
     }
 
     /**

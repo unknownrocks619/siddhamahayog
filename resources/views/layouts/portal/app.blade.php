@@ -9,26 +9,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>
-        {{ config("app.name","Siddhamahayog Sadhak Portal") }}
-        @yield("page_title")
+        {{ config('app.name', 'Siddhamahayog Sadhak Portal') }}
+        @yield('page_title')
     </title>
-    <link rel="stylesheet" href="{{ asset ('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
-    @yield("top_css")
-    <link rel="stylesheet" href="{{ asset ('assets/css/main.css') }}">
-    <link rel="stylesheet" href="{{ asset ('assets/css/color_skins.css') }}">
-    @yield("page_css")
+    <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}">
+    @yield('top_css')
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/color_skins.css') }}">
+    @yield('page_css')
 </head>
 
 <body class="theme-black">
-    <!-- Page Loader -->
-    <div class="page-loader-wrapper">
-        <div class="loader">
-            <div class="m-t-30">
-                <img src="{{ site_settings('loading_bar_image') }}" width="48" height="48" alt="Siddhamahayog">
-            </div>
-            <p>Please wait...</p>
-        </div>
-    </div>
     <div class="overlay_menu">
         <button class="btn btn-primary btn-icon btn-icon-mini btn-round"><i class="zmdi zmdi-close"></i></button>
         <div class="container">
@@ -54,16 +45,18 @@
         </div>
     </div>
     <div class="overlay"></div><!-- Overlay For Sidebars -->
-    @if(auth()->user()->role_id == 1)
-    @include("inc.admin.nav")
-    @include("inc.admin.menu")
-    @include("inc.admin.aside")
+    @if (auth()->user()->role_id == 1)
+        @include('inc.admin.nav')
+        @include('inc.admin.menu')
+        @include('inc.admin.aside')
     @endif
-    @yield("content")
-    @yield("modal")
-    <script src="{{ asset ('assets/bundles/libscripts.bundle.js') }}"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) -->
-    <script src="{{ asset ('assets/bundles/vendorscripts.bundle.js') }}"></script> <!-- slimscroll, waves Scripts Plugin Js -->
-    @yield("page_script")
+    @yield('content')
+    @yield('modal')
+    <script src="{{ asset('assets/bundles/libscripts.bundle.js') }}"></script> <!-- Lib Scripts Plugin Js ( jquery.v3.2.1, Bootstrap4 js) -->
+    <script src="{{ asset('assets/bundles/vendorscripts.bundle.js') }}"></script> <!-- slimscroll, waves Scripts Plugin Js -->
+    <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+
+    @yield('page_script')
 
 </body>
 

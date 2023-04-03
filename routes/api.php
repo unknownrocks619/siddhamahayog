@@ -64,7 +64,7 @@ Route::prefix("v1")
             });
 
         /**
-         * Member 
+         * Member
          */
         Route::prefix('member')
             ->name('member.')

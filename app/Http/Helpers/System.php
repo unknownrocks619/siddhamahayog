@@ -79,7 +79,7 @@ if (!function_exists('meeting_details')) {
 
     function zoom_meeting_details($meeting_id = 81217648146)
     {
-        $signature = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InBVQmhpSkRqVFJXaG9XQWVuamttTFEiLCJleHAiOjE2NzIzODA5MDAsImlhdCI6MTYzMTIwMDQ4NH0.33IM6DmA8fs-BGTf7khr5O9euOsHqY3WxQbgcWZq1S8";
+        // $signature = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InBVQmhpSkRqVFJXaG9XQWVuamttTFEiLCJleHAiOjE2NzIzODA5MDAsImlhdCI6MTYzMTIwMDQ4NH0.33IM6DmA8fs-BGTf7khr5O9euOsHqY3WxQbgcWZq1S8";
 
         $curl_url = "https://api.zoom.us/v2/meetings/$meeting_id";
         $curl = curl_init();
@@ -92,7 +92,7 @@ if (!function_exists('meeting_details')) {
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
-                "authorization: Bearer {$signature}",
+                // "authorization: Bearer {$signature}",
                 "content-type: application/json"
             ),
         ));
