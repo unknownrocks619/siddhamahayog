@@ -26,7 +26,7 @@
 
         <!-- Folder View -->
         <div class="row">
-            <div class="col-md-4" style="max-height:95vh; overflow:hidden;overflow-y:scrol">
+            <div class="col-md-4" style="max-height:95vh; overflow:hidden;overflow-y:scroll">
 
 
                 <!-- Mobile View -->

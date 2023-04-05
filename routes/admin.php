@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Batch\AdminBatchController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CodeTestZoneController;
 use App\Http\Controllers\Admin\FileManager\AdminFileManagerController;
 use App\Http\Controllers\Admin\Members\MemberController;
 use App\Http\Controllers\Admin\Notice\Noticecontroller;
@@ -43,7 +44,7 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(["auth", "admin"])
     ->group(function () {
-
+        Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {
 
             $members = Member::select(['first_name', 'last_name', 'middle_name', 'id'])->cursor();

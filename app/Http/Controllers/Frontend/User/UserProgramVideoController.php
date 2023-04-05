@@ -33,10 +33,7 @@ class UserProgramVideoController extends Controller
             return $query->with(["lession"]);
         }, "last_video_history"]);
 
-        if (user()->role_id == Role::ADMIN) {
-            return view("frontend.user.program.videos.folder-view", compact("program"));
-        }
-
+        return view("frontend.user.program.videos.folder-view", compact("program"));
         return view("frontend.user.program.videos.index", compact("program"));
     }
 
@@ -50,10 +47,8 @@ class UserProgramVideoController extends Controller
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 403);
         }
-        if (user()->role_id == Role::ADMIN) {
-            $content = view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'))->render();
-            return $this->json(true, '', '', ['content' => $content, 'modalID' => 'videoModal']);
-        }
+        $content = view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'))->render();
+        return $this->json(true, '', '', ['content' => $content, 'modalID' => 'videoModal']);
         return view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'));
     }
 
@@ -93,9 +88,7 @@ class UserProgramVideoController extends Controller
         }
 
         if (!$this->checkFeeDetail($program, "admission_fee")) {
-            if (user()->role_id == Role::ADMIN) {
-                return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
-            }
+            return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
             return view("frontend.user.program.videos.modal.payment");
         }
         // get video
