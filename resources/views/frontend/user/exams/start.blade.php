@@ -6,7 +6,7 @@
 
 
 @section('content')
-    <div class="container-xxl flex-grow-1 container-p-y"
+    <div class="container-xxl flex-grow-1 container-p-y question-answer-wrapper"
         data-default="{{ route('user.account.programs.exam.fetch-start', [$program->getKey(), $exam->getKey()]) }}">
         <div class="row">
             <div class="col-md-3">
@@ -25,7 +25,7 @@
                                                 {{ $question->question_title }}
                                             </a>
                                         </h6>
-                                        <small class="text-muted type">{{ ucwords($question->question_type) }}</small>
+                                        <small class="text-info type">{{ ucwords($question->question_type) }}</small>
                                         {{-- <small class="text-danger status">Draft</small> --}}
                                     </div>
                                 </div>
@@ -217,10 +217,16 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-        })
 
+        })
+        window.ajaxCall = null;
         const defaultQuestion = function getDefaultQuestion(userData = {}) {
-            $.ajax({
+
+            if (ajaxCall) {
+                ajaxCall.abort();
+            }
+
+            window.ajaxCall = $.ajax({
                 type: 'POST',
                 url: $('.container').data('default'),
                 data: userData,
@@ -273,6 +279,7 @@
             }
         }
 
+
         const saveAnswer = function saveUserAnswer(userData, url) {
             $.ajax({
                 type: 'POST',
@@ -306,7 +313,44 @@
         $(document).on('click', '.question-title', function(event) {
             event.preventDefault();
             let questions = question.getQuestionByIndex($(this).data('question-index'));
-
+            $(this).closest('div.card-body').find('.question-title').removeClass('text-muted');
+            // $('.question-title').removeClass('text-muted');
+            $(this).addClass('text-muted');
+            let _htmlLoading = `
+            <div class="card">
+                        <div class="card-body d-flex justify-content-center">
+                            <div class="demo-inline-spacing">
+                                <div class="spinner-grow" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-secondary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-success" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-warning" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-info" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-light" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-dark" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            `;
             if (questions) {
                 displayQuestion({
                     html: questions
@@ -317,12 +361,17 @@
             formData = {
                 "question": $(this).data('question-index')
             }
+            $('.actual-question').empty().html(_htmlLoading);
+
             return defaultQuestion(formData);
 
         })
 
         $(document).on('click', '.draft', function(event) {
             event.preventDefault();
+
+            $('.question-answer-wrapper').find('button').prop('readonly', true).addClass('disabled')
+            $('.question-answer-wrapper').find('button').addClass('ajax-submit-class');
 
             // get question
             let currentForm = $(this).closest('form');
@@ -352,6 +401,10 @@
                 'value': 'draft'
             });
             saveAnswer(formData, url);
+            // $(document).find('.ajax-submit-class').prop('readonly', false)
+            //     .removeClass('disabled')
+            // $(document).find('.ajax-submit-class').removeClass('.ajax-submit-class')
+
         })
 
         $(document).on('submit', 'form.form-answer', function(event) {
@@ -372,6 +425,7 @@
             let questionIndex = $(questionWrapperElement).find('div.card-body')
             addQuestion($(questionIndex).data('question-id'), htmlRender.html);
             displayAnswer($(questionIndex).data('question-id'));
+
         }
 
 
@@ -392,6 +446,15 @@
         function responseAnswer(htmlRender) {
             $('.actual-question').html(htmlRender.html);
             question.updateQuestionState(htmlRender.question_index, htmlRender.html);
+            $('.ajax-submit-class').prop('readonly', false).removeClass('disabled');
+            $('.ajax-submit-class').removeClass('disabled');
+        }
+
+        function answerCompleted(htmlRender) {
+            $('.ajax-submit-class').prop('readonly', false).removeClass('disabled');
+            $('.ajax-submit-class').removeClass('disabled');
+
+            $('.question-answer-wrapper').empty().html(htmlRender.html);
         }
     </script>
 @endpush

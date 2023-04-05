@@ -14,4 +14,18 @@ class ProgramExam extends Model
     {
         return $this->hasMany(ProgramExamQuestion::class, 'program_exam_id');
     }
+
+
+    public function attempts()
+    {
+        return $this->hasMany(MemberQuestionAnswerDetail::class, 'program_exam_id')
+            ->where('member_id', auth()->id())
+            ->where('status', 'completed');
+    }
+
+    public function all_attempts()
+    {
+        return $this->hasMany(MemberQuestionAnswerDetail::class, 'program_exam_id')
+            ->where('status', 'completed');
+    }
 }

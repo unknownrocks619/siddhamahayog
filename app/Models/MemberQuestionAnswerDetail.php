@@ -16,4 +16,7 @@ class MemberQuestionAnswerDetail extends Model
         'exam_detail' => 'array',
         'question_detail' => 'array'
     ];
+
+    const CORRECT_ANSWER = 'Correct Answer';
+    const WRONG_ANSWER = 'Wrong Answer';
 }

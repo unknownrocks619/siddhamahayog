@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend\Exams;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\Exam\ExamAttendValidationRequest;
 use App\Http\Traits\CourseFeeCheck;
+use App\Jobs\CreateResultJob;
 use App\Models\MemberAnswerOverview;
 use App\Models\MemberQuestionAnswerDetail;
 use App\Models\Program;
@@ -23,7 +24,7 @@ class ExamCenterController extends Controller
         user()->load(['member_detail']);
         $userPrograms = user()->member_detail->groupBy('program_id')->toArray();
         $exams = ProgramExam::where('program_id', array_keys($userPrograms))
-            ->withCount(['questions'])
+            ->withCount(['questions', 'attempts'])
             ->where('active', true)->orderBy('start_date', 'desc')->get();
 
         return view("frontend.user.exams.index", compact('exams'));
@@ -57,8 +58,11 @@ class ExamCenterController extends Controller
             session()->put('exam_start', time());
         }
         $exam->load(['questions']);
-
-        return view('frontend.user.exams.start', compact('program', 'exam'));
+        $userAnswerCount = MemberQuestionAnswerDetail::where('program_id', $program->getKey())
+            ->where('program_exam_id', $exam->getKey())
+            ->where('status', 'completed')
+            ->count();
+        return view('frontend.user.exams.start', compact('program', 'exam', 'userAnswerCount'));
     }
 
     /**
@@ -101,11 +105,12 @@ class ExamCenterController extends Controller
         $existingAnswer = MemberQuestionAnswerDetail::where('program_id', $program->getKey())
             ->where('program_exam_id', $exam->getKey())
             ->where('program_exam_question_id', $question->getKey())
+            ->where('member_id', auth()->id())
             ->first();
 
 
-        $method = '_' . $question->question_type;
 
+        $method = '_' . $question->question_type;
         $answer = $this->$method($request, $program, $exam, $question, $existingAnswer);
 
         if (!$answer) {
@@ -119,13 +124,29 @@ class ExamCenterController extends Controller
             $message = "Answer Saved as Draft.";
         }
 
-        $questions = view('frontend.user.exams.lister.question', compact('question', 'program', 'exam', 'answer'))->render();
-        return $this->json(true, $message, 'responseAnswer', ['html' => $questions, 'question_index' => $question->getKey()]);
+        $totalQuestion = $exam->questions()->count();
+        $memberAnswer = MemberQuestionAnswerDetail::where('program_id', $program->getKey())
+            ->where('program_exam_id', $exam->getKey())
+            ->where('member_id', auth()->id())
+            ->where('status', 'completed')
+            ->count();
+        if ($memberAnswer >= $totalQuestion) {
+            $viewFile = 'frontend.user.exams.lister.completed';
+            $message = 'Congratulation ! You have answered all the questions.';
+            $callback  = 'answerCompleted';
+            CreateResultJob::dispatch(auth()->user(), $exam);
+        } else {
+            $viewFile = 'frontend.user.exams.lister.question';
+            $callback = 'responseAnswer';
+        }
+
+        $questions = view($viewFile, compact('question', 'program', 'exam', 'answer'))->render();
+
+        return $this->json(true, $message, $callback, ['html' => $questions, 'question_index' => $question->getKey()]);
     }
 
     private function _boolean(Request $request,  Program $program, ProgramExam $exam, ProgramExamQuestion $question, $previousAnswer = null): MemberQuestionAnswerDetail|null
     {
-
         if ($previousAnswer) {
             return null;
         }
@@ -139,14 +160,14 @@ class ExamCenterController extends Controller
         $newUserAnswer->question_detail = $question->toArray();
         $newUserAnswer->status = 'completed';
         $correct_answer = $question->question_detail->answer;
-
         $newUserAnswer->result = [
             'answer' => $request->post('answer'),
             'marks_obtained' => $request->post('answer') == $correct_answer ? $question->marks : 0,
             'checked' => true,
-            'remarks' => 'Correct Answer',
+            'remarks' => $request->post('answer') == $correct_answer ? MemberQuestionAnswerDetail::CORRECT_ANSWER : MemberQuestionAnswerDetail::WRONG_ANSWER,
             'status' => 'completed',
         ];
+
         $answerOverView = $this->_answerOverView($program, $exam, $question);
         try {
             DB::transaction(function () use ($newUserAnswer, $answerOverView) {
@@ -196,7 +217,7 @@ class ExamCenterController extends Controller
         $newUserAnswer->exam_detail = $exam->toArray();
         $newUserAnswer->question_detail = $question->toArray();
         $newUserAnswer->status = 'completed';
-        $remarks = "Incorrect Answer";
+        $remarks = MemberQuestionAnswerDetail::WRONG_ANSWER;
         $marksObtained = 0;
         // check if user was correct.
         $totalCorrect = $request->post('answer');
@@ -216,7 +237,7 @@ class ExamCenterController extends Controller
             }
 
             if ($correct) {
-                $remarks = 'Correct Answer';
+                $remarks = MemberQuestionAnswerDetail::CORRECT_ANSWER;
                 $marksObtained = $question->marks;
             }
         }

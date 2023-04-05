@@ -32,10 +32,25 @@
                             </div>
                         </div>
                         <div class="job-right my-4 flex-shrink-0">
-
+                            @if ($exam->attempts_count >= $exam->questions_count)
+                                <button href="#"
+                                    data-href="{{ route('user.account.programs.exam.start', [$exam->program_id, $exam->getKey()]) }}"
+                                    class="btn  btn-info clickable">
+                                    View Result
+                                </button>
+                            @endif
+                            <?php
+                            $text = 'Start Exam';
+                            if ($exam->attempts_count >= $exam->questions_count) {
+                                $text = 'View Answer';
+                            }
+                            ?>
                             <button href="#"
                                 data-href="{{ route('user.account.programs.exam.start', [$exam->program_id, $exam->getKey()]) }}"
-                                class="btn d-block w-100 d-sm-inline-block btn-primary clickable">Start Exam</button>
+                                class="btn  btn-primary clickable">
+                                {{ $text }}
+                            </button>
+
                         </div>
                     </div>
                 @endforeach
