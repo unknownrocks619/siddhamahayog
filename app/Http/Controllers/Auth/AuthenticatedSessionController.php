@@ -107,14 +107,14 @@ class AuthenticatedSessionController extends Controller
             return back()->withErrors(['access' => "Invalid or Access Code Already Used."]);
         }
 
-        $registrationDetailResponse = json_decode(register_participants_guest($live->zoomAccount, $guestAccess->meeting_id, $settings));
-        if (isset($registrationDetailResponse->code)) {
+        $registrationDetailResponse = register_participants($live->zoomAccount, $guestAccess->meeting_id, $settings);
+        if (isset($registrationDetailResponse['code'])) {
             session()->flash('error', "Unable to join session. " . $registrationDetailResponse->message);
             return back();
         }
 
         $remarks = [
-            'url' => $registrationDetailResponse->join_url,
+            'url' => $registrationDetailResponse['join_url'],
             $meta = [
                 "zoom" => $registrationDetailResponse, //,
                 "ip" => request()->ip(),
@@ -126,7 +126,7 @@ class AuthenticatedSessionController extends Controller
 
         if ($guestAccess->save()) {
             session()->put('vip_access', true);
-            return redirect()->to($registrationDetailResponse->join_url);
+            return redirect()->to($registrationDetailResponse['join_url']);
         }
 
         return back()->withErrors(['access_code', 'Unable to join session Please try again or contact support.']);

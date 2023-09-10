@@ -109,7 +109,7 @@ class AdminProgramController extends Controller
     {
 
         $program->promote = ($program->promote) ? "yes" : "no";
-        
+
         if ($program->program_duration) {
             $start_date = explode("-", $program->program_duration);
             $program->program_duration_start = $start_date[0];
@@ -185,8 +185,13 @@ class AdminProgramController extends Controller
 
 
         $sections = ProgramSection::where('program_id', $program->id)->get();
+        $students = [];
+        $paymentDetail = [];
+
         $students = ProgramStudent::all_program_student($program);
         $paymentDetail = ProgramStudent::studentPaymentDetail('admission_fee', array_keys(Arr::keyBy($students, 'user_id')));
+        if ($program->program_type != 'open') {
+        }
         // $students = ProgramStudent::with(["section", "batch", "student"])
         //     ->where('program_id', $program->id)
         //     ->get();
@@ -240,9 +245,8 @@ class AdminProgramController extends Controller
 
         // now let's retrieve zoom account detail.
         $zoom_account_detail = ZoomAccount::find($request->zoom_account);
-        // dd($zoom_account_detail);
+//         dd(zoom_meeting_details(82527372739));
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name, $domain);
-
         if (!$meeting || isset($meeting->code)) {
             // dd("unable to create meeting");
             session()->flash('error', "Unable to create zoom meeting at the moment.");
@@ -250,9 +254,9 @@ class AdminProgramController extends Controller
         }
 
         $liveProgram->domain = $domain;
-        $liveProgram->meeting_id = $meeting->id;
-        $liveProgram->admin_start_url = $meeting->start_url;
-        $liveProgram->join_url = $meeting->join_url;
+        $liveProgram->meeting_id = $meeting['id'];
+        $liveProgram->admin_start_url = $meeting['start_url'];
+        $liveProgram->join_url = $meeting['join_url'];
 
         try {
             $liveProgram->save();

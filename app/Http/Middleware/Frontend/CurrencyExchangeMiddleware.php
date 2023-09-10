@@ -18,6 +18,9 @@ class CurrencyExchangeMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        if (getenv('APP_ENV') == 'local') {
+            return $next($request);
+        }
         $this->storeTodayExchangeRate();
         return $next($request);
     }

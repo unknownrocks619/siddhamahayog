@@ -29,7 +29,7 @@ class EventController extends Controller
      * @param String $slug
      * @return view
      */
-    
+
     public function event($slug)
     {
         $event = WebsiteEvents::where('slug', $slug)->firstOrFail();
@@ -110,7 +110,6 @@ class EventController extends Controller
                 }
             })
             ->first();
-
         if (!$live) {
 
             $live = Live::where('program_id', $program->getKey())
@@ -243,12 +242,12 @@ class EventController extends Controller
             $insertRamdasInfo->role_id = user()->role_id;
             $insertRamdasInfo->reference_number = $number;
         }
-        $register_member = json_decode(register_participants($live->zoomAccount, $live->meeting_id, $settings, $live->domain));
-        if (isset($register_member->code)) {
-            session()->flash('error', "Unable to join session. " . $register_member->message);
+        $register_member = register_participants($live->zoomAccount, $live->meeting_id, $settings, $live->domain);
+        if (isset($register_member['code'])) {
+            session()->flash('error', "Unable to join session. " . $register_member['message']);
             return back();
         }
-        $attendance->join_url = $register_member->join_url; // register user and fetch account.
+        $attendance->join_url = $register_member['join_url']; // register user and fetch account.
         $attendance->meta = [
             "zoom" => $register_member, //,
             "ip" => request()->ip(),
@@ -284,9 +283,9 @@ class EventController extends Controller
         }
 
         if ($ajaxResponse) {
-            return $this->json(true, '', 'redirect', ['location' => $register_member->join_url]);
+            return $this->json(true, '', 'redirect', ['location' => $register_member['join_url']]);
         }
-        return redirect()->to($register_member->join_url);
+        return redirect()->to($register_member['join_url']);
     }
 
     protected function isLiveLock(Live $live)

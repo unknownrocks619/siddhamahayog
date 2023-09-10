@@ -4,7 +4,7 @@
     </h5>
     <button type="button" class="btn-close bg-danger text-white" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<div class="modal-body p-0">
+<div class="modal-body p-0 post-modal-body-content">
     <div class="row mt-2">
         <div class="col-md-12">
             <?php
@@ -49,7 +49,6 @@
             global: false,
             url: "{{ route('user.account.programs.videos.video-permission', [$program->id, $lession->getKey()]) }}",
             success: function(response) {
-                console.log('response: ', response);
                 if (response) {
                     $(".post-modal-body-content").empty().html(response);
                 }

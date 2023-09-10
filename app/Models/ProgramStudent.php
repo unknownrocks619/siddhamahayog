@@ -108,7 +108,7 @@ class ProgramStudent extends Model
             $sql .= " amount_category = 'admission_fee' ";
         }
 
-        if (is_array($member)) {
+        if (is_array($member) && !empty($member)) {
 
             $memberID = implode(',', $member);
             $sql .= " AND student_id in ({$memberID})";

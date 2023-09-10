@@ -458,22 +458,14 @@
 
         window.popModalWithHTML = function(params) {
             params = params.params;
-            console.log('p', params);
             let _targetID = params.modalID;
-            console.log('target : ', _targetID);
-            console.log($("#" + _targetID));
             if (!$('#' + _targetID).length) {
-                console.log($("#" + _targetID));
                 messageBox(false, 'Unable to complete your action.');
                 return;
             }
 
             let _modalElement = $('#' + _targetID);
             $(_modalElement).find('#modal-content').empty().html(params.content);
-            // now trigger modal pop.
-            // $("#" + _targetID).modal({
-            //     'show': true
-            // });
 
             let MyModal = new bootstrap.Modal($(_modalElement), {
                 backdrop: 'static',
@@ -484,7 +476,6 @@
         }
 
         $(document).on('click', '.btn-close', function(event) {
-            console.log('hello');
             let _modal = $(this).closest('div.modal');
             if ($(_modal).find('iframe').length) {
                 $(_modal).find('div.modal-body').remove();

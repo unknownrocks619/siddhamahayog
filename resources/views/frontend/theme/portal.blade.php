@@ -133,6 +133,15 @@
             $(this).prop("disabled", true);
             window.location.replace($(this).data("href"));
         })
+
+        $(document).on('click', '.unlock-video-pricing', function(event) {
+            event.preventDefault();
+            let _this = this;
+            // get type
+            let _subscriptionType = $(_this).attr('data-type');
+            let _typeID = $(_this).attr('data-id');
+
+        })
     </script>
 </body>
 

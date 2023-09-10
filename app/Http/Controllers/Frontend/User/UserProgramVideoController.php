@@ -34,7 +34,6 @@ class UserProgramVideoController extends Controller
         }, "last_video_history"]);
 
         return view("frontend.user.program.videos.folder-view", compact("program"));
-        return view("frontend.user.program.videos.index", compact("program"));
     }
 
     public function continueWatch()
@@ -49,7 +48,6 @@ class UserProgramVideoController extends Controller
         }
         $content = view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'))->render();
         return $this->json(true, '', '', ['content' => $content, 'modalID' => 'videoModal']);
-        return view("frontend.user.program.videos.modal.video", compact('program', 'course', 'lession'));
     }
 
     public function storeHistory(ProgramVideoLessionWatchRequest $request, Program $program, ProgramCourse $course, ProgramChapterLession $lession)
@@ -89,7 +87,6 @@ class UserProgramVideoController extends Controller
 
         if (!$this->checkFeeDetail($program, "admission_fee")) {
             return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
-            return view("frontend.user.program.videos.modal.payment");
         }
         // get video
         if ($lession->course->lock) {
@@ -103,9 +100,15 @@ class UserProgramVideoController extends Controller
 
         if ($lession->lock_after) {
             $parseDate = Carbon::parse($lession->created_at);
+
+            if ($lession->lession_date) {
+                $parseDate = Carbon::parse($lession->lession_date);
+            }
+
+            $parseDate->addDays($lession->lock_after);
             $now = Carbon::now();
 
-            if ($parseDate->diffInDays($now) > $lession->lock_after) {
+            if ($now->greaterThan($parseDate)) {
                 // lock video watch
                 return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
             }
