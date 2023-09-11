@@ -50,7 +50,7 @@ class ZoomMeeting extends ZoomController
     public function configuration(): array {
         return [
             "type" => 2,
-            "topic" => ' Zoom Meeting Testing',
+            "topic" => $this->getName(),
             "start_time" => date("Y-m-dT15:30:00"),
             "timezone" => "Asia/Kathmandu",
             "duration" => 300,

@@ -6,7 +6,8 @@
         </h1>
         <br />
         <p class="text-white fs-4">
-            Unable to Play video due to error on your account. If problem presist
+            Unable to Play video due to error on your account. If problem pre
+            sist
             please create support ticket.
         </p>
         <div>
