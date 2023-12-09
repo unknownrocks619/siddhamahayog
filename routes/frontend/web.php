@@ -21,12 +21,15 @@ include __DIR__ . "/arthapanchawk.php";
 Route::get('/guru-parampara', function () {
     return view("frontend.page.menus.guru-parampara");
 })->name("guru-parampara");
+
 Route::get('/jagadguru', function () {
     return view("frontend.page.menus.gurudev");
 })->name("jagadguru");
+
 Route::get('/events/atirudri', function () {
     return view("frontend.page.menus.atirudri");
 })->name("events.atirudri");
+
 Route::name('legal.')
     ->group(function () {
         Route::get("/terms-and-conditions", fn () => view("frontend.page.legal.terms"))->name('terms');

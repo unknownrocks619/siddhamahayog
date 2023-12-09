@@ -8,12 +8,14 @@ use App\Http\Requests\Frontend\Event\LiveEventRequest;
 use App\Http\Traits\CourseFeeCheck;
 use App\Models\AttendanceDateSheet;
 use App\Models\Live;
+use App\Models\Member;
 use App\Models\MemberNotes;
 use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudentAttendance;
 use App\Models\Ramdas;
+use App\Models\User;
 use App\Models\WebsiteEvents;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -43,6 +45,7 @@ class EventController extends Controller
 
     public function joinOpenEvent(LiveEventRequest $request, Program $program, Live $live)
     {
+
         $attendance = $this->checkAndUpdateAttendance($program, $live);
         $lock = $this->isLiveLock($live);
         if ($lock) {
@@ -177,11 +180,11 @@ class EventController extends Controller
         return $this->markAttendance($program, $live, true);
     }
 
-    protected function checkAndUpdateAttendance(Program $program, Live $live, bool $ajaxResponse = false, $userSection = null)
+    public function checkAndUpdateAttendance(Program $program, Live $live, bool $ajaxResponse = false, $userSection = null, Member $user=null)
     {
         $attendance = ProgramStudentAttendance::where('live_id', $live->id)
             ->where('program_id', $program->id)
-            ->where("student", user()->id)
+            ->where("student", ($user) ? $user->getKey() : user()->id)
             ->where('meeting_id', $live->meeting_id)
             ->latest()
             ->first();
@@ -200,12 +203,14 @@ class EventController extends Controller
         }
     }
 
-    protected function markAttendance(Program $program, Live $live, bool $ajaxResponse = false)
+    public function markAttendance(Program $program, Live $live, bool $ajaxResponse = false, Member $user = null)
     {
+
+        $user = ($user) ? $user : user();
         $attendance = new ProgramStudentAttendance;
-        $attendance->program_id = $program->id;
-        $attendance->student = auth()->id();
-        $attendance->section_id = ($program->program_type == "open") ? $program->active_sections->id : (($live->section_id) ? $live->section_id : auth()->user()->section->program_section_id);
+        $attendance->program_id = $program->getKey();
+        $attendance->student = $user->getKey();
+        $attendance->section_id = ($program->program_type == "open") ? $program->active_sections?->id ?? 0 : (($live->section_id) ? $live->section_id : $user->section?->program_section_id);
         $attendance->live_id = $live->id;
         $attendance->meeting_id = $live->meeting_id;
         $attendance->active = true;
@@ -215,31 +220,31 @@ class EventController extends Controller
         $attendance->attendance_date_id = $dateID->getKey();
 
 
-        $last_name = ucfirst(trim(user()->last_name));
-        if (user()->middle_name) {
-            $last_name = ucfirst(trim(user()->middle_name)) . ' ' . ucfirst(trim(user()->last_name));
+        $last_name = ucfirst(trim($user->last_name));
+        if ($user->middle_name) {
+            $last_name = ucfirst(trim($user->middle_name)) . ' ' . ucfirst(trim($user->last_name));
         }
         $settings = [
-            'first_name' => ucfirst(trim(user()->first_name)),
+            'first_name' => ucfirst(trim($user->first_name)),
             'last_name' => $last_name,
-            'email' => "T_" . time() . "_rand_" . user()->getKey() . "@" . $live->domain,
+            'email' => "T_" . time() . "_rand_" . $user->getKey() . "@" . $live->domain,
             'auto_approve' => true
         ];
 
-        if (user()->role_id == 1 || user()->role_id == 11) {
+        if ($user->role_id == 1 || $user->role_id == 11) {
 
             $number = substr(time(), 7, 3);
             $settings = [
                 'first_name' => "Ram",
                 'last_name' => "Das ({$number})",
-                'email' => Str::slug(trim(user()->first_name), "_") . time() . "_key_" . user()->getKey() . "@" . $live->domain,
+                'email' => Str::slug(trim($user->first_name), "_") . time() . "_key_" . $user->getKey() . "@" . $live->domain,
                 'auto_approve' => true
             ];
 
             $insertRamdasInfo = new Ramdas();
-            $insertRamdasInfo->member_id = user()->getKey();
-            $insertRamdasInfo->full_name = user()->full_name;
-            $insertRamdasInfo->role_id = user()->role_id;
+            $insertRamdasInfo->member_id = $user->getKey();
+            $insertRamdasInfo->full_name = $user->full_name;
+            $insertRamdasInfo->role_id = $user->role_id;
             $insertRamdasInfo->reference_number = $number;
         }
         $register_member = register_participants($live->zoomAccount, $live->meeting_id, $settings, $live->domain);
@@ -267,7 +272,7 @@ class EventController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             $notification = new MemberNotification;
-            $notification->member_id = auth()->id();
+            $notification->member_id = $user->getKey();
             $notification->title = $program->program_name . " attendance";
             $notification->body = "Attendance couldn't be taken at the moment. If you are locked out from joining please inform support team.";
             $notification->type = "message";
@@ -288,7 +293,7 @@ class EventController extends Controller
         return redirect()->to($register_member['join_url']);
     }
 
-    protected function isLiveLock(Live $live)
+    public function isLiveLock(Live $live)
     {
         if ($live->lock) {
             $message = ($live->lock_text) ?  $live->lock_text : "Sorry ! This meeting has been locked. Pelase contact support to get access.";

@@ -53,15 +53,18 @@ class MemberJoinController extends Controller
         $checkRecord = MemberToSadhak::where('member_id', auth()->id())
             ->where('join_type', 'sadhak')->first();
 
-        if ($checkRecord) {
+        if ( $checkRecord ) {
+
             $record = $checkRecord->joinHistory;
-            $record[] = [
+            $record [] = [
                 'ip' => request()->ip(),
                 'browser' => request()->header('User-Agent')
             ];
+
             $checkRecord->joinHistory = $record;
             $checkRecord->save();
             return redirect()->to($checkRecord->join_link);
+
         }
 
         $getAdminLink = DB::connection('sadhak')->table('zoom_settings')->find('5');

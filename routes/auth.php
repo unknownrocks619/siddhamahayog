@@ -36,11 +36,17 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::get('/access-code', [AuthenticatedSessionController::class, 'createKey'])
     ->middleware('guest')
     ->name('access_key_create');
+
 Route::post('/access-code', [AuthenticatedSessionController::class, 'storeKey'])
     ->middleware('guest')
     ->name('access_key_store');
 
-
+/**
+ * Allow Join from get Request with special access.
+ */
+Route::get('login/join-external',[AuthenticatedSessionController::class,'joinUsingExternal'])
+        ->name('guest')
+        ->name('access_login');
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
     ->middleware('guest')

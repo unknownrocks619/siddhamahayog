@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Frontend\Events\EventController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\GuestAccess;
 use App\Models\Live;
+use App\Models\Member;
+use App\Models\Program;
+use App\Models\ProgramStudent;
 use App\Providers\RouteServiceProvider;
 use App\Rules\GoogleCaptcha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stripe\Event;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -130,5 +135,52 @@ class AuthenticatedSessionController extends Controller
         }
 
         return back()->withErrors(['access_code', 'Unable to join session Please try again or contact support.']);
+    }
+
+    public function joinUsingExternal(Request $request) {
+
+        if (! $request->get('user') || ! $request->get('program') ) {
+            abort(404);
+        }
+
+        $userID =(int) $request->get('user');
+        $programID = (int) $request->get('program');
+
+        // validate usr first.
+        $user = Member::where('id',$userID)->firstOrFail();
+
+        // check if program is active
+        $program = Program::where('id',$programID)
+                            ->where('program_type','open')
+                            ->where('status','active')
+                            ->firstOrFail();
+        // check if this user is registered in event.
+        $programUser = ProgramStudent::where('program_id', $program->getKey())
+                                        ->where('student_id',$user->getKey())
+                                        ->firstOrFail();
+
+        // now check if program is live.
+        $live = Live::where('program_id',$program->getKey())
+                        ->where('live',true)
+                        ->latest()
+                        ->firstOrFail();
+
+        $settings = [
+            "first_name" => trim($user->first_name), // . "(#)",
+            "last_name" => trim($user->last_name),
+            "email" => "T_" . time()  . "_" . strtolower($user->first_name) . "@siddhamahayog.org",
+            "auto_approve" => true
+        ];
+
+
+        $openEvent = new EventController();
+        $attendance = $openEvent->checkAndUpdateAttendance($program, $live, false,null,$user);
+        $lock = $openEvent->isLiveLock($live);
+
+        if ($lock) {
+            return $lock;
+        }
+
+        return ($openEvent->markAttendance($program, $live,false,$user));
     }
 }
