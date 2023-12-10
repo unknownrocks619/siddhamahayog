@@ -53,6 +53,13 @@
                                                     class="clickable btn btn-primary mx-2">My Payment</button>
 
                                             </div>
+                                            <div class="col-sm-12 col-md-2 mt-2">
+                                                <button
+                                                    data-href="{{ route('frontend.jaap.index', $program->program->id) }}"
+                                                    class="clickable btn btn-primary mx-2">My Mantra Count</button>
+
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>

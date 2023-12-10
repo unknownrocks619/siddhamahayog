@@ -21,7 +21,7 @@ use App\Models\Scholarship;
                             @includeWhen(
                                 $program->active,
                                 'frontend.live.dashboard.absent-form',
-                                compact('program'))
+                                ['program' => $program])
                         </div>
                     </div>
                 </div>
@@ -37,7 +37,7 @@ use App\Models\Scholarship;
                 @endif
 
                 @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::ADMIN == user()->role_id)
-                    @include('frontend.user.dashboard.buttons.admin', compact('program'))
+                    @include('frontend.user.dashboard.buttons.admin', ['program' => $program])
                 @endif
             </li>
         @empty

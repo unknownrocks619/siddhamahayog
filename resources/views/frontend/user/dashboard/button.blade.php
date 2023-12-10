@@ -2,6 +2,8 @@
 
 use App\Models\Scholarship;
 use App\Models\UnpaidAccess;
+
+/** @var \App\Models\Program $program */
 $enroll = $program;
 $showPayment = false;
 $showPending = false;
@@ -9,9 +11,12 @@ $allowJoin = false;
 $live = $program->live;
 
 $program = $program->program;
+
 $admission = $program->admission_fee()->first();
 
 if ($program->program_type == 'open') {
+    $allowJoin = true;
+    $showPayment = false;
 } else {
     $scholarship = Scholarship::where('program_id', $program->getKey())
         ->where('student_id', user()->getKey())
@@ -65,9 +70,11 @@ if ($program->program_type == 'open') {
     }
 }
 ?>
+
 @includeWhen(!$enroll->active, 'frontend.user.dashboard.buttons.cancel-subscription')
+
 @includeWhen(
-    $allowJoin && $enroll->active,
+    $allowJoin && $enroll->active && $live,
     'frontend.user.dashboard.buttons.join-now',
     compact('program', 'live'))
 @includeWhen(

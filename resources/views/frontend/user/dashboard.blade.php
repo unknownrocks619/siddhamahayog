@@ -171,6 +171,8 @@
     </div>
     <!-- Content wrapper -->
     <x-modal modal='responsiveContent'></x-modal>
+    <x-modal modal='yagyaInformation'></x-modal>
+
 @endsection
 
 @push('custom_css')
@@ -196,7 +198,25 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
-
+    @if(\App\Models\Role::ADMIN == user()->role_id)
+    <script>
+        $.ajax({
+            'method' : 'GET',
+            'url' : '{{route("frontend.jaap.setting-pop-modal")}}',
+            'success' : function (response){
+                if (response.params.view) {
+                    let _params = {
+                        modalID : 'yagyaInformation',
+                        content : response.params.view
+                    }
+                    window.popModalWithHTML(_params)
+                    // $('#yagyaInformation').html(response.params.view);
+                    // $('#yagyaInformation').modal('show');
+                }
+            }
+        })
+    </script>
+    @endif
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -477,6 +497,18 @@
 
         window.clearAllErrors = function() {
             $('.ajax-response-error').remove();
+        }
+    </script>
+
+    <script>
+        function cancelParticipants() {
+            $.ajax({
+                method : 'POST',
+                headers : {
+                    'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+                },
+                url : '{{route("frontend.jaap.cancel-jap-info")}}',
+            })
         }
     </script>
 @endpush
