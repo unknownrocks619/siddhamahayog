@@ -38,29 +38,15 @@ class MemberController extends Controller
     {
         //
         if (request()->ajax() && request()->wantsJson()) {
-            $members = Member::with(["emergency", "countries", 'meta', "member_detail" => function ($query) {
-                return $query->with(["program"]);
-            }])->get();
 
-            $datatable = DataTables::of($members)
+            $datatable = DataTables::of(DB::select(Member::all_members()))
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
-                    $full_name = htmlspecialchars($row->first_name);
-
-                    if ($row->middle_name) {
-                        $full_name .= " ";
-                        $full_name .= $row->middle_name;
-                    }
-                    $full_name .= " ";
-                    $full_name .= $row->last_name;
-                    return $full_name;
-                })
-                ->addColumn('login_source', function ($row) {
-                    return strtolower(strip_tags($row->email));
+                   return strip_tags($row->full_name);
                 })
                 ->addColumn('country', function ($row) {
                     // return $row->countries->country_name;
-                    return ($row->countries) ? htmlspecialchars(strip_tags($row->countries->name)) : "NaN";
+                    return $row->country_name ?? "NaN";
                 })
                 ->addColumn('phone', function ($row) {
                     $phone = "";
@@ -69,36 +55,34 @@ class MemberController extends Controller
                     } else {
                         $phone .= "NaN";
                     }
-                    if ($row->emergency) {
-                        $phone .= "<br />";
-                        $phone .= "Emergency Contact: " . htmlspecialchars(strip_tags($row->emergency->phone_number));
-                        $phone .= "<br />";
-                        $phone .= "Emergency Person: " . htmlspecialchars(strip_tags($row->emergency->contact_person));
-                    }
                     return $phone;
                 })
                 ->addColumn('program_involved', function ($row) {
 
-                    if (!$row->member_detail->count()) {
+                    if (!$row->program) {
                         return "NaN";
                     }
+                    $allPrograms = explode(', ', $row->program);
+
                     $program_involved = "";
-                    foreach ($row->member_detail as $programs) {
-                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs->program->program_name . "</span>";
+                    foreach ($allPrograms as $programs) {
+                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs ."</span>";
                     }
                     return $program_involved;
                 })
                 ->addColumn('registered_date', function ($row) {
-                    return $row->created_at;
+                    return date('Y-m-d',strtotime($row->created_at));
                 })
                 ->addColumn('action', function ($row) {
-                    $action = "<a href='" . route('admin.members.show', $row->id) . "'>View Detail</a>";
+                    $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
+                    $action .= "<a href='" . route('admin.members.show', $row->member_id) . "' class='text-danger'><i class='ti ti-edit ti-sm me-2'></a>";
                     return $action;
                 })
-                ->rawColumns(["country", "phone", "program_involved", "action"])
+                ->rawColumns(["program_involved", "action"])
                 ->make(true);
             return $datatable;
         }
+
         return view('admin.members.index');
     }
 
@@ -129,13 +113,16 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function show(Member $member)
+    public function show(Member $member,$tab = 'user-detail')
     {
         //
+        session()->forget('adminAccount');
+
         $member->load(['transactions' => function ($query) {
             return $query->with(['program']);
         }, 'donations', 'member_detail']);
-        return view('admin.members.show', compact("member"));
+
+        return view('admin.members.show', compact("member","tab"));
     }
 
 
@@ -166,37 +153,40 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
 
-        //
-        $member->first_name = $request->first_name;
-        $member->middle_name = $request->middle_name;
-        $member->last_name = $request->last_name;
-        $member->phone_number = $request->phone_number;
+        $member->first_name = $request->post('first_name');
+        $member->middle_name = $request->post('middle_name');
+        $member->last_name = $request->post('last_name');
+        $member->phone_number = $request->post('phone_number');
+        $member->email = $request->post('email');
 
-        if ($request->email) {
-            $check_email = Member::where('email', $request->email)->where('id', '!=', $member->getKey())->exists();
-            if ($check_email) {
-                session()->flash('Email Already exists. Unable to save record.');
-                return back()->withInput();
-            }
-            $member->email = $request->email;
+        if ($member->isDirty('email') && Member::where('email', $request->post('email'))
+                ->where('id', '!=', $member->getKey())
+                ->exists()) {
+            return $this->json(false,'Email Already Exists. Unable to save Record.');
+//            session()->flash('Email Already exists. Unable to save record.');
+//            return back()->withInput();
         }
-        $member->role_id = $request->role;
-        $member->country = $request->country;
-        $member->city = $request->city;
-        $member->address = ["street_address" => $request->street_address];
 
-        if ($member->isDirty(["first_name", "middle_name", "last_name"])) {
-            $member->full_name = $request->first_name . ($request->middle_name) ? $request->middle_name . " " . $request->last_name : " " . $request->last_name;
-        }
+        $member->role_id = $request->post('role');
+        $member->country = $request->post('country');
+        $member->city = $request->post('city');
+        $member->address = ["street_address" => $request->post('street_address')];
+        $member->full_name = $member->full_name();
 
         try {
             $member->save();
+
+            $this->updatePersonal($request,$member,$member->meta);
+
         } catch (\Throwable $th) {
             //throw $th;
+            return $this->json(false,'Error: '. $th->getMessage());
             session()->flash('error', $th->getMessage());
             return back();
         }
 
+        // update
+        return $this->json(true,'Information updated.');
         session()->flash('success', "Personal Information updated.");
         return back();
     }
@@ -383,10 +373,7 @@ class MemberController extends Controller
         $member->first_name = $request->first_name;
         $member->middle_name = $request->middle_name;
         $member->last_name = $request->last_name;
-
-        if ($member->isDirty()) {
-            $member->full_name = ($request->middle_name) ? $request->first_name . " " . $request->middle_name . " " . $request->last_name : $request->first_name . " " . $request->last_name;
-        }
+        $member->full_name = $member->full_name();
 
         $member->phone_number = $request->phone_number;
         $member->role_id = $request->role;
@@ -411,8 +398,10 @@ class MemberController extends Controller
     public function updatePersonal(Request $request, Member $member, MemberInfo $memberInfo = null)
     {
         if (!$memberInfo) {
+
             return $this->storeUpdatePersonal($request, $member);
         }
+
         $education = (array) $memberInfo->education;
         $personal = (array) $memberInfo->personal;
 
@@ -478,29 +467,29 @@ class MemberController extends Controller
         try {
             $member->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Error: '. $th->getMessage());
             //throw $th;
-            session()->flash('error', 'Unable to update User password');
-            return back()->withInput();
+//            session()->flash('error', 'Unable to update User password');
+//            return back()->withInput();
         }
 
-        session()->flash('success', "Password Updated for User.");
-        return back();
+        return $this->json(true,'Password updated.');
+//        session()->flash('success', "Password Updated for User.");
+//        return back();
     }
 
     public function reauthUser(Member $member)
     {
         if ($member->role_id != 7) {
-            session()->flash('error', "Cannot debug non member account.");
-            return back();
+            return $this->returnResponse(false,'Cannot debut admin Account');
         }
         session()->put('adminAccount', auth()->id());
 
-        if (!Auth::loginUsingId($member->id)) {
-            session()->flash('error', 'Oops ! Unable to use debug for this user.');
-            return back();
+        if (!Auth::loginUsingId($member->getKey())) {
+            return $this->returnResponse(false,'Oops ! Unable to use debug for this user.');
         }
 
-        return redirect()->route('dashboard');
+        return $this->returnResponse(true,'Debug is now enabled.','redirect',['location' => route('dashboard')]);
     }
 
     public function calcel_subscription(Program $program, Member $member)

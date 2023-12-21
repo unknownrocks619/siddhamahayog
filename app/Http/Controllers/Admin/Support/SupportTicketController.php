@@ -47,9 +47,7 @@ class SupportTicketController extends Controller
                 $supportTicket->save();
             });
         } catch (\Throwable $th) {
-            //throw $th;
-            session()->flash("error", "Error: " . $th->getMessage());
-            return back();
+            $this->json(false,'Error: '. $th->getMessage());
         }
         MemberNotification::create([
             "member_id" => $ticket->member_id,
@@ -61,8 +59,7 @@ class SupportTicketController extends Controller
             "level" => "info",
             "seen" => false
         ]);
-        session()->flash('success', "You Replied to ticket.");
-        return back();
+        return $this->json(true,'You Replied to ticker','reload');
     }
 
     public function closeTicket(SupportTicket $ticket)
@@ -72,10 +69,10 @@ class SupportTicketController extends Controller
         try {
             $ticket->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Error: '. $th->getMessage(),'reload');
             //throw $th;
-            session()->flash("error", "Error: " . $th->getMessage());
-            return back();
         }
+
         MemberNotification::create([
             "member_id" => $ticket->member_id,
             "title" => "Support Ticket : #" . $ticket->id,
@@ -86,8 +83,8 @@ class SupportTicketController extends Controller
             "level" => "info",
             "seen" => false
         ]);
-        session()->flash('success', "Ticket Closed");
-        return back();
+
+        return $this->returnResponse(true,'Ticket Closed.','reload');
     }
 
     public function editTicket()

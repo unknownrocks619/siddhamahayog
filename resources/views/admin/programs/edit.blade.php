@@ -1,196 +1,146 @@
-@extends('layouts.portal.app')
+@extends('layouts.admin.master')
+@push('title') Edit :: {{$program->program_name}} @endpush
+@section('main')
+    <h4 class="py-3 mb-4">
+        <span class="text-muted fw-light"><a href="{{route('admin.program.admin_program_list')}}">Programs</a></span> Create
+    </h4>
+    <div class="row mb-2">
+        <div class="col-md-12 text-end">
+            <button class="btn btn-primary"><i class="fas fa-arrow-left me-2"></i> Go Back</button>
+        </div>
+    </div>
 
-@section('page_title')
-    Edit Program
-@endsection
-
-@section('page_css')
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.3/datatables.min.css" />
-@endsection
-
-@section('content')
-    <section class="content">
-        <div class="container">
-            <div class="block-header">
-                <div class="row clearfix">
-                    <div class="col-lg-5 col-md-5 col-sm-12">
-                        <h2>Programs</h2>
+    <!-- Responsive Datatable -->
+    <div class="card">
+        <h5 class="card-header">Update Program</h5>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="program_name">Program Name</label>
+                        <input type="text" value="{{$program->program_name}}" name="program_name" id="program_name" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="program_type">Program Option</label>
+                        <select name="program_type" id="program_type" class="form-control">
+                            @foreach (\App\Models\Program::PROGRAM_TYPES as $key => $value)
+                                <option value="{{$key}}" @if($program->program_type == $key) selected @endif>
+                                    {{$value}}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="program_start_date">Program Start Date</label>
+                        <input type="date" value="{{$program->program_start_date}}" name="program_start_date" id="program_start_date" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="program_end_date">
+                            Program End Date
+                        </label>
+                        <input type="date" value="{{$program->program_end_date}}" name="program_end_date" id="program_end_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea name="description" id="description" class="tiny-mce form-control">{!! $program->description !!}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3 program_type paid">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="overdue_allowed">
+                            Allow Access for Number days to unpaid user.
+                        </label>
+                        <input type="number" required class="form-control"
+                               name="overdue_allowed" id="overdue_allowed" />
                     </div>
                 </div>
             </div>
 
-            <div class="row clearfix">
-                <div class="col-lg-12">
-                    @if (Session::has('success'))
-                        <div class="alert alert-success alert-dismissible mb-2" role="alert">
-                            <button type="button" class="close text-info" data-dismiss="alert" aria-label="close">
-                                x
-                            </button>
-                            <div class='d-flex align-items-center'>
-                                <i class="bx bx-check"></i>
-                                <span>{{ Session::get('success') }}</span>
-                            </div>
-                        </div>
-                    @endif
-                    @if (Session::has('error'))
-                        <div class="alert alert-danger alert-dismissible mb-2" role="alert">
-                            <button type="button" class="close text-info" data-dismiss="alert" aria-label="close">
-                                x
-                            </button>
-                            <div class='d-flex align-items-center'>
-                                <i class="bx bx-check"></i>
-                                <span>{{ Session::get('error') }}</span>
-                            </div>
-                        </div>
-                    @endif
-                    <div class="card">
-                        <div class="header">
-                            <h2><strong>Update</strong> Program Detail </h2>
-                            <ul class="header-dropdown">
-                                <li class="remove">
-                                    <button type="button"
-                                        onclick="window.location.href='{{ route('admin.program.admin_program_list') }}'"
-                                        class="btn btn-danger btn-sm boxs-close"><i class="zmdi zmdi-close"></i>
-                                        Close</button>
-                                </li>
-                            </ul>
-                        </div>
-                        <div id="app">
-                            <form action="" method="post" class="ajax-append">
-                                <div class="card">
-                                    <div class="body">
-                                        <div class="row clearfix mt-3">
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b for="account_name">Program Name
-                                                        <sup class='text-danger'>*</sup>
-                                                    </b>
-                                                    <input type="text" class="form-control" name="program_name"
-                                                        id="program_name" require value="{{ $program->program_name }}" />
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Program Type
-                                                        <sup class='text-danger'>*</sup>
-                                                    </b>
-                                                    <select name="program_type" id="program_type" class='form-control'
-                                                        required>
-                                                        <option value="paid"
-                                                            @if ($program->program_type == 'paid') selected @endif>Paid</option>
-                                                        <option value="open"
-                                                            @if ($program->program_type == 'open') selected @endif>Open</option>
-                                                        <option value="registered_user"
-                                                            @if ($program->program_type == 'registered_user') selected @endif>Registered
-                                                            User
-                                                        </option>
-                                                        <option value="club"
-                                                            @if ($program->program_type == 'club') selected @endif>Club</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div v-if="fields.program_type == 'paid'" class="row clearfix mt-3">
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b for="account_name">Monthly Fee
-                                                        <sup class='text-danger'>*</sup>
-                                                    </b>
-                                                    <input type="text" class="form-control" name="monthly_fee"
-                                                        id="monthly_fee" value="{{ $program->monthly_fee }}" require />
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Admission Fee
-                                                        <sup class='text-danger'>*</sup>
-                                                    </b>
-                                                    <input type="text" class="form-control" name="admission_fee"
-                                                        id="admission_fee" require value="{{ $program->admission_fee }}" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row clearfix mt-3">
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Program Start Date
-                                                    </b>
-                                                    <input type="date" class="form-control" value=""
-                                                        name="program_duration_start" />
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Program Start Date
-                                                    </b>
-                                                    <input type="date" class="form-control"
-                                                        name="program_duration_end" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row clearfix mt-3">
-                                            <div class="col-lg-12 col-md-12 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Write Something About Program
-                                                    </b>
-                                                    <textarea class="form-control" name="description" id="description"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row clearfix mt-3">
-                                            <div class="col-lg-6 col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Promote
-                                                    </b>
-                                                    <div class="radio">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <input type="radio" name="promote" id="promote_yes"
-                                                                    value="yes">
-                                                                <label for="promote_yes" class='text-success'>
-                                                                    Yes, Promote in Website
-                                                                </label>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <input type="radio" checked name="promote"
-                                                                    id="promote_no" value="no">
-                                                                <label for="promote_no" class='text-danger'>
-                                                                    No, Don't Promote in Website
-                                                                </label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div v-if="fields.program_type == 'paid'"
-                                                class="col-lg-6  col-md-6 col-sm-12 m-b-20">
-                                                <div class="form-group">
-                                                    <b>Allow Access for Number days to unpaid user.
-                                                        <span class="text-danger">*</span>
-                                                    </b>
-                                                    <input type="number" required class="form-control"
-                                                        name="overdue_allowed" id="overdue_allowed" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="footer clearfix mt-3">
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <button type="submit" class='btn btn-primary btn-block'>Update Program
-                                                    Detail</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="admission_fee">Admission Fee</label>
+                        <input type="number" name="admission_fee" id="admission_fee" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="monthly_fee">Monthly Fee</label>
+                        <input type="number" class="form-control" name="monthly_fee" id="monthly_fee" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select name="status" id="status" class="form-control">
+                            @foreach (\App\Models\Program::PROGRAM_STATUS as $key => $value)
+                                <option value="{{$key}}" @if($key == $program->status) selected @endif>{{$value}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-2">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="batch" class="d-flex justify-content-between">
+                            <span>Batch</span>
+                            <span>
+                                <a href="" data-bs-target="#newBatch" data-bs-toggle="modal" class="ajax-modal" data-action="{{route('admin.modal.display',['view' => 'programs.batch.new','program'=>$program])}}"><i class="fas fa-plus me-2"></i> Create new batch</a>
+                            </span>
+                        </label>
+                        <select name="batch" id="batch" class="form-control">
+
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="section" class="d-flex justify-content-between">
+                            <span>Section</span>
+                            <span>
+                                <a href="" class="ajax-modal" data-bs-target="#newSection" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view'=>'programs.section.new','program' => $program->getKey()])}}">
+                                    <i class="fas fa-plus"></i>
+                                    Create New Section
+                                </a>
+                            </span>
+                        </label>
+                        <select name="" id="" class="form-control"></select>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-@endsection
-@section('page_script')
-    <script src="{{ asset('assets/js/admin.js') }}"></script>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">
+                        Update Program
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<x-modal modal="newSection"></x-modal>
+<x-modal modal="newBatch"></x-modal>
 @endsection

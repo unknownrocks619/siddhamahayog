@@ -14,22 +14,51 @@ class Program extends Model
     protected $auditable = [
         'program_name' => 'Program Name'
     ];
-
+    protected  $fillable = [
+        'program_duration',
+        'program_access',
+        'admission_fee',
+        'monthly_fee',
+        'program_start_date',
+        'program_end_date',
+        'promote',
+        'description',
+        'overdue_allowed',
+        'batch',
+        'zoom',
+        'slug',
+        'program_name',
+        'program_type'
+    ];
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
-        'program_duration',
-        'program_access',
+        'zoom',
         'admission_fee',
-        'monthly_fee'
+        'monthly_fee',
+        'program_access',
     ];
 
     protected $alias = [
         'id' => "Program ID"
     ];
 
+    public const PROGRAM_TYPES = [
+        'open' => 'Open',
+        'paid'  => 'Paid',
+        'live'  => 'Live',
+        'registered_user' => "Registered User",
+        'club'  => 'Club',
+        'sadhana'   => 'Sadhana',
+        'event' => 'Event'
+    ];
 
+    public const PROGRAM_STATUS = [
+        'active'    =>  'Active',
+        'pending'   => 'Pending',
+        'inactive'  => 'Inactive'
+    ];
 
     public function students()
     {

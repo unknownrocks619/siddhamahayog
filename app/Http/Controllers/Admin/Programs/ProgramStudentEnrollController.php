@@ -67,7 +67,7 @@ class ProgramStudentEnrollController extends Controller
             $student_fee->student_id = $member->id;
             $student_fee->total_amount = $program->active_fees->admission_fee;
 
-            // 
+            //
             $student_fee_detail->program_id = $program->id;
             $student_fee_detail->student_id = $member->id;
             $student_fee_detail->amount = $program->active_fees->admission_fee;
@@ -85,7 +85,7 @@ class ProgramStudentEnrollController extends Controller
                 ->where('amount_category', 'admission_fee')
                 ->exists();
             if (!$check_student_fee) {
-                // 
+                //
                 $student_fee_detail->program_id = $program->id;
                 $student_fee_detail->student_id = $member->id;
                 $student_fee_detail->program_student_fees_id = $student_fee_check->id;
@@ -121,7 +121,7 @@ class ProgramStudentEnrollController extends Controller
                 }
                 if ($request->monthly_fee) {
                     $add_monthly_fee = new ProgramStudentFeeDetail;
-                    // 
+                    //
                     $add_monthly_fee->program_id = $student_fee_detail->program_id;
                     $add_monthly_fee->student_id = $student_fee_detail->student_id;
                     $add_monthly_fee->amount = $request->monthly_fee;
@@ -146,7 +146,7 @@ class ProgramStudentEnrollController extends Controller
             //throw $th;
         }
         // if ( $check_student_fee ) {
-        //     // 
+        //     //
 
         // }
 
@@ -162,38 +162,50 @@ class ProgramStudentEnrollController extends Controller
     {
         $request->validate([
             "program_name" => "required",
-            'batch' =>  "required",
-            'section' => "required"
+            'batch' =>  "sometimes|required",
+            'section' => "sometimes|required"
         ]);
 
+        $program = Program::find($request->post('program_name'));
+
         if (ProgramStudent::where('program_id', $request->post('program_name'))->where('student_id', $member->id)->exists()) {
-            session()->flash('error', "User already in program.");
-            return redirect()->route('admin.members.show', $member->id);
+            return $this->returnResponse(false,'User already in program',null,[],200,route('admin.members.show', $member->id));
         }
 
         $programStudent = new ProgramStudent;
 
-        $programStudent->program_id = $request->post('program_name');
-        $programStudent->program_section_id = $request->post('section');
-        $programStudent->batch_id = $request->post('batch');
-        $programStudent->student_id = $member->id;
+        $batchID = $request->post('batch');
+        $sectionID = $request->post('section');
+
+        if ( ! $request->post('batch') ) {
+            // get default batch
+            $batchID = $program->active_batch?->getKey();
+        }
+
+        if ( ! $request->post('section') ) {
+            // get default section
+            $sectionID = $program->active_sections?->getKey();
+        }
+
+        $programStudent->program_id = $program->getKey();
+        $programStudent->program_section_id = $sectionID;
+        $programStudent->batch_id = $batchID;
+        $programStudent->student_id = $member->getKey();
         $programStudent->active = true;
 
         try {
             $programStudent->save();
         } catch (\Throwable $th) {
-            //throw $th;
-            session()->flash('error', 'Unable to enroll user. Error: ' . $th->getMessage());
-            return redirect()->route('admin.members.show', [$member->id]);
+
+            return $this->returnResponse(false,'Failed to enroll',null,[],200,route('admin.members.show', [$member->id]));
         }
-        session()->flash('success', "User Enrollment was success.");
-        return redirect()->route('admin.members.show', [$member->id]);
+        return $this->returnResponse(true,'Enrollment success','reload',[],200,route('admin.members.show', [$member->id]));
     }
 
 
     public function RemoveEnrolledUser(ProgramStudent $programStudent)
     {
-        // 
+        //
         if (ProgramStudentFee::where('program_id', $programStudent->program_id)->where('student_id', $programStudent->student_id)->exists()) {
             session()->flash('error', "Can not remove from the program. Member have active transaction history.");
             return back();
@@ -203,10 +215,12 @@ class ProgramStudentEnrollController extends Controller
             $programStudent->delete();
         } catch (\Throwable $th) {
             //throw $th;
+            return $this->json(false,'Error: '. $th->getMessage());
             session()->flash('error', 'Unable to remove user program. Error: ' . $th->getMessage());
             return back();
         }
 
+        return $this->json(true,'Member removed from program','reload');
         session()->flash('success', 'Member removed from program.');
         return back();
     }

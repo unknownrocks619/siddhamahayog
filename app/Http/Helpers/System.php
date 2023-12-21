@@ -105,9 +105,10 @@ function getUserCountry()
 
     $userIp = request()->getClientIp();
 
-    if (array_search($userIp, $white_ip, false)) {
+    if (in_array($userIp, $white_ip)) {
         return "NP";
     }
+
     if (session()->has('userIp')) {
         return session()->get('userIp')->$userIp->isocode;
     }

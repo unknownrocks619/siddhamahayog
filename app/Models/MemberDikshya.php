@@ -12,10 +12,14 @@ class MemberDikshya extends Model
     protected $fillable = [
         'member_id',
         'remarks',
-        'diskhya_type',
-        'rashi_name'
+        'dikshya_type',
+        'rashi_name',
+        'ceromony_location',
+        'ceromony_date',
+        'guru_name'
     ];
+
     protected $casts = [
-        'remarks' => 'object'
+        'remarks' => 'array'
     ];
 }

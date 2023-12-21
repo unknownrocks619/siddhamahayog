@@ -1,23 +1,140 @@
-require('./bootstrap');
+import './bootstrap.js';
 
-import Alpine from 'alpinejs';
+//================== partials ======================//
+import './partials/ajax-form.js'
+import './partials/ajax-modal';
+import './partials/voucher-modal';
+import './partials/tinymce';
+$(function () {
+    "use strict";
 
-window.Alpine = Alpine;
+    /**
+     * Ajax Setup
+     */
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
 
-Alpine.start();
-import { createApp } from 'vue';
-// import {createRouter,createWebHashHistory} from 'vue-router';
-import NewProgram from './components/programs/NewProgram.vue'
-import AddFee from './components/programs/AddFee.vue';
-import NewMeeting from './components/zoom/NewMeeting.vue';
-import EditProgram from './components/programs/EditMeeting.vue';
+    $('.ajax-append').each(function () {
+        $(this).append(`<input type='hidden' name='_token' value='${$('meta[name=csrf-token]').attr('content')}' />`);
+    })
 
-const app = createApp({ NewProgram });
-app.component('NewProgram', NewProgram);
-app.component('EditProgram', NewProgram);
-app.component('AddFee', AddFee);
-app.component('zoom-meeting', NewMeeting);
-// app.use(router)
-app.mount("#app");
-// app.component('WaveComponent',WaveComponent);
-// app.use(router).mount("#app");
+
+
+    $(document).on('click', '.data-confirm', function (event) {
+        event.preventDefault()
+        let confirmTitle = $(this).data('confirm')
+        let ele = this;
+        Swal.fire({
+            title: 'Confirm your Action !!',
+            text: confirmTitle ?? "Once deleted, you will not be able to recover !",
+            showConfirmButton: true,
+            showCloseButton: true,
+            showCancelButton: true
+        }).then((action) => {
+            if (action.isConfirmed === true) {
+                // perform ajax query.
+                if ($(ele).data('action')) {
+                    $.ajax({
+                        method: $(ele).data('method'),
+                        url: $(ele).data('action'),
+                        data: $(ele).data('values'),
+                        success: function (response) {
+                            handleOKResponse(response)
+                        },
+                        error: function (response) {
+                            handleBadResponse(response);
+                        }
+                    })
+                }
+
+                if ($(ele).attr('href') && !$(ele).attr('href') != '') {
+
+                    let param = { location: $(ele).attr('href') }
+                    redirect(param);
+                }
+            }
+        })
+    })
+
+
+    window.handleOKResponse = function (response) {
+        if (response.status == 200) {
+            messageBox(response.state, response.msg);
+
+            if ((response.callback !== null || response.callback !== '')) {
+                let fn = window[response.callback];
+
+                if (typeof (fn) === 'function') {
+                    fn(response.params);
+                }
+            }
+        }
+    }
+
+
+    window.handleBadResponse = function (response) {
+        clearAllErrors();
+        if (response.status == 422) {
+            handle422Case(response.responseJSON);
+        }
+    }
+
+    /**
+     * Handle 422 Error
+     * @param data
+     */
+    window.handle422Case = function (data) {
+        messageBox(false, data.msg ? data.msg : data.message);
+        $.each(data.errors, function (index, error) {
+            let inputElement = $(`input[name="${index}"]`);
+            let parentDiv = $(inputElement).closest('div.form-group');
+
+            if (parentDiv.length) {
+                let element = `<div class='text-danger ajax-response-error'>${error}</div>`
+                parentDiv.append(element);
+            }
+        });
+    }
+
+    window.redirect = function (param) {
+        if (typeof param.location !== 'undefined' || param.location !== null) {
+            window.location.href = param.location
+        }
+    }
+
+    window.reload = function () {
+        window.location.reload();
+    }
+
+
+    window.clearAllErrors = function () {
+        $('.ajax-response-error').remove();
+    }
+
+    /**
+     * Display message Box
+     * @param status
+     * @param message
+     * @param icon
+     */
+    window.messageBox = function (status, message, icon = null) {
+        if (!icon && status == false) {
+            icon = "<i class='fa fa-warning'></i>";
+        } else if (!icon && status == true) {
+            icon = "<i class='fa fa-check-square'></i>";
+        }
+        $.notify(`${icon}<strong>${message}</strong>`, {
+            type: (status) ? 'success' : 'danger',
+            allow_dismiss: true,
+            showProgressbar: true,
+            timer: 100000,
+            animate: {
+                enter: 'animated fadeInDown',
+                exit: 'animated fadeOutUp'
+            }
+        });
+    }
+})

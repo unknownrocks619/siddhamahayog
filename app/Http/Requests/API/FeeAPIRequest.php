@@ -26,7 +26,7 @@ class FeeAPIRequest extends FormRequest
     {
         return [
             //
-            "update_type" => "required|in:status,detail"
+//            "update_type" => "required|in:status,detail"
         ];
     }
 }

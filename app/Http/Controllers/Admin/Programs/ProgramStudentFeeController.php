@@ -15,10 +15,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use DataTables;
+use Upload\Media\Traits\FileUpload;
 
 class ProgramStudentFeeController extends Controller
 {
     //
+    use FileUpload;
 
     public function index()
     {
@@ -97,37 +99,86 @@ class ProgramStudentFeeController extends Controller
         return view('admin.programs.fee.add', compact('program'));
     }
 
-    public function store_fee_by_program(Request $request, Program $program, Member $member)
+    public function store_fee_by_program(Request $request,  ?Member $member , ?Program $program)
     {
         $request->validate([
             "amount" => "required",
-            "source" => "required",
-            "source_detail" => "required|min:10"
+            "payment_type" => "required",
+            'payment_mode'  => 'required',
+            'esewa-reference-number' => 'required_if:payment_mode,esewa',
+            'esewa-transaction-id' => 'required_if:payment_mode,esewa',
+            'esewa-transaction-date'    => 'required_if:payment_mode,esewa',
+            'khalti-reference-number'   => 'required_if:payment_mode,khalti',
+            'khalti-transaction-id' => 'required_if:payment_mode,khalti',
+            'khalti-transaction-date'    => 'required_if:payment_mode,khalti',
+            'file'  => 'required_if:payment_mode,voucher',
+            'bank_name' => 'required_if:payment_mode,voucher',
+            'voucher_date' => 'required_if:payment_mode,voucher',
+            "source_detail" => "sometime|min:10"
         ]);
+
+        if ( ! $program->getKey() ) {
+            $request->validate(['program_name' => 'required|int|exists:programs,id']);
+            $program = Program::where('id',$request->post('program_name'))->first();
+        }
+
+        if (! $member) {
+            $request->validate(['member' => 'required|int']);
+            $member = Member::find($request->post('member'));
+        }
+
+
         $program_fee = new ProgramStudentFeeDetail;
-        $program_fee->program_id = $program->id;
-        $program_fee->student_id = $member->id;
-        $program_fee->amount = $request->amount;
-        $program_fee->amount_category = ($request->category) ? $request->category : 'monthly_fee';
-        $program_fee->source = $request->source;
+        $program_fee->program_id = $program->getKey();
+        $program_fee->student_id = $member->getKey();
+        $program_fee->amount = $request->post('amount');
+        $program_fee->amount_category = ($request->post('payment_type')) ? $request->post('payment_type') : 'monthly_fee';
+        $program_fee->source = $request->post('payment_mode');
         $program_fee->source_detail = $request->source_detail;
-        $program_fee->verified = true;
-        ($request->verified == "yes") ? true : false;
+        $program_fee->verified = $request->post('verified');
         $program_fee->rejected = false;
-        $program_fee->remarks = "Payment added.";
+
+
+        if (in_array($request->post('payment_mode'),['esewa','khalti','banking']) ) {
+            $program_fee->source = 'Online';
+            $program_fee->source_detail = Str::ucfirst($request->post('payment_mode'));
+            $program_fee->remarks = [
+                'oid'   => $request->post($request->post('payment_mode').'-reference-number'),
+                'amt'   =>  $request->post('amount'),
+                'refId'=> $request->post($request->post('payment_mode').'-transaction-id')
+            ];
+        } else {
+            $program_fee->source = 'Voucher Upload';
+            $program_fee->source_detail = 'Physical Bank Deposit';
+            $program_fee->remarks = [
+                'upload_date' => $request->post('voucher_date'),
+                'bank_name' => $request->post('bank_name'),
+            ];
+            $this->set_access('file');
+            $this->set_upload_path('website/payments/programs');
+            $program_fee->file = $this->upload('file');
+        }
+
+        $program_fee->fee_added_by_user = auth()->id();
+
+        if ( $program_fee->verified ) {
+            $program_fee->message = 'Payment Verified By User '. auth()->user()->full_name;
+        }
 
         //
         $fee_detail = new ProgramStudentFee;
         $check_previous = $fee_detail->where('program_id', $program->id)->where('student_id', $member->id)->first();
 
         if ($check_previous) {
-            $check_previous->total_amount = $check_previous->total_amount + $request->amount;
+
+            $check_previous->total_amount = $check_previous->total_amount + $request->post('amount');
         } else {
             $check_previous = $fee_detail;
-            $check_previous->program_id = $program->id;
-            $check_previous->student_id = $member->id;
-            $check_previous->total_amount = $request->amount;
+            $check_previous->program_id = $program->getKey();
+            $check_previous->student_id = $member->getKey();
+            $check_previous->total_amount = $request->post('amount');
         }
+
 
         try {
             DB::transaction(function () use ($check_previous, $program_fee) {
@@ -138,21 +189,15 @@ class ProgramStudentFeeController extends Controller
             });
             $program_fee->save();
         } catch (\Throwable $th) {
-            //throw $th;
-            return response([
-                'success' => false,
-                'message' => 'Unable to save transaction',
-                'error' => $th->getMessage()
-            ]);
+            return $this->returnResponse(false,'Error: '. $th->getMessage());
         }
 
-        return response([
-            'success' => true,
-            "message" => "Payment Added.",
-            "redirect" => true
-        ]);
+        return $this->returnResponse(true,'Payment information added.','reload');
     }
 
+    public function storeFeeByProgram(Request $request, Program|null $program=null, Member $member) {
+
+    }
     public function fee_overview_by_program(Request $request, Program $program)
     {
         if ($request->ajax() && $request->wantsJson()) {
@@ -357,40 +402,48 @@ class ProgramStudentFeeController extends Controller
         return back();
     }
 
-    public function display_uploaded_voucher(ProgramStudentFeeDetail $fee_detail)
+    public function display_uploaded_voucher(int|ProgramStudentFeeDetail $fee_detail)
     {
+        if (is_int($fee_detail ) ) {
+            $fee_detail = ProgramStudentFeeDetail::with(['remarks','student','file'])->find($fee_detail);
+        }
+
         if (!$fee_detail->file) {
             return "Image Not Found.";
         }
-        $html = "<div class='row'>";
-        $html .= "<div class='col-md-12'>";
-        $html .= "<table class='table table-border table-hover'>";
-        $html .= "<thead>";
-        $html .= "<tr>";
-        $html .= "<th>";
-        $html .= "Bank Name";
-        $html .= "</th>";
-        $html .= "<th>";
-        $html .= "Voucher Date";
-        $html .= "</th>";
-        $html .= "<th>";
-        $html .= "Name";
-        $html .= "</th>";
-        $html .= "</tr>";
-        $html .= "</thead>";
-        $html .= "<tbody>";
-        $html .= "<tr>";
-        $html .= "<td>" . htmlspecialchars($fee_detail->remarks->bank_name) . "</td>";
-        $html .= "<td>" . htmlspecialchars($fee_detail->remarks->upload_date) . "</td>";
-        $html .= "<td>" . strtoupper($fee_detail->student->full_name) . "</td>";
-        $html .= "</tr>";
-        $html .= "</tbody>";
-        $html .= "</table>";
+
+        $html = "<div class='modal-body'>";
+            $html .= "<div class='row'>";
+            $html .= "<div class='col-md-12'>";
+            $html .= "<table class='table table-border table-hover'>";
+            $html .= "<thead>";
+            $html .= "<tr>";
+            $html .= "<th>";
+            $html .= "Bank Name";
+            $html .= "</th>";
+            $html .= "<th>";
+            $html .= "Voucher Date";
+            $html .= "</th>";
+            $html .= "<th>";
+            $html .= "Name";
+            $html .= "</th>";
+            $html .= "</tr>";
+            $html .= "</thead>";
+            $html .= "<tbody>";
+            $html .= "<tr>";
+            $html .= "<td>" . htmlspecialchars($fee_detail->remarks->bank_name) . "</td>";
+            $html .= "<td>" . htmlspecialchars($fee_detail->remarks->upload_date) . "</td>";
+            $html .= "<td>" . strtoupper($fee_detail->student->full_name) . "</td>";
+            $html .= "</tr>";
+            $html .= "</tbody>";
+            $html .= "</table>";
+            $html .= "</div>";
+            $html .= "<div class='col-md-12  mt-3 border'>";
+            $html .= "<img src='" . asset($fee_detail->file->path) . "' class='img-fluid' />";
+            $html .= "</div>";
+            $html .= "</div>";
         $html .= "</div>";
-        $html .= "<div class='col-md-12  mt-3 border'>";
-        $html .= "<img src='" . asset($fee_detail->file->path) . "' class='img-fluid' />";
-        $html .= "</div>";
-        $html .= "</div>";
+
         return $html;
     }
 }

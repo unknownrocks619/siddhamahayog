@@ -15,6 +15,7 @@ use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
 use App\Models\Ramdas;
 use App\Models\ZoomAccount;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use DataTables;
@@ -28,11 +29,12 @@ class AdminProgramController extends Controller
     public function program_list(Request $request, $type = null)
     {
         if ($request->ajax() && $request->wantsJson()) {
+
             $programs = Program::with(["active_batch" => function ($query) {
                 return $query->with(["batch"]);
             }, "liveProgram" => function ($query) {
                 return $query->with(["sections"]);
-            }]);
+            },'students']);
 
             if ($type) {
                 $programs->where("program_type", "paid")->latest()->get();
@@ -52,6 +54,14 @@ class AdminProgramController extends Controller
                 })
                 ->addColumn('program_duration', function ($row) {
                     return ($row->program_duration) ? "Ongoing" : $row->program_duration;
+                })
+                ->addColumn('total_student', function ($row) {
+                    $totalStudent =  $row->students?->count() ?? 0;
+
+                    if ( ! $totalStudent ) {
+                        return '<span class="btn-label-danger px-2 py-1">0</span>';
+                    }
+                    return '<span class="btn-label-success px-2 py-1">'.$totalStudent.'</span>';
                 })
                 ->addColumn('promote', function ($row) {
                     if ($row->liveProgram->count()) {
@@ -88,20 +98,57 @@ class AdminProgramController extends Controller
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'>view detail</a>";
-                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm'>Edit</a>";
-                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'>Delete</a>";
+                    $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-2'></i>view detail</a>";
+                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-2'><i class='fas fa-pencil'></i></a>";
+                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'><i class='fas fa-trash'></a>";
                     return $action;
                 })
-                ->rawColumns(["program_name", "batch", "action", "promote"])
+                ->rawColumns(["program_name", "batch", "action", "promote","total_student"])
                 ->make(true);
             return $datatable;
         }
         return view("admin.programs.index");
     }
 
-    public function new_program($type = null)
+    public function new_program(Request $request, $type = null)
     {
+        if ($request->post() ) {
+
+            $request->validate(['program_name' => 'required']);
+
+            $program = new Program();
+            $program->fill([
+                'program_name' => $request->post('program_name'),
+                'slug' => str($request->post('program_name'))->slug('-')->value(),
+                'program_type' => $request->post('program_type'),
+                'admission_fee' => $request->post('admission_fee'),
+                'monthly_fee'   => $request->post('monthly_fee'),
+                'program_duration'  => null,
+                'program_access' => null,
+                'description' => $request->post('description'),
+                'promote' => true,
+                'overdue_allowed' => $request->post('overdue_allowed'),
+                'batch' => 0,
+                'zoom' => true,
+                'status' => false,
+
+            ]);
+
+            if ( $request->post('start_date') && $request->post('end_date')) {
+                $carbonStartDate = Carbon::createFromFormat('Y-m-d',$request->post('program_start_date'));
+                $carbonEndDate = Carbon::createFromFormat('Y-m-d',$request->post('program_end_date'));
+                $program_diff = $carbonEndDate->diffInDays($carbonEndDate);
+                $program->program_duration = $program_diff;
+            }
+
+            if ( ! $program->save() ) {
+                return $this->json(false,'Unable to create new Program.');
+            }
+
+            return $this->json(true, 'New Program created.','redirect',['location' => route('admin.program.admin_program_edit',['program' => $program])]);
+        }
+
+
         return view("admin.programs.add", compact("type"));
     }
 

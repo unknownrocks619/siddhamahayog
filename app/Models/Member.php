@@ -115,4 +115,41 @@ class Member extends Authenticatable
     {
         return $this->hasOne(ProgramStudentFee::class, "student_id", 'id');
     }
+
+    public static function all_members() {
+
+        return $sql = "SELECT member.id as member_id,
+                                        member.full_name,
+                                        member.email,
+                                        member.phone_number,
+
+                                        member.created_at,
+                                       country.name as country_name,
+                                       GROUP_CONCAT(program.program_name SEPARATOR ', ') AS 'program'
+                                FROM members member
+                                    LEFT JOIN countries country
+                                        ON country.id = member.country
+
+                                    LEFT JOIN program_students pstd
+                                        ON pstd.student_id = member.id
+
+                                    LEFT JOIN programs program
+                                        ON program.id = pstd.program_id
+                                WHERE pstd.deleted_at IS NULL
+                                    AND member.deleted_at IS NULL
+                                GROUP BY member.id";
+
+    }
+
+    public function full_name(): string {
+        $full_name = $this->first_name;
+
+        if ($this->middle_name) {
+            $full_name .= ' '.$this->middle_name;
+        }
+
+        $full_name .= ' '.$this->last_name;
+
+        return $full_name;
+    }
 }

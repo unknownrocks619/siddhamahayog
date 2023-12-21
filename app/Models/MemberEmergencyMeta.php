@@ -10,6 +10,16 @@ class MemberEmergencyMeta extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected  $fillable = [
+        'member_id',
+        'contact_person',
+        'relation',
+        'gender',
+        'email_address',
+        'phone_number',
+        'contact_number'
+    ];
+
     // protected $casts = [
     //     "contact_person" => "object"
     // ];

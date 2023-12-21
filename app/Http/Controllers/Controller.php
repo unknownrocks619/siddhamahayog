@@ -26,4 +26,18 @@ class Controller extends BaseController
         $response->header('Content-Type', 'application/json');
         return $response;
     }
+
+    public function returnResponse($state,$message,$jsCallback=null,array $params=[],int $status = 200,string $redirect=null) {
+        if (request()->ajax()) {
+            return $this->json($state,$message,$jsCallback,$params,$status);
+        }
+
+        session()->flash(! $status ? 'success' : 'false',$message);
+        return redirect()->to($redirect);
+    }
+
+    public function adminThemes($view,$data)
+    {
+
+    }
 }

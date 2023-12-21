@@ -44,6 +44,7 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(["auth", "admin"])
     ->group(function () {
+
         Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {
 
@@ -71,6 +72,7 @@ Route::prefix('admin')
         Route::get("/dashboard", function () {
             return view("admin.dashboard");
         })->name("admin_dashboard");
+
         /**
          * Staffs
          */
@@ -78,31 +80,11 @@ Route::prefix('admin')
         /**
          * Users
          */
-        Route::prefix("members")
-            ->name('members.')
-            ->controller(MemberController::class)
-            ->group(function () {
 
-                Route::get("/all", "index")->name('all');
-                Route::get('/member/detail/{member}', "show")->name("show");
-                Route::get("/add/{program}", "add_member_to_program")->name('admin_add_member_to_program');
-                Route::get("/assign/{program}", "assign_member_to_program")->name('admin_add_assign_member_to_program');
-                Route::get("/show/program/{member}/{program}", "programShow")->name('admin_show_for_program');
-                Route::put('/update-password/{member}', 'updatePassword')->name('admin_change_user_password');
-                Route::post('/add/{program}', "store_member_to_program")->name("admin_store_member_to_program");
-                Route::post("/assign/{program}", "store_member_to_class")->name('admin_store_assign_member_to_program');
-                Route::post("/show/program/{member}/{emergencyMeta}/{program?}", "programUpdate")->name('admin_update_for_program');
-                Route::post("/update/{member}", 'update')->name("admin_update_member_basic_info");
-                Route::post("/update/member/meta/{member}/{memberInfo?}", "updatePersonal")->name("admin_update_member_meta_info");
-                Route::post("/reauth-as-user/{member}", "reauthUser")->name("admin_login_as_user");
-                Route::delete('/delete/{member}', 'deleteUser')->name('admin_user_delete');
-                Route::prefix('subscription')
-                    ->name('subscription.')
-                    ->controller(MemberController::class)
-                    ->group(function () {
-                        Route::post('/cancel/{program}/{member}', 'calcel_subscription')->name('admin_cancel_user_subscription');
-                    });
-            });
+        include __DIR__.'/admin/member.php';
+        include __DIR__.'/admin/member-dikshya.php';
+        include __DIR__.'/admin/member-emergency.php';
+
         /**
          * Zoom & Meetings
          */
@@ -114,6 +96,7 @@ Route::prefix('admin')
                 Route::get("account/edit/{edit_id}", [AdminZoomAccountController::class, "edit_zoom_account"])->name("admin_zoom_account_edit");
                 Route::post("account/edit/{edit_id}", [AdminZoomAccountController::class, "update_zoom_account"])->name("admin_zoom_account_edit");
             });
+
         Route::prefix("meeting")
             ->name("meeting.")
             ->group(function () {
@@ -124,6 +107,7 @@ Route::prefix('admin')
                 Route::post('/update');
                 Route::post("/delete");
             });
+
         /**
          * Batch
          */
@@ -141,6 +125,7 @@ Route::prefix('admin')
                 Route::post("/delete/{batch}", [AdminBatchController::class, "delete_batch"])->name("admin_delete_batch");
                 // Route::get("")
             });
+
         /**
          * Programs
          */
@@ -150,7 +135,7 @@ Route::prefix('admin')
             ->group(function () {
 
                 Route::get("/list/{type?}", "program_list")->name("admin_program_list");
-                Route::get("/add/{type?}", "new_program")->name("admin_program_new");
+                Route::match(['post','get'],"/add/{type?}", "new_program")->name("admin_program_new");
                 Route::get("/edit/{program}", "edit_program")->name("admin_program_edit");
                 Route::get('/program/store/{program}', 'programBatchAndSectionModal')->name('admin_modal_program_meta_information');
                 Route::get("/add/batch/modal/{program}", "add_batch_modal")->name("admin_program_add_batch_modal");
@@ -231,8 +216,8 @@ Route::prefix('admin')
                         Route::get('/overview/{program}', [ProgramStudentFeeController::class, "fee_overview_by_program"])->name('admin_fee_overview_by_program');
                         Route::get("/transaciton-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
                         Route::get("/transaciton/voucher/file/{fee_detail}", [ProgramStudentFeeController::class, "display_uploaded_voucher"])->name('admin_display_fee_voucher');
-                        Route::post('/store/{program}/{member}', [ProgramStudentFeeController::class, "store_fee_by_program"])->name('admin_store_student_fee');
-                        Route::post('/store/fee-strucutre/new/{program}', [ProgramStudentFeeController::class, "store_program_course_fee_structure"])->name('admin_store_course_fee');
+                        Route::post('/store/{member?}/{program?}', [ProgramStudentFeeController::class, "store_fee_by_program"])->name('admin_store_student_fee');
+                        Route::post('/store/fee-structure/new/{program}', [ProgramStudentFeeController::class, "store_program_course_fee_structure"])->name('admin_store_course_fee');
                         Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');
                         Route::put("transaction/update/status/{fee_detail}", [FeeAPIController::class, "update_fee_status"])->name('api_update_fee_detail');
                         Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
@@ -329,6 +314,12 @@ Route::prefix('admin')
          * Exams
          */
         include __DIR__ . "/admin/exam-center.php";
+
+        /**
+         *  Modal
+         */
+        include __DIR__ .'/admin/modal.php';
+
         /**
          * Website
          */
@@ -461,7 +452,7 @@ Route::prefix('admin')
          *
          * */
         Route::prefix('supports')
-            ->name("suppports.")
+            ->name("supports.")
             ->controller(SupportTicketController::class)
             ->group(function () {
                 Route::get("list", "index")->name("tickets.list");
