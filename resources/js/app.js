@@ -3,8 +3,10 @@ import './bootstrap.js';
 //================== partials ======================//
 import './partials/ajax-form.js'
 import './partials/ajax-modal';
+import './partials/select2';
 import './partials/voucher-modal';
-import './partials/tinymce';
+// import './partials/tinymce';
+import './partials/programs';
 $(function () {
     "use strict";
 

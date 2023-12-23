@@ -9,6 +9,7 @@ use App\Models\Program;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -62,41 +63,42 @@ class AdminProgramSectionController extends Controller
     {
         //
         $program_section = new ProgramSection;
-        $program_section->program_id = $program->id;
-        $program_section->section_name = $request->section_name;
-        $program_section->slug = Str::slug($request->section_name, '-');
-        $program_section->default = ($request->default) ? true : false;
-
+        $program_section->fill([
+            'program_id' => $program->getKey(),
+            'section_name'  => $request->post('section_name'),
+            'slug'  => Str::slug($request->post('section_name'),'-'),
+            'default'   => $request->post('default') ?? false
+        ]);
         // check slug
-        $slug = $program_section->where('slug', Str::slug($request->section_name))->where('program_id', $program->id)->exists();
+        $slug = $program_section->where('slug', Str::slug($request->section_name))->where('program_id', $program->getKey())->exists();
+
         if ($slug) {
-            session()->flash('error', "Section Name Already Exists.");
-            return back()->withInput();
+            return $this->returnResponse(false,'Section name already exists.',null,[],200,route('admin.program.section.index',['program' => $program->getKey()]));
         }
+
         try {
             DB::transaction(function () use ($program_section, $program) {
                 if ($program_section->default) {
 
-                    $check_previous = $program_section->where("program_id", $program->id)->where('default', true)->first();
-
+                    $check_previous = ProgramSection::where("program_id", $program->id)
+                                                    ->where('default', true)->first();
                     if ($check_previous) {
                         $check_previous->default = false;
-                    }
-
-                    if ($check_previous && $check_previous->isDrity()) {
                         $check_previous->save();
                     }
+
                 }
                 $program_section->save();
             });
+
         } catch (\Throwable $th) {
-            //throw $th;
-            session()->flash('error', "Unable to add section. Error: " . $th->getMessage());
-            return back()->withInput();
+            return $this->returnResponse(false,'Error: '. $th->getMessage(),null,[],200,route('admin.program.section.index',['program' => $program->getKey()]));
         }
 
-        session()->flash('success', "Section Crated.");
-        return back();
+        $jsCallback = $request->post('callback') ?? '';
+        $params  = $request->post('params') ?? [];
+        $params['items'] = ['id' => $program_section->getKey(),'text' => $program_section->section_name];
+        return $this->returnResponse(true,"Section Created",$jsCallback,$params,200,route('admin.program.section.index',['program' => $program->getKey()]));
     }
 
     /**

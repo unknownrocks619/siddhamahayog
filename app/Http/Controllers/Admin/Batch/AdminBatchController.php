@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Batch;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BatchRequest;
 use App\Models\Batch;
+use App\Models\ProgramBatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -18,6 +19,7 @@ class AdminBatchController extends Controller
     public function batch(Request $request) {
 
         if ( $request->ajax() && $request->wantsJson()) {
+
             $batches = Batch::latest()->withCount(['batch_program'])->get();
             $datatable = Datatables::of($batches)
                                 ->addIndexColumn()
@@ -61,35 +63,51 @@ class AdminBatchController extends Controller
         return view('admin.batches.create-batch');
     }
 
-    public function store_batch(BatchRequest $request) {
+    /**
+     * @param BatchRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
+    public function store_batch(BatchRequest $request) : \Illuminate\Http\RedirectResponse|\Illuminate\Http\Response {
         $batch = new Batch;
-        $batch->batch_name = $request->batch_name;
-        $batch->slug = Str::slug($batch->batch_name,"-");
-        $batch->batch_year = $request->year;
-        $batch->batch_month = $request->month;
-
-        // try slug.
+        $batch->fill([
+            'batch_name'    => $request->post('batch_name'),
+            'slug'  => Str::slug($request->post('batch_name'),"-"),
+            'batch_year'    => $request->post('year'),
+            'batch_month'   => $request->post('month')
+        ]);
 
         $test_batch = Batch::where("slug",$batch->slug)->first();
 
         if ( $test_batch ) {
-            $request->session()->flash("error","Batch with Same Name exists.");
-            return back()->withInput();
+            $this->returnResponse(false,'Batch with same name exists.',null,[],200,route('admin.batch.admin_batch_store'));
         }
 
         try {
             $batch->save();
-        } catch (\Throwable $th) {
-            //throw $th;
-            $request->session()->flash("error","Warning: ". $th->getMessage());
-            return back()->withInput();
-        } catch (\Error $er) {
-            $request->session()->flash("error","Warning: ". $th->getMessage());
-            return back()->withInput();
+
+            // Add batch to program to begin.
+            if ( $request->post('program') ) {
+                $programBatch = new ProgramBatch();
+
+                $programBatch->fill([
+                    'program_id'    => $request->post('program'),
+                    'batch_id'  => $batch->getKey(),
+                    'active'    => true,
+                ]);
+
+                $programBatch->save();
+            }
+
+        } catch (\Throwable|\Error $th) {
+            return $this->returnResponse(false,' Error: '. $th->getMessage(),null,[],200,route('admin.batch.admin_batch_create'));
         }
 
-        $request->session()->flash("success","New batch created.");
-        return back();
+        $callback = $request->post('callback');
+        $params = $request->post('params') ?? [];
+        $params['items'] = ['id' => $batch->getKey(),'text' => $batch->batch_name];
+        return $this->returnResponse(true,'New Batch Created', $callback,$params,200,route('admin.batch.admin_batch_create'));
+//        $request->session()->flash("success","New batch created.");
+//        return back();
     }
 
     public function edit_batch(Batch $batch) {
@@ -145,5 +163,5 @@ class AdminBatchController extends Controller
     public function member_list_with_batch_program() {
 
     }
-    
+
 }

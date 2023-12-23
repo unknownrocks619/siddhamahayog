@@ -105,20 +105,19 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="batch" class="d-flex justify-content-between">
-                            <span>Batch</span>
+                            <span>Default Batch</span>
                             <span>
                                 <a href="" data-bs-target="#newBatch" data-bs-toggle="modal" class="ajax-modal" data-action="{{route('admin.modal.display',['view' => 'programs.batch.new','program'=>$program])}}"><i class="fas fa-plus me-2"></i> Create new batch</a>
                             </span>
                         </label>
-                        <select name="batch" id="batch" class="form-control">
-
+                        <select name="batch" id="batch-select" class="form-control ajax-select-2"  data-action="{{route('admin.select2.batch-list')}}">
                         </select>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="section" class="d-flex justify-content-between">
-                            <span>Section</span>
+                            <span>Default Section</span>
                             <span>
                                 <a href="" class="ajax-modal" data-bs-target="#newSection" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view'=>'programs.section.new','program' => $program->getKey()])}}">
                                     <i class="fas fa-plus"></i>
@@ -126,7 +125,7 @@
                                 </a>
                             </span>
                         </label>
-                        <select name="" id="" class="form-control"></select>
+                        <select name="section" id="section-select" class="form-control ajax-select-2" data-action="{{route('admin.select2.program-section-list',['program' => $program])}}"></select>
                     </div>
                 </div>
             </div>

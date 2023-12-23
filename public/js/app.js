@@ -5366,14 +5366,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_ajax_form_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_partials_ajax_form_js__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _partials_ajax_modal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./partials/ajax-modal */ "./resources/js/partials/ajax-modal.js");
 /* harmony import */ var _partials_ajax_modal__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_partials_ajax_modal__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./partials/voucher-modal */ "./resources/js/partials/voucher-modal.js");
-/* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_partials_voucher_modal__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./partials/tinymce */ "./resources/js/partials/tinymce.js");
-/* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_partials_tinymce__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _partials_select2__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./partials/select2 */ "./resources/js/partials/select2.js");
+/* harmony import */ var _partials_select2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_partials_select2__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./partials/voucher-modal */ "./resources/js/partials/voucher-modal.js");
+/* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
+/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_5__);
  //================== partials ======================//
 
 
 
+
+ // import './partials/tinymce';
 
 
 $(function () {
@@ -5505,28 +5509,6 @@ $(function () {
       animate: {
         enter: 'animated fadeInDown',
         exit: 'animated fadeOutUp'
-      }
-    });
-  };
-
-  window.setupTinyMce = function () {
-    tinymce.init({
-      selector: 'textarea',
-      plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-      tinycomments_mode: 'embedded',
-      tinycomments_author: 'Author name',
-      mergetags_list: [{
-        value: 'First.Name',
-        title: 'First Name'
-      }, {
-        value: 'Email',
-        title: 'Email'
-      }],
-      ai_request: function ai_request(request, respondWith) {
-        return respondWith.string(function () {
-          return Promise.reject("See docs to implement AI Assistant");
-        });
       }
     });
   };
@@ -5693,56 +5675,134 @@ $(document).on('click', '.ajax-modal', function (event) {
     },
     error: function error(response) {
       messageBox(false, 'Unable to load ');
-      $(clickeElement).prop('disabled', false).removeClass('disabled');
+      $(clickElement).prop('disabled', false).removeClass('disabled');
     }
   });
 });
 
 /***/ }),
 
-/***/ "./resources/js/partials/tinymce.js":
-/*!******************************************!*\
-  !*** ./resources/js/partials/tinymce.js ***!
-  \******************************************/
+/***/ "./resources/js/partials/programs.js":
+/*!*******************************************!*\
+  !*** ./resources/js/partials/programs.js ***!
+  \*******************************************/
 /***/ (() => {
 
 $(function () {
-  console.log('hello world');
+  window.assignBatchToProgram = function (params) {
+    var _targetElement = params.targetElm;
 
-  if ($('.tiny-mce').length) {
-    window.setupTinyMce();
-  }
+    if (!_targetElement) {
+      _targetElement = $('#batch-select');
+    }
+
+    _targetElement.append("<option value=\"".concat(params.items.id, "\" selected>").concat(params.items.text, "</option>"));
+
+    if ($('div.modal').hasClass('show')) {
+      $('div.modal.show').find('[data-bs-dismiss]').trigger('click').trigger('change');
+    }
+  };
+
+  window.assignSectionToProgram = function (params) {
+    var _targetElement = params.targetElm;
+
+    if (!_targetElement) {
+      _targetElement = $('#section-select');
+    }
+
+    _targetElement.append("<option value=\"".concat(params.items.id, "\" selected>").concat(params.items.text, "</option>"));
+
+    console.log('hello');
+
+    if ($('div.modal').hasClass('show')) {
+      $('div.modal.show').find('[data-bs-dismiss]').trigger('click').trigger('change');
+    }
+  };
 });
 
-window.setupTinyMce = function () {
-  tinymce.init({
-    selector: 'textarea',
-    plugins: 'ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss',
-    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-    tinycomments_mode: 'embedded',
-    tinycomments_author: 'Author name',
-    mergetags_list: [{
-      value: 'First.Name',
-      title: 'First Name'
-    }, {
-      value: 'Email',
-      title: 'Email'
-    }],
-    ai_request: function ai_request(request, respondWith) {
-      return respondWith.string(function () {
-        return Promise.reject("See docs to implement AI Assistant");
-      });
+/***/ }),
+
+/***/ "./resources/js/partials/select2.js":
+/*!******************************************!*\
+  !*** ./resources/js/partials/select2.js ***!
+  \******************************************/
+/***/ (() => {
+
+window.ajaxReinitalize = function (element) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (!$(element).hasClass('no-select-2')) {
+    if (!$(element).hasClass('ajax-select-2')) {
+      $(element).select2(options);
+    } else {
+      var action = $(element).data('action');
+      options.ajax = {
+        url: action,
+        dataType: 'json',
+        type: 'GET',
+        data: function data(params) {
+          var query = {
+            search: params.term,
+            page: params.page || 1
+          };
+          return query;
+        },
+        results: function results(data) {
+          console.log('data: ', data);
+          return {
+            results: data
+          };
+        }
+      };
+      $(element).select2(options);
     }
-  });
+  }
 };
 
-window.setupTinyMceAll = function () {
-  tinymce.init({
-    selector: '.tiny-mce',
-    inline: true,
-    menubar: false
-  });
+window.select2Options = function () {
+  if ($('select').length) {
+    console.log('hello');
+    $.each($('select'), function (index, element) {
+      if (!$(element).hasClass('no-select-2')) {
+        window.ajaxReinitalize(element);
+      }
+    });
+  }
 };
+
+window.select2Options();
+$(document).on('change', '.update-from-select', function (event) {
+  var _$$data;
+
+  event.preventDefault();
+  var url = $(this).data('action');
+  var params = {
+    'record': $(this).find(':selected').val()
+  };
+  var method = (_$$data = $(this).data('method')) !== null && _$$data !== void 0 ? _$$data : 'get';
+  $.ajax({
+    method: method,
+    url: url,
+    data: params,
+    success: function success(response) {
+      window.handleOKResponse(response);
+    },
+    erorr: function erorr(response) {
+      window.handleBADResponse(response);
+    }
+  });
+});
+$(document).on('change', 'select[name="slider_layout"]', function (event) {
+  event.preventDefault();
+
+  var _sliderValue = $(this).find(':selected').val();
+
+  $(".slider_row").addClass('d-none');
+
+  if ($('.' + _sliderValue).length) {
+    $('.' + _sliderValue).removeClass('d-none');
+  }
+});
 
 /***/ }),
 

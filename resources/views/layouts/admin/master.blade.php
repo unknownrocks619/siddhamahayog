@@ -29,6 +29,7 @@
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}">
+    <link rel="stylesheet" href="{{ asset ('themes/admin/assets/vendor/libs/select2/select2.css')}}" />
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/css/pages/cards-advance.css') }}" />
@@ -90,9 +91,10 @@
 <script src="{{asset ('themes/admin/assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.5/bootstrap-notify.min.js"></script>
 @stack('vendor_css')
+<script src="{{ asset ('themes/admin/assets/vendor/libs/select2/select2.js')}}"></script>
 {{--<script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>--}}
-    <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js"
-        referrerpolicy="origin"></script>
+<script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js"
+    referrerpolicy="origin"></script>
 
 <!-- Main JS -->
 <script src="{{ asset ('themes/admin/assets/js/main.js')}}"></script>

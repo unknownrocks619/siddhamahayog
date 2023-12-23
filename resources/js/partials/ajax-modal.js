@@ -34,7 +34,7 @@ $(document).on('click', '.ajax-modal', function (event) {
         },
         error: function (response) {
             messageBox(false, 'Unable to load ');
-            $(clickeElement).prop('disabled', false).removeClass('disabled');
+            $(clickElement).prop('disabled', false).removeClass('disabled');
         }
     })
 });

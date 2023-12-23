@@ -10,7 +10,9 @@ class ProgramBatch extends Model
     use HasFactory;
 
     public $fillable = [
-        "active"
+        "active",
+        'program_id',
+        'batch_id'
     ];
     public function batch()
     {

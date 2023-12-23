@@ -6,7 +6,7 @@
     </h4>
     <div class="row mb-2">
         <div class="col-md-12 text-end">
-            <button class="btn btn-primary"><i class="fas fa-arrow-left me-2"></i> Go Back</button>
+            <a href="{{route('admin.program.admin_program_list')}}" class="btn btn-primary"><i class="fas fa-arrow-left me-2"></i> Go Back</a>
         </div>
     </div>
 

@@ -9,6 +9,13 @@ class ProgramSection extends Model
 {
     use HasFactory;
 
+    protected  $fillable = [
+        'program_id',
+        'section_name',
+        'slug',
+        'default'
+    ];
+
     public function programStudents()
     {
         return $this->hasMany(ProgramStudent::class, "program_section_id");

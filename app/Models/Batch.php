@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Batch extends Model
 {
+    protected $fillable = [
+        'batch_name',
+        'slug',
+        'batch_year',
+        'batch_month'
+    ];
+
     use HasFactory;
 
     public function batch_program() {

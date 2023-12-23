@@ -30,6 +30,7 @@
     "dependencies": {
         "vue-loader": "^17.0.0",
         "vue-router": "^4.0.13",
-        "sweetalert2": "^11.7.3"
+        "sweetalert2": "^11.7.3",
+        "select2": "^4.1.0-rc.0"
     }
 }

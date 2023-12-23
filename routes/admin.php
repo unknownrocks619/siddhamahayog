@@ -513,4 +513,6 @@ Route::prefix('admin')
          * Resources
          */
         Route::resource("widget", WidgetController::class);
+
+        include __DIR__.'/admin/select2.php';
     });
