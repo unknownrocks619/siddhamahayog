@@ -6,7 +6,7 @@
     </h4>
     <!-- Responsive Datatable -->
     <div class="card">
-        <h5 class="card-header">All Member List/h5>
+        <h5 class="card-header">All Member List</h5>
         <div class="card-datatable table-responsive">
             <table class="dt-responsive table" id="program-table">
                 <thead>

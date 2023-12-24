@@ -28,16 +28,18 @@ class AdminProgramController extends Controller
 
     public function program_list(Request $request, $type = null)
     {
+
         if ($request->ajax() && $request->wantsJson()) {
 
-            $programs = Program::with(["active_batch" => function ($query) {
-                return $query->with(["batch"]);
-            }, "liveProgram" => function ($query) {
+            $programs = Program::with(["defaultBatch",
+                "liveProgram" => function ($query) {
                 return $query->with(["sections"]);
-            },'students']);
+            },'students','sections' => function ($query) {
+                $query->withCount('programStudents');
+            }]);
 
             if ($type) {
-                $programs->where("program_type", "paid")->latest()->get();
+                $programs->where("program_type", $type)->latest()->get();
             }
 
             $datatable = DataTables::of($programs)
@@ -54,6 +56,18 @@ class AdminProgramController extends Controller
                 })
                 ->addColumn('program_duration', function ($row) {
                     return ($row->program_duration) ? "Ongoing" : $row->program_duration;
+                })
+                ->addColumn('sections', function ($row) {
+                    $sectionHTML = '';
+                    foreach ($row->sections ?? [] as $section) {
+
+                        if ($section->default) {
+                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger">'.$section->section_name .':{'.$section->program_students_count.'}</span>';
+                            continue;
+                        }
+                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary">'.$section->section_name .':{'.$section->program_students_count.'}</span>';
+                    }
+                    return $sectionHTML;
                 })
                 ->addColumn('total_student', function ($row) {
                     $totalStudent =  $row->students?->count() ?? 0;
@@ -91,19 +105,19 @@ class AdminProgramController extends Controller
                     return "<a class='btn btn-success btn-sm' href='" . route('admin.program.live', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Go Live</a>";
                 })
                 ->addColumn('batch', function ($row) {
-                    if ($row->active_batch) {
-                        return ($row->active_batch->batch->batch_name . "-" . $row->active_batch->batch->batch_year . "/   " . $row->active_batch->batch->batch_month);
+                    if ($row->defaultBatch) {
+                        return ($row->defaultBatch->batch_name . "-" . $row->defaultBatch->batch_year . "/   " . $row->defaultBatch->batch_month);
                     } else {
-                        return "<a href='" . route('admin.program.admin_program_add_batch_modal', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Add Batch</a>";
+                        return "<button data-action='" . route('admin.modal.display', ['view' => 'programs.batch.new','program' => $row->getKey(),'callback' => 'reload'] ) . "' data-bs-toggle='modal' data-bs-target='#newBatch' class='btn btn-link ajax-modal'>Add Batch</button>";
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-2'></i>view detail</a>";
-                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-2'><i class='fas fa-pencil'></i></a>";
+                    $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-1'></i></a>";
+                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-1'><i class='fas fa-pencil'></i></a>";
                     $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'><i class='fas fa-trash'></a>";
                     return $action;
                 })
-                ->rawColumns(["program_name", "batch", "action", "promote","total_student"])
+                ->rawColumns(["program_name", "batch", "action", "promote","total_student",'sections'])
                 ->make(true);
             return $datatable;
         }
@@ -152,8 +166,62 @@ class AdminProgramController extends Controller
         return view("admin.programs.add", compact("type"));
     }
 
-    public function edit_program(Program $program)
+    public function edit_program(Request $request, Program $program)
     {
+        if ( $request->post() ) {
+            $program->fill([
+                'program_name'  => $request->post('program_name'),
+                'program_type'  => $request->post('program_type'),
+                'program_start_date'    => $request->post('program_start_date'),
+                'program_end_date'  => $request->post('program_end_date'),
+                'monthly_fee'   => $request->post('monthly_fee'),
+                'admission_fee' => $request->post('admission_fee'),
+                'status'    => $request->post('status'),
+                'batch' => $request->post('batch'),
+                'overdue_allowed'   => $request->post('overdue_allowed'),
+                'description'   => $request->post('description'),
+                'zoom'  => $request->post('zoom'),
+            ]);
+
+            $program->save();
+
+            // update batch
+
+            if ($request->post('batch') ) {
+
+                $programBatch = ProgramBatch::where('batch_id',$request->post('batch'))
+                                            ->where('program_id',$program->getKey())
+                                            ->first();
+                if (! $programBatch ) {
+
+                    $programBatch = new ProgramBatch();
+                    $programBatch->fill([
+                        'program_id' => $program->getKey(),
+                        'batch_id'  => $request->post('batch')
+                    ]);
+                }
+
+                $programBatch->active = true;
+                $programBatch->save();
+
+            }
+
+            if ( $request->post('section') ) {
+                $programSection = ProgramSection::where('id',$request->post('section'))->first();
+                $defaultProgramSection = ProgramSection::where('program_id',$program->getKey())
+                                                        ->where('default',true)
+                                                        ->first();
+                if ( $defaultProgramSection ) {
+                    $defaultProgramSection->default = false;
+                    $defaultProgramSection->save();
+                }
+
+                $programSection->default = true;
+                $programSection->save();
+            }
+
+            return $this->json(true,'Program Information Updated.');
+        }
 
         $program->promote = ($program->promote) ? "yes" : "no";
 
@@ -186,7 +254,6 @@ class AdminProgramController extends Controller
 
     public function store_batch_program(Request $request, Program $program)
     {
-
 
         $program_batch = new ProgramBatch;
         $program_batch->program_id = $program->id;
@@ -227,21 +294,73 @@ class AdminProgramController extends Controller
         return back();
     }
 
+    /**
+     * Program Detail
+     * @param Request $request
+     * @param Program $program
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function program_detail(Request $request, Program $program)
     {
 
+        if ($request->ajax() && $request->wantsJson()) {
+
+            $datatable = DataTables::of($program->programStudentEnrolments())
+                ->addIndexColumn()
+                ->addColumn('roll_number', function ($row) {
+
+                    if ( ! $row->roll_number) {
+                        return '<span class="label label-bg-dark px-1"><a href="" class="text-info"><i class="fas fa-plus"></i> Add Roll number</a></span>';
+                    }
+
+                    return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
+
+                })
+                ->addColumn('full_name', function ($row) {
+                    return "<a href='route()'>".$row->full_name."</a>";
+                })
+                ->addColumn('phone_number', function ($row) {
+                    return $row->phone_number ?? 'N/A';
+                })
+                ->addColumn('email', function ($row) {
+                    return $row->email ?? 'N/A';
+                })
+                ->addColumn('total_payment', function ($row) {
+                    if ( ! $row->member_payment ) {
+                        return '<span class="badge bg-label-danger">'.default_currency(0.0).'</span>';
+                    }
+
+                    if ($row->scholarID) {
+                        return '<span class="badge bg-label-info"><b>Scholarshp</b><br />'.$row->remarks.'</span>';
+                    }
+
+                    return '<span class="badge bg-label-primary">'.default_currency($row->member_payment).'</span>';
+                })
+                ->addColumn('batch', function ($row) {
+                    return $row->batch_name ?? 'Batch N/A';
+                })
+                ->addColumn('section', function ($row) {
+                   return $row->section_name ?? 'Section N/A';
+                })
+                ->addColumn('enrolled_date', function($row) {
+                   return date('Y-m-d',strtotime($row->enrolled_date));
+                })
+                ->addColumn('action', function ($row) {
+                    $action ='';
+                    return $action;
+                })
+                ->rawColumns(["total_payment", "action", "roll_number",'full_name'])
+                ->make(true);
+            return $datatable;
+        }
 
         $sections = ProgramSection::where('program_id', $program->id)->get();
-        $students = [];
-        $paymentDetail = [];
 
         $students = ProgramStudent::all_program_student($program);
         $paymentDetail = ProgramStudent::studentPaymentDetail('admission_fee', array_keys(Arr::keyBy($students, 'user_id')));
         if ($program->program_type != 'open') {
+
         }
-        // $students = ProgramStudent::with(["section", "batch", "student"])
-        //     ->where('program_id', $program->id)
-        //     ->get();
 
         return view("admin.programs.detail", compact("program", "sections", "students", "paymentDetail"));
     }

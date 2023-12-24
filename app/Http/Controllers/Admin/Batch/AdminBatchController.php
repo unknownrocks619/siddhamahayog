@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Batch;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BatchRequest;
 use App\Models\Batch;
+use App\Models\Program;
 use App\Models\ProgramBatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -83,12 +84,16 @@ class AdminBatchController extends Controller
         }
 
         try {
-            $batch->save();
 
+            $batch->save();
             // Add batch to program to begin.
             if ( $request->post('program') ) {
-                $programBatch = new ProgramBatch();
+                $program = Program::where('id', $request->post('program'))->first();
 
+                $programBatch = new ProgramBatch();
+                $programBatch->program_id = $request->post('program');
+                $programBatch->batch_id = $batch->getKey();
+                $programBatch->active = true;
                 $programBatch->fill([
                     'program_id'    => $request->post('program'),
                     'batch_id'  => $batch->getKey(),
@@ -96,6 +101,8 @@ class AdminBatchController extends Controller
                 ]);
 
                 $programBatch->save();
+                $program->batch = $batch->getKey();
+                $program->save();
             }
 
         } catch (\Throwable|\Error $th) {

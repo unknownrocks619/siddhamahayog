@@ -8,8 +8,9 @@
     <div class="modal-body p-2">
 
         @if(request()->program)
+            <input type="hidden" name="program" value="{{request()->program}}" />
             <input type="hidden" name="params['program']" value="{{request()->program}}" />
-            <input type="hidden" name="callback" value="assignBatchToProgram">
+            <input type="hidden" name="callback" value="@if(request()->callback){{request()->callback}}@else{{'assignBatchToProgram'}}@endif">
         @endif
 
         <div class="row">

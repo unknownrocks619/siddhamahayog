@@ -51,10 +51,13 @@ class AdminProgramCourseController extends Controller
         try {
             $program_course->save();
         } catch (\Throwable $th) {
+            return $this->json(false,'Unable to create new course.',null,['Error: '. $th->getMessage()]);
             //throw $th;
-            session()->flash("error", "Error: " . $th->getMessage());
-            return back()->withInput();
+//            session()->flash("error", "Error: " . $th->getMessage());
+//            return back()->withInput();
         }
+
+        return $this->json(true,'New Course Created.','reload');
         session()->flash("success", "New Course Created.");
         return back();
     }
@@ -88,10 +91,12 @@ class AdminProgramCourseController extends Controller
                 $course->delete();
             });
         } catch (\Throwable $th) {
+            return $this->json(false,'Error: '. $th->getMessage());
             //throw $th;
-            session()->flash('error', 'Unable to remove Course. Error: ' . $th->getMessage());
-            return back();
+//            session()->flash('error', 'Unable to remove Course. Error: ' . $th->getMessage());
+//            return back();
         }
+        return $this->json(true,'Course removed.','reload');
         return back();
     }
 

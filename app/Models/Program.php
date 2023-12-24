@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Program extends Model
 {
@@ -176,5 +177,86 @@ class Program extends Model
     public function allLivePrograms()
     {
         return $this->hasMany(Live::class, "program_id")->where('live', true);
+    }
+
+    public function defaultBatch() {
+        return $this->hasOne(Batch::class,'id','batch');
+    }
+
+    public function programStudentEnrolments() {
+        $selects = [
+            'pro.program_name',
+            'pro.id AS program_id',
+            'prostu.id AS program_student_id',
+            'prostu.roll_number',
+            'prostu.active as active_student',
+            'prostu.created_at as enrolled_date',
+            'prostu.roll_number',
+            'prostu.allow_all',
+            'prostu.batch_id AS batch_id',
+            'prostu.program_section_id AS section_id',
+            'member.full_name',
+            'member.first_name',
+            'member.last_name',
+            'member.phone_number',
+            'member.email',
+            'member.id as member_id',
+            'SUM(prostufee.total_amount) as member_payment',
+            'prosec.section_name',
+            'batches.batch_name',
+            'scholar.remarks',
+            'scholar.scholar_type',
+            'scholar.id AS scholarID',
+        ];
+
+        $sql = "SELECT ";
+        $sql .= implode(', ', $selects);
+        $sql .= ' FROM programs pro';
+        $sql .= ' INNER JOIN program_students prostu';
+        $sql .= ' ON prostu.program_id = pro.id';
+        $sql .= ' AND prostu.deleted_at IS NULL';
+        $sql .=' INNER JOIN members member';
+        $sql .= ' ON member.id = prostu.student_id';
+        $sql .= " AND member.deleted_at IS NULL";
+        $sql .= ' INNER JOIN program_sections prosec';
+        $sql .= ' ON prosec.id = prostu.program_section_id';
+        $sql .= " AND prosec.deleted_at IS NULL";
+        $sql .= ' INNER JOIN program_batches probatch';
+        $sql .= ' ON probatch.id = prostu.batch_id';
+        $sql .= ' INNER JOIN batches';
+        $sql .= " ON batches.id = probatch.batch_id";
+        $sql .= " LEFT JOIN program_student_fees prostufee";
+        $sql .= " ON prostufee.program_id = pro.id";
+        $sql .= " AND prostufee.student_id = member.id";
+        $sql .= " AND prostufee.deleted_at IS NULL";
+        $sql .= " LEFT JOIN scholarships scholar";
+        $sql .= " ON scholar.program_id = pro.id";
+        $sql .= " AND scholar.student_id = member.id";
+        $sql .= " AND scholar.deleted_at IS NULL ";
+
+        $sql .= " WHERE pro.id = ?";
+        $sql .= " GROUP BY member.id";
+
+        return DB::select($sql,[$this->getKey()]);
+    }
+
+    public function totalAdmissionFee() {
+        $sql = " SELECT SUM(amount) as total_amount, ";
+        $sql .= "  COALESCE(amount_category, 'grand_total') AS total_by";
+        $sql .= " FROM program_student_fee_details prostufee";
+        $sql .= " WHERE prostufee.verified  = 1";
+        $sql .= " AND prostufee.program_id = ?";
+        $sql .=  " GROUP BY prostufee.amount_category";
+        $sql .= " WITH ROLLUP";
+
+        return DB::select($sql, [$this->getKey()]);
+    }
+
+    public function totalMonthlyFee() {
+
+    }
+
+    public function totalRevenue() {
+
     }
 }

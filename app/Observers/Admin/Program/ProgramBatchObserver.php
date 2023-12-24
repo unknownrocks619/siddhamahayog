@@ -17,11 +17,16 @@ class ProgramBatchObserver
         //
 
         if ($programBatch->active) {
-            $currentActive = ProgramBatch::where('id', "!=", $programBatch->id)->where('program_id', request()->program->id)->where('active', true)->get();
-            foreach ($currentActive as $active_batch) {
-                $active_batch->active = false;
-                $active_batch->saveQuietly();
-            }
+
+//            $currentActive = ProgramBatch::where('id', "!=", $programBatch->id)
+//                                            ->where('program_id', request()->program->id)
+//                                            ->where('active', true)
+//                                            ->get();
+//
+//            foreach ($currentActive as $active_batch) {
+//                $active_batch->active = false;
+//                $active_batch->saveQuietly();
+//            }
         }
     }
 

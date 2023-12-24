@@ -2,42 +2,81 @@
 @push('page_title') Program List @endpush
 @section('main')
     <h4 class="py-3 mb-4">
-        <span class="text-muted fw-light">Programs/</span> All
+        <span class="text-muted fw-light"><a href="{{route('admin.program.admin_program_list')}}">Programs</a>/</span> {{$program->program_name}}
     </h4>
-    <div class="row mb-2">
-        <div class="col-md-12 text-end">
-            <a href="{{route('admin.program.admin_program_new')}}" class="btn btn-primary"><i class="fas fa-plus"></i>Add New Program</a>
+    <div class="container-fluid">
+        @if ($program->liveProgram->count())
+            <div class="d-flex flex-column flex-md-row justify-content-end align-items-start align-items-md-center mb-3">
+                @foreach ($program->liveProgram as $live_program)
+                    <div class="d-flex align-content-center flex-wrap gap-2">
+                        <button class="btn btn-label-danger delete-order waves-effect">End All</button>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="d-flex flex-column flex-md-row justify-content-end align-items-start align-items-md-center mb-3">
+                <div class="d-flex align-content-center flex-wrap gap-2">
+                    <button class="btn btn-label-success delete-order waves-effect">Go Live</button>
+                </div>
+            </div>
+        @endif
+        <div class="row">
+            <div class="col-xl-12 mb-4 col-lg-12 col-12">
+                @include('admin.programs.partials.statistics',['program' => $program])
+            </div>
         </div>
-    </div>
 
-    <!-- Responsive Datatable -->
-    <div class="card">
-        <h5 class="card-header">All Program  </h5>
+        <div class="row">
+            <div class="col-md-8 col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>
+                            Enrolled Student
+                        </h4>
+                    </div>
+                    <div class="card-datatable table-responsive">
+                        <table class=" table" id="program-table">
+                            <thead>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Full name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Payment Info</th>
+                                <th>Batch Name</th>
+                                <th>Section name</th>
+                                <th>Member Date</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
 
-        <div class="card-datatable table-responsive">
-            <table class="dt-responsive table" id="program-table">
-                <thead>
-                <tr>
-                    <th>Program Name</th>
-                    <th>Total Student</th>
-                    <th>Live</th>
-                    <th>Batch</th>
-                    <th>Section</th>
-                    <th></th>
-                </tr>
-                </thead>
+                            <tbody>
+                            </tbody>
 
-                <tbody>
-                </tbody>
-            </table>
+                            <tfoot>
+                            <tr>
+                                <th>Roll Number</th>
+                                <th>Full name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Payment Info</th>
+                                <th>Batch Name</th>
+                                <th>Section name</th>
+                                <th>Member Date</th>
+                                <th>Action</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-12">
+                @include('admin.programs.partials.quick-navigation')
+            </div>
         </div>
-    </div>
-    <!--/ Responsive Datatable -->
-    <x-modal modal="quickUserView">
-        @include('admin.members.modal.user-quick-view')
-    </x-modal>
-    <x-modal modal="newBatch"></x-modal>
 
+    </div>
 @endsection
 
 @push('page_script')
@@ -102,24 +141,36 @@
             ajax: '{{url()->full()}}',
             columns: [
                 {
-                    data: 'program_name',
-                    name: 'program_name'
+                    data: 'roll_number',
+                    name: 'roll_number'
                 },
                 {
-                    data: "total_student",
-                    name: "total_student"
+                    data: "full_name",
+                    name: "full_name"
                 },
                 {
-                    data: "promote",
-                    name: "promote"
+                    data: "phone_number",
+                    name: "phone_number"
+                },
+                {
+                    data: "email",
+                    name: "email"
+                },
+                {
+                    data : "total_payment",
+                    name: "total_payment"
                 },
                 {
                     data: "batch",
                     name: "batch"
                 },
                 {
-                  data : 'sections',
-                  name: 'sections'
+                    data : 'section',
+                    name: 'section'
+                },
+                {
+                    data : 'enrolled_date',
+                    name: 'enrolled_date'
                 },
                 {
                     data: "action",
@@ -133,9 +184,4 @@
             e.addEventListener("show.bs.modal",function(e){var t=document.querySelector("#wizard-create-app");if(null!==t){var n=[].slice.call(t.querySelectorAll(".btn-next")),c=[].slice.call(t.querySelectorAll(".btn-prev")),r=t.querySelector(".btn-submit");const a=new Stepper(t,{linear:!1});n&&n.forEach(e=>{e.addEventListener("click",e=>{a.next(),l()})}),c&&c.forEach(e=>{e.addEventListener("click",e=>{a.previous(),l()})}),r&&r.addEventListener("click",e=>{alert("Submitted..!!")})}})
         })
     </script>
-@endpush
-
-@push('vendor_css')
-    <link rel="stylesheet" href="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.css') }}" />
-
 @endpush
