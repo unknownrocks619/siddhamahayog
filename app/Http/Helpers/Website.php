@@ -145,9 +145,11 @@ if (!function_exists("user")) {
 if (!function_exists("profile")) {
     function profile()
     {
-        if (user()->profile) {
+        if (user()->profile && isset(user()->profile->path)) {
             $profile = asset(user()->profile->path);
-        } elseif (user()->profileUrl) {
+        } elseif(user()->profile && isset(user()->profile->full_path)) {
+            $profile = user()->profile->full_path;
+        }elseif (user()->profileUrl) {
             $path = isset(user()->profileUrl->avatar) ? user()->profileUrl->avatar : null;
             $profile = $path;
         } else {

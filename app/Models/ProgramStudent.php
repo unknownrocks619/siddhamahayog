@@ -17,6 +17,16 @@ class ProgramStudent extends Model
         'deleted_at',
     ];
 
+    protected $fillable = [
+        'program_id',
+        'program_section_id',
+        'student_id',
+        'batch_id',
+        'active',
+        'roll_number',
+        'allow_all',
+        'multiple_section'
+    ];
 
     public function program()
     {
