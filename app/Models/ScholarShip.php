@@ -10,6 +10,20 @@ class Scholarship extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const TYPES = [
+        'vip'   => 'VIP',
+        'full'  => 'Full',
+        'void'  => 'Void'
+    ];
+
+    protected  $fillable = [
+      'program_id',
+      'student_id',
+      'scholar_type',
+      'active',
+      'remarks'
+    ];
+
     public static function studentByProgram(Program $program)
     {
         $query = self::where('program_id', $program->getKey())

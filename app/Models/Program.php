@@ -183,7 +183,7 @@ class Program extends Model
         return $this->hasOne(Batch::class,'id','batch');
     }
 
-    public function programStudentEnrolments() {
+    public function programStudentEnrolments($searchTerm = null) {
         $selects = [
             'pro.program_name',
             'pro.id AS program_id',
@@ -208,6 +208,12 @@ class Program extends Model
             'scholar.scholar_type',
             'scholar.id AS scholarID',
         ];
+
+        $binds = [$this->getKey()];
+
+        if ( $this->getKey() == 5 ) {
+            $selects[] = 'yagya.total_counter';
+        }
 
         $sql = "SELECT ";
         $sql .= implode(', ', $selects);
@@ -234,10 +240,36 @@ class Program extends Model
         $sql .= " AND scholar.student_id = member.id";
         $sql .= " AND scholar.deleted_at IS NULL ";
 
+        if ( $this->getKey() == 5 ) {
+            $sql .= " LEFT JOIN hanumand_yagya_counters yagya";
+            $sql .= " ON yagya.member_id = member.id";
+            $sql .= " AND yagya.program_id = pro.id ";
+        }
+
         $sql .= " WHERE pro.id = ?";
+
+        if ( $searchTerm ) {
+            $sql .= " AND ( ";
+            $sql .= " member.full_name LIKE ?";
+            $sql .= " OR member.phone_number LIKE ?";
+            $sql .= " OR member.email LIKE ? ";
+            $sql .= " OR member.first_name LIKE ? ";
+            $sql .= " OR member.last_name LIKE ? ";
+            $sql .= " ) ";
+
+            $binds= array_merge($binds, [
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+            ]);
+
+        }
+
         $sql .= " GROUP BY member.id";
 
-        return DB::select($sql,[$this->getKey()]);
+        return DB::select($sql,$binds);
     }
 
     public function totalAdmissionFee() {
@@ -252,11 +284,149 @@ class Program extends Model
         return DB::select($sql, [$this->getKey()]);
     }
 
-    public function totalMonthlyFee() {
-
+    public function programBatches() {
+        return $this->hasManyThrough(Batch::class,ProgramBatch::class,'program_id','id','id','batch_id');
     }
 
     public function totalRevenue() {
 
+    }
+
+
+    public function transactionOverview($term = null) {
+        $selects = [
+            'fees.student_id',
+            'fees.id as fees_id',
+            'fees.total_amount as amount',
+            'fees.updated_at as last_transaction_date',
+            'member.full_name',
+            'member.id as member_id',
+        ];
+
+        $binds = [$this->getKey()];
+
+        $sql = " SELECT ";
+        $sql .= implode (" , ", $selects);
+        $sql .= " FROM  program_student_fees fees";
+        $sql .= " JOIN members member ";
+        $sql .= " ON member.id = fees.student_id";
+        $sql .= ' AND member.deleted_at IS NULL ';
+        $sql .= " WHERE fees.program_id = ?";
+        $sql .= " AND fees.deleted_at IS NULL ";
+
+        if ( $term ) {
+            $sql .= " AND ( ";
+            $sql .= 'member.first_name LIKE ?';
+            $sql .= " OR ";
+            $sql .= " member.last_name LIKE ? ";
+            $sql .= " OR ";
+            $sql .= " member.email LIKE ? ";
+            $sql .= " OR ";
+            $sql .= " member.phone_number LIKE ?";
+            $sql .= ' OR ';
+            $sql .= "fees.total_amount >= ?";
+            $sql .= " ) ";
+
+            $binds = array_merge($binds,['%'.$term.'%',
+                    '%'.$term.'%',
+                    '%'.$term.'%',
+                    '%'.$term.'%',
+                    $term]
+            );
+        }
+
+        return DB::select($sql,$binds);
+    }
+    public function transactionsDetail($searchTerm = null) {
+        $selects = [
+            'fee_detail.id as transaction_id',
+            'fee_detail.program_student_fees_id as transaction_overview_id',
+            'fee_detail.amount',
+            'fee_detail.amount_category',
+            'fee_detail.source',
+            'fee_detail.source_detail',
+            'fee_detail.verified',
+            'fee_detail.rejected',
+            'fee_detail.remarks',
+            'fee_detail.file',
+            'fee_detail.created_at as transaction_date',
+            'member.full_name',
+            'member.email',
+            'member.phone_number',
+            'member.id as member_id'
+        ];
+        $binds = [$this->getKey()];
+
+        $sql = " SELECT ";
+        $sql .= implode(' , ', $selects);
+        $sql .= " FROM program_student_fee_details fee_detail";
+
+        $sql .= " JOIN members member";
+        $sql .= " ON member.id = fee_detail.student_id";
+
+        $sql .= " WHERE fee_detail.program_id = ? ";
+
+        if ($searchTerm) {
+            $sql .= " AND ( ";
+                $sql .= " LOWER(member.full_name) LIKE ? ";
+                $sql .= " OR member.first_name LIKE ?";
+                $sql .= " OR member.last_name LIKE ?";
+                $sql .= " OR member.email LIKE ? ";
+                $sql .= " OR member.phone_number LIKE ? ";
+                $sql .= " OR fee_detail.created_at LIKE ? ";
+                $sql .= " OR fee_detail.source_detail LIKE ? ";
+                $sql .= " OR fee_detail.source LIKE ? ";
+                $sql .= " OR fee_detail.amount_category LIKE ? ";
+                $sql .= " OR fee_detail.amount LIKE ? ";
+                $sql .= " OR ( CASE WHEN 'verified' LIKE ? THEN verified = 1 ";
+                $sql .= "      WHEN 'pending' LIKE ? THEN verified = 0 AND rejected = 0";
+                $sql .= "      WHEN 'rejected' LIKE ? THEN rejected = 1 ";
+                $sql .= " END ";
+                $sql .= " ) ";
+            $sql .= ") ";
+
+            $binds = array_merge ($binds, [
+                '%'.strtolower($searchTerm).'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+            ]);
+        }
+
+        $sql .= " AND fee_detail.deleted_at IS NULL";
+
+        return DB::select($sql,$binds);
+    }
+
+    public function nonPaidList(){
+        $selects = [
+            'member.*',
+            'pro_mem.created_at as joined_date'
+        ];
+        $sql  = " SELECT ";
+        $sql .= implode (', ', $selects);
+        $sql .= " FROM ";
+        $sql .= " members member";
+        $sql .= " JOIN program_students pro_mem ";
+        $sql .= " ON pro_mem.student_id = member.id";
+        $sql .= " LEFT JOIN program_student_fees pro_fees ";
+        $sql .= " ON pro_fees.student_id = member.id";
+        $sql .= " AND pro_fees.program_id = pro_mem.program_id ";
+        $sql .= " AND pro_fees.deleted_at IS NULL ";
+        $sql .= " WHERE ";
+        $sql .= " pro_mem.program_id = ? ";
+        $sql .= " AND ( pro_fees.student_id  IS NULL ";
+        $sql .= " OR pro_fees.total_amount <= 0 ) ";
+
+        return DB::select($sql,[$this->getKey()]);
     }
 }

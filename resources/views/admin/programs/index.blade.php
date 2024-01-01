@@ -37,7 +37,8 @@
         @include('admin.members.modal.user-quick-view')
     </x-modal>
     <x-modal modal="newBatch"></x-modal>
-
+    <x-modal modal="liveSessionModal"></x-modal>
+    <x-modal modal="mergeSession"></x-modal>
 @endsection
 
 @push('page_script')

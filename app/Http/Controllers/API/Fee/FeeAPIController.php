@@ -33,11 +33,12 @@ class FeeAPIController extends Controller
                 $fee_detail->save();
             });
         } catch (\Throwable $th) {
-            return response([
-                "success" => false,
-                "message" => "Unable to update fee status.",
-                "error" => (auth()->user()->role_id == 1) ? $th->getMessage  : null
-            ]);
+            return $this->json(false,'Unable to update fee status.',null);
+//            return response([
+//                "success" => false,
+//                "message" => "Unable to update fee status.",
+//                "error" => (auth()->user()->role_id == 1) ? $th->getMessage  : null
+//            ]);
         }
 
         if ($fee_detail->verified) {

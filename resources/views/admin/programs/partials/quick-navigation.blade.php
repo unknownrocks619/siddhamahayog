@@ -39,7 +39,7 @@
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
                         <div class="mb-0 fw-medium">
-                            <a href="">
+                            <a href="{{ route('admin.program.fee.admin_fee_overview_by_program', ['program' => $program]) }}">
                                 Accounts & Management
                             </a>
                         </div>
@@ -53,7 +53,7 @@
                 </div>
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                        <p class="mb-0 fw-medium">Assign Member to Program</p>
+                        <a href="#" class="mb-0 fw-medium ajax-modal" data-bs-target="#assignStudentToProgram" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'members.list','program' => $program->getKey()])}}">Assign Member to Program</a>
                     </div>
                 </div>
             </li>
@@ -63,7 +63,9 @@
                 </div>
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                        <div class="mb-0 fw-medium">Register New Member to Program</div>
+                        <div class="mb-0 fw-medium">
+                            <a href="{{ route('admin.members.admin_add_member_to_program', ['program' => $program->id]) }}">Register New Member to Program</a>
+                        </div>
                     </div>
                 </div>
             </li>
@@ -73,7 +75,7 @@
                 </div>
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                        <p class="mb-0 fw-medium">Scholarship or Special Permission</p>
+                        <a href="{{route('admin.program.scholarship.list', ['program' => $program->getKey()])}}" class="mb-0 fw-medium">Scholarship or Special Permission</a>
                     </div>
                 </div>
             </li>
@@ -83,7 +85,7 @@
                 </div>
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                        <p class="mb-0 fw-medium">VIP / Guest Access List</p>
+                        <a href="{{ route('admin.program.guest.list', ['program' => $program]) }}" class="mb-0 fw-medium">VIP / Guest Access List</a>
                     </div>
                 </div>
             </li>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class ProgramStudentFee extends Model
 {
@@ -24,4 +25,5 @@ class ProgramStudentFee extends Model
     {
         return $this->belongsTo(Program::class, "program_id");
     }
+
 }

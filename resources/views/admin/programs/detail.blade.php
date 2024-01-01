@@ -5,21 +5,19 @@
         <span class="text-muted fw-light"><a href="{{route('admin.program.admin_program_list')}}">Programs</a>/</span> {{$program->program_name}}
     </h4>
     <div class="container-fluid">
-        @if ($program->liveProgram->count())
-            <div class="d-flex flex-column flex-md-row justify-content-end align-items-start align-items-md-center mb-3">
-                @foreach ($program->liveProgram as $live_program)
-                    <div class="d-flex align-content-center flex-wrap gap-2">
-                        <button class="btn btn-label-danger delete-order waves-effect">End All</button>
+        <div class="row">
+            <div class="col-md-3 col-sm-12 mb-3">
+                <a class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_list')}}"><i class="fas fa-arrow-left"></i></a>
+            </div>
+            <div class="col-md-9 col-sm-12 mb-3">
+                <div class="row">
+                    <div class="col-md-12 text-end">
+                        @include('admin.datatable-view.programs.live',['row' => $program])
                     </div>
-                @endforeach
-            </div>
-        @else
-            <div class="d-flex flex-column flex-md-row justify-content-end align-items-start align-items-md-center mb-3">
-                <div class="d-flex align-content-center flex-wrap gap-2">
-                    <button class="btn btn-label-success delete-order waves-effect">Go Live</button>
                 </div>
+
             </div>
-        @endif
+        </div>
         <div class="row">
             <div class="col-xl-12 mb-4 col-lg-12 col-12">
                 @include('admin.programs.partials.statistics',['program' => $program])
@@ -38,7 +36,13 @@
                         <table class=" table" id="program-table">
                             <thead>
                             <tr>
-                                <th>Roll Number</th>
+                                <th>
+                                    @if($program->getKey() == 5 )
+                                        Total Jap
+                                    @else
+                                        Roll Number
+                                    @endif
+                                </th>
                                 <th>Full name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
@@ -55,7 +59,13 @@
 
                             <tfoot>
                             <tr>
-                                <th>Roll Number</th>
+                                <th>
+                                    @if($program->getKey() == 5 )
+                                        Total Jap
+                                    @else
+                                        Roll Number
+                                    @endif
+                                </th>
                                 <th>Full name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
@@ -77,6 +87,7 @@
         </div>
 
     </div>
+    <x-modal modal="assignStudentToProgram"></x-modal>
 @endsection
 
 @push('page_script')

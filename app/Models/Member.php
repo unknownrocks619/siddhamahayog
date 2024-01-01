@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Cashier\Billable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -36,7 +37,11 @@ class Member extends Authenticatable
         'phone_number',
         'profile',
         'gender',
-        'street_address'
+        'street_address',
+        'gotra',
+        'role_id',
+        'source',
+        'password'
     ];
 
     protected $hidden = [
@@ -50,6 +55,13 @@ class Member extends Authenticatable
         'remember_token'
     ];
 
+    const IMAGE_TYPES = [
+        'profile_picture'   => 'Profile Picture',
+        'id_card'           => 'ID Card',
+        'event_gallery'     => "Event Pictures",
+        'private'           => 'Private',
+        'public'            => 'Public'
+    ];
 
     public function diskshya()
     {
@@ -116,9 +128,9 @@ class Member extends Authenticatable
         return $this->hasOne(ProgramStudentFee::class, "student_id", 'id');
     }
 
-    public static function all_members() {
-
-        return $sql = "SELECT member.id as member_id,
+    public static function all_members($searchTerm = null) {
+        $binds = [];
+        $sql = "SELECT member.id as member_id,
                                         member.full_name,
                                         member.email,
                                         member.phone_number,
@@ -135,10 +147,25 @@ class Member extends Authenticatable
 
                                     LEFT JOIN programs program
                                         ON program.id = pstd.program_id
-                                WHERE pstd.deleted_at IS NULL
-                                    AND member.deleted_at IS NULL
+                                WHERE pstd.deleted_at IS NULL ";
+        if ( ! empty($searchTerm) ) {
+
+            $sql .= " AND ( ";
+                $sql .= " member.full_name LIKE ?";
+                $sql .= " OR member.email LIKE ?";
+                $sql .= " OR member.phone_number LIKE ?";
+            $sql .= " ) ";
+            $binds =[
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
+            ];
+        }
+
+        $sql .= " AND member.deleted_at IS NULL
                                 GROUP BY member.id";
 
+        return DB::select($sql,$binds);
     }
 
     public function full_name(): string {
@@ -151,5 +178,17 @@ class Member extends Authenticatable
         $full_name .= ' '.$this->last_name;
 
         return $full_name;
+    }
+
+    public function profileImage() {
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
+                    ->where('relation',self::class)
+                    ->where('type','profile_picture')
+                    ->latest();
+    }
+
+    public function media() {
+        return $this->hasMany(ImageRelation::class,'relation_id')
+                    ->where('relation',self::class);
     }
 }

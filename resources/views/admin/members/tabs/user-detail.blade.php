@@ -73,7 +73,7 @@
             </div>
 
             <div class="row my-2 mt-4">
-                <div class="col-md-12">
+                <div class="col-md-6">
                     <div class="form-group">
                         <b>
                             Role
@@ -83,6 +83,12 @@
                                 <option value="{{ $index }}" @if($index==$member->role_id) selected @endif>{{ $role }}</option>
                             @endforeach
                         </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="gotra">Gotra</label>
+                        <input type="text" value="{{$member->gotra}}" name="gatra" id="gotra" class="form-control" />
                     </div>
                 </div>
             </div>
@@ -115,7 +121,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         <b>
-                            Street Addrees
+                            Street Address
                         </b>
                         <textarea name="street_address" id="street_address" class="form-control">{{ ($member->address && $member->address->street_address) ? $member->address->street_address : "" }}</textarea>
                     </div>

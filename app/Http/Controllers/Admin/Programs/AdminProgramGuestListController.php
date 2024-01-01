@@ -41,19 +41,22 @@ class AdminProgramGuestListController extends Controller
         try {
             $guestAccess->save();
         } catch (\Throwable $th) {
+            return $this->json(false,$th->getMessage());
             //throw $th;
-            return response(['errors' => [], 'message' => $th->getMessage()], 406);
+//            return response(['errors' => [], 'message' => $th->getMessage()], 406);
         }
 
+        return $this->json(true,'New Guest list created.','reload');
         return response(['errors' => [], 'message' => "New Guest List Created."], 200);
     }
 
     public function delete(Program $program, GuestAccess $guest)
     {
+        if ( ! $guest->delete() ) {
 
-        $guest->delete();
+            return $this->json(false,'Unable to delete token.');
+        }
 
-        session()->flash('success', "Access Token Deleted.");
-        return back();
+        return $this->json(true,'Access Token Deleted.','reload');
     }
 }

@@ -5370,14 +5370,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_select2__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_partials_select2__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./partials/voucher-modal */ "./resources/js/partials/voucher-modal.js");
 /* harmony import */ var _partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_partials_voucher_modal__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
-/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./partials/tinymce */ "./resources/js/partials/tinymce.js");
+/* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_partials_tinymce__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
+/* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_6__);
  //================== partials ======================//
 
 
 
 
- // import './partials/tinymce';
+
 
 
 $(function () {
@@ -5393,6 +5395,22 @@ $(function () {
   });
   $('.ajax-append').each(function () {
     $(this).append("<input type='hidden' name='_token' value='".concat($('meta[name=csrf-token]').attr('content'), "' />"));
+  });
+  /**
+   * Header User Avatar dropdown
+   */
+
+  $('#avatarDropDown').click(function (event) {
+    // target dropdown togger.
+    var _eventElm = $(this).parent().find('ul.dropdown-menu');
+
+    console.log('targeted element`; ', _eventElm);
+
+    if ($(_eventElm).hasClass('show')) {
+      $(_eventElm).removeClass('show');
+    } else {
+      $(_eventElm).addClass('show');
+    }
   });
   $(document).on('click', '.data-confirm', function (event) {
     event.preventDefault();
@@ -5474,6 +5492,19 @@ $(function () {
   window.redirect = function (param) {
     if (typeof param.location !== 'undefined' || param.location !== null) {
       window.location.href = param.location;
+    }
+  };
+
+  window.redirectTab = function (param) {
+    console.log('hello params', param);
+
+    if (typeof param.location !== 'undefined' || param.location !== null) {
+      console.log('aparam');
+      window.open(param.location, '_blank');
+    }
+
+    if (typeof param.reload !== 'undefined' && param.reload === true) {
+      location.reload();
     }
   };
 
@@ -5754,6 +5785,13 @@ window.ajaxReinitalize = function (element) {
           };
         }
       };
+      console.log('select2', $(element).closest('[data-dropdown]'));
+
+      if ($(element).closest('[data-dropdown]').length) {
+        console.log('#' + $(element).closest('[data-dropdown]').attr('data-dropdown'));
+        options.dropdownParent = '#' + $(element).closest('[data-dropdown]').attr('data-dropdown');
+      }
+
       $(element).select2(options);
     }
   }
@@ -5803,6 +5841,39 @@ $(document).on('change', 'select[name="slider_layout"]', function (event) {
     $('.' + _sliderValue).removeClass('d-none');
   }
 });
+
+/***/ }),
+
+/***/ "./resources/js/partials/tinymce.js":
+/*!******************************************!*\
+  !*** ./resources/js/partials/tinymce.js ***!
+  \******************************************/
+/***/ (() => {
+
+$(function () {
+  console.log('hello world');
+
+  if ($('.tiny-mce').length) {
+    window.setupTinyMce();
+  }
+});
+
+window.setupTinyMce = function () {
+  tinymce.init({
+    selector: 'textarea',
+    plugins: ' anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount,accordion,fullscreen,quickbars,advlist',
+    toolbar: 'undo redo fullscreen| blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight  | numlist bullist indent outdent | emoticons charmap | removeformat accordion',
+    fullscreen_native: true
+  });
+};
+
+window.setupTinyMceAll = function () {
+  tinymce.init({
+    selector: '.tiny-mce',
+    inline: true,
+    menubar: false
+  });
+};
 
 /***/ }),
 

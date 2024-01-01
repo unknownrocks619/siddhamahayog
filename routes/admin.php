@@ -20,7 +20,6 @@ use App\Http\Controllers\Admin\Programs\ProgramCourseResourceController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentEnrollController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
 use App\Http\Controllers\Admin\Scholarship\StudentProgramScholarShipController;
-use App\Http\Controllers\Admin\Support\SupportTicketController;
 use App\Http\Controllers\Admin\Website\Events\WebsiteEventController;
 use App\Http\Controllers\Admin\Website\Menus\MenuController;
 use App\Http\Controllers\Admin\Website\Settings\AdminSettingController;
@@ -88,14 +87,7 @@ Route::prefix('admin')
         /**
          * Zoom & Meetings
          */
-        Route::prefix("zoom")
-            ->group(function () {
-                Route::get("account", [AdminZoomAccountController::class, "zoom_accounts"])->name('admin_zoom_account_show');
-                Route::get('account/create', [AdminZoomAccountController::class, "add_zoom_account"])->name("admin_zoom_acount_create");
-                Route::post("account/create", [AdminZoomAccountController::class, "store_zoom_account"])->name('admin_zoom_acount_store');
-                Route::get("account/edit/{edit_id}", [AdminZoomAccountController::class, "edit_zoom_account"])->name("admin_zoom_account_edit");
-                Route::post("account/edit/{edit_id}", [AdminZoomAccountController::class, "update_zoom_account"])->name("admin_zoom_account_edit");
-            });
+       include __DIR__.'/admin/zoom.php';
 
         Route::prefix("meeting")
             ->name("meeting.")
@@ -240,12 +232,7 @@ Route::prefix('admin')
         /**
          * Notices
          */
-        Route::prefix("notices")
-            ->name("notices.")
-            ->controller(Noticecontroller::class)
-            ->group(function () {
-                Route::resource("notice", Noticecontroller::class);
-            });
+        include __DIR__.'/admin/notices.php';
         /**
          * Settings
          */
@@ -297,15 +284,7 @@ Route::prefix('admin')
          * Support Tickets
          *
          * */
-        Route::prefix('supports')
-            ->name("supports.")
-            ->controller(SupportTicketController::class)
-            ->group(function () {
-                Route::get("list", "index")->name("tickets.list");
-                Route::get("show/{ticket}", "show")->name("tickets.show");
-                Route::post("show/{ticket}", "responseTicket")->name("tickets.store");
-                Route::post("close/{ticket}", "closeTicket")->name("tickets.close");
-            });
+        include __DIR__.'/admin/support.php';
 
         /**
          * Holidays

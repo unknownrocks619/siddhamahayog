@@ -100,6 +100,7 @@
                                     </td>
 
                                     <td>
+
                                         @php
                                         $status = "";
                                         if ($all_detail_transaction->verified) {

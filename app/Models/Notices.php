@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notices extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         "title",
@@ -23,5 +24,11 @@ class Notices extends Model
         "created_at" => "datetime",
         "updated_at" => 'datetime',
         "settings" => "object"
+    ];
+
+    const TYPES = [
+        'text'  => 'Text',
+        'image' => "Image / File",
+        'video' => 'Video',
     ];
 }

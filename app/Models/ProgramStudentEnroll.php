@@ -9,4 +9,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProgramStudentEnroll extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'program_id',
+        'member_id',
+        'enrolled_date',
+        'program_course_fee_id',
+        'scholarship',
+        'scholarship_documents',
+        'scholarship_cause',
+        'scholarship_type'
+    ];
 }

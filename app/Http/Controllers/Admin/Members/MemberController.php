@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use DataTables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class MemberController extends Controller
 {
@@ -39,7 +40,9 @@ class MemberController extends Controller
         //
         if (request()->ajax() && request()->wantsJson()) {
 
-            $datatable = DataTables::of(DB::select(Member::all_members()))
+            $searchTerm = (isset(request()->get('search')['value'])) ? request()->get('search')['value'] : '';
+
+            $datatable = DataTables::of(Member::all_members($searchTerm))
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
                    return strip_tags($row->full_name);
@@ -224,13 +227,23 @@ class MemberController extends Controller
     /**
      * add member to program.
      */
-    public function add_member_to_program(Request $request, Program $program)
+    public function add_member_to_program(Request $request, ?Program $program=null)
     {
-        $batches = ProgramBatch::select(['batch_id'])->where('program_id', $program->id)->with(["batch" => function ($query) {
-            return $query->select(["id", 'batch_name', "batch_year", 'batch_month']);
-        }])->get();
-        $sections = ProgramSection::where('program_id', $program->id)->get();
-        return view('admin.programs.members.add', compact("program", "batches", "sections"));
+        $data = [
+            'program' => $program
+        ];
+
+        if ($program) {
+
+            $batches = ProgramBatch::select(['batch_id'])->where('program_id', $program->id)->with(["batch" => function ($query) {
+                return $query->select(["id", 'batch_name', "batch_year", 'batch_month']);
+            }])->get();
+
+            $sections = ProgramSection::where('program_id', $program->id)->get();
+            $data['batches'] = $batches;
+            $data['sections'] = $sections;
+        }
+        return view('admin.programs.members.add', $data);
     }
 
     public function store_member_to_program(Request $request, Program $program)
@@ -239,74 +252,119 @@ class MemberController extends Controller
             "first_name" => "required",
             "last_name" => "required",
             "email" => "required|email",
-            "phone" => "required|min:10",
+            "phone" => "nullable|min:10",
             "profile" => "nullable|mimes:pdf,jpg,png",
-            "password" => "required|min:7",
-            "student_type" => "required|in:general,scholar,scholar_month,scholar_admission",
+            "password" => "nullable|min:7",
+//            "student_type" => "required|in:general,scholar,scholar_month,scholar_admission",
             "current_batch" => "required",
             "sections" => "required",
             "fee_voucher" => "nullable|mimes:pdf,jpg,png"
         ]);
 
         // check email or password match.
-        $check_previous_record = Member::where("email", $request->email)->orWhere('phone_number', 'like', '%' . $request->phone . '%')->first();
+        $check_previous_record = Member::where("email", $request->post('email'))
+                                        ->first();
+
         if ($check_previous_record) {
-            session()->flash("error", "User Already Exists.");
-            return back()->withInput();
+            return $this->returnResponse(false,'User Already exists.',null,[],200,route('admin.members.admin_add_member_to_program',['program' => $program->getKey()]));
         }
 
         $member = new Member;
-        $member->first_name = $request->first_name;
-        $member->middle_name = $request->middle_name;
-        $member->last_name = $request->last_name;
-        $member->source = "admin_entry";
-        $member->email = $request->email;
-        $member->password = Hash::make($request->password);
-        $member->phone_number = $request->phone;
-        $member->role_id = 3;
-        $member->full_name = $request->first_name . (($request->middle_name) ? " " . $request->middle_name . " " : " ") . $request->last_name;
+        $member->fill([
+            'first_name' => $request->post('first_name'),
+            'middle_name' => $request->post('middle_name'),
+            'last_name' => $request->post('last_name'),
+            'source' => "admin_entry",
+            'email' => $request->post('email'),
+            'password' => Hash::make($request->password ?? Str::random(8)),
+            'phone_number' => $request->post('phone'),
+            'role_id' => $request->post('role') ?? 3,
+            'full_name' => $request->post('first_name') . (($request->post('middle_name')) ? " " . $request->post('middle_name') . " " : " ") . $request->post('last_name'),
+            'country' => $request->post('country'),
+            'city' => $request->post('city'),
+            'address' => ['street_address' => $request->post('street_address')],
+            'date_of_birth' => $request->post('date_of_birth'),
+            'gender'            => $request->post('gender'),
+            'gotra'             => $request->post('gotra'),
+        ]);
+
+        // get program batch
+        $programBatch = ProgramBatch::where('batch_id',$request->post('current_batch'))
+            ->where('program_id',$program->getKey())
+            ->first();
+
 
         // now add user to section and to batch as well
         $program_batch = new ProgramStudent;
-        $program_batch->program_id = $program->id;
-        $program_batch->program_section_id = $request->sections;
-        $program_batch->batch_id = $request->current_batch;
+
+        $program_batch->fill([
+            'program_id'            => $program->getKey(),
+            'program_section_id'    => $request->post('sections'),
+            'batch_id'              => $programBatch->getKey(),
+            'active'                => true
+        ]);
 
         /**
          * Part for admission fee upload
          */
         try {
-            DB::transaction(function () use ($program_batch, $member) {
+            DB::transaction(function () use ($program_batch, $member, $request) {
                 $member->save();
                 // now save this student in student table as well.
-                $program_batch->student_id = $member->id;
+                $program_batch->student_id = $member->getKey();
                 $program_batch->save();
+
+
+
+                if ( $request->post('place_of_birth') ) {
+                    $memberInfo = new MemberInfo();
+                    $memberInfo->fill([
+                        'personal' => ['date_of_birth' => $request->post('date_of_birth'),'place_of_birth' => $request->post('place_of_birth')],
+                        'education' => [],
+                        'member_id' => $member->getKey()
+                    ]);
+
+                    $memberInfo->save();
+
+                }
+
+//                $programEnroll = ProgramStudentEnroll::where('student_id',$member->getKey())
+//                                                        ->where('program_section_id', $program_batch->section_id)
+//                                                        ->where('batch_id',$program_batch->batch_id)
+//                                                        ->first();
+//                if (! $programEnroll ) {
+//                    $programEnroll->fill([
+//                        ''
+//                    ]);
+//                }
             });
-            $program_batch->save();
+
         } catch (\Throwable $th) {
-            //throw $th;
-            dd($th->getMessage());
-            session()->flash("error", "Unable to save record.");
-            return back()->withInput();
+            return $this->returnResponse(false,'Unable to save Record',null,['error : ' . $th->getMessage()],200,route('admin.members.admin_add_member_to_program',['program' => $program->getKey()]));
         }
-
         //
-
-        session()->flash("success", "New Record Created.");
-        return back();
+        return $this->returnResponse(true,'New Record Created.','redirect',['location' => route('admin.program.admin_program_detail',['program' => $program->getKey()])],200,route('admin.program.admin_program_detail',['program' => $program->getKey()]));
     }
 
     public function assign_member_to_program(Request $request, Program $program)
     {
         if ($request->ajax()) {
+
             // search member and display result.
             $members = Member::with(["member_detail" => function ($query) use ($program) {
                 return $query->where('program_id', $program->id)
                     ->with(["program", "section", "batch"]);
-            }])->where('email', $request->member)->orWhere('phone_number', 'like', '%' . $request->member . '%')->get();
+            }])
+            ->where('email', $request->member)
+            ->orWhere('phone_number', 'like', '%' . $request->member . '%')
+                ->orWhere('first_name','LIKE','%'.$request->member.'%')
+                ->orWhere('last_name','LIKE','%'.$request->member.'%')
+                ->orWhere('full_name','LIKE','%'.$request->member.'%')
+            ->limit(30)->get();
             $batches = ProgramBatch::with(["batch"])->where('program_id', $program->id)->latest()->get();
             $sections = ProgramSection::where('program_id', $program->id)->latest()->get();
             return view('admin.programs.members.partials.search_result', compact('members', 'program', 'batches', 'sections'));
+
         }
         return view('admin.programs.members.assign_student_to_program', compact('program'));
     }

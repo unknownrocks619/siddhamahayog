@@ -5,8 +5,8 @@
         <div class="card-body">
             <div class="user-avatar-section">
                 <div class=" d-flex align-items-center flex-column">
-                    @if($member->profileUrl)
-                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ $member->profileUrl->avatar }}" height="100" width="100" alt="User avatar" />
+                    @if($member->profileImage)
+                        <img class="img-fluid rounded mb-3 pt-1 mt-4" src="{{ \App\Classes\Helpers\Image::getImageAsSize($member->profileImage->filepath,'s') }}" height="100" width="100" alt="User avatar" />
                     @endif
                     <div class="user-info text-center">
                         <h4 class="mb-2">{{$member->full_name}}</h4>
@@ -94,5 +94,8 @@
         </div>
     </div>
     <!-- /Plan Card -->
+    <!-- Yagya Info -->
+    @include('admin.members.partials.statistics',['member' => $member])
+    <!-- /Yagya Info -->
 </div>
 <!--/ User Sidebar -->

@@ -22,34 +22,36 @@ class StudentProgramScholarShipController extends Controller
 
     public function storeScholarShip(Request $request, Program $program)
     {
+        $request->validate([
+           'student'    => 'required',
+           'scholarship_type'   => 'required',
+        ]);
 
         $exists = Scholarship::where('program_id', $program->getKey())
-            ->where('student_id', $request->student)
+            ->where('student_id', $request->post('student'))
             ->first();
 
         if ($exists) {
-            session()->flash('error', "Student Already Exists in scholarship list.");
-            return back();
+            return $this->returnResponse(false,'Student Already Exists in scholarship',null,[],200,url()->previous());
         }
 
         $scholarship = new Scholarship();
-        $scholarship->program_id = $program->getKey();
-        $scholarship->student_id = $request->get('student');
-        $scholarship->scholar_type = $request->get('scholarship_type');
-        $scholarship->active = true;
-        $scholarship->remarks = $request->get('remarks');
-
+        $scholarship->fill([
+            'program_id' => $program->getKey(),
+            'student_id' => $request->post('student'),
+            'scholar_type' => $request->post('scholarship_type'),
+            'active' => true,
+            'remarks' => $request->post('remarks'),
+        ]);
 
         try {
             $scholarship->save();
         } catch (\Throwable $th) {
-            //throw $th;
-            session()->flash('error', 'Unable to save Record: ' . $th->getMessage());
-            return back()->withInput();
+            return $this->returnResponse(false,'Unable to Save Record.',null,['error' => $th->getMessage()],200,url()->previous());
         }
 
-        session()->flash('success', "New member added in scholarship table.");
-        return back();
+        return $this->returnResponse(true,'Member added to scholarship table.','reload',[],200,url()->previous());
+
     }
 
     public function removeStudent(Program $program, Member $student)
@@ -61,11 +63,9 @@ class StudentProgramScholarShipController extends Controller
 
         if ($scholarship) {
             if ($scholarship->delete()) {
-                session()->flash('success', 'Student Removed from scholarship Program.');
-                return back();
+                return $this->returnResponse(true,'Student Removed From scholarship program.','reload');
             }
         }
-        session()->flash('error', "Unable to remove Student from scholarship.");
-        return back();
+        return $this->returnResponse(false,'Unable to remove student from scholarship.');
     }
 }

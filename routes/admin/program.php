@@ -2,7 +2,12 @@
 
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
 use App\Http\Controllers\Admin\Programs\AdminProgramCourseController;
+use App\Http\Controllers\Admin\Programs\AdminProgramGuestListController;
 use App\Http\Controllers\Admin\Programs\ProgramBatchController;
+use App\Http\Controllers\Admin\Programs\ProgramStudentEnrollController;
+use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
+use App\Http\Controllers\Admin\Scholarship\StudentProgramScholarShipController;
+use App\Http\Controllers\API\Fee\FeeAPIController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('programs')
@@ -50,8 +55,8 @@ Route::prefix('programs')
         Route::prefix("live")
             ->name("live_program.")
             ->group(function () {
-                Route::get('/merge/{program}/{live}', [AdminProgramController::class, "mergeSessionView"])->name("merge.view");
-                Route::post('/merge/{program}/{live}', [AdminProgramController::class, "mergeSessionStore"])->name("merge.store");
+//                Route::get('/merge/{program}/{live}', [AdminProgramController::class, "mergeSessionView"])->name("merge.view");
+                Route::post('/merge/{program}/{live?}', [AdminProgramController::class, "mergeSessionStore"])->name("merge.store");
                 Route::post('/end-session/{live}', [AdminProgramController::class, "endLiveSession"])->name("end");
             });
 
@@ -91,8 +96,9 @@ Route::prefix('programs')
             ->group(function () {
                 Route::get("/add/{program}", [ProgramStudentFeeController::class, "add_fee_to_student_by_program"])->name('admin_program_create_fee');
                 Route::get('/overview/{program}', [ProgramStudentFeeController::class, "fee_overview_by_program"])->name('admin_fee_overview_by_program');
-                Route::get("/transaciton-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
-                Route::get("/transaciton/voucher/file/{fee_detail}", [ProgramStudentFeeController::class, "display_uploaded_voucher"])->name('admin_display_fee_voucher');
+                Route::get("/transaction-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
+                Route::get("/transaction/voucher/file/{fee_detail}", [ProgramStudentFeeController::class, "display_uploaded_voucher"])->name('admin_display_fee_voucher');
+                Route::get('/transaction/overview/unpaid/{program}',[ProgramStudentFeeController::class,'unpaidList'])->name('admin_display_unpaid_list');
                 Route::post('/store/{member?}/{program?}', [ProgramStudentFeeController::class, "store_fee_by_program"])->name('admin_store_student_fee');
                 Route::post('/store/fee-structure/new/{program}', [ProgramStudentFeeController::class, "store_program_course_fee_structure"])->name('admin_store_course_fee');
                 Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');

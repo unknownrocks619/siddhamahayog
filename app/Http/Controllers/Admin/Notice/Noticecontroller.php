@@ -51,27 +51,58 @@ class Noticecontroller extends Controller
         try {
             $notice->save();
         } catch (\Throwable $th) {
+            return $this->json(false,"Error: ". $th->getMessage());
             //throw $th;
             session()->flash('error', "Error: " . $th->getMessage());
             return back();
         }
+        return $this->json(true,'Notice Saved.','redirect',['location'=>route('admin.notices.notice.edit',['notice' => $notice])]);
         session()->flash("success", "Notice Saved.");
         return back();
     }
 
-    public function edit()
+    public function edit(Notices $notice)
     {
+        return view("admin.notice.edit",['notice' => $notice]);
+
     }
 
-    public function update()
+    public function update(Request $request, Notices $notice)
     {
+        $notice->title = $request->title;
+        $notice->notice = $request->notice;
+        $notice->active = $request->active;
+        $notice->target = 'all';
+        $notice->notice_type = $request->notice_type;
+
+        if ($notice->notice_type == "image" && $request->file('image')) {
+            $this->set_access("file");
+            $this->set_upload_path("website/notices");
+            $notice->settings = $this->upload("image");
+        }
+
+        if ($notice->notice_type == "video") {
+            $this->set_source(Str::contains($request->video_url, "youtube", true) ? "youtube" : 'vimeo');
+
+            $notice->settings = $this->video_parts($request->video_url);
+        }
+
+        try {
+            $notice->save();
+        } catch (\Throwable $th) {
+            return $this->json(false,"Error: ". $th->getMessage());
+        }
+
+        return $this->json(true,'Notice Saved.','redirect',['location'=>route('admin.notices.notice.edit',['notice' => $notice])]);
+
     }
 
     public function destroy(Notices $notice)
     {
-        $notice->delete();
+        if (! $notice->delete() ) {
+            return $this->json(false,'Unable to delete Notice.');
+        }
 
-        session()->flash("success", 'Notice Removed.');
-        return back();
+        return $this->json(true,'Notice removed.','reload');
     }
 }

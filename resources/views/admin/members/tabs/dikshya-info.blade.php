@@ -3,7 +3,7 @@
    $dikshyaInfos = \App\Models\MemberDikshya::where('member_id',$member->getKey())->get();
 @endphp
 
-    <!-- Project table -->
+<!-- Project table -->
 <div class="card mb-4">
     <h5 class="card-header">Member Dikshya Information</h5>
     <div class="row p-4">

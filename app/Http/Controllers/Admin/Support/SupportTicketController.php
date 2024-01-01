@@ -11,9 +11,16 @@ use Illuminate\Support\Facades\DB;
 class SupportTicketController extends Controller
 {
     //
-    public function index()
+    public function index($type=null, $filter=null)
     {
-        $tickets = SupportTicket::with("user")->where('parent_id', NULL)->where('status', '!=', 'completed')->get();
+        $tickets = SupportTicket::with("user")
+                                ->where('parent_id', NULL)
+                                ->where('status', '!=', 'completed');
+        if ($type && $filter) {
+            $tickets->where($type,'=',$filter);
+        }
+        $tickets = $tickets->get();
+
         return view("admin.supports.list", compact('tickets'));
     }
 
@@ -24,20 +31,20 @@ class SupportTicketController extends Controller
 
     public function responseTicket(Request $request, SupportTicket $ticket)
     {
+
         $request->validate([
-            "title" => "required",
             "issue" => "required"
         ]);
 
         $supportTicket = new SupportTicket;
-        $supportTicket->title = $request->title;
+        $supportTicket->title = $request->title ?? $ticket->title;
         $supportTicket->issue = $request->issue;
         $supportTicket->parent_id = $ticket->id;
         $supportTicket->category = $ticket->category;
         $supportTicket->status = "pending";
         $supportTicket->member_id = $ticket->member_id;
         $supportTicket->priority = $ticket->priority;
-
+        $supportTicket->replied_by = auth()->id();
         $ticket->total_count = $ticket->total_count + 1;
         $ticket->status = "waiting_response";
 
@@ -49,22 +56,25 @@ class SupportTicketController extends Controller
         } catch (\Throwable $th) {
             $this->json(false,'Error: '. $th->getMessage());
         }
+
         MemberNotification::create([
             "member_id" => $ticket->member_id,
             "title" => "Support Ticket : #" . $ticket->id,
             "body" => $request->issue,
-            "notification_type" => "\App\Models\SupporTicket",
+            "notification_type" => "\App\Models\SupportTicket",
             "notification_id" => $ticket->id,
             "type" => "message",
             "level" => "info",
             "seen" => false
         ]);
+
         return $this->json(true,'You Replied to ticker','reload');
     }
 
     public function closeTicket(SupportTicket $ticket)
     {
         $ticket->status = "completed";
+        $ticket->replied_by = auth()->id();
 
         try {
             $ticket->save();

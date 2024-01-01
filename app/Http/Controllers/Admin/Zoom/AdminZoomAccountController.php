@@ -42,23 +42,44 @@ class AdminZoomAccountController extends Controller
 
         try {
             $zoom_account_db->save();
-        } catch (\Throwable $th) {
-            $request->session()->flash('error',"Warning: ". $th->getMessage());
-            return back()->withInput();
-        } catch (\Error $er) {
-            $request->session()->flash("error","Error: ". $er->getMessage());
-            return back()->withInput();
+        } catch (\Throwable|\Error $th) {
+            return $this->json(false,'Error: '. $th->getMessage());
         }
 
-        $request->session()->flash('success',"New Zoom account created.");
-        return back();
+        return $this->json(true,'New Zoom Account created.','reload');
     }
 
-    public function edit_account(){
+    public function edit_account(Request $request,ZoomAccount $zoom){
 
+        if ($request->post() ) {
+            $request->validate([
+                'name'  => 'required'
+            ]);
+
+            $zoom->account_name = $request->post('name');
+            $zoom->slug = Str::slug($request->post('name'),"-");
+            $zoom->account_status = $request->post('status');
+            $zoom->account_username = $request->post('username');
+            $zoom->category = $request->post('category');
+
+            try {
+                $zoom->save();
+            } catch ( \Error $error) {
+                return $this->json(false, 'Unable to update information.');
+            }
+
+            return $this->json(true,'Information Updated.');
+        }
+
+        return view('admin.zoom.account-edit',['zoom' => $zoom]);
     }
 
-    public function remove_account() {
+    public function remove_account(ZoomAccount $zoom) {
 
+        if (! $zoom->delete() ) {
+            return $this->json(false,'Unable to delete Account.');
+        }
+
+        return $this->json(true,'Zoom Account Deleted.','reload');
     }
 }

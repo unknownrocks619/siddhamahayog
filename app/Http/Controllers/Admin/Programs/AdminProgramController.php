@@ -78,38 +78,16 @@ class AdminProgramController extends Controller
                     return '<span class="btn-label-success px-2 py-1">'.$totalStudent.'</span>';
                 })
                 ->addColumn('promote', function ($row) {
-                    if ($row->liveProgram->count()) {
-                        $live_session = "";
-                        foreach ($row->liveProgram as $live_program) {
-                            $live_session .= "<form method='post' action='" . route('admin.program.live_program.end', [$live_program->id]) . "'>";
-                            $live_session .= csrf_field();
-                            $live_session .= "<button type='submit' class='btn btn-danger btn-sm clickable'>";
-                            if (!$live_program->section_id) {
-                                $live_session .= "End Live Session";
-                            } else {
-                                $live_session .= "End " . $live_program->sections->section_name . " Program";
-                            }
-                            //
-                            $live_session .= "</button>";
-                            $live_session .= "</form>";
-                        }
-
-
-                        $live_session .= "<br />";
-                        $live_session .= "<a href='" . route('admin.program.live_program.merge.view', [$row->id, $live_program->id]) . "' data-toggle='modal' data-target='#addBatch'  class='btn btn-info btn-sm'>";
-                        $live_session .= "Merge";
-                        $live_session .= "</a>";
-                        $live_session .= "<a class='btn btn-success btn-sm' href='" . route('admin.program.live', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Go Live</a>";
-                        return $live_session;
-                    }
-                    return "<a class='btn btn-success btn-sm' href='" . route('admin.program.live', [$row->id]) . "' data-toggle='modal' data-target='#addBatch'>Go Live</a>";
+                    return view('admin.datatable-view.programs.live',['row' => $row])->render();
                 })
                 ->addColumn('batch', function ($row) {
+
                     if ($row->defaultBatch) {
                         return ($row->defaultBatch->batch_name . "-" . $row->defaultBatch->batch_year . "/   " . $row->defaultBatch->batch_month);
                     } else {
                         return "<button data-action='" . route('admin.modal.display', ['view' => 'programs.batch.new','program' => $row->getKey(),'callback' => 'reload'] ) . "' data-bs-toggle='modal' data-bs-target='#newBatch' class='btn btn-link ajax-modal'>Add Batch</button>";
                     }
+
                 })
                 ->addColumn('action', function ($row) {
                     $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-1'></i></a>";
@@ -305,9 +283,21 @@ class AdminProgramController extends Controller
 
         if ($request->ajax() && $request->wantsJson()) {
 
-            $datatable = DataTables::of($program->programStudentEnrolments())
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+
+            $datatable = DataTables::of($program->programStudentEnrolments($searchTerm))
                 ->addIndexColumn()
-                ->addColumn('roll_number', function ($row) {
+                ->addColumn('roll_number', function ($row) use ($program) {
+
+                    if ( $program->getKey() == 5 ) {
+
+                        if ( ! $row->total_counter) {
+                            return '<span class="label label-bg-dark px-1"> 0 </span>';
+                        }
+
+                        return '<span class="label label-info px-1">'.$row->total_counter.'</span>';
+
+                    }
 
                     if ( ! $row->roll_number) {
                         return '<span class="label label-bg-dark px-1"><a href="" class="text-info"><i class="fas fa-plus"></i> Add Roll number</a></span>';
@@ -317,7 +307,7 @@ class AdminProgramController extends Controller
 
                 })
                 ->addColumn('full_name', function ($row) {
-                    return "<a href='route()'>".$row->full_name."</a>";
+                    return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".$row->full_name."</a>";
                 })
                 ->addColumn('phone_number', function ($row) {
                     return $row->phone_number ?? 'N/A';
@@ -381,8 +371,9 @@ class AdminProgramController extends Controller
         // check if program is already live or not.
         $liveProgram = Live::where('program_id', $program->id)->where('section_id', $request->section)->where('live', true)->exists();
         if ($liveProgram) {
-            session()->flash("error", "Session is already active. Please end current session or re-join the session.");
-            return redirect()->route('admin.program.admin_program_list');
+            return $this->returnResponse(false,'Session is already active. Please end current session or re-join the session.',null,[],200,route('admin.program.admin_program_list'));
+//            session()->flash("error", "Session is already active. Please end current session or re-join the session.");
+//            return redirect()->route('admin.program.admin_program_list');
         }
 
         $liveProgram = new Live;
@@ -390,6 +381,7 @@ class AdminProgramController extends Controller
         $liveProgram->program_id = $program->id;
         $liveProgram->section_id = ($request->section) ? $request->section : null;
         $liveProgram->zoom_account_id = $request->zoom_account;
+        $liveProgram->started_by = auth()->id();
         $domain = str_shuffle('siddhamahayog') . ".org";
 
 
@@ -409,14 +401,14 @@ class AdminProgramController extends Controller
             $cohost = implode(";", $emails);
         }
 
-        // now let's retrieve zoom account detail.
         $zoom_account_detail = ZoomAccount::find($request->zoom_account);
-//         dd(zoom_meeting_details(82527372739));
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name, $domain);
+
         if (!$meeting || isset($meeting->code)) {
-            // dd("unable to create meeting");
-            session()->flash('error', "Unable to create zoom meeting at the moment.");
-            return redirect()->route('admin.program.admin_program_list');
+            return $this->returnResponse(false,'Unable to create Zoom Meeting at the moment',null,[],200,route('admin.program.admin_program_list'));
+//            // dd("unable to create meeting");
+//            session()->flash('error', "Unable to create zoom meeting at the moment.");
+//            return redirect()->route('admin.program.admin_program_list');
         }
 
         $liveProgram->domain = $domain;
@@ -427,10 +419,12 @@ class AdminProgramController extends Controller
         try {
             $liveProgram->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Error: '. $th->getMessage(),null,[],200,route('admin.program.admin_program_list'));
             //throw $th;
             dd($th->getMessage());
         }
-        return redirect()->to($liveProgram->admin_start_url);
+        return $this->returnResponse(true,'Meeting Started. Please wait redirecting you to zoom portal.','redirectTab',['location' => $liveProgram->admin_start_url,'reload' => true],200,$liveProgram->admin_start_url);
+//        return redirect()->to($liveProgram->admin_start_url);
 
 
         // create zoom meeting id.
@@ -439,24 +433,25 @@ class AdminProgramController extends Controller
 
     public function endLiveSession(Live $live)
     {
-
         $live->live = false;
         $program_message = $live->program->program_name;
 
         if ($live->section_id) {
             $program_message .= " - " . $live->programSection->section_name;
         }
+
         $program_message .= " session ended.";
+
         try {
             $live->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Error : ' . $th->getMessage(),null,[],200,url()->previous());
             //throw $th;
             session()->flash('error', "Error: " . $th->getMessage());
             return back();
         }
 
-        session()->flash('success', $program_message);
-        return back();
+        return $this->returnResponse(true,$program_message,'reload',[],200,url()->previous());
     }
 
     /**
@@ -468,8 +463,18 @@ class AdminProgramController extends Controller
         return view("admin.programs.modal.merge-session", compact("program", 'live'));
     }
 
-    public function mergeSessionStore(Request $request, Program $program, Live $live)
+    public function mergeSessionStore(Request $request, Program $program, ?Live $live=null)
     {
+        // Check Live Merge Section
+        if ( ! $live ) {
+
+            $request->validate(['active_section' => 'required']);
+
+            $live = Live::where('program_id', $program->getKey())
+                            ->where('section_id',$request->post('active_section'))
+                            ->first();
+        }
+
         $merge = ($live->merge) ?  array($live->merge) : [];
         $section = ProgramSection::find($request->merge_with);
         $merge[$request->merge_with] = ["id" => $request->merge_with, "name" => $section->section_name];
@@ -478,28 +483,32 @@ class AdminProgramController extends Controller
         try {
             $live->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Error : '. $th->getMessage(),null,[],200,route('admin.program.admin_program_list'));
             //throw $th;
-            session()->flash('error', "Error:" . $th->getMessage());
-            return redirect()->route('admin.program.admin_program_list');
+//            session()->flash('error', "Error:" . $th->getMessage());
+//            return redirect()->route('admin.program.admin_program_list');
         }
-        session()->flash('success', "Session has been merged.");
-        return redirect()->route('admin.program.admin_program_list');
+
+        return $this->returnResponse(true,'Session has been merged.','reload',[],200,route('admin.program.admin_program_list'));
+//        session()->flash('success', "Session has been merged.");
+//        return redirect()->route('admin.program.admin_program_list');
     }
 
     public function rejoinSession(Live $live)
     {
         if (!$live->live) {
-            session()->flash("error", "Program already closed.");
-            return back();
+            return $this->returnResponse(false,'Program Already Closed',null,[],200,url()->current());
+//            session()->flash("error", "Program already closed.");
+//            return back();
         }
-
-        return redirect()->to($live->admin_start_url);
+        return $this->returnResponse(true,'Session available.','redirectTab',['location' => $live->admin_start_url],200,$live->admin_start_url);
+//        return redirect()->to($live->admin_start_url);
     }
 
     public function liveProgram()
     {
         $lives = Live::with(['zoomAccount', "program", 'programSection'])->where("live", true)->get();
-        return view('admin.programs.live.list', compact('lives'));
+        return view('admin.programs.live.list', ['lives' => $lives]);
     }
 
     public function ramdasList(Live $live)
@@ -507,9 +516,6 @@ class AdminProgramController extends Controller
         $ramdas = Ramdas::where('meeting_id', $live->meeting_id)->get();
         return view('admin.programs.live.modal.list', compact('live', 'ramdas'));
     }
-
-
-
 
     public function programBatchAndSectionModal(Program $program)
     {

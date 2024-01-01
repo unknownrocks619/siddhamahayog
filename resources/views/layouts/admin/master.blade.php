@@ -30,7 +30,7 @@
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css') }}">
     <link rel="stylesheet" href="{{ asset ('themes/admin/assets/vendor/libs/select2/select2.css')}}" />
-
+    @stack('page_css')
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('themes/admin/assets/vendor/css/pages/cards-advance.css') }}" />
 
@@ -39,7 +39,11 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{asset ('themes/admin/assets/js/config.js')}}"></script>
-
+    <style type="text/css">
+        .select2-container--open {
+            z-index: 99999;
+        }
+    </style>
 </head>
 <body>
 <!-- Layout wrapper -->

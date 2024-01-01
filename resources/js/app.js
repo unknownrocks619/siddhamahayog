@@ -5,7 +5,7 @@ import './partials/ajax-form.js'
 import './partials/ajax-modal';
 import './partials/select2';
 import './partials/voucher-modal';
-// import './partials/tinymce';
+import './partials/tinymce';
 import './partials/programs';
 $(function () {
     "use strict";
@@ -23,7 +23,19 @@ $(function () {
         $(this).append(`<input type='hidden' name='_token' value='${$('meta[name=csrf-token]').attr('content')}' />`);
     })
 
-
+    /**
+     * Header User Avatar dropdown
+     */
+    $('#avatarDropDown').click(function(event) {
+        // target dropdown togger.
+        let _eventElm = $(this).parent().find('ul.dropdown-menu');
+        console.log('targeted element`; ', _eventElm);
+        if ($(_eventElm).hasClass('show') ) {
+            $(_eventElm).removeClass('show');
+        } else {
+            $(_eventElm).addClass('show');
+        }
+    })
 
     $(document).on('click', '.data-confirm', function (event) {
         event.preventDefault()
@@ -104,6 +116,18 @@ $(function () {
     window.redirect = function (param) {
         if (typeof param.location !== 'undefined' || param.location !== null) {
             window.location.href = param.location
+        }
+    }
+
+    window.redirectTab = function (param) {
+        console.log('hello params', param);
+        if (typeof param.location !== 'undefined' || param.location !== null) {
+            console.log('aparam');
+            window.open(param.location,'_blank');
+        }
+
+        if ( typeof param.reload !== 'undefined' && param.reload === true) {
+            location.reload();
         }
     }
 

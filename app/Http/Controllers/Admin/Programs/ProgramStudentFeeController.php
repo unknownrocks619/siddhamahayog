@@ -201,34 +201,25 @@ class ProgramStudentFeeController extends Controller
     public function fee_overview_by_program(Request $request, Program $program)
     {
         if ($request->ajax() && $request->wantsJson()) {
-            $overview_payment = ProgramStudentFee::where('program_id', $program->id)
-                ->with(["member"])
-                ->orderBy("id", "DESC")->get();
-            return DataTables::of($overview_payment)
-                ->addColumn('member_name', function ($row) {
-                    $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "'>";
-                    $full_name = htmlspecialchars($row->member->first_name);
-                    if ($row->member->middle_name) {
-                        $full_name .= " ";
-                        $full_name .= $row->member->middle_name;
-                    }
-                    $full_name .= " ";
-                    $full_name .= htmlspecialchars($row->member->last_name);
 
-                    $member .= $full_name;
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+
+            return DataTables::of($program->transactionOverview($searchTerm))
+                ->addColumn('member_name', function ($row) use($program) {
+                    $member = "<a href='" . route('admin.members.show',['member' => $row->member_id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']). "'>";
+                        $member .= htmlspecialchars($row->full_name) . "";
                     $member .= "</a>";
-
                     return $member;
                 })
                 ->addColumn('amount', function ($row) {
-                    return default_currency($row->total_amount);
+                    return default_currency($row->amount);
                 })
                 ->addColumn('last_transaction', function ($row) {
-                    return $row->updated_at;
+                    return $row->last_transaction_date;
                 })
-                ->addColumn('action', function ($row) {
+                ->addColumn('action', function ($row) use($program) {
                     $action = "";
-                    $action .= "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "'>";
+                    $action .= "<a href='" . route('admin.program.fee.admin_fee_by_member', ['program' => $program->getKey(), 'member' => $row->member_id]) . "'>";
                     $action .= "View";
                     $action .= "</a>";
 
@@ -237,7 +228,7 @@ class ProgramStudentFeeController extends Controller
 
                     return $action;
                 })
-                ->rawColumns(['member_name', "action", "amount", "last_transaction", "member_name"])
+                ->rawColumns(['member_name', "action"])
                 ->make(true);
         }
 
@@ -247,27 +238,21 @@ class ProgramStudentFeeController extends Controller
     public function transaction_by_program(Request $request, Program $program)
     {
         if ($request->ajax() && $request->wantsJson()) {
-            $all_transaction = ProgramStudentFeeDetail::where('program_id', $program->id)->with(["student"])->orderBy("id", "DESC")->get();
-            return DataTables::of($all_transaction)
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+
+            return DataTables::of($program->transactionsDetail($searchTerm))
                 ->addColumn('transaction_date', function ($row) {
-                    return date("Y-m-d", strtotime($row->created_at));
+                    return date("Y-m-d", strtotime($row->transaction_date));
                 })
-                ->addColumn('member_name', function ($row) {
-                    $member = "<a href='" . route('admin.program.fee.admin_fee_by_member', [$row->program_id, $row->student_id]) . "' class='text-info text-underline'>";
-                    $full_name = htmlspecialchars($row->student->first_name);
-                    if ($row->student->middle_name) {
-                        $full_name .= " ";
-                        $full_name .= htmlspecialchars($row->middle_name);
-                    }
-                    $full_name .= ' ';
-                    $full_name .= htmlspecialchars($row->student->last_name);
-                    $member .= htmlspecialchars($full_name);
+                ->addColumn('member_name', function ($row) use ($program) {
+                    $member = "<a href='" . route('admin.members.show',['member' => $row->member_id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";
+                    $member .= htmlspecialchars($row->full_name);
                     $member .= "</a>";
 
                     return $member;
                 })
                 ->addColumn('transaction_amount', function ($row) {
-                    return strip_tags(default_currency($row->amount));
+                    return default_currency(strip_tags($row->amount));
                 })
                 ->addColumn('category', function ($row) {
                     $seperate_category = explode("_", $row->amount_category);
@@ -279,25 +264,26 @@ class ProgramStudentFeeController extends Controller
                     return $category_text;
                 })
                 ->addColumn('source', function ($row) {
-                    $source = "<strong>" . $row->source . "</strong>";
-                    $source .= "<hr />";
-                    $source .= htmlspecialchars($row->source_detail);
+//                    $source = ucwords($row->source);
+//                    $source .= "<hr />";
+                    $source = htmlspecialchars($row->source_detail);
                     return $source;
                 })
                 ->addColumn('status', function ($row) {
                     $status = "";
                     if ($row->verified) {
-                        $status .= '<span class="badge bg-success px-2"><a href="#" title="Verified"><i class="text-white zmdi zmdi-check"></i></a>';
+                        $status .= '<span class="badge bg-label-success"><a href="#" title="Verified"><i class="fas fa-check"></i></a>';
                     } else {
-                        $status .= '<span class="badge bg-danger px-2"><a href="#" title="Rejected"><i class="text-white zmdi zmdi-minus-circle-outline"></i></a>';
+                        $status .= '<span class="badge bg-label-danger"><a href="#" title="Rejected"><i class="fas fa-cancel"></i></a>';
                     }
                     $status .= "</span>";
 
                     return $status;
                 })
-                ->addColumn('media', function ($row) {
+                ->addColumn('media', function ($row) use ($program) {
+                    $row->remarks = (json_decode( $row->remarks));
                     if ($row->file) {
-                        $string =  "[<a data-toggle='modal' data-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->id) . "'> View Image </a>]";
+                        $string =  "[<a class='ajax-modal' data-bs-toggle='modal' data-action='".route('admin.modal.display',['view' => 'fees.media.images','transactionID' => $row->transaction_id,'programID' => $program->getKey(),'memberID' => $row->member_id])."' data-bs-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->transaction_id) . "'> View Image </a>]";
                         $string .= "<br /> Deposit Date: ";
                         if ($row->remarks && isset($row->remarks->upload_date)) {
                             $string .= $row->remarks->upload_date;
@@ -309,8 +295,9 @@ class ProgramStudentFeeController extends Controller
                     } else {
                         $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);
                         if ($searchString) {
-                            $string = "OID: " . $row->remarks->oid;
-                            $string .= "<br />";
+                            $string = "";
+//                            $string = "OID: " . $row->remarks->oid;
+//                            $string .= "<br />";
                             $string .= "refId: " . $row->remarks->refId;
                             return $string;
                         }
@@ -331,24 +318,21 @@ class ProgramStudentFeeController extends Controller
                 })
                 ->addColumn('action', function ($row) {
 
-                    $action = "";
+                    $action = "<div class='d-flex justify-content-between'>";
                     if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
 
-                        $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->id]) . "'>";
-                        $action .= "<input type='hidden' name='update_type' value='status' />";
+//                        $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->transaction_id]) . "'>";
+//                        $action .= "<input type='hidden' name='update_type' value='status' />";
 
                         if ($row->verified) {
-                            $action .= "<button type='submit' class='btn btn-danger btn-sm'>Reject</button>";
+                            $action .= "<button data-method='PUT' data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id])."' data-confirm='You are about to change the transaction status to `Unverified` state. User will be notified about the change. Are you sure you want to continue ?' data-bs-original-title='Reject Transaction' data-bs-toggle='tooltip' type='submit' class='btn btn-danger btn-icon data-confirm'><i class='fas fa-close'></i></button>";
                         } else {
-                            $action .= "<button type='submit' class='btn btn-success btn-sm'>Verify</button>";
+                            $action .= "<button  data-method='PUT'  data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id])."' data-confirm='You are about to update the transaction status to `Verified`. User will be notified about the changes. Do you wish to continue your action ?' type='submit' data-bs-toggle='tooltip' data-bs-original-title='Mark as verified Transaction' class='btn btn-success btn-icon data-confirm'><i class='fas fa-check'></i></button>";
                         }
-                        $action .= "</form>";
                     }
 
-                    $action .= "<form style='display:inline' method='DELETE' action='" . route('admin.program.fee.api_delete_fee', $row->id) . "' class='transaction_delete_form'>";
-                    $action .= "<input type='hidden' name='update_type' value='status' />";
-                    $action .= "<button type='submit' class='btn btn-danger btn-sm'><i class='zmdi zmdi-delete'></i></button>";
-                    $action .= "</form>";
+                    $action .= "<button type='button' data-confirm='You are about to delete selected transaction. This action cannot be undone. Do you wish to continue your action ?' data-method='DELETE' data-action='".route('admin.program.fee.api_delete_fee', ['fee' => $row->transaction_id])."' class='btn btn-warning btn-icon data-confirm'><i class='fas fa-trash'></i></button>";
+                    $action .= "</div>";
                     return $action;
                 })
                 ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
@@ -445,5 +429,45 @@ class ProgramStudentFeeController extends Controller
         $html .= "</div>";
 
         return $html;
+    }
+
+    public function unpaidList(Request $request, Program $program) {
+        if ($request->ajax() && $request->wantsJson()) {
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+
+            return DataTables::of($program->nonPaidList($searchTerm))
+
+                ->addColumn('member_name', function ($row) use ($program) {
+                    $member = "<a href='" . route('admin.members.show',['member' => $row->id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";
+                    $member .= htmlspecialchars($row->full_name);
+                    $member .= "</a>";
+
+                    return $member;
+                })
+                ->addColumn('email', function ($row) {
+                    return $row->email;
+                })
+                ->addColumn('phone_number', function ($row) {
+                   return $row->phone_number;
+                })
+                ->addColumn('Joined Dated', function ($row) {
+                    return date('Y-m-d' ,strtotime($row->joined_date));
+                })
+                ->addColumn('action',fn($row) => '')
+//                ->addColumn('status', function ($row) {
+//                    $status = "";
+//                    if ($row->verified) {
+//                        $status .= '<span class="badge bg-label-success"><a href="#" title="Verified"><i class="fas fa-check"></i></a>';
+//                    } else {
+//                        $status .= '<span class="badge bg-label-danger"><a href="#" title="Rejected"><i class="fas fa-cancel"></i></a>';
+//                    }
+//                    $status .= "</span>";
+//
+//                    return $status;
+//                })
+                ->rawColumns(["action",'member_name'])
+                ->make(true);
+        }
+        return view('admin.fees.program.unpaid', compact('program'));
     }
 }

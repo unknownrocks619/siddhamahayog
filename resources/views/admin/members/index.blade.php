@@ -46,7 +46,7 @@
     <script src="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.js')}}"></script>
 
     <script>
-        $("#program-table thead tr").clone(true).addClass('filters').appendTo("#program-table thead")
+        // $("#program-table thead tr").clone(true).addClass('filters').appendTo("#program-table thead")
 
         $('#program-table').DataTable({
             processing: true,

@@ -16,9 +16,12 @@ if (!function_exists("default_currency")) {
 
 if (!function_exists("create_zoom_meeting")) {
 
-    function create_zoom_meeting(ZoomAccount $zoom_account, $meeting_name = "Siddhamahayog, Test Case 01", $domain = 'siddhamahayog.org', $cohost = "")
+    function create_zoom_meeting(ZoomAccount $zoom_account, $meeting_name = "Siddhamahayog", $domain = 'siddhamahayog.org', $cohost = "")
     {
         $zoomMeeting = new \App\Classes\Zoom\ZoomMeeting\ZoomMeeting();
+        if ( env('APP_ENV') == 'local' || env('APP_DEBUT') == true) {
+            $meeting_name = $meeting_name . ' Debug Mode';
+        }
         return ($zoomMeeting->setname($meeting_name)->set_account($zoom_account->account_username)->create());
 
     }

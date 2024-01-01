@@ -18,7 +18,7 @@
         <li class="nav-item">
             <a class="nav-link  @if( $tab == 'emergency-info') active @endif" href="@if( $tab == 'emergency-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'emergency-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Emergency Info</a></li>
         <li class="nav-item">
-            <a class="nav-link  @if( $tab == 'media-info') active @endif" href="@if( $tab == 'media-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'emergency-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Media</a></li>
+            <a class="nav-link  @if( $tab == 'media-info') active @endif" href="@if( $tab == 'media-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'media-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Media</a></li>
         <li class="nav-item">
             <a class="nav-link  @if( $tab == 'dharmashala-info') active @endif" href="@if( $tab == 'dharmashala-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'dharmashala-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Dharmashala</a></li>
         <li class="nav-item">

@@ -20,4 +20,11 @@ class ZoomAccount extends Model
         "api_token"
     ];
 
+    const ACCESS_TYPES =[
+        'admin' => 'Admin',
+        'local' => 'Local',
+        'zonal' => 'Zonal',
+        'other' => 'Other'
+    ];
+
 }

@@ -26,10 +26,20 @@
             <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <a class="nav-link dropdown-toggle hide-arrow" id="avatarDropDown" href="javascript:void(0);" data-bs-toggle="dropdown">
+                        @if(user()->profileImage)
                         <div class="avatar avatar-online">
-                            <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle">
+                            <img src="{{\App\Classes\Helpers\Image::getImageAsSize(user()->profileImage->filepath,'xs')}}" alt class="h-auto rounded-circle">
                         </div>
+                        @else
+                            @php
+                                $first = str(user()->first_name)->substr(0,1);
+                                $last = str(user()->last_name)->substr(0,1);
+                            @endphp
+                            <div class="avatar avatar-online border-1 rounded-circle bg-label-success d-flex align-items-center justify-content-center">
+                                {{$first->upper()->value()}} {{$last->upper()->value()}}
+                            </div>
+                        @endif
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
@@ -41,8 +51,8 @@
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <span class="fw-medium d-block">John Doe</span>
-                                        <small class="text-muted">Admin</small>
+                                        <span class="fw-medium d-block">{{auth()->user()->full_name}}</span>
+                                        <small class="text-muted">{{\App\Models\Role::$roles[auth()->user()->role_id]}}</small>
                                     </div>
                                 </div>
                             </a>
@@ -51,46 +61,22 @@
                             <div class="dropdown-divider"></div>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="pages-profile-user.html">
+                            <a class="dropdown-item" href="{{route('admin.members.show',['member' => auth()->id()])}}">
                                 <i class="ti ti-user-check me-2 ti-sm"></i>
                                 <span class="align-middle">My Profile</span>
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="pages-account-settings-account.html">
+                            <a class="dropdown-item" href="{{route('dashboard')}}">
                                 <i class="ti ti-settings me-2 ti-sm"></i>
-                                <span class="align-middle">Settings</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="pages-account-settings-billing.html">
-                  <span class="d-flex align-items-center align-middle">
-                    <i class="flex-shrink-0 ti ti-credit-card me-2 ti-sm"></i>
-                    <span class="flex-grow-1 align-middle">Billing</span>
-                    <span class="flex-shrink-0 badge badge-center rounded-pill bg-label-danger w-px-20 h-px-20">2</span>
-                  </span>
+                                <span class="align-middle">Visit Portal</span>
                             </a>
                         </li>
                         <li>
                             <div class="dropdown-divider"></div>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="pages-faq.html">
-                                <i class="ti ti-help me-2 ti-sm"></i>
-                                <span class="align-middle">FAQ</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="pages-pricing.html">
-                                <i class="ti ti-currency-dollar me-2 ti-sm"></i>
-                                <span class="align-middle">Pricing</span>
-                            </a>
-                        </li>
-                        <li>
-                            <div class="dropdown-divider"></div>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="auth-login-cover.html" target="_blank">
+                            <a class="dropdown-item data-confirm" data-confirm="All your unsaved changes will be lost.?" data-method="post" data-action="{{route('logout')}}"  href="#">
                                 <i class="ti ti-logout me-2 ti-sm"></i>
                                 <span class="align-middle">Log Out</span>
                             </a>
