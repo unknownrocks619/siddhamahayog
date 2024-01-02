@@ -200,21 +200,21 @@
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     @if(\App\Models\Role::ADMIN == user()->role_id)
     <script>
-        $.ajax({
-            'method' : 'GET',
-            'url' : '{{route("frontend.jaap.setting-pop-modal")}}',
-            'success' : function (response){
-                if (response.params.view) {
-                    let _params = {
-                        modalID : 'yagyaInformation',
-                        content : response.params.view
-                    }
-                    window.popModalWithHTML(_params)
-                    // $('#yagyaInformation').html(response.params.view);
-                    // $('#yagyaInformation').modal('show');
-                }
-            }
-        })
+        {{--$.ajax({--}}
+        {{--    'method' : 'GET',--}}
+        {{--    'url' : '{{route("frontend.jaap.setting-pop-modal")}}',--}}
+        {{--    'success' : function (response){--}}
+        {{--        if (response.params.view) {--}}
+        {{--            let _params = {--}}
+        {{--                modalID : 'yagyaInformation',--}}
+        {{--                content : response.params.view--}}
+        {{--            }--}}
+        {{--            window.popModalWithHTML(_params)--}}
+        {{--            // $('#yagyaInformation').html(response.params.view);--}}
+        {{--            // $('#yagyaInformation').modal('show');--}}
+        {{--        }--}}
+        {{--    }--}}
+        {{--})--}}
     </script>
     @endif
     <script type="text/javascript">
