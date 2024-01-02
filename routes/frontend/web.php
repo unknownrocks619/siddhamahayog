@@ -43,13 +43,15 @@ Route::prefix("account")
     ->group(function () {
 
         Route::get("/user", [ProfileController::class, "account"])->name("list");
-        Route::get("/user/connections", [ProfileController::class, "connections"])->name("connections");
+        Route::match(['get','post'],"/user/connections", [ProfileController::class, "connections"])->name("connections");
+        Route::post('user/connection/delete/{connection}',[ProfileController::class,'deleteConnection'])->name('connection.delete');
         Route::get("/user/notifications", [ProfileController::class, "notifications"])->name("notifications");
         Route::post("/profile", [ProfileController::class, "storeProfile"])->name("store.profile");
         Route::post("/profile/detail", [ProfileController::class, "storeDetail"])->name("store.personal");
         Route::post('/user/notifications/{notification}', [ProfileController::class, "singleNotification"])->name('notification-body');
         Route::post('/user/notifications/{notification}/update', [ProfileController::class, "markNotification"])->name('notification-update');
         Route::post('/user/end/', [ProfileController::class, 'removeAdminAccess'])->name('end_debug_session');
+
         Route::get("/dashboard", [ProfileController::class, "index"])->name("dashboard");
         Route::prefix("notes")
             ->controller(UserNoteController::class)

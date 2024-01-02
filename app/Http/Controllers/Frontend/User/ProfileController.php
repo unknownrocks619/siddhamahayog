@@ -10,6 +10,7 @@ use App\Http\Traits\UploadHandler;
 use App\Models\Live;
 use App\Models\Member;
 use App\Models\MemberNotification;
+use App\Models\MemberRefers;
 use App\Models\Program;
 use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
@@ -34,8 +35,22 @@ class ProfileController extends Controller
         return view("frontend.user.account");
     }
 
-    public function connections()
+    public function connections(Request $request)
     {
+        if ($request->post() ) {
+            $referalModal = new MemberRefers();
+            $referalModal->fill([
+                'member_id' => auth()->id(),
+                'full_name' => $request->post('full_name'),
+                'phone_number'  => $request->post('phone_number'),
+                'email_address' => $request->post('email'),
+                'country'   => $request->post('country'),
+                'status'    => 'pending'
+            ]);
+
+            $referalModal->save();
+        }
+
         return view("frontend.user.connections");
     }
     public function notifications()
@@ -118,5 +133,18 @@ class ProfileController extends Controller
 
         session()->flash('success', 'Debug Mode Ended.');
         return redirect()->route('admin.members.show', $user->id);
+    }
+
+    public function deleteConnection(MemberRefers $connection) {
+
+        if ( $connection->status != 'pending') {
+            session()->flash('error','Refer is already in follow up process.');
+            return redirect()->back();
+        }
+
+        $connection->delete();
+
+        session()->flash('success','Deleted Successfully');
+        return redirect()->back();
     }
 }
