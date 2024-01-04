@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Programs\AdminProgramAttendanceController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
 use App\Http\Controllers\Admin\Programs\AdminProgramCourseController;
 use App\Http\Controllers\Admin\Programs\AdminProgramGuestListController;

@@ -17,7 +17,7 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && (Role::ADMIN == user()->role_id || Role::ACTING_ADMIN == user()->role_id)) {
+        if (auth()->check() && (Role::ADMIN == user()->role_id || Role::ACTING_ADMIN == user()->role_id) || Role::SUPER_ADMIN == user()->role_id) {
             return $next($request);
         }
         return redirect()->route('login');

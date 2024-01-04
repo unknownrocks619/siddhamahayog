@@ -28,9 +28,9 @@
                     <i class="menu-icon tf-icons bx bxs-bell-ring"></i>
                     Notification
                     <?php
-                    
+
                     use App\Models\MemberNotification;
-                    
+
                     $notification = MemberNotification::where('member_id', user()->id)
                         ->where('seen', false)
                         ->count();
@@ -44,7 +44,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="{{ profile() }}" alt class="w-px-40 h-auto rounded-circle border border-2" />
+                        <img src="{{ profile() }}" alt class="w-px-40 h-auto rounded-circle border border-2" style="height: 100% !important;width: 100% !important;" />
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -73,7 +73,7 @@
                             <span class="align-middle">Settings</span>
                         </a>
                     </li>
-                    @if (\App\Models\Role::$roles[user()->role_id] == 'Admin')
+                    @if (user()->role_id == \App\Models\Role::SUPER_ADMIN || user()->role_id == \App\Models\Role::ADMIN)
                         <li>
                             <a class="dropdown-item" href="{{ route('admin.admin_dashboard') }}">
                                 <i class="bx bx-cog me-2"></i>
@@ -82,7 +82,7 @@
                         </li>
                     @endif
 
-                    @if (\App\Models\Role::$roles[user()->role_id] == 'CenterAdmin')
+                    @if (user()->role_id == \App\Models\Role::CENTER_ADMIN)
                         <li>
                             <a class="dropdown-item" href="{{ route('center.admin.dashboard') }}">
                                 <i class="bx bx-cog me-2"></i>

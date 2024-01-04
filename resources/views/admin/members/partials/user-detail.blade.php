@@ -9,8 +9,11 @@
                 class="nav-link  @if( $tab == 'programs') active @endif"
                 href="@if( $tab == 'programs')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'programs'])}}@endif">
                 <i class="ti ti-lock ti-xs me-1"></i>Programs</a></li>
-        <li class="nav-item">
-            <a class="nav-link  @if( $tab == 'billing') active @endif" href="@if( $tab == 'billing')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'billing'])}}@endif"><i class="ti ti-currency-dollar ti-xs me-1"></i>Billings</a></li>
+        @if(user()->role_id == \App\Models\Role::SUPER_ADMIN)
+            <li class="nav-item">
+                <a class="nav-link  @if( $tab == 'billing') active @endif" href="@if( $tab == 'billing')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'billing'])}}@endif"><i class="ti ti-currency-dollar ti-xs me-1"></i>Billings</a>
+            </li>
+        @endif
 {{--        <li class="nav-item">--}}
 {{--            <a class="nav-link  @if( $tab == 'support') active @endif" href="@if( $tab == 'support')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'support'])}}@endif"><i class="ti ti-bell ti-xs me-1"></i>Supports</a></li>--}}
         <li class="nav-item">

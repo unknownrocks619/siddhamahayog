@@ -11,7 +11,7 @@ class Role extends Model
     use HasFactory;
 
     public static $roles = [
-        1 => "Admin",
+        1 => "Super Admin",
         2 => "Centers",
         3 => "Sadhaks",
         4 => "Teachers",
@@ -22,11 +22,14 @@ class Role extends Model
         9 => "CenterAdmin",
         10 => "Dharmashala",
         11 => "Co-Host",
-        12 => 'Acting-Admin'
+        12 => 'Acting-Admin',
+        13 => 'Admin'
     ];
 
     public const ACTING_ADMIN = 12;
-    public const ADMIN = 1;
+    public const SUPER_ADMIN = 1;
+    public const ADMIN = 13;
+    public const CENTER_ADMIN = 9;
 
     protected $casts = [
         'role_category' => 'array'

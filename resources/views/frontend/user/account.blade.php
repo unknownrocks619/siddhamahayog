@@ -25,7 +25,7 @@
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         <img src="{{ profile() }}" alt="user-avatar" class="d-block rounded border border-2" height="100" width="100" id="uploadedAvatar" />
                         <div class="button-wrapper">
-                            <form action="{{ route('user.account.store.profile') }}" enctype="multipart/form-data" id="profileForm" method="post">
+                            <form class="ajax-form" action="{{ route('user.account.store.profile') }}" enctype="multipart/form-data" id="profileForm" method="post">
                                 @csrf
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                     <span class="d-none d-sm-block">Upload new photo</span>

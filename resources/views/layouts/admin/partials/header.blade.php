@@ -27,19 +27,9 @@
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                     <a class="nav-link dropdown-toggle hide-arrow" id="avatarDropDown" href="javascript:void(0);" data-bs-toggle="dropdown">
-                        @if(user()->profileImage)
                         <div class="avatar avatar-online">
-                            <img src="{{\App\Classes\Helpers\Image::getImageAsSize(user()->profileImage->filepath,'xs')}}" alt class="h-auto rounded-circle">
+                            <img src="{{profile()}}" alt class="rounded-circle">
                         </div>
-                        @else
-                            @php
-                                $first = str(user()->first_name)->substr(0,1);
-                                $last = str(user()->last_name)->substr(0,1);
-                            @endphp
-                            <div class="avatar avatar-online border-1 rounded-circle bg-label-success d-flex align-items-center justify-content-center">
-                                {{$first->upper()->value()}} {{$last->upper()->value()}}
-                            </div>
-                        @endif
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
@@ -47,7 +37,7 @@
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
                                         <div class="avatar avatar-online">
-                                            <img src="../../assets/img/avatars/1.png" alt class="h-auto rounded-circle">
+                                            <img src="{{profile()}}" alt class="rounded-circle">
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">

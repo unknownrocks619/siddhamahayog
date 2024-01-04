@@ -145,21 +145,24 @@ if (!function_exists("user")) {
 if (!function_exists("profile")) {
     function profile()
     {
-        if ( ! user()->profile && ! user()->profileUrl) {
+        if ( ! user()->profileImage ) {
             $hash = md5(user()->email);
             return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
         }
-        if (user()->profile && isset(user()->profile->full_path) ) {
-            return user()->profile->full_path;
-        }
 
-        if ( (user()->profile) && isset(user()->profile->path) ) {
-            return asset(user()->profile->path);
-        }
-
-        if (user()->profileUrl && isset(user()->profileUrl->avatar) ) {
-            return user()->profileUrl->avatar;
-        }
+        return \App\Classes\Helpers\Image::getImageAsSize(user()->profileImage?->filepath,'xs');
+//
+//        if (user()->profile && isset(user()->profile->full_path) ) {
+//            return user()->profile->full_path;
+//        }
+//
+//        if ( (user()->profile) && isset(user()->profile->path) ) {
+//            return asset(user()->profile->path);
+//        }
+//
+//        if (user()->profileUrl && isset(user()->profileUrl->avatar) ) {
+//            return user()->profileUrl->avatar;
+//        }
 
     }
 }

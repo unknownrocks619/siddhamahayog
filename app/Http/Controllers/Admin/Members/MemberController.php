@@ -118,6 +118,10 @@ class MemberController extends Controller
      */
     public function show(Member $member,$tab = 'user-detail')
     {
+        $superAdmin = ['billing'];
+        if ( in_array($tab,$superAdmin) && user()->role_id != Role::SUPER_ADMIN) {
+            return redirect()->route('admin.members.show',['member' => $member,'tab' => 'user-detail']);
+        }
         //
         session()->forget('adminAccount');
 

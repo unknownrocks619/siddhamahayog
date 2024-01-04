@@ -32,7 +32,7 @@ class Controller extends BaseController
             return $this->json($state,$message,$jsCallback,$params,$status);
         }
 
-        session()->flash(! $status ? 'success' : 'false',$message);
+        session()->flash( ! ($status) ? 'success' : 'error' ,$message);
         return redirect()->to($redirect);
     }
 

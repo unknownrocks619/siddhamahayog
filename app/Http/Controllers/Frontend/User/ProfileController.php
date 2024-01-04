@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\User;
 
+use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\StoreProfileRequest;
 use App\Http\Requests\Frontend\User\UpdatePersonalRequest;
@@ -67,7 +68,6 @@ class ProfileController extends Controller
     public function markNotification(SingleNotificationRequest $request, MemberNotification $notification)
     {
         $notification->seen = true;
-
         $notification->save();
     }
 
@@ -75,18 +75,30 @@ class ProfileController extends Controller
     {
         $this->set_upload_path("website/profile");
         $user = auth()->user();
-        $user->profile = $this->upload($request, "profileMedia");
 
-        try {
-            $user->save();
-        } catch (\Throwable $th) {
-            //throw $th;
-            session()->flash("error", "Unable to upload profile.");
-            return back();
+        $uploadImage = Image::uploadImage($request->profileMedia,$user);
+
+        if ( empty ($uploadImage) ) {
+            return $this->returnResponse(false, 'Unable to upload profile.','reload',[],200,route('user.account.list'));
         }
 
-        session()->flash("success", "Profile Updated.");
-        return back();
+        $relationImage = $uploadImage[0]['relation'];
+        $relationImage->type = 'profile_picture';
+        $relationImage->save();
+        return $this->returnResponse(true, 'Profile Updated.','reload',[],200,route('user.account.list'));
+
+//        $user->profile = $this->upload($request, "profileMedia");
+//
+//        try {
+//            $user->save();
+//        } catch (\Throwable $th) {
+//            //throw $th;
+//            session()->flash("error", "Unable to upload profile.");
+//            return back();
+//        }
+//
+//        session()->flash("success", "Profile Updated.");
+//        return back();
     }
 
     public function storeDetail(UpdatePersonalRequest $request)

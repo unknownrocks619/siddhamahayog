@@ -42,12 +42,12 @@ class AdminProgramAttendanceController extends Controller
 
         if (!empty($request->get('filter_dates'))) {
 
-            $split_dates  =  explode(' - ', $request->get('filter_dates'));
+            $split_dates  =  explode(' to ', $request->get('filter_dates'));
             $parseStartDate = Carbon::parse($split_dates[0]);
 
             $parseEndDate = Carbon::parse($split_dates[1]);
-            $start_date = $parseStartDate->subDay()->format("Y-m-d");
-            $end_date = $parseEndDate->addDay()->format('Y-m-d');
+            $start_date = $parseStartDate->format("Y-m-d");
+            $end_date = $parseEndDate->format('Y-m-d');
         }
 
         $query = <<<SQL
@@ -61,6 +61,69 @@ class AdminProgramAttendanceController extends Controller
 
     public function studentList(Request $request, Program $program)
     {
+        $selects = [
+            'members.full_name',
+            'program_students.student_id AS user_id',
+            'members.phone_number',
+            'members.email',
+            'program_students.program_id AS pro_id',
+            'program_sections.section_name'
+        ];
+
+        $binds = [$program->getKey()];
+
+        $sql = " SELECT ";
+        $sql .= implode(' , ', $selects);
+
+        $sql .= " FROM program_students ";
+
+        $sql .= " INNER JOIN members ";
+        $sql .= " ON members.id = program_students.student_id";
+        $sql .= " AND members.deleted_at IS NULL ";
+
+        $sql .= " INNER JOIN program_sections";
+        $sql .= " ON program_sections.id = program_students.program_section_id ";
+        $sql .= " AND program_sections.deleted_at IS NULL ";
+
+        if ($request->get('filter_member') && $request->get('filter_member') == 'paid') {
+            $sql .= " INNER JOIN program_student_fee_details ";
+            $sql .= " ON program_student_fee_details.program_id = program_students.program_id";
+            $sql .= " AND program_student_fee_details.student_id = members.id";
+            $sql .= " AND program_student_fee_details.deleted_at IS NULL ";
+            $sql .= " AND program_student_fee_details.verified = 1 ";
+        }
+
+        if ($request->get('filter_member') && $request->get('filter_member') == 'rejected') {
+            $sql .= " INNER JOIN program_student_fee_details ";
+            $sql .= " ON program_student_fee_details.program_id = program_students.program_id";
+            $sql .= " AND program_student_fee_details.student_id = members.id";
+            $sql .= " AND program_student_fee_details.deleted_at IS NULL ";
+            $sql .= " AND program_student_fee_details.rejected = 1 ";
+        }
+
+        if ($request->get('filter_member') && $request->get('filter_member') == 'unpaid') {
+                $sql .= " LEFT JOIN program_student_fees ";
+                $sql .= " ON program_student_fees.program_id = program_students.program_id";
+                $sql .= " AND program_student_fees.deleted_at IS NULL ";
+        }
+
+        $sql .= " WHERE ";
+        $sql .= " program_students.program_id = ? ";
+
+        if ($request->get('filter_member') && $request->get('filter_member') == 'unpaid') {
+            $sql .= " AND program_student_fees.student_id IS NULL ";
+        }
+
+        if ($request->get('filter_section')) {
+            $sql .= " AND program_students.program_section_id = ?";
+            $binds = array_merge($binds,[$request->get('filter_section')]);
+        }
+
+        $sql .= " AND program_students.deleted_at IS NULL ";
+        $sql .= ' GROUP BY members.id ';
+
+        return (DB::select($sql,$binds));
+
         $sql = "
             SELECT `members`.`full_name`, `program_students`.`student_id` AS `user_id`,
              `members`.`phone_number`,`members`.`email`,
@@ -72,17 +135,30 @@ class AdminProgramAttendanceController extends Controller
         ";
         if ($request->get('filter_member') && $request->get('filter_member') == 'paid') {
             $sql .= " INNER JOIN
-            `program_student_fee_details` on `program_student_fee_details`.`student_id` = `program_students`.`student_id`
-            WHERE `program_student_fee_details`.`amount_category` = 'admission_fee'
-            AND `program_student_fee_details`.`verified` = 1 AND `program_student_fee_details`.`deleted_at` is NULL";
+                        `program_student_fee_details` on `program_student_fee_details`.`student_id` = `program_students`.`student_id`
+                        WHERE `program_student_fee_details`.`amount_category` = 'admission_fee'
+                        AND `program_student_fee_details.program_id` = {$program->getKey()}
+                        AND `program_student_fee_details`.`verified` = 1
+                        AND `program_student_fee_details`.`deleted_at` is NULL";
 
             $sql .= " AND `program_students`.`program_id` = {$program->getKey()} ";
-        } else {
+        }
+        if ($request->get('filter_member') && $request->get('filter_member') == 'unpaid') {
+
+            $sql .= " LEFT JOIN
+                    `program_student_fee_details` on `program_student_fee_details`.`program_id` = `program_students`.`program_id`";
+        }
+
+        else {
             $sql .= " WHERE `program_students`.`program_id` = {$program->getKey()} ";
         }
 
+        if ($request->get('filter_member') && $request->get('filter_member') == 'unpaid') {
+            $sql .= " AND `program_student_fee_details`.`student_id` IS NULL ";
+        }
 
-        if ($request->get('filter_section')) {
+            if ($request->get('filter_section')) {
+
             $sql .= " AND `program_students`.`program_section_id` = {$request->get('filter_section')}";
         }
 

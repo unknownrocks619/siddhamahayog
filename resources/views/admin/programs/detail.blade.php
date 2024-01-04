@@ -18,11 +18,13 @@
 
             </div>
         </div>
-        <div class="row">
-            <div class="col-xl-12 mb-4 col-lg-12 col-12">
-                @include('admin.programs.partials.statistics',['program' => $program])
+        @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
+            <div class="row">
+                <div class="col-xl-12 mb-4 col-lg-12 col-12">
+                    @include('admin.programs.partials.statistics',['program' => $program])
+                </div>
             </div>
-        </div>
+        @endif
 
         <div class="row">
             <div class="col-md-8 col-sm-12">

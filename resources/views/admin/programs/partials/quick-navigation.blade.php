@@ -25,28 +25,29 @@
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
                         <div class="mb-0 fw-medium">
-                            <a href="">
+                            <a href="{{route('admin.program.attendances.list',['program'=>$program])}}">
                                 Program Daily Attendance
                             </a>
                         </div>
                     </div>
                 </div>
             </li>
-            <li class="d-flex mb-4 pb-1 align-items-center">
-                <div class="avatar flex-shrink-0 me-3">
-                    <span class="avatar-initial rounded bg-label-success"><i class="ti ti-currency-dollar ti-md"></i></span>
-                </div>
-                <div class="row w-100 align-items-center">
-                    <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                        <div class="mb-0 fw-medium">
-                            <a href="{{ route('admin.program.fee.admin_fee_overview_by_program', ['program' => $program]) }}">
-                                Accounts & Management
-                            </a>
+            @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
+                <li class="d-flex mb-4 pb-1 align-items-center">
+                    <div class="avatar flex-shrink-0 me-3">
+                        <span class="avatar-initial rounded bg-label-success"><i class="ti ti-currency-dollar ti-md"></i></span>
+                    </div>
+                    <div class="row w-100 align-items-center">
+                        <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                            <div class="mb-0 fw-medium">
+                                <a href="{{ route('admin.program.fee.admin_fee_overview_by_program', ['program' => $program]) }}">
+                                    Accounts & Management
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-            </li>
+                </li>
+            @endif
             <li class="d-flex mb-4 pb-1 align-items-center">
                 <div class="avatar flex-shrink-0 me-3">
                     <span class="avatar-initial rounded bg-label-warning"><i class="ti ti-brand-dribbble ti-md"></i></span>

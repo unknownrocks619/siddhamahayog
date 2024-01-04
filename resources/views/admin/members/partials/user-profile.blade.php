@@ -46,9 +46,10 @@
             </div>
         </div>
     </div>
-    <!-- /User Card -->
-    <!-- Plan Card -->
-    <div class="card mb-4">
+
+    @if(user()->role_id == \App\Models\Role::SUPER_ADMIN)
+        <!-- Plan Card -->
+            <div class="card mb-4">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-4">
                 <span class="badge bg-label-primary">Password manager</span>
@@ -93,8 +94,8 @@
             </form>
         </div>
     </div>
-    <!-- /Plan Card -->
-    <!-- Yagya Info -->
+        <!-- /Plan Card -->
+    @endif
     @include('admin.members.partials.statistics',['member' => $member])
     <!-- /Yagya Info -->
 </div>
