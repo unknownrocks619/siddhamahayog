@@ -1,5 +1,5 @@
 import './bootstrap.js';
-
+console.log('from app. js');
 //================== partials ======================//
 import './partials/ajax-form.js'
 import './partials/ajax-modal';
