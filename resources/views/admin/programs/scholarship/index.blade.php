@@ -35,7 +35,12 @@
                     <tr>
                         <td>{{ $student->students?->full_name }} </td>
                         <td>
-                            {{\App\Models\Scholarship::TYPES[$student->scholar_type]}}
+                            @if(isset(\App\Models\Scholarship::TYPES[$student->scholar_type]) )
+                                {{\App\Models\Scholarship::TYPES[$student->scholar_type]}}
+
+                            @else
+                                <span class="badge bg-label-danger">Not Defined</span>
+                            @endif
                         </td>
                         <td>{{ $student->students?->phone_number }}</td>
                         <td>{{ $student->students?->email }}</td>
