@@ -354,7 +354,7 @@
     @endif
 
 
-    @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::ADMIN == user()->role_id)
+    @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::SUPER_ADMIN == user()->role_id)
         <script type="text/javascript">
             $('#goLive').on('shown.bs.modal', function(event) {
                 $.ajax({

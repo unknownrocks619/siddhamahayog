@@ -36,7 +36,7 @@ use App\Models\Scholarship;
                     </p>
                 @endif
 
-                @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::ADMIN == user()->role_id)
+                @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::SUPER_ADMIN == user()->role_id)
                     @include('frontend.user.dashboard.buttons.admin', ['program' => $program])
                 @endif
             </li>

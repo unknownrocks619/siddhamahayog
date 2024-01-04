@@ -23,7 +23,7 @@ if ($program->program_type == 'open') {
         ->first();
     $unpaidAccess = UnpaidAccess::totalAccess(user(), $program);
 
-    if ($scholarship || (int) user()->role_id === 1) {
+    if ($scholarship || (int) user()->role_id === \App\Models\Role::SUPER_ADMIN) {
         $allowJoin = true;
     }
 
