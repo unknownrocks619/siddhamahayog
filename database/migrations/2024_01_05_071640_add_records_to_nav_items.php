@@ -29,6 +29,21 @@ return new class extends Migration
             'order' => 1,
             'id_position' => 1,
             'permission'    => ['*']
+            ],
+            [
+                'name'  => 'Members',
+                'route' => '',
+                'icon'  => 'layout-grid-add',
+                'order' => 2,
+                'id_position'   => 1,
+                'permission'    => ['*']
+            ],
+            [
+                'name'  => 'Notices',
+                'route' => 'admin.notices.notice.index',
+                'icon'  => '',
+                'order' => 3,
+                'id_position'   => ['*']
             ]
         ];
     }
