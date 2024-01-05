@@ -64,12 +64,14 @@ class ImageToTable extends Command
                 echo 'Processing : ' . $member->getKey() . PHP_EOL;
                 // check using full_path
                 if (isset ($member->profile->full_path) ) {
+                    echo 'Processing Full Path : '. PHP_EOL;
                     $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
                     $originalFilename = pathinfo($url,PATHINFO_FILENAME);
                     $this->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
                 }
 //
                 if (isset($member->profile->id_card) ) {
+                    echo 'Processing ID Card: '. PHP_EOL;
                     $url = str_replace('uploads/m','uploads/cus', $member->profile->id_card);
                     $originalFilename = pathinfo($url,PATHINFO_FILENAME);
                     $this->downloadAndSaveImage($url,$member,$originalFilename,'id_card');
