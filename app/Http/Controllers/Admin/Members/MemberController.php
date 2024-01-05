@@ -133,23 +133,35 @@ class MemberController extends Controller
             return $query->with(['program']);
         }, 'donations', 'member_detail']);
 
+        $setNull = false;
+
         if ($member->profile && isset ($member->profile->full_path)) {
             $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
             $originalFilename = pathinfo($url,PATHINFO_FILENAME);
             (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+            $setNull = true;
         }
 
         if ($member->profile && isset($member->profile->id_card) ) {
             $url = str_replace('uploads/m','uploads/cus', $member->profile->id_card);
             $originalFilename = pathinfo($url,PATHINFO_FILENAME);
             (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'id_card');
+            $setNull = true;
         }
 
         if ( $member->profile &&  isset($member->profile->path) ) {
             $originalFilename = $member->profile->original_filename;
             $url = asset($member->profile->path);
             (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+            $setNull = true;
         }
+
+        if ($setNull === true) {
+
+            $member->profile = null;
+            $member->save();
+        }
+
         return view('admin.members.show', compact("member","tab"));
     }
 
