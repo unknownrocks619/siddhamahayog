@@ -153,6 +153,59 @@
                 </ul>
             </li>
 
+            @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN || auth()->user()->role_id == 10)
+                <!-- Misc -->
+                <li class="menu-item">
+                    <a href="javascript:void(0)" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons ti ti-hotel-service"></i>
+                        <div data-i18n="Dharmashala Management">Dharmashala Management</div>
+                    </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="javascript:void(0)" target="_blank" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-building"></i>
+                                    <div data-i18n="Building">Buildings</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list')}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-bed"></i>
+                                    <div data-i18n="Room Management">Room Management</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list',['type' =>'priority','filter' => 'high'])}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-bed-filled"></i>
+                                    <div data-i18n="Amenities">Amenities</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list',['type' =>'priority','filter' => 'medium'])}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-check"></i>
+                                    <div data-i18n="Check In">Check-In</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list',['type' =>'priority','filter' => 'low'])}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-blur-off"></i>
+                                    <div data-i18n="Check Out">Check-Out</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list',['type' =>'category','filter' => 'finance'])}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-report"></i>
+                                    <div data-i18n="Overview">Overview</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{route('admin.supports.tickets.list',['type' =>'category','filter' => 'finance'])}}" class="menu-link">
+                                    <i class="menu-icon tf-icons ti ti-note"></i>
+                                    <div data-i18n="Logs">Logs</div>
+                                </a>
+                            </li>
+                        </ul>
+                </li>
+            @endif
         </ul>
     </div>
 </aside>
