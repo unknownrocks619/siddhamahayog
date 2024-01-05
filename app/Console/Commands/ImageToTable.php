@@ -36,6 +36,10 @@ class ImageToTable extends Command
      */
     public function handle()
     {
+        ini_set('allow_url_fopen', 1);
+        ini_set('memory_limit',-1);
+
+
         $allMembers = Member::select(['id','profile','profileUrl'])
                         ->get();
 
@@ -84,8 +88,8 @@ class ImageToTable extends Command
                     $this->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
                 }
 
-//                $member->profile = null;
-//                $member->save();
+                $member->profile = null;
+                $member->save();
             }
 
         }
@@ -94,15 +98,24 @@ class ImageToTable extends Command
 
     public function downloadAndSaveImage(string $url, Member $member, $originalFilename,$type) {
 
-        if ( ! $this->url_exists($url) ) {
-            echo 'Skipping URL ' . $url .' File Does not exists.' . PHP_EOL;
-            return;
-        }
+        $context = stream_context_create(array(
+            'ssl' => array(
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+            ),
+        ));
+
+
+//        if ( ! $this->url_exists($url) ) {
+//            echo 'Skipping URL ' . $url .' File Does not exists.' . PHP_EOL;
+//            return;
+//        }
 
         $generatedFilename = Str::random(40);
         $fileExtension = pathinfo($url,PATHINFO_EXTENSION);
         $sizes = config('image-settings')['sizes'];
-        $imageContent = file_get_contents($url);
+//        $imageContent = file_get_contents($url);
+        $imageContent = file_get_contents($url, true, $context);
         $baseOriginal = 'uploads/org/'.date('Y').'/'.date('m');
         Storage::disk('local')->put($baseOriginal.'/'.$generatedFilename.'.'.$fileExtension,$imageContent);
 

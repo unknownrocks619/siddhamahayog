@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Members;
 
+use App\Console\Commands\ImageToTable;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
@@ -118,6 +119,9 @@ class MemberController extends Controller
      */
     public function show(Member $member,$tab = 'user-detail')
     {
+        ini_set('allow_url_fopen', 1);
+        ini_set('memory_limit',-1);
+
         $superAdmin = ['billing'];
         if ( in_array($tab,$superAdmin) && user()->role_id != Role::SUPER_ADMIN) {
             return redirect()->route('admin.members.show',['member' => $member,'tab' => 'user-detail']);
@@ -129,6 +133,23 @@ class MemberController extends Controller
             return $query->with(['program']);
         }, 'donations', 'member_detail']);
 
+        if ($member->profile && isset ($member->profile->full_path)) {
+            $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
+            $originalFilename = pathinfo($url,PATHINFO_FILENAME);
+            (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+        }
+
+        if ($member->profile && isset($member->profile->id_card) ) {
+            $url = str_replace('uploads/m','uploads/cus', $member->profile->id_card);
+            $originalFilename = pathinfo($url,PATHINFO_FILENAME);
+            (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'id_card');
+        }
+
+        if ( $member->profile &&  isset($member->profile->path) ) {
+            $originalFilename = $member->profile->original_filename;
+            $url = asset($member->profile->path);
+            (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+        }
         return view('admin.members.show', compact("member","tab"));
     }
 
