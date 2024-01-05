@@ -46,10 +46,10 @@
                                 @endif
                             </td>
                             <td>
-                                <a href="" class="btn btn-primary btn-icon">
+                                <a href="{{route('admin.notices.notice.edit',['notice' => $notice])}}" class="btn btn-primary btn-icon">
                                     <i class="fas fa-pencil"></i>
                                 </a>
-                                <button data-method="post" data-action="{{ route('admin.notices.notice.destroy',$notice->id) }}" class="btn btn-danger btn-icon" type="button" data-confirm="You are about to delete notice from the system. This action cannot be undone. Are you Sure? ">
+                                <button data-method="delete" data-action="{{ route('admin.notices.notice.destroy',['notice' =>$notice]) }}" class="btn btn-danger btn-icon data-confirm" type="button" data-confirm="You are about to delete notice from the system. This action cannot be undone. Are you Sure? ">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </td>

@@ -40,6 +40,7 @@ class NoticeObserver
     public function deleted(Notices $notice)
     {
         //
+        Cache::delete('notices');
         Cache::add("notices", Notices::latest()->get());
     }
 

@@ -1,6 +1,7 @@
 <?php
+use App\Http\Controllers\Frontend\Events\EventController;
 
-use App\Http\Controllers\Frontend\Frontend\EventController;
+//use App\Http\Controllers\Frontend\Frontend\EventController;
 use App\Http\Controllers\Frontend\Sadhana\SadhanaController;
 use App\Http\Controllers\Frontend\User\ProfileController;
 use App\Http\Controllers\Payment\EsewaController;
