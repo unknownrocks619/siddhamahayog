@@ -16,8 +16,17 @@ class NavigationItem extends Model
         'order',
         'permission',
         'route',
-        'path'
+        'path',
+        'parent_id',
+        'route_params'
     ];
 
-    protected  $casts = ['permission' => 'array'];
+    protected  $casts = ['permission' => 'array' , 'route_params' => 'array'];
+
+    protected $with = ['child'];
+    public function child() {
+        return $this->hasMany(NavigationItem::class,'parent_id','id')
+                    ->with(['child'])
+                    ->orderBy('order','ASC');
+    }
 }

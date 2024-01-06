@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('order')->nullable();
             $table->string('permission')->default('*');
             $table->string('route')->nullable();
+            $table->longText('route_params')->nullable();
             $table->string('path')->nullable();
             $table->timestamps();
             $table->softDeletes();

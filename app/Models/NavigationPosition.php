@@ -13,4 +13,14 @@ class NavigationPosition extends Model
     protected $fillable = ['nav_position','permission'];
 
     protected $casts=['permission' => 'array'];
+
+    protected $with = [
+        'navigationItems'
+    ];
+
+    public function navigationItems() {
+        return $this->hasMany(NavigationItem::class,'id_position')
+                    ->whereNull('parent_id')
+                    ->orderBy('order','ASC');
+    }
 }
