@@ -14,7 +14,8 @@ class LiveEventJoinAsAdminRequest extends FormRequest
      */
     public function authorize()
     {
-        return (auth()->check() && array_key_exists(auth()->user()->role_id, Role::$roles) && Role::$roles[auth()->user()->role_id] == 'Admin');
+
+        return (auth()->check() && (auth()->user()->role_id == Role::SUPER_ADMIN || auth()->user()->role_id == Role::ACTING_ADMIN || auth()->user()->role_id == Role::ADMIN) );
     }
 
     /**
