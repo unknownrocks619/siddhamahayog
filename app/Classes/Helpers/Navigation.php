@@ -10,8 +10,8 @@ class Navigation
 {
     public static function adminParentAsideNavigationItems() {
 
-        if ( cache()->has('ADMIN_PARENT_ASIDE_NAVIGATION') ) {
-            return cache()->get('ADMIN_PARENT_ASIDE_NAVIGATION');
+        if ( cache()->has('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION') ) {
+            return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
         }
 
         $navigations = NavigationPosition::where('nav_position','aside')->get();
@@ -42,9 +42,8 @@ class Navigation
                 $items[] = $nav;
             }
         }
-        return $items;
-        cache()->put('ADMIN_PARENT_ASIDE_NAVIGATION',$items);
-        return cache()->get('ADMIN_PARENT_ASIDE_NAVIGATION');
+        cache()->put('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION',$items);
+        return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
     }
 
 }
