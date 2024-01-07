@@ -163,12 +163,16 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-md-12">
+                @if($program->active_fees?->online)
                 <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'esewa']) }}" class="btn btn-success clickable py-2 px-2 ">
                     Esewa Payment
                 </a>
-                <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'voucher']) }}" class="btn btn-primary clickable py-2 px-2">
-                    Voucher Payment
-                </a>
+                @endif
+                @if($program->active_fees?->offline)
+                    <a href="{{ route('user.account.programs.payment.create.form',[$program->id,'paymentOpt'=>'voucher']) }}" class="btn btn-primary clickable py-2 px-2">
+                        Voucher Payment
+                    </a>
+                @endif
             </div>
         </div>
         {{-- @include('frontend.partials.payment-selection') --}}

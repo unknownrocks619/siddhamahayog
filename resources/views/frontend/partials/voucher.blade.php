@@ -13,9 +13,9 @@
     $studentFee = user()->transactions()->where('program_id', $program->id)
         ->where('amount_category', 'admission_fee')
         ->sum('amount');
-    $toBePaid = 9000;
+    $toBePaid = $program->active_fees->admission_fee;
     if ($studentFee < $toBePaid) {
-        $toBePaid =  (!$studentFee) ? 9000 : ($toBePaid - $studentFee);
+        $toBePaid =  (!$studentFee) ? $toBePaid : ($toBePaid - $studentFee);
     } else {
         $toBePaid = 0;
     }
@@ -24,7 +24,7 @@
     }
     ?>
     @if( ! $allow_access || ! $toBePaid)
-    @include("frontend.partials.not-allowed",['program'=>$program])
+        @include("frontend.partials.not-allowed",['program'=>$program])
     @else
 
     <div class="row">
@@ -58,7 +58,7 @@
                                         (NRs)
                                         <sup class="text-danger">*</sup>
                                     </label>
-                                    <input type="number" readonly name="amount" class="form-control" value=" {{ (int)  ( ! $program->student_admission_fee) ? $toBePaid : $program->active_fees->monthly_fee }}" max="{{ $toBePaid }}" id="amount" />
+                                    <input type="number" readonly name="amount" class="form-control" value="{{ (int)  ( ! $program->student_admission_fee) ? $toBePaid : $program->active_fees->monthly_fee }}" id="amount" />
                                 </div>
                             </div>
                             <div class="col-md-4">

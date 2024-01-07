@@ -25,7 +25,7 @@ class Role extends Model
         12 => 'Acting-Admin',
         13 => 'Admin'
     ];
-
+    public const DHARMASHALA = 10;
     public const ACTING_ADMIN = 12;
     public const SUPER_ADMIN = 1;
     public const ADMIN = 13;

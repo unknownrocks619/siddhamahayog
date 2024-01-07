@@ -62,7 +62,7 @@ Spiritual Academy
 <!-- Icons Start -->
 <div class="section section-padding pt-1">
   <div class="container">
-    <div class="section-title section-title-2 text-center">
+    <div class="section-title section-title-2 text-center menu-icon tf-icon ti ti-brand-onlyfans">
       <p class="subtitle">Benefits</p>
       <h4 class="title">Help yourself, Heal yourself</h4>
     </div>

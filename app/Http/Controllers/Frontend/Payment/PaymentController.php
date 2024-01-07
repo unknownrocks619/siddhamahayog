@@ -23,7 +23,9 @@ class PaymentController extends Controller
             session()->flash("error", "Unable to complete your request.");
             return back();
         }
+
         $intent = null;
+
         if ($request->paymentOpt == "stripe") {
             if (user()->role_id  != 1) {
                 abort(404);
