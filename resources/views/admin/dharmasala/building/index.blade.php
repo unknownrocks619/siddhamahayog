@@ -33,7 +33,7 @@
                                         <div class="card-header d-flex justify-content-between">
                                             <h4>{{$floor->floor_name}}</h4>
                                             <div>
-                                                <button class="btn btn-primary ajax-modal" data-bs-toggle="" data-bs-target="" data-action="route('admin.')"><i class="fas fa-plus"></i> Add Rooms</button>
+                                                <button class="btn btn-primary ajax-modal" data-bs-toggle="modal" data-bs-target="#roomForm" data-action="{{route('admin.modal.display',['view' => 'dharmasala.rooms.create','building' => $building->getKey(),'floor' => $floor->getKey()])}}"><i class="fas fa-plus"></i> Add Rooms</button>
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -60,5 +60,5 @@
         @include('admin.modal.dharmasala.building.create');
     </x-modal>
     <x-modal modal="dharmasalaFloorForm"></x-modal>
-
+    <x-modal modal="roomForm"></x-modal>
 @endsection
