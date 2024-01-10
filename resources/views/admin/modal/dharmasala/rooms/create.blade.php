@@ -30,28 +30,11 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="room_capacity">Room Capacity</label>
-                    <input type="number" name="total_rroom_capacityooms" id="room_capacity" class="form-control">
+                    <input type="number" name="room_capacity" id="room_capacity" class="form-control">
                 </div>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="online_access">Room Type</label>
 
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="Status">Room Type</label>
-                    <select name="status" id="status" class="form-control">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                    </select>
-                </div>
-            </div>
-        </div>
         <div class="row mt-3">
                 @if( ! $building )
                     <div class="col-md-6">
@@ -79,7 +62,7 @@
         <div class="row mt-3">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="enable_booking">Room Status</label>
+                    <label for="enable_booking">Enable Booking</label>
                     <select name="enable_booking" id="enable_booking" class="form-control">
                         @foreach (\App\Models\Dharmasala\DharmasalaBuildingRoom::ROOM_STATUS as $key => $value)
                             <option value="{{$key}}">{{$value}}</option>
@@ -98,16 +81,27 @@
                 </div>
             </div>
         </div>
+
         <div class="row mt-3">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="room_category">Room Category</label>
                     <select name="room_category" id="room_category" class="form-control">
-
+                        @foreach (\App\Models\Dharmasala\DharmasalaBuildingRoom::ROOM_CATEGORY as $key => $value)
+                            <option value="{{$key}}">{{$value}}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
-            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="online_booking">Enable Online Booking</label>
+                    <select name="online_booking" id="online_booking" class="form-control">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 

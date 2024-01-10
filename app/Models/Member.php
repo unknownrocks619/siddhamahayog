@@ -187,6 +187,13 @@ class Member extends Authenticatable
                     ->latest();
     }
 
+    public function memberIDMedia() {
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
+            ->where('relation',self::class)
+            ->where('type','id_card')
+            ->latest();
+    }
+
     public function media() {
         return $this->hasMany(ImageRelation::class,'relation_id')
                     ->where('relation',self::class);

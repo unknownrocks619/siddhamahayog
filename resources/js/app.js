@@ -7,6 +7,8 @@ import './partials/select2';
 import './partials/voucher-modal';
 import './partials/tinymce';
 import './partials/programs';
+import './partials/room.js';
+
 $(function () {
     "use strict";
 
@@ -120,7 +122,6 @@ $(function () {
     }
 
     window.redirectTab = function (param) {
-        console.log('hello params', param);
         if (typeof param.location !== 'undefined' || param.location !== null) {
             console.log('aparam');
             window.open(param.location,'_blank');
@@ -163,4 +164,38 @@ $(function () {
             }
         });
     }
+
+    /**
+     *
+     * @type {*|jQuery}
+     */
+    window.memberSearchFunction =  function() {
+        $("#memberSearchField").keyup(function(event) {
+            event.preventDefault();
+            let _this = this;
+
+            let _data = {
+                member : $(this).val(),
+            }
+            $.ajax({
+                url : $(_this).data("action"),
+                data : {member : $(_this).val()},
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                method : "GET",
+                success : function (response) {
+                    $("#search_result").html(response);
+                },
+                error : function (response) {
+                    if (response.status == 401)  {
+                        // window.location.href = '/login';
+                    }
+                    // if (resonse.data.stats)
+                }
+            })
+        });
+    }
+
+    window.memberSearchFunction;
 })

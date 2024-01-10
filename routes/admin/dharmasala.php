@@ -31,13 +31,15 @@ Route::prefix('admin/dharmasala')
             Route::prefix('rooms')
                     ->group( function() {
                         Route::get('list',[RoomController::class,'index'])->name('admin.dharmasala.rooms.list');
-                        Route::match(['get','post'],'create',[RoomController::class,'create'])->name('admin.dharmasala.rooms.create');
+                        Route::match(['get','post'],'create/{building?}/{floor?}',[RoomController::class,'create'])->name('admin.dharmasala.rooms.create');
                     });
 
             /** Bookings */
             Route::prefix('bookings')
                     ->group(function () {
                         Route::get('list',[BookingController::class,'index'])->name('admin.dharmasala.booking.list');
+                        Route::match(['get','post'],'create/{room?}/{floor?}/{building?}',[BookingController::class,'create'])->name('admin.dharmasala.booking.create');
+                        Route::get('user-search',[BookingController::class,'selectUsers'])->name('admin.dharmasala.booking-user-list');
                     });
 
             /** Amenities */

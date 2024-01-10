@@ -39,8 +39,15 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 @foreach ($floor->rooms as $room)
-                                                    <div class="col-md-3 my-3">
-                                                        <i class="fas fa-bed fs-2"></i>
+                                                    <div class="col-md-1 my-3">
+                                                        <button class="btn-default ajax-modal" data-action="{{route('admin.modal.display',['view' => 'dharmasala.booking.book-user','room' => $room->getKey()])}}" type="button" data-bs-target="#assignUserToRoom" data-bs-toggle="modal">
+                                                            @if($room->room_type == "open")
+                                                                <i class="fas fa-tent fs-2"></i>
+                                                            @else
+                                                                <i class="fas fa-bed fs-2"></i>
+                                                            @endif
+                                                            <h5>{{$room->room_number}}</h5>
+                                                        </button>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -61,4 +68,5 @@
     </x-modal>
     <x-modal modal="dharmasalaFloorForm"></x-modal>
     <x-modal modal="roomForm"></x-modal>
+    <x-modal modal="assignUserToRoom"></x-modal>
 @endsection
