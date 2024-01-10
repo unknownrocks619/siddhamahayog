@@ -201,6 +201,10 @@ class Program extends Model
             'member.phone_number',
             'member.email',
             'member.id as member_id',
+            'member.country as member_country',
+            'member.address',
+            'memberinfo.personal as personal_detail',
+            'country.name as country_name',
             'SUM(prostufee.total_amount) as member_payment',
             'prosec.section_name',
             'batches.batch_name',
@@ -218,23 +222,36 @@ class Program extends Model
         $sql = "SELECT ";
         $sql .= implode(', ', $selects);
         $sql .= ' FROM programs pro';
+
         $sql .= ' INNER JOIN program_students prostu';
         $sql .= ' ON prostu.program_id = pro.id';
         $sql .= ' AND prostu.deleted_at IS NULL';
+
         $sql .=' INNER JOIN members member';
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
+
+        $sql .= ' LEFT JOIN countries country ';
+        $sql .= " on member.country = country.id";
+
+        $sql .= " LEFT JOIN member_infos memberinfo ";
+        $sql .= " on memberinfo.member_id = member.id";
+
         $sql .= ' INNER JOIN program_sections prosec';
         $sql .= ' ON prosec.id = prostu.program_section_id';
         $sql .= " AND prosec.deleted_at IS NULL";
+
         $sql .= ' INNER JOIN program_batches probatch';
         $sql .= ' ON probatch.id = prostu.batch_id';
+
         $sql .= ' INNER JOIN batches';
         $sql .= " ON batches.id = probatch.batch_id";
+
         $sql .= " LEFT JOIN program_student_fees prostufee";
         $sql .= " ON prostufee.program_id = pro.id";
         $sql .= " AND prostufee.student_id = member.id";
         $sql .= " AND prostufee.deleted_at IS NULL";
+
         $sql .= " LEFT JOIN scholarships scholar";
         $sql .= " ON scholar.program_id = pro.id";
         $sql .= " AND scholar.student_id = member.id";
@@ -249,15 +266,19 @@ class Program extends Model
         $sql .= " WHERE pro.id = ?";
 
         if ( $searchTerm ) {
-            $sql .= " AND ( ";
+            $sql .=  " AND ( ";
             $sql .= " member.full_name LIKE ?";
             $sql .= " OR member.phone_number LIKE ?";
             $sql .= " OR member.email LIKE ? ";
             $sql .= " OR member.first_name LIKE ? ";
             $sql .= " OR member.last_name LIKE ? ";
+            $sql .= " OR memberinfo.personal LIKE ?";
+            $sql .= " OR country.name LIKE ? ";
             $sql .= " ) ";
 
             $binds= array_merge($binds, [
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',

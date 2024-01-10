@@ -136,6 +136,7 @@ class MemberController extends Controller
         $setNull = false;
 
         if ($member->profile && isset ($member->profile->full_path)) {
+
             $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
             $originalFilename = pathinfo($url,PATHINFO_FILENAME);
             (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');

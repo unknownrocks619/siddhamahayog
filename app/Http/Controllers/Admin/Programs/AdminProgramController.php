@@ -335,6 +335,39 @@ class AdminProgramController extends Controller
                 ->addColumn('enrolled_date', function($row) {
                    return date('Y-m-d',strtotime($row->enrolled_date));
                 })
+                ->addColumn('country',function($row){
+                    if ( ! $row->member_country &&  ! $row->country_name) {
+                        return 'N/A';
+                    }
+                    if ($row->member_country && ! (int) $row->member_country) {
+                        return $row->member_country;
+                    }
+
+                    return $row->country_name;
+
+                })
+                ->addColumn('full_address', function($row) {
+                    if ( ! $row->address) {
+                        return 'N/A';
+                    }
+
+                    $addressDecode = json_decode($row->address);
+                    if ( isset($addressDecode->street_address) ) {
+                        return $addressDecode->street_address;
+                    }
+
+                    if ( $row->personal_detail ) {
+                        $detailDecode = json_decode($row->personal_detail);
+
+                        if (isset($detailDecode->street_address) ) {
+                            return $detailDecode->street_address;
+                        }
+                    }
+
+                    return 'N/A';
+
+
+                })
                 ->addColumn('action', function ($row) {
                     $action ='';
                     return $action;
