@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Notices;
 use App\Models\ProgramBatch as ProgramBatch;
 use App\Models\ProgramHoliday;
@@ -10,6 +11,7 @@ use App\Models\WebsiteEvents;
 use App\Observers\Admin\Notice\NoticeObserver;
 use App\Observers\Admin\Program\ProgramBatchObserver;
 use App\Observers\Admin\Website\WebsiteEventObserver;
+use App\Observers\Dharmasala\DharmasalaBookingObserver;
 use App\Observers\Frontend\Program\ProgramHolidayObserver;
 use App\Observers\Frontend\Support\SupportEventObserver;
 use Illuminate\Auth\Events\Registered;
@@ -30,6 +32,11 @@ class EventServiceProvider extends ServiceProvider
         ],
     ];
 
+    protected $observers = [
+      DharmasalaBooking::class => [
+          DharmasalaBookingObserver::class
+      ]
+    ];
     /**
      * Register any events for your application.
      *
@@ -52,6 +59,6 @@ class EventServiceProvider extends ServiceProvider
      */
     public function shouldDiscoverEvents()
     {
-        return false;
+        return true;
     }
 }

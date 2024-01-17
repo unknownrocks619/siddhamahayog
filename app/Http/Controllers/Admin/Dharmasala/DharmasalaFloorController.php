@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBuilding;
 use App\Models\Dharmasala\DharmasalaBuildingFloor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DharmasalaFloorController extends Controller
 {
@@ -51,4 +52,15 @@ class DharmasalaFloorController extends Controller
         return $this->json(true,'Floor Created.','reload');
     }
 
+    public function delete(Request $request, DharmasalaBuildingFloor $floor){
+        try {
+            DB::transaction(function() use ($floor) {
+               $floor->rooms()->update(['floor_id' => null]);
+               $floor->delete();
+            });
+        } catch (\Error $error) {
+            return $this->json(false,'Unable to delete floor information.');
+        }
+        return $this->json(true,'Floor information updated.');
+    }
 }

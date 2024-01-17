@@ -12,28 +12,58 @@
     </div>
     <div class="card">
         <h5 class="card-header">Available Building</h5>
+
         <div class="card-datatable table-responsive">
             <div class="accordion" id="dharamasalaBuilding">
                 @foreach ($buildings as $building)
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="item_{{$building->getKey()}}">
-                            <button class="accordion-button" @if($building->building_color) style="background: {{$building->building_color}} !important;color:#fff" @endif type="button" data-bs-toggle="collapse" data-bs-target="#{{str($building->building_name)->slug('_')}}_{{$building->getKey()}}" aria-expanded="true" aria-controls="collapseOne">
+                            <button class="accordion-button d-inline" @if($building->building_color) style="background: {{$building->building_color}} !important;color:#fff" @endif type="button" data-bs-toggle="collapse" data-bs-target="#{{str($building->building_name)->slug('_')}}_{{$building->getKey()}}" aria-expanded="true" aria-controls="collapseOne">
                                 {{$building->building_name}}
                             </button>
+
                         </h2>
                     <div id="{{str($building->building_name)->slug('_')}}_{{$building->getKey()}}" class="accordion-collapse collapse" aria-labelledby="item_{{$building->getKey()}}" data-bs-parent="#dharamasalaBuilding">
                         <div class="accordion-body my-3">
-                            <button class="btn btn-primary ajax-modal" data-bs-target="#dharmasalaFloorForm" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'dharmasala.floors.create','building' => $building->getKey()])}}">
-                                <i class="fas fa-plus"></i> Add Floors
-                            </button>
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-default ajax-modal"
+                                        data-method="get"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        data-action="{{route('admin.modal.display',['building' => $building->getKey(),'view' => 'dharmasala.building.edit'])}}">
+                                    <i class="fas fa-pencil me-2"></i>
+                                    Edit Building Info
+                                </button>
+
+                                <button class="btn btn-primary ajax-modal mx-1" data-bs-target="#dharmasalaFloorForm" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'dharmasala.floors.create','building' => $building->getKey()])}}">
+                                    <i class="fas fa-plus me-1"></i> Add Floors
+                                </button>
+
+                                <button class="btn btn-danger ajax-modal" data-bs-target="#dharmasalaFloorForm" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'dharmasala.floors.create','building' => $building->getKey()])}}">
+                                    <i class="fas fa-trash me-1"></i> Delete Floor
+                                </button>
+
+                            </div>
+
 
                             @foreach ($building->floors as $floor)
                                 <div class="row my-3">
                                     <div class="col-md-12 bg-light">
                                         <div class="card-header d-flex justify-content-between">
                                             <h4>{{$floor->floor_name}}</h4>
-                                            <div>
-                                                <button class="btn btn-primary ajax-modal" data-bs-toggle="modal" data-bs-target="#roomForm" data-action="{{route('admin.modal.display',['view' => 'dharmasala.rooms.create','building' => $building->getKey(),'floor' => $floor->getKey()])}}"><i class="fas fa-plus"></i> Add Rooms</button>
+                                            <div class="d-flex">
+                                                <button class="btn btn-primary ajax-modal me-1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#roomForm"
+                                                        data-action="{{route('admin.modal.display',['view' => 'dharmasala.rooms.create','building' => $building->getKey(),'floor' => $floor->getKey()])}}">
+                                                    <i class="fas fa-plus"></i> Add Rooms</button>
+                                                <button class="btn btn-danger btn-icon data-confirm"
+                                                        type="button"
+                                                        data-confirm="Removing Floors will deattach rooms from the floors."
+                                                        data-action="{{route('admin.dharmasala.floor.delete',['floor' =>$floor])}}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -56,6 +86,23 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <div class="accordion-footer my-3">
+                            <div class="row">
+                                <div class="col-md-12 text-end">
+
+                                    <button class="btn btn-primary" data-action="{{route('admin.dharmasala.building.edit',['building' => $building])}}">
+                                        <i class="fas fa-pencil me-2"></i>
+                                        Edit Building Info
+                                    </button>
+
+                                    <button class="btn btn-danger data-confirm" data-confir="Delete Building and remove link with floors and rooms. Already booked will still have this information stored." data-action="{{route('admin.dharmasala.building.delete',['building' => $building])}}" data-method="post">
+                                        <i class="fas fa-trash me-2"></i>
+                                        Delete Building
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 @endforeach
@@ -66,6 +113,7 @@
     <x-modal modal="buildingModal">
         @include('admin.modal.dharmasala.building.create');
     </x-modal>
+    <x-modal modal="editModal"></x-modal>
     <x-modal modal="dharmasalaFloorForm"></x-modal>
     <x-modal modal="roomForm"></x-modal>
     <x-modal modal="assignUserToRoom"></x-modal>

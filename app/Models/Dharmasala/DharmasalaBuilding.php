@@ -33,4 +33,5 @@ class DharmasalaBuilding extends Model
     public function floors() {
         return $this->hasMany(DharmasalaBuildingFloor::class,'building_id');
     }
+
 }

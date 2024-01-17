@@ -39,5 +39,12 @@ Route::prefix('v1')
                         Route::get('/lession/{course}/{lessionID?}', 'lession');
                     });
             });
+        Route::middleware(['auth','admin'])
+                ->group(function() {
+                    Route::prefix('dharmasala')
+                            ->group(function() {
+                                Route::get('/building');
+                            });
+                });
 
     });

@@ -1,9 +1,15 @@
 @extends('layouts.admin.master')
 @push('page_title') All Members @endpush
 @section('main')
-    <h4 class="py-3 mb-4">
-        <span class="text-muted fw-light">Members/</span> All
-    </h4>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-between">
+            <h4 class="py-3 mb-4">
+                <span class="text-muted fw-light">Members/</span> All
+            </h4>
+
+            <a href="{{route('admin.members.create')}}" class="btn btn-primary btn-icon"><i class="fas fa-plus"></i></a>
+        </div>
+    </div>
     <!-- Responsive Datatable -->
     <div class="card">
         <h5 class="card-header">All Member List</h5>

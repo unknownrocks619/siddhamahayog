@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\City;
 use App\Models\Country;
+use App\Models\Dharmasala\DharmasalaBuilding;
+use App\Models\Dharmasala\DharmasalaBuildingFloor;
+use App\Models\Dharmasala\DharmasalaBuildingRoom;
 use App\Models\Program;
 use App\Models\ProgramSection;
 use Illuminate\Http\Request;
@@ -63,5 +66,33 @@ class Select2Controller extends Controller
 
         return $this->select2AjaxResponse($sections->get()->toArray());
 
+    }
+
+    public function buildings(Request $request) {
+        $searchTerm = null;
+        $buildingQuery = DharmasalaBuilding::select('id','building_name as text');
+        return $this->select2AjaxResponse($buildingQuery->get()->toArray());
+    }
+
+    public function floors(Request $request, DharmasalaBuilding $building) {
+        $searchTerm = null;
+        $floorQuery = DharmasalaBuildingFloor::select('id','floor_name as text')
+                                                ->where('building_id',$building->getKey());
+
+        return $this->select2AjaxResponse($floorQuery->get()->toArray());
+    }
+
+    public function rooms(Request $request, DharmasalaBuilding $building = null , DharmasalaBuildingFloor $floor = null) {
+
+        $roomQuery = DharmasalaBuildingRoom::select('id', 'room_number as text');
+
+        if ( $building ) {
+            $roomQuery->where('building_id', $building->getKey());
+        }
+        if ($floor ) {
+            $roomQuery->where('floor_id', $floor->getKey());
+        }
+
+        return $this->select2AjaxResponse($roomQuery->get()->toArray());
     }
 }

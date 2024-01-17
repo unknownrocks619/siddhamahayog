@@ -7,12 +7,186 @@ use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuilding;
 use App\Models\Dharmasala\DharmasalaBuildingFloor;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
+use App\Models\Donation;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use DataTables;
 
 class BookingController extends  Controller
 {
-    public function index() {
+    public function index(Request $request, $filter=0) {
+        $params = ['filter' => $filter,'sort' => []];
+
+        if ( $request->user ) {
+            $params['sort']['user'] =  $request->user;
+        }
+
+        if ( $request->check_in) {
+            $params['sort']['check_in'] = $request->check_in;
+        }
+
+        if ( $request->filter_room ) {
+            $params['sort']['filter_room'] = $request->filter_room;
+        }
+
+        if ( $request->check_out) {
+            $params['sort']['check_out'] = $request->check_out;
+        }
+
+        if ($request->ajax() && $request->wantsJson()) {
+
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+            $bookingsModel = DharmasalaBooking::select("*");
+
+            if ( $filter ) {
+                $bookingsModel->where('status',(int) $filter);
+            }
+
+            if ($searchTerm ) {
+                $bookingsModel->where(function($query) use ($searchTerm){
+
+                $query->where('full_name','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('floor_name','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('building_name','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('room_number','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('email','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('check_in','LIKE','%'.$searchTerm.'%')
+                                ->OrWhere('check_out','LIKE','%'.$searchTerm.'%');
+                });
+            }
+
+            if ( $request->user ) {
+                $bookingsModel->where('email',$request->user);
+                $params['sort']['user'] =  $request->user;
+            }
+
+            if ( $request->check_in) {
+                $bookingsModel->where('check_in',$request->check_in);
+                $params['sort']['check_in'] = $request->check_in;
+            }
+
+            if ( $request->filter_room) {
+                $bookingsModel->where('room_number',$request->filter_room);
+                $params['sort']['filter_room'] = $request->filter_room;
+            }
+
+            if ( $request->check_out) {
+                $bookingsModel->where('check_out',$request->check_out);
+                $params['sort']['check_out'] = $request->check_out;
+            }
+
+            $datatable = DataTables::of($bookingsModel->get())
+                ->addIndexColumn()
+                ->addColumn('full_name',function($row){
+                    $action = "<a href='".route('admin.dharmasala.booking.list',['user' => $row->email])."'>";
+                        $action .= $row->full_name;
+                    $action .= "</a>";
+                    return $action;
+                })
+                ->addColumn('floor_name', fn($row) => $row->floor_name)
+                ->addColumn('room_number', function($row){
+                    $action = "<a href='".route('admin.dharmasala.booking.list',['filter_room' => $row->room_number])."'>";
+                        $action .= $row->room_number;
+                    $action .= "</a>";
+                    return $action;
+                })
+                ->addColumn('email' , fn($row) => $row->email)
+                ->addColumn('check_in', function($row) use ($request) {
+                    $action = "<a href='".route('admin.dharmasala.booking.list',['check_in' => $row->check_in])."'>";
+                        $action .= $row->check_in;
+                    $action .= "</a>";
+                    return $action;
+                })
+                ->addColumn('check_out' ,function($row) {
+                    $action = "<a href='".route('admin.dharmasala.booking.list',['check_out' => $row->check_out])."'>";
+                        $action .= $row->check_out;
+                    $action .= "</a>";
+                    return $action;
+                })
+                ->addColumn('status', function($row) {
+                    return DharmasalaBooking::STATUS[$row->status];
+                })
+                ->addColumn('qr' , fn($row) => QrCode::generate($row->uuid))
+                ->addColumn('action', function ($row) {
+                    $action = [];
+
+                    $today = Carbon::today();
+                    $checkInDate = Carbon::createFromFormat('Y-m-d', $row->check_in);
+
+                    if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($row->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
+                        $action[] = [
+                            'route' => '',
+                            'label' => 'Check In',
+                            'class' => 'btn btn-primary data-confirm',
+                            'attribute' => [
+                                'data-confirm' => 'Confirm Check In User. ',
+                                'data-method'   => 'POST',
+                                'data-action'   => route('admin.dharmasala.booking-check-in-reservation',['booking' => $row->getKey()])
+                            ]
+                        ];
+
+                        $action[] = [
+                            'route'   => '',
+                            'label'   => 'Cancel ' . DharmasalaBooking::STATUS[$row->status],
+                            'class' => 'btn btn-danger data-confirm',
+                            'attribute' => [
+                                'data-confirm'  => 'You are about to cancel active booking.',
+                                'data-method'   => 'POST',
+                                'data-action'   => route('admin.dharmasala.booking-cancel-reservation',['booking' => $row->getKey()]),
+                            ]
+                        ];
+                    }
+
+                    if ($row->status == DharmasalaBooking::CHECKED_IN) {
+                        $action[] = [
+                            'route' => '',
+                            'label' => 'Check Out',
+                            'class' => 'btn btn-success ajax-modal' ,
+                            'attribute' => [
+                                'data-bs-target'    => '#checkOut',
+                                'data-bs-toggle'    => 'modal',
+                                'data-action'   => route('admin.modal.display',['view' => 'dharmasala.booking.check-out','booking' => $row->getKey()]),
+                                'data-method'   => 'get'
+                            ]
+                        ];
+                    }
+
+                    if ( ! $checkInDate->isToday() && $today->lessThan($checkInDate) &&  ! in_array( $row->status,[DharmasalaBooking::CANCELLED, DharmasalaBooking::CHECKED_IN, DharmasalaBooking::CHECKED_OUT]) ) {
+                        $action[] = [
+                                'route' => '',
+                                'class' => 'btn btn-danger data-confirm',
+                                'label' => 'Cancel '. DharmasalaBooking::STATUS[$row->status],
+                                'attribute' => [
+                                    'data-confirm' => 'You are about to cancel a expired booking. Proceed with your action ?',
+                                    'data-action'   => route('admin.dharmasala.booking-cancel-reservation',['booking' => $row->getKey()]),
+                                    'data-method'   => 'POST'
+                                ]
+                            ];
+                    }
+
+                    $actionButton = "";
+
+                    foreach ($action as $value) {
+                        $actionButton .= "<button class=' me-1 {$value['class']}'";
+
+                        foreach ($value['attribute'] as $attributeKey => $attributeValue) {
+                            $actionButton .= " " . $attributeKey .'="'.$attributeValue .'"';
+                        }
+
+                        $actionButton .= ">";
+                        $actionButton .= $value['label'];
+                        $actionButton .= "</butotn>";
+                    }
+                    return $actionButton;
+                })
+                ->rawColumns(["action",'status','qr','full_name','check_in','check_out','room_number'])
+                ->make(true);
+            return $datatable;
+        }
+        return view('admin.dharmasala.booking.list',$params);
     }
 
     public function create(Request $request, DharmasalaBuildingRoom $room = null, DharmasalaBuildingFloor $floor=null, DharmasalaBuilding $building=null) {
@@ -23,9 +197,9 @@ class BookingController extends  Controller
         if ( ! $room ) {
 
             $request->validate([
-               'room'   => 'required'
+               'room_number'   => 'required'
             ]);
-            $room = DharmasalaBuildingRoom::where('id', $request->post('room'))->first();
+            $room = DharmasalaBuildingRoom::where('id', $request->post('room_number'))->first();
         }
 
         if ( ! $floor ) {
@@ -40,7 +214,7 @@ class BookingController extends  Controller
                                 ->with('profileImage','memberIDMedia')
                                 ->get();
 
-        $insertArray = [];
+        $error = [];
         foreach ($request->post('members') as $key => $value) {
             $member = $memberRecord->where('id',$value)->first();
 
@@ -48,14 +222,14 @@ class BookingController extends  Controller
                 continue;
             }
 
-            $innerArray[] = [
+
+            $innerArray = [
                 'room_number'   => $room->room_number,
-                'building_id'   => $building->getKey(),
-                'floor_id'      => $floor->getKey(),
+                'building_id'   => $building?->getKey(),
+                'floor_id'      => $floor?->getKey(),
                 'room_id'       => $room->getKey(),
-                'room_capacity' => $room->room_capacity,
-                'building_name' => $building->building_name,
-                'floor_name'    => $floor->floor_name,
+                'building_name' => $building?->building_name,
+                'floor_name'    => $floor?->floor_name,
                 'member_id'     => $member->getKey(),
                 'full_name'     => $member->full_name,
                 'email'         => $member->email,
@@ -64,17 +238,25 @@ class BookingController extends  Controller
                 'check_out'     => isset($request->post('check_out')[$key]) ? $request->post('check_in')[$key]  : null,
                 'profile'       => $member->profileImage?->filepath ? Image::getImageAsSize($member->profileImage?->filepath) :  null,
                 'id_card'       => $member->memberIDMedia?->filepath ? Image::getImageAsSize($member->memberIDMedia?->filepath) :  null,
-                'status'         => 'reserved'
+                'status'         => 1,
+                'uuid'          => Str::uuid()
             ];
+
+            $dharmasalaBooking = new DharmasalaBooking();
+            try {
+                $dharmasalaBooking->fill($innerArray)->save();
+            } catch (\Error $error) {
+                $error[] = [$error->getMessage()];
+                continue;
+            }
+
         }
 
-        try {
-            DharmasalaBooking::insert($insertArray);
-        } catch (\Error $error) {
-            return $this->json(false,'Unable to create new record.');
+        if ( count($error ) ) {
+            return $this->json(false,'Some information contains error. Re-check your booking table for missing info.');
         }
 
-        return $this->json(true,' New booking confirmed.');
+        return $this->json(true,' New booking confirmed.','reload');
 
     }
     public function selectUsers(Request $request) {
@@ -88,5 +270,75 @@ class BookingController extends  Controller
                             ->get();
 
         return view('admin.dharmasala.booking.partials.search-result', compact('members'));
+    }
+
+    public function cancelReservation(DharmasalaBooking $booking) {
+
+        $booking->status = DharmasalaBooking::CANCELLED;
+
+        if ( ! $booking->save() ){
+            return $this->json(false,'Unable to can booking. Please try again.');
+        }
+
+        // track booking information.
+        return $this->json(true,'Booking Cancelled.','reload');
+    }
+
+    public function checkIn(DharmasalaBooking $booking) {
+        $booking->status = DharmasalaBooking::CHECKED_IN;
+        $today = Carbon::today();
+        $booking->check_in_time = $today->format('H:i A');
+
+        $checkInCarbon = Carbon::createFromFormat('Y-m-d',$booking->check_in);
+
+        if ( ! $checkInCarbon->isToday() ) {
+            $booking->check_in = $today->format('Y-m-d');
+        }
+
+        if (! $booking->save() ) {
+            return $this->json(false,'Unable to check in user.');
+        }
+
+        return $this->json(true,'Check In success.','reload');
+    }
+
+    public function checkOut(Request $request,DharmasalaBooking $booking) {
+        $booking->status = DharmasalaBooking::CHECKED_OUT;
+        $today = Carbon::today();
+        $booking->check_out_time = $today->format('H:i A');
+
+        if ( ! $booking->save() ) {
+            return $this->json(false,'Unable to Check out user.');
+        }
+
+        // check if donation is provided.
+        if ($request->post('donation') && $request->post('donation') > 0 ) {
+            $type = 'Dharmasala - Cash';
+            if ($request->post('esewa') ) {
+                    $type = "Dharmasala - Esewa";
+            }
+
+            if ( $request->post('fonepay') ) {
+                $type = "Dharmasala - FonePay";
+            }
+
+            if ( $request->post('bank_transfer') ) {
+                $type = 'Dharmasala - Bank Transfer';
+            }
+
+            $donation = new Donation();
+
+            $donation->fill([
+                'member_id' => $booking->member_id,
+                'amount'    => $request->post('donation'),
+                'type'  => $type,
+                'verified'  => true,
+                'remarks'   => ['remarks' => $request->post('remark'),'refId' => $request->post('refId'),'amt' => $request->post('donation')]
+            ]);
+
+            $donation->save();
+        }
+
+        return $this->json(true,'Check Out Success','reload');
     }
 }

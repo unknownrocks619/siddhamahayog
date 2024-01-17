@@ -103,7 +103,6 @@
 <!-- Main JS -->
 <script src="{{ asset ('themes/admin/assets/js/main.js')}}"></script>
 <script src="{{mix('js/app.js')}}"></script>
-
 @stack('page_script')
 </body>
 </html>

@@ -9,6 +9,7 @@ Route::prefix("members")
     ->group(function () {
 
         Route::get("/all", "index")->name('all');
+        Route::match(['get','post'],'create','create')->name('create');
         Route::get('/member/detail/{member}/{tab?}', "show")->name("show");
         Route::get("/add/{program?}", "add_member_to_program")->name('admin_add_member_to_program');
         Route::get("/assign/{program}", "assign_member_to_program")->name('admin_add_assign_member_to_program');

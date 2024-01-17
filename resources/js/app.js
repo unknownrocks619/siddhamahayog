@@ -1,5 +1,4 @@
 import './bootstrap.js';
-console.log('from app. js');
 //================== partials ======================//
 import './partials/ajax-form.js'
 import './partials/ajax-modal';
@@ -8,7 +7,7 @@ import './partials/voucher-modal';
 import './partials/tinymce';
 import './partials/programs';
 import './partials/room.js';
-
+import './partials/member';
 $(function () {
     "use strict";
 
@@ -31,7 +30,6 @@ $(function () {
     $('#avatarDropDown').click(function(event) {
         // target dropdown togger.
         let _eventElm = $(this).parent().find('ul.dropdown-menu');
-        console.log('targeted element`; ', _eventElm);
         if ($(_eventElm).hasClass('show') ) {
             $(_eventElm).removeClass('show');
         } else {
@@ -123,7 +121,6 @@ $(function () {
 
     window.redirectTab = function (param) {
         if (typeof param.location !== 'undefined' || param.location !== null) {
-            console.log('aparam');
             window.open(param.location,'_blank');
         }
 

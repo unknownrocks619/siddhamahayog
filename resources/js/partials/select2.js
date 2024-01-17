@@ -21,14 +21,11 @@ window.ajaxReinitalize = function (element, options = {}) {
                     return query;
                 },
                 results: function (data) {
-                    console.log('data: ', data);
                     return { results: data };
                 }
             }
-            console.log('select2',$(element).closest('[data-dropdown]'))
             if ($(element).closest('[data-dropdown]').length) {
 
-                console.log('#'+$(element).closest('[data-dropdown]').attr('data-dropdown'));
                 options.dropdownParent = '#'+$(element).closest('[data-dropdown]').attr('data-dropdown')
             }
             $(element).select2(options)
@@ -40,7 +37,6 @@ window.ajaxReinitalize = function (element, options = {}) {
 
 window.select2Options = function(){
     if ($('select').length) {
-        console.log('hello');
         $.each($('select'), function (index, element) {
             if (!$(element).hasClass('no-select-2')) {
                 window.ajaxReinitalize(element);
@@ -80,4 +76,30 @@ $(document).on('change', 'select[name="slider_layout"]', function (event) {
     if ($('.' + _sliderValue).length) {
         $('.' + _sliderValue).removeClass('d-none');
     }
+})
+
+$(document).on('change','#building_selection_to_room', function() {
+
+    let _floorElement = $('#floor_selection_to_room');
+    if (! _floorElement.length ) {
+        return true;
+    }
+
+    // otherwise change the list option according to building options.
+    _floorElement.empty();
+    let _buildingID = $(this).find(':selected').val();
+    let _buildingName = $(this).find(':selected').text();
+
+    _floorElement.removeAttr('data-action');
+
+    _floorElement.attr('data-action','/admin/select2/select2/list/floor/'+_buildingID)
+
+    _floorElement.select2({
+        placeholder : 'Select Floor for ' + _buildingName,
+        ajax: {
+            url : _floorElement.attr('data-action'),
+            dataType: 'json'
+        }
+    });
+
 })

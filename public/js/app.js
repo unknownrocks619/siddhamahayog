@@ -5375,8 +5375,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _partials_room_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./partials/room.js */ "./resources/js/partials/room.js");
+/* harmony import */ var _partials_member__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./partials/member */ "./resources/js/partials/member.js");
+ //================== partials ======================//
 
-console.log('from app. js'); //================== partials ======================//
 
 
 
@@ -5406,8 +5407,6 @@ $(function () {
   $('#avatarDropDown').click(function (event) {
     // target dropdown togger.
     var _eventElm = $(this).parent().find('ul.dropdown-menu');
-
-    console.log('targeted element`; ', _eventElm);
 
     if ($(_eventElm).hasClass('show')) {
       $(_eventElm).removeClass('show');
@@ -5500,7 +5499,6 @@ $(function () {
 
   window.redirectTab = function (param) {
     if (typeof param.location !== 'undefined' || param.location !== null) {
-      console.log('aparam');
       window.open(param.location, '_blank');
     }
 
@@ -5751,6 +5749,64 @@ $(document).on('click', '.ajax-modal', function (event) {
 
 /***/ }),
 
+/***/ "./resources/js/partials/member.js":
+/*!*****************************************!*\
+  !*** ./resources/js/partials/member.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MemberRegistration": () => (/* binding */ MemberRegistration)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var MemberRegistration = /*#__PURE__*/function () {
+  function MemberRegistration() {
+    _classCallCheck(this, MemberRegistration);
+
+    _defineProperty(this, "additionalMembers", []);
+  }
+
+  _createClass(MemberRegistration, [{
+    key: "enableOnlineLogin",
+    value: function enableOnlineLogin(elm) {
+      console.log('hello world');
+
+      var _passwordField = $('#passwordFields');
+
+      if ($(elm).val() == 1) {
+        _passwordField.removeClass('d-none');
+
+        _passwordField.find('input[type="password"]').attr('required', 'required');
+      } else {
+        _passwordField.addClass('d-none');
+
+        _passwordField.find('input[type="password"]').removeAttr('required');
+      }
+    }
+  }, {
+    key: "addMoreMembers",
+    value: function addMoreMembers() {
+      var _memberRow = "<div class=\"row border-bottom\">\n                                    <div class=\"col-md-3\">\n                                        <div class=\"form-group\">\n                                            <label for=\"full_name\">Full Name <sup class=\"text-danger\">*</sup></label>\n                                            <input type=\"text\" name=\"connectorFullName[]\" class=\"form-control\">\n                                        </div>\n                                    </div>\n                                    <div class=\"col-md-3\">\n                                        <div class=\"form-group\">\n                                            <label for=\"relation\">Relation <sup class=\"text-danger\">*</sup></label>\n                                            <input type=\"text\" name=\"relation[]\" class=\"form-control\">\n                                        </div>\n                                    </div>\n                                    <div class=\"col-md-3\">\n                                        <div class=\"form-group\">\n                                            <label for=\"phone_number\">Phone Number</label>\n                                            <input type=\"text\" name=\"relationPhoneNumber[]\"\n                                                   class=\"form-control\" />\n                                        </div>\n                                    </div>\n                                    <div class=\"col-md-3\">\n                                        <div class=\"form-group\">\n                                            <div class=\"border\">\n                                                <video width=\"640\" height=\"480\" autoplay playsinline></video>\n                                            </div>\n                                            <div class=\"d-flex justify-content-end\">\n                                                <button class=\"text-end camera-action-button record btn btn-primary btn-icon\">\n                                                    <i class=\"fas fa-camera\"></i>\n                                                </button>\n                                                <button class=\"text-end d-none camera-action-button stop btn btn-danger btn-icon\">\n                                                    <i class=\"fas fa-stop\"></i>\n                                                </button>\n                                                <button class=\"d-none camera-action-button camera-action-button image btn btn-primary btn-icon\">\n                                                    <i class=\"fas fa-image\"></i>\n                                                </button>\n\n                                            </div>\n                                        </div>\n                                    </div>\n                                </div>";
+      $("#familyMembers").append(_memberRow);
+    }
+  }]);
+
+  return MemberRegistration;
+}();
+console.log('hello form member page.');
+window.memberRegistration = new MemberRegistration();
+
+/***/ }),
+
 /***/ "./resources/js/partials/programs.js":
 /*!*******************************************!*\
   !*** ./resources/js/partials/programs.js ***!
@@ -5853,16 +5909,13 @@ window.ajaxReinitalize = function (element) {
           return query;
         },
         results: function results(data) {
-          console.log('data: ', data);
           return {
             results: data
           };
         }
       };
-      console.log('select2', $(element).closest('[data-dropdown]'));
 
       if ($(element).closest('[data-dropdown]').length) {
-        console.log('#' + $(element).closest('[data-dropdown]').attr('data-dropdown'));
         options.dropdownParent = '#' + $(element).closest('[data-dropdown]').attr('data-dropdown');
       }
 
@@ -5873,7 +5926,6 @@ window.ajaxReinitalize = function (element) {
 
 window.select2Options = function () {
   if ($('select').length) {
-    console.log('hello');
     $.each($('select'), function (index, element) {
       if (!$(element).hasClass('no-select-2')) {
         window.ajaxReinitalize(element);
@@ -5914,6 +5966,32 @@ $(document).on('change', 'select[name="slider_layout"]', function (event) {
   if ($('.' + _sliderValue).length) {
     $('.' + _sliderValue).removeClass('d-none');
   }
+});
+$(document).on('change', '#building_selection_to_room', function () {
+  var _floorElement = $('#floor_selection_to_room');
+
+  if (!_floorElement.length) {
+    return true;
+  } // otherwise change the list option according to building options.
+
+
+  _floorElement.empty();
+
+  var _buildingID = $(this).find(':selected').val();
+
+  var _buildingName = $(this).find(':selected').text();
+
+  _floorElement.removeAttr('data-action');
+
+  _floorElement.attr('data-action', '/admin/select2/select2/list/floor/' + _buildingID);
+
+  _floorElement.select2({
+    placeholder: 'Select Floor for ' + _buildingName,
+    ajax: {
+      url: _floorElement.attr('data-action'),
+      dataType: 'json'
+    }
+  });
 });
 
 /***/ }),

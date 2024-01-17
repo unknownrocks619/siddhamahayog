@@ -5,9 +5,12 @@
         $room  = \App\Models\Dharmasala\DharmasalaBuildingRoom::where('id',request()->room)->first();
         $routeParams = [
                         'room' => $room->getKey(),
-                        'building'  => $room->building_id,
-                        'floor'  => $room->floor_id
                     ];
+        if ( $room->floor_id && $room->booking_id) {
+            $routeParams['booking'] = $room->booking_id;
+            $routeParams['floor'] = $room->floor_id;
+        }
+
     }
 @endphp
 
@@ -23,7 +26,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="room_number">Select Room<sup class="text-danger">*</sup></label>
-                    <select name="room_number" id="room_number" class="form-control"></select>
+                    <select name="room_number" id="room_number" data-method="get" data-action="{{route('admin.select2.dharmasala.room.list')}}" class="ajax-select-2 form-control"></select>
                 </div>
             </div>
             @else
@@ -64,13 +67,15 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+        @if(request()->ajax())
+            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+        @endif
         <button type="submit" class="btn btn-primary">Confirm Booking</button>
     </div>
 </form>
+@if( request()->ajax() )
 <script>
     window.memberSearchFunction();
-
     $(document).on('click','.btn-remove-user', function (event) {
         event.preventDefault();
         let _getMemberID = $(this).attr('data-member');
@@ -81,3 +86,4 @@
     });
 
 </script>
+@endif

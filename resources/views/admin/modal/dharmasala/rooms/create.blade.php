@@ -39,8 +39,13 @@
                 @if( ! $building )
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="building">Building</label>
-                            <select name="building" id="building" class="form-control">
+                            <label for="building_selection_to_room">Building</label>
+                            <select
+                                    data-action="{{route('admin.select2.dharmasala.building.list')}}"
+                                    name="building"
+                                    id="building_selection_to_room"
+                                    class="form-control ajax-select-2">
+                                <option value="">Please Select Building</option>
                                 @foreach(\App\Models\Dharmasala\DharmasalaBuilding::get() as $dharmashalaBuilding)
                                     <option value="{{$dharmashalaBuilding->getKey()}}">{{$dharmashalaBuilding->building_name}}</option>
                                 @endforeach
@@ -51,9 +56,9 @@
                 @if ( ! $floor )
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="floor">Floor</label>
-                            <select name="floor" id="floor" class="form-control">
-                                <option value="">Please Select Floor</option>
+                            <label for="floor_selection_to_room">Floor</label>
+                            <select name="floor" id="floor_selection_to_room" class="form-control no-select-2">
+                                <option value="">Please Select Building First</option>
                             </select>
                         </div>
                     </div>

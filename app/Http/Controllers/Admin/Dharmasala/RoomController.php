@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 
 class RoomController extends  Controller
 {
+    public function index() {
+        $rooms = DharmasalaBuildingRoom::with(['building','floor'])->withCount(['totalActiveReserved'])->get();
+        return view('admin.dharmasala.rooms.list',['rooms' => $rooms]);
+    }
     public function create(Request $request,DharmasalaBuilding $building=null,DharmasalaBuildingFloor $floor=null) {
         $request->validate([
             'room_number' => 'required'
@@ -57,5 +61,12 @@ class RoomController extends  Controller
         }
 
         return $this->json(true,'New Room Added.','reload');
+    }
+
+    public function delete(DharmasalaBuildingRoom $room) {
+        if ( ! $room->delete() ) {
+            return $this->json(false,'Unable to delete room. Please try again.');
+        }
+        return $this->json(true,'Room Information deleted.','reload');
     }
 }

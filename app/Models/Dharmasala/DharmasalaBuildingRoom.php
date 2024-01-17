@@ -46,4 +46,18 @@ class DharmasalaBuildingRoom extends Model
         'guest'     => 'Guest',
         'paid'      => 'Paid'
     ];
+
+    public function building() {
+        return $this->belongsTo(DharmasalaBuilding::class,'building_id');
+    }
+
+    public function floor() {
+        return $this->belongsTo(DharmasalaBuildingFloor::class,'floor_id');
+    }
+
+    public function totalActiveReserved() {
+        return $this->hasMany(DharmasalaBooking::class,'room_id')
+                    ->whereIn('status',[DharmasalaBooking::BOOKING,DharmasalaBooking::RESERVED,DharmasalaBooking::CHECKED_IN]);
+    }
+
 }

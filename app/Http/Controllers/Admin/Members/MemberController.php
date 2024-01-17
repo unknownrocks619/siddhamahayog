@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Members;
 
 use App\Console\Commands\ImageToTable;
 use App\Http\Controllers\Controller;
+use App\Models\Dharmasala\DharmasalaBooking;
+use App\Models\Dharmasala\DharmasalaBuildingRoom;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
@@ -23,6 +25,7 @@ use App\Models\Scholarship;
 use App\Models\SupportTicket;
 use App\Models\UnpaidAccess;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use DataTables;
@@ -95,9 +98,111 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request, $source = null)
     {
-        //
+        if ( $request->post() )  {
+            // first create member
+            $request->validate([
+                'first_name'    => 'required',
+                'last_name'     => 'required',
+                'date_of_birth' => 'required',
+                'gender'        => 'required',
+                'phone_number'  => 'required',
+                'city'         => 'required',
+                'street_address'    => 'required',
+                'country'       => 'required',
+            ]);
+
+            if ( $source && $source == 'dharmasala') {
+                $request->validate([
+                    'check_in' => 'required',
+                    'id_card'   => 'required',
+                    'media' => 'required',
+                    'room_number'   => 'required',
+                ]);
+            }
+
+
+            $fill = [
+                'first_name'    => $request->post('first_name'),
+                'middle_name'   => $request->post('middle_name'),
+                'last_name'     => $request->post('last_name'),
+                'phone_number'  =>  $request->post('phone_number'),
+                'country'       => $request->post('country'),
+                'city'          => $request->post('city'),
+                'street_address'    => $request->post('street_address'),
+                'date_of_birth' => $request->post('date_of_birth'),
+                'gender'        => $request->post('gender')
+            ];
+
+
+            $full_name = $fill['first_name'];
+
+            if ( $fill['middle_name'] ) {
+                $full_name .= " " . $fill['middle_name'];
+            }
+            $full_name .= " " . $fill['last_name'];
+
+            $fill['full_name']  = $full_name;
+
+            // if email exists and is not empty;
+            if ( $request->post('email') ) {
+                $memberExists = Member::where('email',$request->post('email'))->exists();
+
+                if ( $memberExists ) {
+                    return $this->json(false, 'Email already exists.');
+                }
+
+                $fill['email'] = $request->post('email');
+            }
+
+            $member = null;
+
+            if ($source && $source == 'darmasala') {
+
+                // setup only booking info.
+                $member = new Member();
+                $member->fill($fill);
+                if ( $request->post('online_registration') ) {
+
+                    if ( ! $member->save() ) {
+                        return $this->json(false,'Unable to save user info.');
+                    }
+
+                }
+
+                $carbonCheckIn = Carbon::createFromFormat('Y-m-d\TH:i', $request->post('check_in'));
+
+                $room = DharmasalaBuildingRoom::where('id',$request->post('room_number'))->first();
+
+                $dharmasala = new DharmasalaBooking();
+                $dharmasala->fill([
+                    'building_id'   => $room->building_id,
+                    'room_id'       => $room->room_id,
+                    'floor_id'      => $room->floor_id,
+                    'member_id'     => $member?->getKey(),
+                    'room_number'   => $room->room_number,
+                    'building_name' => $room->building?->building_name,
+                    'floor_name'    => $room->floor?->floor_name,
+                    'full_name'     => $member->full_name,
+                    'email'         => $member->email,
+                    'phone_number'  => $member->phone_number,
+                    'check_in'      => $carbonCheckIn->format('Y-m-d'),
+                    'check_in_time' => $carbonCheckIn->format('H:i A'),
+                    'check_out'     => null,
+                    'profile'       => null,
+                    'status'        => DharmasalaBooking::CHECKED_IN
+                ]);
+
+                $dharmasala->save();
+
+                return $this->json(true,'Member Registration & Booking Complete.','redirect',['location' => route('admin.dharmasala.building.list')]);
+
+            }
+
+            return $this->json(true,'New Member Registration created.','reload');
+        }
+        return view("admin.members.create");
     }
 
     /**

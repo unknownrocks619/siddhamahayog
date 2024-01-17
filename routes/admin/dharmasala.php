@@ -16,8 +16,8 @@ Route::prefix('admin/dharmasala')
                     ->group(function() {
                         Route::get('list',[BuildingController::class,'index'])->name('admin.dharmasala.building.list');
                         Route::match(['get','post'],'create',[BuildingController::class,'create'])->name('admin.dharmasala.building.create');
-                        Route::match(['get','post'],'edit',[BuildingController::class,'edit'])->name('admin.dharmasala.building.edit');
-                        Route::match(['delete','get','post'],'delete',[BuildingController::class,'delete'])->name('admin.dharmasala.building.delete');
+                        Route::match(['get','post'],'edit/{building}',[BuildingController::class,'edit'])->name('admin.dharmasala.building.edit');
+                        Route::match(['delete','get','post'],'delete/{building}',[BuildingController::class,'delete'])->name('admin.dharmasala.building.delete');
                     });
 
             /**
@@ -26,20 +26,36 @@ Route::prefix('admin/dharmasala')
             Route::prefix('floors')
                     ->group(function() {
                         Route::match(['get','post'],'create/{building?}',[DharmasalaFloorController::class,'create'])->name('admin.dharmasala.floor.create');
+                        Route::match(['delete','get','post'],'delete/{floor}',[DharmasalaFloorController::class,'delete'])->name('admin.dharmasala.floor.delete');
                     });
             /** Rooms */
             Route::prefix('rooms')
                     ->group( function() {
                         Route::get('list',[RoomController::class,'index'])->name('admin.dharmasala.rooms.list');
                         Route::match(['get','post'],'create/{building?}/{floor?}',[RoomController::class,'create'])->name('admin.dharmasala.rooms.create');
+                        Route::match(['get','post','delete'],'delete/{room}',[RoomController::class,'delete'])->name('admin.dharmasala.rooms.delete');
                     });
 
             /** Bookings */
             Route::prefix('bookings')
                     ->group(function () {
-                        Route::get('list',[BookingController::class,'index'])->name('admin.dharmasala.booking.list');
-                        Route::match(['get','post'],'create/{room?}/{floor?}/{building?}',[BookingController::class,'create'])->name('admin.dharmasala.booking.create');
-                        Route::get('user-search',[BookingController::class,'selectUsers'])->name('admin.dharmasala.booking-user-list');
+                        Route::get('list/{filter?}',[BookingController::class,'index'])
+                                ->name('admin.dharmasala.booking.list');
+
+                        Route::match(['get','post'],'create/{room?}/{floor?}/{building?}',[BookingController::class,'create'])
+                                ->name('admin.dharmasala.booking.create');
+
+                        Route::get('user-search',[BookingController::class,'selectUsers'])
+                                ->name('admin.dharmasala.booking-user-list');
+
+                        Route::match(['post','put'],'check-in-reservation/{booking}',[BookingController::class,'checkIn'])
+                                ->name('admin.dharmasala.booking-check-in-reservation');
+
+                        Route::match(['post','put'],'check-out-reservation/{booking}',[BookingController::class,'checkOut'])
+                            ->name('admin.dharmasala.booking-check-out-reservation');
+
+                        Route::match(['post','put'],'cancel-reservation/{booking}',[BookingController::class,'cancelReservation'])
+                                ->name('admin.dharmasala.booking-cancel-reservation');
                     });
 
             /** Amenities */
