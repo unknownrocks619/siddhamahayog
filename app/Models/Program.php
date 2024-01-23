@@ -61,6 +61,53 @@ class Program extends Model
         'inactive'  => 'Inactive'
     ];
 
+    public const GO_LIVE_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const EDIT_PROGRAM_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const STUDENT_COUNT_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const QUICK_NAVIGATION_ACCESS = [
+        'syllabus_and_resources'    => [
+            'label' => 'Syllabus / Resources',
+            'access'    => [Role::SUPER_ADMIN,Role::ACTING_ADMIN,Role::ADMIN]
+        ],
+        'program_daily_attendance'  => [
+            'label' => 'Program Daily Attendance',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'account_and_management' => [
+            'label' => 'Account Management',
+            'access'    => [Role::SUPER_ADMIN]
+        ],
+
+        'assign_member_to_program'  => [
+            'label' => 'Assign Member to Program',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'register_new_member_to_program'    => [
+            'label' => 'Register Member',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'scholarship_and_special_permission' => [
+            'label' => 'Scholarship & Special Permission',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'vip_and_guest_list'    => [
+            'label' => 'VIP / Guest Access List',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ]
+    ];
+
     public function students()
     {
         return $this->hasMany(ProgramStudent::class, $this->foreignKey);

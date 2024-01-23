@@ -9,14 +9,15 @@
             <div class="col-md-3 col-sm-12 mb-3">
                 <a class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_list')}}"><i class="fas fa-arrow-left"></i></a>
             </div>
-            <div class="col-md-9 col-sm-12 mb-3">
-                <div class="row">
-                    <div class="col-md-12 text-end">
-                        @include('admin.datatable-view.programs.live',['row' => $program])
+            @if(in_array(auth()->user()->role_id, \App\Models\Program::GO_LIVE_ACCESS))
+                <div class="col-md-9 col-sm-12 mb-3">
+                    <div class="row">
+                        <div class="col-md-12 text-end">
+                            @include('admin.datatable-view.programs.live',['row' => $program])
+                        </div>
                     </div>
                 </div>
-
-            </div>
+            @endif
         </div>
         @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
             <div class="row">
@@ -59,6 +60,11 @@
                             </thead>
 
                             <tbody>
+                                @if(!in_array(auth()->user()->role_id,\App\Models\Program::STUDENT_COUNT_ACCESS) )
+                                    <tr>
+                                        <th class="text-center" colspan="8">You do not have permission to see this section.</th>
+                                    </tr>
+                                @endif
                             </tbody>
 
                             <tfoot>
@@ -95,69 +101,70 @@
     </div>
     <x-modal modal="assignStudentToProgram"></x-modal>
 @endsection
+@if(in_array(auth()->user()->role_id,\App\Models\Program::STUDENT_COUNT_ACCESS))
+    @push('page_script')
+        <script src="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.js')}}"></script>
 
-@push('page_script')
-    <script src="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.js')}}"></script>
+        <script>
+            $('#program-table').DataTable({
+                processing: true,
+                serverSide: true,
+                fixedHeader: true,
+                orderCellsTop: true,
+                aaSorting: [],
+                ajax: '{{url()->full()}}',
+                columns: [
+                    {
+                        data: 'roll_number',
+                        name: 'roll_number'
+                    },
+                    {
+                        data: "full_name",
+                        name: "full_name"
+                    },
+                    {
+                        data: "phone_number",
+                        name: "phone_number"
+                    },
+                    {
+                        data: "email",
+                        name: "email"
+                    },
+                    {
+                        data : "country",
+                        name : 'country'
+                    },
+                    {
+                        data : 'full_address',
+                        name : 'full_address'
+                    },
+                    // {
+                    //     data : "total_payment",
+                    //     name: "total_payment"
+                    // },
+                    // {
+                    //     data: "batch",
+                    //     name: "batch"
+                    // },
+                    // {
+                    //     data : 'section',
+                    //     name: 'section'
+                    // },
+                    {
+                        data : 'enrolled_date',
+                        name: 'enrolled_date'
+                    },
+                    {
+                        data: "action",
+                        name: "action"
+                    }
+                ]
+            });
 
-    <script>
-        $('#program-table').DataTable({
-            processing: true,
-            serverSide: true,
-            fixedHeader: true,
-            orderCellsTop: true,
-            aaSorting: [],
-            ajax: '{{url()->full()}}',
-            columns: [
-                {
-                    data: 'roll_number',
-                    name: 'roll_number'
-                },
-                {
-                    data: "full_name",
-                    name: "full_name"
-                },
-                {
-                    data: "phone_number",
-                    name: "phone_number"
-                },
-                {
-                    data: "email",
-                    name: "email"
-                },
-                {
-                    data : "country",
-                    name : 'country'
-                },
-                {
-                    data : 'full_address',
-                    name : 'full_address'
-                },
-                // {
-                //     data : "total_payment",
-                //     name: "total_payment"
-                // },
-                // {
-                //     data: "batch",
-                //     name: "batch"
-                // },
-                // {
-                //     data : 'section',
-                //     name: 'section'
-                // },
-                {
-                    data : 'enrolled_date',
-                    name: 'enrolled_date'
-                },
-                {
-                    data: "action",
-                    name: "action"
-                }
-            ]
-        });
-
-        $(function(){
-            var e=document.getElementById("quickUserView")
-            e.addEventListener("show.bs.modal",function(e){var t=document.querySelector("#wizard-create-app");if(null!==t){var n=[].slice.call(t.querySelectorAll(".btn-next")),c=[].slice.call(t.querySelectorAll(".btn-prev")),r=t.querySelector(".btn-submit");const a=new Stepper(t,{linear:!1});n&&n.forEach(e=>{e.addEventListener("click",e=>{a.next(),l()})}),c&&c.forEach(e=>{e.addEventListener("click",e=>{a.previous(),l()})}),r&&r.addEventListener("click",e=>{alert("Submitted..!!")})}})
-        })
-    </script>
-@endpush
+            $(function(){
+                var e=document.getElementById("quickUserView")
+                e.addEventListener("show.bs.modal",function(e){var t=document.querySelector("#wizard-create-app");if(null!==t){var n=[].slice.call(t.querySelectorAll(".btn-next")),c=[].slice.call(t.querySelectorAll(".btn-prev")),r=t.querySelector(".btn-submit");const a=new Stepper(t,{linear:!1});n&&n.forEach(e=>{e.addEventListener("click",e=>{a.next(),l()})}),c&&c.forEach(e=>{e.addEventListener("click",e=>{a.previous(),l()})}),r&&r.addEventListener("click",e=>{alert("Submitted..!!")})}})
+            })
+        </script>
+    @endpush
+@endif
