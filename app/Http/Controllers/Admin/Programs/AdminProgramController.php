@@ -306,7 +306,7 @@ class AdminProgramController extends Controller
                     return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
 
                 })
-                ->addColumn('full_name', function ($row) {
+                ->addColumn('$rawColumns', function ($row) {
                     return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".$row->full_name."</a>";
                 })
                 ->addColumn('phone_number', function ($row) {

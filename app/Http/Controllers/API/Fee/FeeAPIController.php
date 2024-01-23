@@ -67,8 +67,12 @@ class FeeAPIController extends Controller
             $notification->seen = false;
             $notification->save();
         }
-
-        return $this->returnResponse(true,'Fee Information updated.','reload');
+        $callback = 'reload';
+        $params = [];
+        if ($request->get('source') == 'datatable' && $request->get('refresh')) {
+            $callback = 'ajaxDataTableReload';
+        }
+        return $this->returnResponse(true,'Fee Information updated.',$callback,$params);
 
     }
 

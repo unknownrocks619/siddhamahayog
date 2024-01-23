@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Programs;
 
+use App\Http\Controllers\Admin\Datatables\ProgramDataTablesController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminProgramSectionRequest;
 use App\Models\Member;
@@ -16,17 +17,20 @@ use Illuminate\Support\Facades\DB;
 class AdminProgramSectionController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Program $program
+     * @return \Illuminate\Contracts\Foundation\Application|
+     *          \Illuminate\Contracts\View\Factory|
+ *              \Illuminate\Contracts\View\View
      */
-    public function index(Request $request, Program $program)
+    public function index(Request $request, Program $program, $current_tab=null)
     {
         //
-        $all_sections = ProgramSection::where('program_id', $program->id)
+        $all_sections = ProgramSection::where('program_id', $program->getKey())
             ->with(['programStudents'])
             ->latest()->get();
-        return view('admin.programs.section.index', compact("all_sections", "program"));
+
+        return view('admin.programs.section.index', compact("all_sections", "program","current_tab"));
     }
 
     public function student_list_per_section(Program $program, $section = null)
@@ -188,7 +192,16 @@ class AdminProgramSectionController extends Controller
 
     public function sectionStudent(Request $request, Program $program, ProgramSection $section)
     {
+        if ($request->ajax()  ) {
 
+            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
+
+            return (new ProgramDataTablesController($searchTerm))
+                ->setSearchTerm($searchTerm)
+                ->setRawColumns(['roll_number',"full_name"])
+                ->getSectionStudents($program,$section);
+
+        }
         //
         $all_students = ProgramStudent::with(["section", "batch", 'student'])->where('program_id', $program->id)->where('program_section_id', $section->getKey())->get();
         return view("admin.programs.section.section-student", compact("all_students", "section", "program"));
@@ -225,5 +238,25 @@ class AdminProgramSectionController extends Controller
     {
         $studentID->allow_all = !$studentID->allow_all;
         $studentID->save();
+    }
+
+    public function updateDefaultSection(Program $program, ProgramSection $section) {
+
+        try {
+            DB::transaction(function() use ($program,$section) {
+                $currentDefaultProgram = ProgramSection::where('program_id',$program->getKey())
+                                                        ->where('default',true)
+                                                        ->update(['default' => false]);
+
+                // now update current section as default.
+                $section->default = true;
+                $section->save();
+            });
+        } catch (\Exception $error) {
+            return $this->json(false,'Unable to default section.');
+        }
+
+        return $this->json(true,'Default Change has been updated.','redirect',['location' => route('admin.program.sections.admin_list_all_section',['program' => $program,str($section->section_name)->slug()->value()])]);
+
     }
 }

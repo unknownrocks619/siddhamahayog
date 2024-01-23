@@ -1,4 +1,4 @@
-<button class='ajax-modal btn btn-success btn-sm mb-1'
+<button class='ajax-modal btn btn-success mb-1'
         data-action='{{route('admin.modal.display',['view' => 'live.live-selection','program' => $row->getKey()])}}'
         data-bs-toggle='modal'
         data-bs-target='#liveSessionModal'>Go Live</button>
