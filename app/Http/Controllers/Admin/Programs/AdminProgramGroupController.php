@@ -52,5 +52,38 @@ class AdminProgramGroupController extends Controller
         return $exportFromView->download('single-entry.xlsx');
     }
 
+    public function familyGroup(Program $program) {
+        $groupingRecord = collect(ProgramGrouping::familyGrouping($program));
+        $params = [
+            'program'   => $program,
+            'data'      => $groupingRecord
+        ];
 
+        $sheet = [
+            'All Family Member' => ['view' =>'admin.programs.groups.family','params'=> $params ]
+        ];
+
+        $collectRecord = $groupingRecord->groupBy('country_name');
+        $byGender = $groupingRecord->groupBy('gender');
+
+        foreach ($collectRecord as $country_name => $country_record) {
+            $sheet_name = $country_name != '' ? $country_name : 'Country Not Set';
+            $sheet[$sheet_name] = [
+                'view' => 'admin.programs.groups.family',
+                'params'    => ['data' => $country_record,'program' => $program]
+            ];
+        }
+
+        foreach ($byGender as $gender => $country_record) {
+
+            $sheet_name = $gender != '' ? ucwords($gender) : 'Gender Not Set';
+            $sheet[$sheet_name] = [
+                'view' => 'admin.programs.groups.family',
+                'params'    => ['data' => $country_record,'program' => $program]
+            ];
+        }
+
+        $exportFromView =new ExcelMultipleSheet($sheet);
+        return $exportFromView->download('family-entry.xlsx');
+    }
 }
