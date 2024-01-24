@@ -105,6 +105,10 @@ class Program extends Model
         'vip_and_guest_list'    => [
             'label' => 'VIP / Guest Access List',
             'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'grouping'  => [
+            'label' => 'Group',
+            'access'    => [Role::SUPER_ADMIN]
         ]
     ];
 
