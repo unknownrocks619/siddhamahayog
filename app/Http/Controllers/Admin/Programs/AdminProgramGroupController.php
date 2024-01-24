@@ -53,6 +53,8 @@ class AdminProgramGroupController extends Controller
     }
 
     public function familyGroup(Program $program) {
+        ini_set('memory_limit',-1);
+
         $groupingRecord = collect(ProgramGrouping::familyGrouping($program));
         $params = [
             'program'   => $program,
