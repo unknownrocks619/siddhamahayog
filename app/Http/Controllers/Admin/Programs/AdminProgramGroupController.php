@@ -15,6 +15,7 @@ class AdminProgramGroupController extends Controller
     //
 
     public function index(Program $program) {
+        ini_set('memory_limit',-1);
         $groupingRecord = collect(ProgramGrouping::singleGrouping($program));
         $params = [
             'program'   => $program,
