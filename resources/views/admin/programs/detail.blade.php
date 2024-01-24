@@ -9,16 +9,17 @@
             <div class="col-md-3 col-sm-12 mb-3">
                 <a class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_list')}}"><i class="fas fa-arrow-left"></i></a>
             </div>
-            <div class="col-md-9 col-sm-12 mb-3">
-                <div class="row">
-                    <div class="col-md-12 text-end">
-                        <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-primary">Sections</a>
+            @if(in_array(auth()->user()->role_id, \App\Models\Program::GO_LIVE_ACCESS))
+                <div class="col-md-9 col-sm-12 mb-3">
+                    <div class="row">
+                        <div class="col-md-12 text-end">
+                            <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-primary">Sections</a>
                         <a class="btn btn-primary">Batch</a>
                         @include('admin.datatable-view.programs.live',['row' => $program])
                     </div>
                 </div>
-
-            </div>
+</div>
+            @endif
         </div>
         @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
             <div class="row">

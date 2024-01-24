@@ -171,4 +171,9 @@ Route::prefix('programs')
                 Route::get('{program}/full-list/{section?}', 'student_list_per_section')->name('index');
                 Route::post('{studentID}/update-access', 'fullSectionAccess')->name('section-access');
             });
+
+        /**
+         * Group
+         */
+        include __DIR__.'/grouping.php';
     });

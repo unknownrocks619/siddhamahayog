@@ -35,6 +35,11 @@ class Role extends Model
         'role_category' => 'array'
     ];
 
+    public const ADMIN_DASHBOARD_ACCESS = [
+        self::ADMIN,
+        self::SUPER_ADMIN,
+        self::ACTING_ADMIN
+    ];
 
     /**
      * Return Authorized Center for user
