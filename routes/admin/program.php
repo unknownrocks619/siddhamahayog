@@ -79,18 +79,21 @@ Route::prefix('programs')
                 Route::post('/store/{program}', [AdminProgramSectionController::class, "store"])->name("admin_store_section");
                 Route::put("/edit/{section}", [AdminProgramSectionController::class, "update"])->name('admin_update_section');
                 Route::put("/list/student/modal/{program}/{member}", "updateSection")->name("admin_update_students_update");
+                Route::match(['post'],'/delete/{programSection}','destroy')->name('admin_program_section_delete');
             });
 
         Route::prefix("batches")
             ->name("batches.")
             ->controller(ProgramBatchController::class)
             ->group(function () {
-                Route::get("/list/{program}", "index")->name("admin_batch_list");
+                Route::post("/list/student/{program}", "storeBatch")->name("admin_batch_store");
+                Route::get("/list/{program}/{current_tab?}", "index")->name("admin_batch_list");
                 Route::get("/list/student/{program}/{member}", "changeBatch")->name("admin_batch_student_change");
                 Route::get("/list/student/modal/{program}/{batch}", "batchStudent")->name("admin_batch_students");
-                Route::post("/list/student/{program}", "storeBatch")->name("admin_batch_store");
                 Route::post("/list/student/{program}/{ProgramBatch}", "updateActive")->name("admin_batch_udpate_status");
                 Route::post("/list/student/modal/{program}/{member}", "updateBatch")->name("admin_batch_students_update");
+                Route::match(['get','post'],'/unlink/{program}/{batch}','deleteBatch')->name('admin_unlink_batch');
+                Route::post('link/{program}','assignBatch')->name('admin_link_batch');
             });
 
         /**

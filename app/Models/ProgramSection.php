@@ -50,9 +50,9 @@ class ProgramSection extends Model
             'section.id AS section_id'
         ];
 
-        $binds = [$this->getKey()];
+        $binds = [$program->getKey(),$this->getKey()];
 
-        if ( $this->getKey() == 5 ) {
+        if ( $program->getKey() == 5 ) {
             $selects[] = 'yagya.total_counter';
         }
 
@@ -91,13 +91,14 @@ class ProgramSection extends Model
         $sql .= " AND scholar.student_id = member.id ";
         $sql .= " AND scholar.deleted_at IS NULL ";
 
-        if ( $this->getKey() == 5 ) {
+        if ( $program->getKey() == 5 ) {
             $sql .= " LEFT JOIN hanumand_yagya_counters yagya";
             $sql .= " ON yagya.member_id = member.id";
             $sql .= " AND yagya.program_id = section.program_id ";
         }
 
         $sql .= " WHERE section.program_id = ?";
+        $sql .= ' AND section.id = ?';
 
         if ( $searchTerm ) {
             $sql .=  " AND ( ";
@@ -123,7 +124,6 @@ class ProgramSection extends Model
         }
 
         $sql .= " GROUP BY member.id";
-
         return DB::select($sql,$binds);
 
     }

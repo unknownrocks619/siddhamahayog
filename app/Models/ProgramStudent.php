@@ -71,7 +71,7 @@ class ProgramStudent extends Model
         return $this->hasMany(ProgramStudentAttendance::class, 'program_id', 'program_id');
     }
 
-    public static  function all_program_student(Program $program)
+    public static  function all_program_student(Program $program,$searchTerm = null,$limit = null)
     {
 
         $select = [
@@ -85,25 +85,50 @@ class ProgramStudent extends Model
             'program_students.id as program_student_id',
             'program_students.active',
             'program_students.created_at as enrolled_date',
+            'program_students.batch_id as student_batch_id',
             'program_sections.section_name',
+            'program_sections.id AS section_id'
             // 'batches.batch_name'
         ];
 
+        $binds = [$program->getKey()];
         $columns = implode(',', $select);
 
-        $sql = " SELECT  {$columns} from program_students ";
+        $sql = " SELECT ";
+        $sql .= implode(',', $select) ;
+        $sql .= " FROM program_students ";
 
-        $sql .= "INNER JOIN members ON members.id = program_students.student_id ";
+        $sql .= " INNER JOIN members ";
+        $sql .= " ON members.id = program_students.student_id ";
+        $sql .= " AND members.deleted_at IS NULL ";
+
         $sql .= " LEFT JOIN batches ON batches.id = program_students.batch_id ";
         $sql .= "INNER JOIN program_sections on program_sections.id = program_students.program_section_id";
         $sql .= " WHERE ";
-        $sql .= " program_students.program_id = {$program->getKey()}";
+        $sql .= " program_students.program_id = ?";
         $sql .= " AND program_students.deleted_at is NULL";
 
-        $query = <<<SQL
-            $sql;
-        SQL;
-        return DB::select($query);
+        if ( $searchTerm ) {
+            $sql .= " AND ( ";
+                $sql .= " members.first_name LIKE ?";
+                $sql .= " OR ";
+                $sql .= " members.last_name LIKE ? ";
+                $sql .= " OR ";
+                $sql .= ' members. email LIKE ?';
+                $sql .= " OR ";
+                $sql .= " members.phone_number LIKE ?";
+
+            $sql .= ")";
+
+            $binds = array_merge($binds,['%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%',]);
+        }
+
+        if ($limit ) {
+
+            $sql .= " LIMIT " . $limit;
+        }
+
+        return DB::select($sql,$binds);
     }
 
     public static function studentPaymentDetail($type = 'admission_fee', $member, Program $program = null)

@@ -399,8 +399,15 @@ class MemberController extends Controller
                 ->orWhere('last_name','LIKE','%'.$request->member.'%')
                 ->orWhere('full_name','LIKE','%'.$request->member.'%')
             ->limit(30)->get();
-            $batches = ProgramBatch::with(["batch"])->where('program_id', $program->id)->latest()->get();
-            $sections = ProgramSection::where('program_id', $program->id)->latest()->get();
+
+            $batches = ProgramBatch::with(["batch"])->where('program_id', $program->getKey())->latest()->get();
+            $sectionQuery = ProgramSection::where('program_id', $program->getKey());
+
+            if ($request->get('section') ) {
+                $sectionQuery->where('id',$request->get('section'));
+            }
+            $sections = $sectionQuery->latest()->get();
+
             return view('admin.programs.members.partials.search_result', compact('members', 'program', 'batches', 'sections'));
 
         }
@@ -415,15 +422,16 @@ class MemberController extends Controller
             "student" => "required"
         ]);
         $student_program = new ProgramStudent;
+
         // check if student is already assigned in this program.
-        $student_program_exists = $student_program->where("program_id", $program->id)
-            ->where('student_id', $request->student)->first();
+        $student_program_exists = $student_program->where("program_id", $program->getKey())
+            ->where('student_id', $request->post('student'))->first();
 
         if ($student_program_exists) {
             // just change section is
             $student_program = $student_program_exists;
-            $student_program_exists->program_section_id = $request->section;
-            $student_program_exists->batch_id = $request->batch;
+            $student_program_exists->program_section_id = $request->post('section');
+            $student_program_exists->batch_id = $request->post('batch');
         } else {
             $student_program->program_id = $program->id;
             $student_program->program_section_id = $request->section;
