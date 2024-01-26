@@ -30,7 +30,7 @@
         @endif
 
         <div class="row">
-            <div class="col-md-8 col-sm-12">
+            <div class="col-md-9 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-3 col-sm-12">
                 @include('admin.programs.partials.quick-navigation')
             </div>
         </div>
@@ -109,6 +109,7 @@
             fixedHeader: true,
             orderCellsTop: true,
             aaSorting: [],
+            pageLength: 250,
             ajax: '{{url()->full()}}',
             columns: [
                 {

@@ -72,7 +72,7 @@ window.enableAllButtons = function (element = null) {
     $(element).find('button').prop('disabled', false)
 }
 
-window.ajaxDataTableReload = function (elmID=null) {
-    let _documentTable = $(document).find('table.datatable');
-    console.log(_documentTable);
+window.ajaxDataTableReload = function (params) {
+    let _documentTable = $('#'+params.sourceID).DataTable().ajax.reload();
+
 }

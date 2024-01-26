@@ -60,6 +60,7 @@
             serverSide: true,
             ajax: '{{url()->full()}}',
             aaSorting: [],
+            pageLength: 250,
             columns: [
                 {
                     data: 'member_name',

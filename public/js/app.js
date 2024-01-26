@@ -5667,12 +5667,8 @@ window.enableAllButtons = function () {
   $(element).find('button').prop('disabled', false);
 };
 
-window.ajaxDataTableReload = function () {
-  var elmID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-
-  var _documentTable = $(document).find('table.datatable');
-
-  console.log(_documentTable);
+window.ajaxDataTableReload = function (params) {
+  var _documentTable = $('#' + params.sourceID).DataTable().ajax.reload();
 };
 
 /***/ }),

@@ -71,6 +71,7 @@ class FeeAPIController extends Controller
         $params = [];
         if ($request->get('source') == 'datatable' && $request->get('refresh')) {
             $callback = 'ajaxDataTableReload';
+            $params['sourceID'] = $request->get('sourceID');
         }
         return $this->returnResponse(true,'Fee Information updated.',$callback,$params);
 
