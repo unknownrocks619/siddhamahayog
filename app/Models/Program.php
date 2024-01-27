@@ -253,6 +253,7 @@ class Program extends Model
             'member.email',
             'member.id as member_id',
             'member.country as member_country',
+            'member.gotra',
             'member.address',
             'memberinfo.personal as personal_detail',
             'country.name as country_name',

@@ -88,4 +88,18 @@ class AdminProgramGroupController extends Controller
         $exportFromView =new ExcelMultipleSheet($sheet);
         return $exportFromView->download('family-entry.xlsx');
     }
+
+    public function downloadProgramStudent(Program $program) {
+        $students = $program->programStudentEnrolments();
+        $params = [
+            'data'  => $students,'program' => $program
+        ];
+        $sheet = [
+            'All Program Member List' => ['view' =>'admin.programs.groups.student','params'=> $params ]
+        ];
+
+        $exportFromView =new ExcelMultipleSheet($sheet);
+        return $exportFromView->download('program-student-list.xlsx');
+
+    }
 }
