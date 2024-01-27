@@ -5374,8 +5374,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_partials_tinymce__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
+/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_7__);
 
 console.log('from app. js'); //================== partials ======================//
+
 
 
 
@@ -5879,6 +5882,62 @@ window.setupTinyMceAll = function () {
     menubar: false
   });
 };
+
+/***/ }),
+
+/***/ "./resources/js/partials/transaction.js":
+/*!**********************************************!*\
+  !*** ./resources/js/partials/transaction.js ***!
+  \**********************************************/
+/***/ (() => {
+
+$(document).on('dblclick', '.update-amount-fee-transaction', function (event) {
+  event.preventDefault();
+  $(document).find('.update-amount-fee-transaction').show();
+  $(document).find('.update-amount-container').addClass('d-none');
+
+  var _wrapper = $(this).closest('.transactionWrapper');
+
+  $(this).fadeOut('fast', function () {
+    $(_wrapper).find('.update-amount-container').removeClass('d-none');
+  });
+});
+$(document).on('click', '.cancel-transaction-update', function (event) {
+  event.preventDefault();
+
+  var _wrapper = $(this).closest('.transactionWrapper');
+
+  $(_wrapper).find('.update-amount-container').addClass('d-none');
+  $(_wrapper).find('.update-amount-fee-transaction').show();
+});
+$(document).on('click', '.update-transaction-update', function (event) {
+  var _url = "/admin/programs/fee/transaction/update/amount/";
+
+  var _wrapperSpan = $(this).closest('.transactionWrapper');
+
+  _url = _url + $(_wrapperSpan).attr('data-wrapper-id');
+  var _body = {
+    amount: $(_wrapperSpan).find('input').val(),
+    callback: 'ajaxDataTableReload',
+    params: {
+      'sourceID': $(_wrapperSpan).attr('data-table-wrapper')
+    }
+  };
+  $.ajax({
+    method: 'post',
+    url: _url,
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    data: _body,
+    success: function success(response) {
+      window.handleOKResponse(response);
+    },
+    error: function error(response) {
+      window.handleBadResponse(response);
+    }
+  });
+});
 
 /***/ }),
 

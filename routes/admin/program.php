@@ -112,7 +112,10 @@ Route::prefix('programs')
                 Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');
                 Route::put("transaction/update/status/{fee_detail}", [FeeAPIController::class, "update_fee_status"])->name('api_update_fee_detail');
                 Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
+                Route::post('/transaction/update/amount/{transaction}',[FeeAPIController::class,'update_transaction_fee_amount'])->name('api_update_fee_amount');
+
             });
+
         Route::prefix('enroll')
             ->name('enroll.')
             ->group(function () {

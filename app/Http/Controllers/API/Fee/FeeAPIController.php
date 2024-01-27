@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Fee;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\FeeAPIRequest;
 use App\Models\MemberNotification;
+use App\Models\ProgramStudentFee;
 use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -94,5 +95,39 @@ class FeeAPIController extends Controller
         }
 
         return $this->returnResponse(true,'Transaction Deleted.','reload');
+    }
+
+    public function update_transaction_fee_amount(FeeAPIRequest $request,ProgramStudentFeeDetail $transaction) {
+        $request->validate([
+            'amount'    => 'required'
+        ]);
+
+        $transaction->amount = $request->post('amount');
+        $transaction->save();
+
+        // get sum of current user
+        $totalAmount = ProgramStudentFeeDetail::select('amount')
+            ->where('program_id',$transaction->program_id)
+            ->where('student_id', $transaction->student_id)
+            ->where('program_student_fees_id',$transaction->program_student_fees_id)
+            ->where('verified',true)
+            ->sum('amount');
+        $programStudentFee = ProgramStudentFee::find($transaction->program_student_fees_id)->first();
+
+        $programStudentFee->total_amount = $totalAmount;
+        $programStudentFee->save();
+
+        $callback = 'reload';
+        $params = [];
+
+        if ($request->post('callback') ) {
+            $callback = $request->post('callback');
+        }
+
+        if ($request->post('params') ) {
+            $params = $request->post('params');
+        }
+
+        return $this->json(true,'Amount Updated.',$callback,$params);
     }
 }

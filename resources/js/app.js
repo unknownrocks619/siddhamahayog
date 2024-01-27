@@ -7,6 +7,8 @@ import './partials/select2';
 import './partials/voucher-modal';
 import './partials/tinymce';
 import './partials/programs';
+import './partials/transaction';
+
 $(function () {
     "use strict";
 

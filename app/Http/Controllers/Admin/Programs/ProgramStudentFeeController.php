@@ -252,7 +252,19 @@ class ProgramStudentFeeController extends Controller
                     return $member;
                 })
                 ->addColumn('transaction_amount', function ($row) {
-                    return default_currency(strip_tags($row->amount));
+                    if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
+                        $spanAmount = '<span class="transactionWrapper" data-table-wrapper="program_fee_overview" data-wrapper-id="'.$row->transaction_id.'">';
+                            $spanAmount .= "<span class='update-amount-fee-transaction' data-update-amount-id='update_span_{$row->transaction_id}'>". default_currency(strip_tags($row->amount)).'</span>';
+                            $spanAmount .= "<span class='update-amount-container d-flex align-items-center d-none' id='update_span_{$row->transaction_id}'>";
+                                $spanAmount .= "<input type='text' class='form-control' value='".strip_tags($row->amount)."' />";
+                                $spanAmount .= "<span class='text-success mx-2 update-transaction-update' style='cursor: pointer'><i class='fas fa-check'></i> </span>";
+                                $spanAmount .= "<span class='text-danger cancel-transaction-update' style='cursor: pointer'><i class='fas fa-close'></i> </span>";
+                            $spanAmount .= "</span>";
+                        $spanAmount .= "</span>";
+                    } else {
+                        $spanAmount = "<span>". default_currency(strip_tags($row->amount)).'</span>';
+                    }
+                    return $spanAmount;
                 })
                 ->addColumn('category', function ($row) {
                     $seperate_category = explode("_", $row->amount_category);
@@ -470,4 +482,5 @@ class ProgramStudentFeeController extends Controller
         }
         return view('admin.fees.program.unpaid', compact('program'));
     }
+
 }
