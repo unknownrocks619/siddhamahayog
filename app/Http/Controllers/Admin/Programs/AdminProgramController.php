@@ -60,16 +60,26 @@ class AdminProgramController extends Controller
                 ->addColumn('sections', function ($row) {
                     $sectionHTML = '';
                     foreach ($row->sections ?? [] as $section) {
+                        $sectionStudentCount = $section->program_students_count;
+
+                        if ( ! in_array(auth()->user()->role_id, Program::STUDENT_COUNT_ACCESS) ){
+                            $sectionStudentCount = 0;
+                        }
 
                         if ($section->default) {
-                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger">'.$section->section_name .':{'.$section->program_students_count.'}</span>';
+                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger">'.$section->section_name .':{'.$sectionStudentCount.'}</span>';
                             continue;
                         }
-                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary">'.$section->section_name .':{'.$section->program_students_count.'}</span>';
+                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary">'.$section->section_name .':{'.$sectionStudentCount.'}</span>';
                     }
                     return $sectionHTML;
                 })
                 ->addColumn('total_student', function ($row) {
+
+                    if (! in_array(auth()->user()->role_id,Program::STUDENT_COUNT_ACCESS)){
+                        return '<span class="btn-label-danger px-2 py-1">0</span>';
+                    }
+
                     $totalStudent =  $row->students?->count() ?? 0;
 
                     if ( ! $totalStudent ) {
@@ -85,14 +95,21 @@ class AdminProgramController extends Controller
                     if ($row->defaultBatch) {
                         return ($row->defaultBatch->batch_name . "-" . $row->defaultBatch->batch_year . "/   " . $row->defaultBatch->batch_month);
                     } else {
+                        if (! in_array(auth()->user()->role_id, Program::EDIT_PROGRAM_ACCESS) ) {
+                            return ' -- ';
+                        }
                         return "<button data-action='" . route('admin.modal.display', ['view' => 'programs.batch.new','program' => $row->getKey(),'callback' => 'reload'] ) . "' data-bs-toggle='modal' data-bs-target='#newBatch' class='btn btn-link ajax-modal'>Add Batch</button>";
                     }
 
                 })
                 ->addColumn('action', function ($row) {
                     $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-1'></i></a>";
-                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-1'><i class='fas fa-pencil'></i></a>";
-                    $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'><i class='fas fa-trash'></a>";
+
+                    if(in_array(auth()->user()->role_id, Program::EDIT_PROGRAM_ACCESS)) {
+                        $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-1'><i class='fas fa-pencil'></i></a>";
+                        $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'><i class='fas fa-trash'></a>";
+                    }
+
                     return $action;
                 })
                 ->rawColumns(["program_name", "batch", "action", "promote","total_student",'sections'])
@@ -306,7 +323,7 @@ class AdminProgramController extends Controller
                     return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
 
                 })
-                ->addColumn('full_name', function ($row) {
+                ->addColumn('$rawColumns', function ($row) {
                     return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".$row->full_name."</a>";
                 })
                 ->addColumn('phone_number', function ($row) {
@@ -334,6 +351,39 @@ class AdminProgramController extends Controller
                 })
                 ->addColumn('enrolled_date', function($row) {
                    return date('Y-m-d',strtotime($row->enrolled_date));
+                })
+                ->addColumn('country',function($row){
+                    if ( ! $row->member_country &&  ! $row->country_name) {
+                        return 'N/A';
+                    }
+                    if ($row->member_country && ! (int) $row->member_country) {
+                        return $row->member_country;
+                    }
+
+                    return $row->country_name;
+
+                })
+                ->addColumn('full_address', function($row) {
+                    if ( ! $row->address) {
+                        return 'N/A';
+                    }
+
+                    $addressDecode = json_decode($row->address);
+                    if ( isset($addressDecode->street_address) ) {
+                        return $addressDecode->street_address;
+                    }
+
+                    if ( $row->personal_detail ) {
+                        $detailDecode = json_decode($row->personal_detail);
+
+                        if (isset($detailDecode->street_address) ) {
+                            return $detailDecode->street_address;
+                        }
+                    }
+
+                    return 'N/A';
+
+
                 })
                 ->addColumn('action', function ($row) {
                     $action ='';

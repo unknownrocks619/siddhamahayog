@@ -59,6 +59,7 @@
             serverSide: true,
             fixedHeader: true,
             orderCellsTop: true,
+            pageLength: 250,
             aaSorting: [],
             initComplete: function() {
                 var api = this.api();

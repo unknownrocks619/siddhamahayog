@@ -12,10 +12,13 @@
             <div class="col-md-9 col-sm-12 mb-3">
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        @include('admin.datatable-view.programs.live',['row' => $program])
+                        <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-primary">Sections</a>
+                        <a href="{{route('admin.program.batches.admin_batch_list', ['program' => $program->getKey()])}}" class="btn btn-primary">Batch</a>
+                        @if(in_array(auth()->user()->role_id, \App\Models\Program::GO_LIVE_ACCESS))
+                            @include('admin.datatable-view.programs.live',['row' => $program])
+                        @endif
                     </div>
                 </div>
-
             </div>
         </div>
         @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
@@ -27,7 +30,7 @@
         @endif
 
         <div class="row">
-            <div class="col-md-8 col-sm-12">
+            <div class="col-md-9 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>
@@ -48,9 +51,11 @@
                                 <th>Full name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
-                                <th>Payment Info</th>
-                                <th>Batch Name</th>
-                                <th>Section name</th>
+                                <th>Country</th>
+                                <th>Address</th>
+{{--                                <th>Payment Info</th>--}}
+{{--                                <th>Batch Name</th>--}}
+{{--                                <th>Section name</th>--}}
                                 <th>Member Date</th>
                                 <th>Action</th>
                             </tr>
@@ -71,9 +76,11 @@
                                 <th>Full name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
-                                <th>Payment Info</th>
-                                <th>Batch Name</th>
-                                <th>Section name</th>
+                                <th>Country</th>
+                                <th>Address</th>
+{{--                                <th>Payment Info</th>--}}
+{{--                                <th>Batch Name</th>--}}
+{{--                                <th>Section name</th>--}}
                                 <th>Member Date</th>
                                 <th>Action</th>
                             </tr>
@@ -83,7 +90,7 @@
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-3 col-sm-12">
                 @include('admin.programs.partials.quick-navigation')
             </div>
         </div>
@@ -96,61 +103,13 @@
     <script src="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.js')}}"></script>
 
     <script>
-        $("#program-table thead tr").clone(true).addClass('filters').appendTo("#program-table thead")
-
         $('#program-table').DataTable({
             processing: true,
             serverSide: true,
             fixedHeader: true,
             orderCellsTop: true,
             aaSorting: [],
-            initComplete: function() {
-                var api = this.api();
-
-                api
-                    .columns()
-                    .eq(0)
-                    .each(function(colIdx) {
-                        // Set the header cell to contain the input element
-                        var cell = $('.filters th').eq(
-                            $(api.column(colIdx).header()).index()
-                        );
-                        var title = $(cell).text();
-                        $(cell).html('<input type="text" placeholder="' + title + '" />');
-
-                        // On every keypress in this input
-                        $('input',
-                            $('.filters th').eq($(api.column(colIdx).header()).index())
-                        )
-                            .off('keyup change')
-                            .on('change', function(e) {
-                                // Get the search value
-                                $(this).attr('title', $(this).val());
-                                var regexr = '({search})'; //$(this).parents('th').find('select').val();
-
-                                var cursorPosition = this.selectionStart;
-                                // Search the column for that value
-                                api
-                                    .column(colIdx)
-                                    .search(
-                                        this.value != '' ?
-                                            regexr.replace('{search}', '(((' + this.value + ')))') :
-                                            '',
-                                        this.value != '',
-                                        this.value == ''
-                                    )
-                                    .draw();
-                            })
-                            .on('keyup', function(e) {
-                                e.stopPropagation();
-
-                                $(this).trigger('change');
-                                $(this)
-                                    .focus()[0]
-                                    .setSelectionRange(cursorPosition, cursorPosition);
-                            });
-                    });
-            },
+            pageLength: 250,
             ajax: '{{url()->full()}}',
             columns: [
                 {
@@ -170,17 +129,25 @@
                     name: "email"
                 },
                 {
-                    data : "total_payment",
-                    name: "total_payment"
+                    data : "country",
+                    name : 'country'
                 },
                 {
-                    data: "batch",
-                    name: "batch"
+                    data : 'full_address',
+                    name : 'full_address'
                 },
-                {
-                    data : 'section',
-                    name: 'section'
-                },
+                // {
+                //     data : "total_payment",
+                //     name: "total_payment"
+                // },
+                // {
+                //     data: "batch",
+                //     name: "batch"
+                // },
+                // {
+                //     data : 'section',
+                //     name: 'section'
+                // },
                 {
                     data : 'enrolled_date',
                     name: 'enrolled_date'

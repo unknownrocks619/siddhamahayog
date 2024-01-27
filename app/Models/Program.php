@@ -61,6 +61,57 @@ class Program extends Model
         'inactive'  => 'Inactive'
     ];
 
+    public const GO_LIVE_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const EDIT_PROGRAM_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const STUDENT_COUNT_ACCESS = [
+        Role::SUPER_ADMIN,
+        Role::ADMIN
+    ];
+
+    public const QUICK_NAVIGATION_ACCESS = [
+        'syllabus_and_resources'    => [
+            'label' => 'Syllabus / Resources',
+            'access'    => [Role::SUPER_ADMIN,Role::ACTING_ADMIN,Role::ADMIN]
+        ],
+        'program_daily_attendance'  => [
+            'label' => 'Program Daily Attendance',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'account_and_management' => [
+            'label' => 'Account Management',
+            'access'    => [Role::SUPER_ADMIN]
+        ],
+
+        'assign_member_to_program'  => [
+            'label' => 'Assign Member to Program',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'register_new_member_to_program'    => [
+            'label' => 'Register Member',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'scholarship_and_special_permission' => [
+            'label' => 'Scholarship & Special Permission',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'vip_and_guest_list'    => [
+            'label' => 'VIP / Guest Access List',
+            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+        ],
+        'grouping'  => [
+            'label' => 'Group',
+            'access'    => [Role::SUPER_ADMIN]
+        ]
+    ];
+
     public function students()
     {
         return $this->hasMany(ProgramStudent::class, $this->foreignKey);
@@ -201,6 +252,11 @@ class Program extends Model
             'member.phone_number',
             'member.email',
             'member.id as member_id',
+            'member.country as member_country',
+            'member.gotra',
+            'member.address',
+            'memberinfo.personal as personal_detail',
+            'country.name as country_name',
             'SUM(prostufee.total_amount) as member_payment',
             'prosec.section_name',
             'batches.batch_name',
@@ -218,23 +274,36 @@ class Program extends Model
         $sql = "SELECT ";
         $sql .= implode(', ', $selects);
         $sql .= ' FROM programs pro';
+
         $sql .= ' INNER JOIN program_students prostu';
         $sql .= ' ON prostu.program_id = pro.id';
         $sql .= ' AND prostu.deleted_at IS NULL';
+
         $sql .=' INNER JOIN members member';
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
+
+        $sql .= ' LEFT JOIN countries country ';
+        $sql .= " on member.country = country.id";
+
+        $sql .= " LEFT JOIN member_infos memberinfo ";
+        $sql .= " on memberinfo.member_id = member.id";
+
         $sql .= ' INNER JOIN program_sections prosec';
         $sql .= ' ON prosec.id = prostu.program_section_id';
         $sql .= " AND prosec.deleted_at IS NULL";
+
         $sql .= ' INNER JOIN program_batches probatch';
         $sql .= ' ON probatch.id = prostu.batch_id';
+
         $sql .= ' INNER JOIN batches';
         $sql .= " ON batches.id = probatch.batch_id";
+
         $sql .= " LEFT JOIN program_student_fees prostufee";
         $sql .= " ON prostufee.program_id = pro.id";
         $sql .= " AND prostufee.student_id = member.id";
         $sql .= " AND prostufee.deleted_at IS NULL";
+
         $sql .= " LEFT JOIN scholarships scholar";
         $sql .= " ON scholar.program_id = pro.id";
         $sql .= " AND scholar.student_id = member.id";
@@ -249,15 +318,19 @@ class Program extends Model
         $sql .= " WHERE pro.id = ?";
 
         if ( $searchTerm ) {
-            $sql .= " AND ( ";
+            $sql .=  " AND ( ";
             $sql .= " member.full_name LIKE ?";
             $sql .= " OR member.phone_number LIKE ?";
             $sql .= " OR member.email LIKE ? ";
             $sql .= " OR member.first_name LIKE ? ";
             $sql .= " OR member.last_name LIKE ? ";
+            $sql .= " OR memberinfo.personal LIKE ?";
+            $sql .= " OR country.name LIKE ? ";
             $sql .= " ) ";
 
             $binds= array_merge($binds, [
+                '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',

@@ -1,16 +1,31 @@
+@php
+    if (request()->progarm) {
+        $program = request()->program;
+    }
 
-<form method="post" class="ajax-form" action="{{route('admin.program.sections.admin_store_section',['program' => request()->program])}}">
+    if (isset($program) && $program instanceof \App\Models\Program) {
+        $program = $program->getKey();
+    }
+@endphp
+<form method="post" class="ajax-form" action="{{route('admin.program.sections.admin_store_section',['program' => $program])}}">
 
     <div class="modal-header">
         <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
     <div class="modal-body p-5">
-        @if(request()->program)
+        @isset($params)
+            @foreach($params as $key => $param)
+                    <input type="hidden" name="params[{{$key}}]" value="{{$param}}" />
+            @endforeach
+        @endisset
+
+        @isset($callback)
+                <input type="hidden" name="callback" value="{{$callback}}" />
+        @elseif(request()->program)
             <input type="hidden" name="params['program']" value="{{request()->program}}" />
             <input type="hidden" name="callback" value="assignSectionToProgram">
-        @endif
-
+        @endisset
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">

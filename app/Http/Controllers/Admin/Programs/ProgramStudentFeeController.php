@@ -252,7 +252,19 @@ class ProgramStudentFeeController extends Controller
                     return $member;
                 })
                 ->addColumn('transaction_amount', function ($row) {
-                    return default_currency(strip_tags($row->amount));
+                    if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
+                        $spanAmount = '<span class="transactionWrapper" data-table-wrapper="program_fee_overview" data-wrapper-id="'.$row->transaction_id.'">';
+                            $spanAmount .= "<span class='update-amount-fee-transaction' data-update-amount-id='update_span_{$row->transaction_id}'>". default_currency(strip_tags($row->amount)).'</span>';
+                            $spanAmount .= "<span class='update-amount-container d-flex align-items-center d-none' id='update_span_{$row->transaction_id}'>";
+                                $spanAmount .= "<input type='text' class='form-control' value='".strip_tags($row->amount)."' />";
+                                $spanAmount .= "<span class='text-success mx-2 update-transaction-update' style='cursor: pointer'><i class='fas fa-check'></i> </span>";
+                                $spanAmount .= "<span class='text-danger cancel-transaction-update' style='cursor: pointer'><i class='fas fa-close'></i> </span>";
+                            $spanAmount .= "</span>";
+                        $spanAmount .= "</span>";
+                    } else {
+                        $spanAmount = "<span>". default_currency(strip_tags($row->amount)).'</span>';
+                    }
+                    return $spanAmount;
                 })
                 ->addColumn('category', function ($row) {
                     $seperate_category = explode("_", $row->amount_category);
@@ -325,9 +337,9 @@ class ProgramStudentFeeController extends Controller
 //                        $action .= "<input type='hidden' name='update_type' value='status' />";
 
                         if ($row->verified) {
-                            $action .= "<button data-method='PUT' data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id])."' data-confirm='You are about to change the transaction status to `Unverified` state. User will be notified about the change. Are you sure you want to continue ?' data-bs-original-title='Reject Transaction' data-bs-toggle='tooltip' type='submit' class='btn btn-danger btn-icon data-confirm'><i class='fas fa-close'></i></button>";
+                            $action .= "<button data-method='PUT' data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id,'source' => 'datatable','refresh'=>1,'sourceID' => 'program_fee_overview'])."' data-confirm='You are about to change the transaction status to `Unverified` state. User will be notified about the change. Are you sure you want to continue ?' data-bs-original-title='Reject Transaction' data-bs-toggle='tooltip' type='submit' class='btn btn-danger btn-icon data-confirm'><i class='fas fa-close'></i></button>";
                         } else {
-                            $action .= "<button  data-method='PUT'  data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id])."' data-confirm='You are about to update the transaction status to `Verified`. User will be notified about the changes. Do you wish to continue your action ?' type='submit' data-bs-toggle='tooltip' data-bs-original-title='Mark as verified Transaction' class='btn btn-success btn-icon data-confirm'><i class='fas fa-check'></i></button>";
+                            $action .= "<button  data-method='PUT'  data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id,'source' => 'datatable','refresh' => true,'sourceID' => 'program_fee_overview'])."' data-confirm='You are about to update the transaction status to `Verified`. User will be notified about the changes. Do you wish to continue your action ?' type='submit' data-bs-toggle='tooltip' data-bs-original-title='Mark as verified Transaction' class='btn btn-success btn-icon data-confirm'><i class='fas fa-check'></i></button>";
                         }
                     }
 
@@ -470,4 +482,5 @@ class ProgramStudentFeeController extends Controller
         }
         return view('admin.fees.program.unpaid', compact('program'));
     }
+
 }

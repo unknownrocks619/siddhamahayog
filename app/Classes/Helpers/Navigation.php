@@ -11,12 +11,13 @@ class Navigation
     public static function adminParentAsideNavigationItems() {
 
         if ( cache()->has('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION') ) {
-//            return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
+            return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
         }
 
         $navigations = NavigationPosition::where('nav_position','aside')->get();
 
         $permission = [];
+
         foreach ($navigations as $navigation) {
             if ( ! in_array('*',$navigation->permission) && ! in_array(auth()->user()->role_id,$navigation->permission) && (int) auth()->user()->role_id !== Role::SUPER_ADMIN) {
                 continue;
@@ -42,8 +43,9 @@ class Navigation
                 $items[] = $nav;
             }
         }
-        cache()->put('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION',$items);
-        return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
+
+        session()->put('ADMIN_'.auth()->id().'_'.auth()->user()->role_id.'_PARENT_ASIDE_NAVIGATION',$items);
+        return session()->get('ADMIN_'.auth()->id().'_'.auth()->user()->role_id.'_PARENT_ASIDE_NAVIGATION');
     }
 
 }

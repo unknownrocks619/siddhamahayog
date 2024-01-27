@@ -4,11 +4,13 @@
     <h4 class="py-3 mb-4">
         <span class="text-muted fw-light">Programs/</span> All
     </h4>
-    <div class="row mb-2">
-        <div class="col-md-12 text-end">
-            <a href="{{route('admin.program.admin_program_new')}}" class="btn btn-primary"><i class="fas fa-plus"></i>Add New Program</a>
+    @if(in_array(auth()->user()->role_id,\App\Models\Program::EDIT_PROGRAM_ACCESS))
+        <div class="row mb-2">
+            <div class="col-md-12 text-end">
+                <a href="{{route('admin.program.admin_program_new')}}" class="btn btn-primary"><i class="fas fa-plus"></i>Add New Program</a>
+            </div>
         </div>
-    </div>
+    @endif
 
     <!-- Responsive Datatable -->
     <div class="card">

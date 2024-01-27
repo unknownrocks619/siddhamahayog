@@ -101,6 +101,13 @@
                         </div>
                     </div>
                     <div class="col-md-8">
+                        <div class="row my-1">
+                            <div class="col-md-12 text-end">
+                                <a class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_detail',['program' => $program])}}">
+                                    <i class="fas fa-arrow-left"></i>
+                                </a>
+                            </div>
+                        </div>
                         <div class="card">
                             <div class="card-body course-options">
                                 <div class="row">

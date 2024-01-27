@@ -71,25 +71,29 @@ Route::prefix('programs')
             ->name("sections.")
             ->controller(AdminProgramSectionController::class)
             ->group(function () {
-                Route::get("/list/{program}", "index")->name('admin_list_all_section');
-                Route::get('/list/{program}/{section}', 'sectionStudent')->name('admin_list_student_section');
+                Route::get("/list/{program}/{current_tab?}", "index")->name('admin_list_all_section');
+                Route::get('/list-section-student/{program}/{section}', 'sectionStudent')->name('admin_list_student_section');
                 Route::get('/modal/list/{program}/{member}/{section}', 'changeSection')->name('admin_change_student_section');
                 Route::get("/edit/{section}", [AdminProgramSectionController::class, "edit"])->name('admin_edit_section');
+                Route::get('change-default/{program}/{section}',[AdminProgramSectionController::class,'updateDefaultSection'])->name('admin_update_default_section');
                 Route::post('/store/{program}', [AdminProgramSectionController::class, "store"])->name("admin_store_section");
                 Route::put("/edit/{section}", [AdminProgramSectionController::class, "update"])->name('admin_update_section');
                 Route::put("/list/student/modal/{program}/{member}", "updateSection")->name("admin_update_students_update");
+                Route::match(['post'],'/delete/{programSection}','destroy')->name('admin_program_section_delete');
             });
 
         Route::prefix("batches")
             ->name("batches.")
             ->controller(ProgramBatchController::class)
             ->group(function () {
-                Route::get("/list/{program}", "index")->name("admin_batch_list");
+                Route::post("/list/student/{program}", "storeBatch")->name("admin_batch_store");
+                Route::get("/list/{program}/{current_tab?}", "index")->name("admin_batch_list");
                 Route::get("/list/student/{program}/{member}", "changeBatch")->name("admin_batch_student_change");
                 Route::get("/list/student/modal/{program}/{batch}", "batchStudent")->name("admin_batch_students");
-                Route::post("/list/student/{program}", "storeBatch")->name("admin_batch_store");
                 Route::post("/list/student/{program}/{ProgramBatch}", "updateActive")->name("admin_batch_udpate_status");
                 Route::post("/list/student/modal/{program}/{member}", "updateBatch")->name("admin_batch_students_update");
+                Route::match(['get','post'],'/unlink/{program}/{batch}','deleteBatch')->name('admin_unlink_batch');
+                Route::post('link/{program}','assignBatch')->name('admin_link_batch');
             });
 
         /**
@@ -108,7 +112,10 @@ Route::prefix('programs')
                 Route::get("/member-transaction/{program}/{member}", [ProgramStudentFeeController::class, "transaction_by_program_and_student"])->name('admin_fee_by_member');
                 Route::put("transaction/update/status/{fee_detail}", [FeeAPIController::class, "update_fee_status"])->name('api_update_fee_detail');
                 Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
+                Route::post('/transaction/update/amount/{transaction}',[FeeAPIController::class,'update_transaction_fee_amount'])->name('api_update_fee_amount');
+
             });
+
         Route::prefix('enroll')
             ->name('enroll.')
             ->group(function () {
@@ -170,4 +177,9 @@ Route::prefix('programs')
                 Route::get('{program}/full-list/{section?}', 'student_list_per_section')->name('index');
                 Route::post('{studentID}/update-access', 'fullSectionAccess')->name('section-access');
             });
+
+        /**
+         * Group
+         */
+        include __DIR__.'/grouping.php';
     });

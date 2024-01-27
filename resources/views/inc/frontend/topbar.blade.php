@@ -73,7 +73,7 @@
                             <span class="align-middle">Settings</span>
                         </a>
                     </li>
-                    @if (user()->role_id == \App\Models\Role::SUPER_ADMIN || user()->role_id == \App\Models\Role::ADMIN)
+                    @if (in_array(user()->role_id,\App\Models\Role::ADMIN_DASHBOARD_ACCESS))
                         <li>
                             <a class="dropdown-item" href="{{ route('admin.admin_dashboard') }}">
                                 <i class="bx bx-cog me-2"></i>

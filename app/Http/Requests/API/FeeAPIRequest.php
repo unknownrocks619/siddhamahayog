@@ -14,7 +14,7 @@ class FeeAPIRequest extends FormRequest
      */
     public function authorize(Request $request)
     {
-        return (auth()->id() == $this->fee_detail->student_id || auth()->user()->role_id == 1) ? true : false;
+        return (auth()->id() == ($this->fee_detail?->student_id ?? $this->transaction->student_id) || auth()->user()->role_id == 1) ? true : false;
     }
 
     /**

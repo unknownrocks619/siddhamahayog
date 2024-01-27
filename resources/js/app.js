@@ -8,6 +8,8 @@ import './partials/tinymce';
 import './partials/programs';
 import './partials/room.js';
 import './partials/member';
+import './partials/transaction';
+
 $(function () {
     "use strict";
 
