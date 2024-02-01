@@ -73,7 +73,8 @@ return [
         public_path('public') => storage_path('app/public'),
         public_path('website') => storage_path('app/website'),
         public_path('courses') => storage_path('app/courses'),
-        public_path('uploads')  => storage_path('app/uploads')
+        public_path('uploads')  => storage_path('app/uploads'),
+        public_path('dharmasala-processing') => storage_path('app/dharmasala-processing')
         // public_path('events') => storage_path('app/website/events')
     ],
 

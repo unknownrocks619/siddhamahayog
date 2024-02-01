@@ -5374,10 +5374,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_tinymce__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_partials_tinymce__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./partials/programs */ "./resources/js/partials/programs.js");
 /* harmony import */ var _partials_programs__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_partials_programs__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
-/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_7__);
+/* harmony import */ var _partials_room_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./partials/room.js */ "./resources/js/partials/room.js");
+/* harmony import */ var _partials_member__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./partials/member */ "./resources/js/partials/member.js");
+/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
+/* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_9__);
+ //================== partials ======================//
 
-console.log('from app. js'); //================== partials ======================//
+
 
 
 
@@ -5407,8 +5410,6 @@ $(function () {
   $('#avatarDropDown').click(function (event) {
     // target dropdown togger.
     var _eventElm = $(this).parent().find('ul.dropdown-menu');
-
-    console.log('targeted element`; ', _eventElm);
 
     if ($(_eventElm).hasClass('show')) {
       $(_eventElm).removeClass('show');
@@ -5461,7 +5462,11 @@ $(function () {
         var fn = window[response.callback];
 
         if (typeof fn === 'function') {
-          fn(response.params);
+          return fn(response.params);
+        }
+
+        if (fn === undefined && typeof window.memberRegistration[response.callback] === 'function') {
+          return window.memberRegistration[response.callback](response.params);
         }
       }
     }
@@ -5500,10 +5505,7 @@ $(function () {
   };
 
   window.redirectTab = function (param) {
-    console.log('hello params', param);
-
     if (typeof param.location !== 'undefined' || param.location !== null) {
-      console.log('aparam');
       window.open(param.location, '_blank');
     }
 
@@ -5540,13 +5542,50 @@ $(function () {
       type: status ? 'success' : 'danger',
       allow_dismiss: true,
       showProgressbar: true,
-      timer: 100000,
+      timer: 0.1,
       animate: {
         enter: 'animated fadeInDown',
         exit: 'animated fadeOutUp'
       }
     });
   };
+  /**
+   *
+   * @type {*|jQuery}
+   */
+
+
+  window.memberSearchFunction = function () {
+    $("#memberSearchField").keyup(function (event) {
+      event.preventDefault();
+
+      var _this = this;
+
+      var _data = {
+        member: $(this).val()
+      };
+      $.ajax({
+        url: $(_this).data("action"),
+        data: {
+          member: $(_this).val()
+        },
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        method: "GET",
+        success: function success(response) {
+          $("#search_result").html(response);
+        },
+        error: function error(response) {
+          if (response.status == 401) {// window.location.href = '/login';
+          } // if (resonse.data.stats)
+
+        }
+      });
+    });
+  };
+
+  window.memberSearchFunction;
 });
 
 /***/ }),
@@ -5721,6 +5760,195 @@ $(document).on('click', '.ajax-modal', function (event) {
 
 /***/ }),
 
+/***/ "./resources/js/partials/member.js":
+/*!*****************************************!*\
+  !*** ./resources/js/partials/member.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MemberRegistration": () => (/* binding */ MemberRegistration)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var MemberRegistration = /*#__PURE__*/function () {
+  function MemberRegistration() {
+    _classCallCheck(this, MemberRegistration);
+
+    _defineProperty(this, "additionalMembers", []);
+
+    _defineProperty(this, "videoElement", null);
+
+    _defineProperty(this, "email", null);
+  }
+
+  _createClass(MemberRegistration, [{
+    key: "enableOnlineLogin",
+    value: function enableOnlineLogin(elm) {
+      console.log('hello world');
+
+      var _passwordField = $('#passwordFields');
+
+      if ($(elm).val() == 1) {
+        _passwordField.removeClass('d-none');
+
+        _passwordField.find('input[type="password"]').attr('required', 'required');
+      } else {
+        _passwordField.addClass('d-none');
+
+        _passwordField.find('input[type="password"]').removeAttr('required');
+      }
+    }
+  }, {
+    key: "addMoreMembers",
+    value: function addMoreMembers() {
+      var _memberRow = "<div class=\"row border-bottom\">\n                                    <div class=\"col-md-8\">\n                                        <div class=\"row\">\n                                            <div class=\"col-md-6\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"full_name\">Full Name <sup class=\"text-danger\">*</sup></label>\n                                                    <input type=\"text\" name=\"connectorFullName[]\" class=\"form-control\">\n                                                </div>\n                                            </div>\n\n                                            <div class=\"col-md-6\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"relation\">Relation <sup class=\"text-danger\">*</sup></label>\n                                                    <input type=\"text\" name=\"relation[]\" class=\"form-control\">\n                                                </div>\n                                            </div>\n\n                                            <div class=\"col-md-6 mt-2\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"phone_number\">Phone Number</label>\n                                                    <input type=\"text\" name=\"relationPhoneNumber[]\"\n                                                           class=\"form-control\" />\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n\n                                    <div class=\"col-md-4\">\n                                        <div class=\"form-group relation_video_wrapper\">\n                                            <div class=\"border\">\n                                                <video width=\"100%\" style=\"height: auto;\" autoplay playsinline></video>\n                                                <img src=\"\" class=\"d-none img-fluid w-100\" style=\"max-height:480px;\" />\n                                                <input type=\"hidden\" name=\"relationImage[]\" class=\"relation_image_capture\" >\n                                            </div>\n                                            <div class=\"d-flex justify-content-end\">\n                                                <button class=\"text-end camera-action-button record btn btn-primary btn-icon\" type=\"button\" onclick=\"window.memberRegistration.enableCamera(this,{cameraID:'.relation_video_wrapper'})\">\n                                                    <i class=\"fas fa-camera\"></i>\n                                                </button>\n                                                <button type=\"button\" onclick=\"window.memberRegistration.captureImage(this,{parent:'.relation_video_wrapper',field: '.relation_image_capture'})\" class=\"d-none camera-action-button camera-action-button image btn btn-primary btn-icon\">\n                                                    <i class=\"fas fa-image\"></i>\n                                                </button>\n\n                                            </div>\n                                        </div>\n                                    </div>\n\n                                </div>";
+      $("#familyMembers").append(_memberRow);
+    }
+  }, {
+    key: "enableCamera",
+    value: function enableCamera(elm) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var _this = this;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        Swal.fire({
+          title: 'Media plugin Error',
+          text: "User media is not supported in this browser",
+          icon: 'error'
+        });
+        return;
+      }
+
+      var _videoWrapper = $(elm).closest(params.cameraID);
+
+      if (!_videoWrapper.length) {
+        _videoWrapper = $(params.cameraID);
+      }
+
+      $(_videoWrapper).find('video').removeClass('d-none');
+      _this.videoElement = $(_videoWrapper).find('video')[0];
+      $(_videoWrapper).find('button').removeAttr('disabled').removeClass('d-none');
+      $(_videoWrapper).removeClass('d-none'); // reset previous Image / input.
+
+      $(_videoWrapper).find('img').removeAttr('src').addClass('d-none');
+      $(_videoWrapper).find('input').val(''); // Enable camera Stream.
+
+      navigator.mediaDevices.getUserMedia({
+        video: true
+      }).then(function (stream) {
+        _this.videoElement.srcObject = stream;
+
+        _this.videoElement.play();
+      })["catch"](function (error) {
+        Swal.fire({
+          title: 'Media / Webcam Error',
+          text: "Error accessing camera:",
+          icon: 'error'
+        });
+        console.error('Error accessing camera:', error);
+      });
+    }
+  }, {
+    key: "captureImage",
+    value: function captureImage(elm) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      var _wrapperElement = $(elm).closest(params.parent);
+
+      var canvas = document.createElement('canvas');
+      canvas.width = this.videoElement.videoWidth;
+      canvas.height = this.videoElement.videoHeight;
+      canvas.getContext('2d').drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
+      var image = canvas.toDataURL('image/png', 1);
+      $(_wrapperElement).find(params.field).val(image);
+      this.postRecord('/admin/dharmasala/bookings/upload-capture-media', {
+        'image': image
+      }).then(function (response) {
+        // Assign image path to field.
+        if (response.data.params && response.data.params.path) {
+          $(_wrapperElement).find(params.field).val(response.data.params.path);
+        }
+      })["catch"](function (error) {
+        Swal.fire({
+          title: 'Media Error',
+          text: "Error Saving Media. Please check your file permission.",
+          icon: 'error'
+        });
+        console.error(error);
+      });
+      $(_wrapperElement).find('img').attr('src', image).removeClass('d-none');
+      canvas.remove();
+      $(_wrapperElement).find('video').addClass('d-none');
+      $(elm).addClass('d-none').attr('disabled', 'disabled');
+
+      if (this.videoElement.srcObject) {
+        // Get the stream tracks
+        var tracks = this.videoElement.srcObject.getTracks(); // Stop each track
+
+        tracks.forEach(function (track) {
+          return track.stop();
+        }); // Reset the video source
+
+        this.videoElement.srcObject = null;
+      }
+    }
+  }, {
+    key: "postRecord",
+    value: function postRecord(_url) {
+      var body = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      return axios.post(_url, body, {
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+      });
+    }
+  }, {
+    key: "verifyEmail",
+    value: function verifyEmail() {
+      var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var _this = this;
+
+      _this.email = $("input[name='search_field']").val();
+      params.userKeyword = _this.email;
+      this.postRecord('/admin/members/partials-validate', params).then(function (response) {
+        window.handleOKResponse(response.data);
+      });
+    }
+  }, {
+    key: "newRegistration",
+    value: function newRegistration() {
+      var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      var _this = this;
+
+      this.postRecord('/admin/members/partials-validate?new-registration=true', params).then(function (response) {
+        window.handleOKResponse(response.data);
+      });
+    }
+  }, {
+    key: "validatePartials",
+    value: function validatePartials(params) {
+      $('#postVerificationPage').html(params.view);
+    }
+  }]);
+
+  return MemberRegistration;
+}();
+window.memberRegistration = new MemberRegistration();
+
+/***/ }),
+
 /***/ "./resources/js/partials/programs.js":
 /*!*******************************************!*\
   !*** ./resources/js/partials/programs.js ***!
@@ -5761,6 +5989,42 @@ $(function () {
 
 /***/ }),
 
+/***/ "./resources/js/partials/room.js":
+/*!***************************************!*\
+  !*** ./resources/js/partials/room.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "RoomBooking": () => (/* binding */ RoomBooking)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var RoomBooking = /*#__PURE__*/function () {
+  function RoomBooking() {
+    _classCallCheck(this, RoomBooking);
+  }
+
+  _createClass(RoomBooking, [{
+    key: "bookUserToRoom",
+    value: function bookUserToRoom() {
+      var params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+      console.log('params: ', params);
+    }
+  }]);
+
+  return RoomBooking;
+}();
+window.dharmasalaBooking = new RoomBooking();
+
+/***/ }),
+
 /***/ "./resources/js/partials/select2.js":
 /*!******************************************!*\
   !*** ./resources/js/partials/select2.js ***!
@@ -5787,16 +6051,13 @@ window.ajaxReinitalize = function (element) {
           return query;
         },
         results: function results(data) {
-          console.log('data: ', data);
           return {
             results: data
           };
         }
       };
-      console.log('select2', $(element).closest('[data-dropdown]'));
 
       if ($(element).closest('[data-dropdown]').length) {
-        console.log('#' + $(element).closest('[data-dropdown]').attr('data-dropdown'));
         options.dropdownParent = '#' + $(element).closest('[data-dropdown]').attr('data-dropdown');
       }
 
@@ -5807,7 +6068,6 @@ window.ajaxReinitalize = function (element) {
 
 window.select2Options = function () {
   if ($('select').length) {
-    console.log('hello');
     $.each($('select'), function (index, element) {
       if (!$(element).hasClass('no-select-2')) {
         window.ajaxReinitalize(element);
@@ -5848,6 +6108,32 @@ $(document).on('change', 'select[name="slider_layout"]', function (event) {
   if ($('.' + _sliderValue).length) {
     $('.' + _sliderValue).removeClass('d-none');
   }
+});
+$(document).on('change', '#building_selection_to_room', function () {
+  var _floorElement = $('#floor_selection_to_room');
+
+  if (!_floorElement.length) {
+    return true;
+  } // otherwise change the list option according to building options.
+
+
+  _floorElement.empty();
+
+  var _buildingID = $(this).find(':selected').val();
+
+  var _buildingName = $(this).find(':selected').text();
+
+  _floorElement.removeAttr('data-action');
+
+  _floorElement.attr('data-action', '/admin/select2/select2/list/floor/' + _buildingID);
+
+  _floorElement.select2({
+    placeholder: 'Select Floor for ' + _buildingName,
+    ajax: {
+      url: _floorElement.attr('data-action'),
+      dataType: 'json'
+    }
+  });
 });
 
 /***/ }),

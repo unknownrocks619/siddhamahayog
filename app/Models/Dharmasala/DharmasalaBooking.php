@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use App\Models\Images;
+use App\Models\ImageRelation;
 class DharmasalaBooking extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected  $fillable = [
+        'id_parent',
         'room_number',
         'building_id',
         'floor_id',
@@ -30,6 +32,7 @@ class DharmasalaBooking extends Model
         'profile',
         'id_card',
         'status',
+        'relation_with_parent',
         'uuid'
     ];
 
@@ -51,4 +54,34 @@ class DharmasalaBooking extends Model
     public const PROCESSING=6;
     public const LEGACY = 7;
 
+    const IMAGES = [
+        'profile'   => "Profile Image",
+        'id'    => 'ID Image'
+    ];
+
+    public function getChildBookings() {
+        return $this->hasMany(DharmasalaBooking::class,'id_parent','id');
+    }
+
+    public function profileImage() {
+        return $this->belongsTo(Images::class,'profile');
+    }
+
+    public function idCardImage() {
+        return $this->belongsTo(Images::class,'id_card');
+    }
+
+    public function profile() {
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
+            ->where('relation',self::class)
+            ->where('type','profile')
+            ->latest();
+    }
+
+    public function IDImage() {
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
+            ->where('relation',self::class)
+            ->where('type','id')
+            ->latest();
+    }
 }

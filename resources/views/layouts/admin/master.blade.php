@@ -99,7 +99,7 @@
 {{--<script src="https://cdn.jsdelivr.net/npm/@tinymce/tinymce-jquery@2/dist/tinymce-jquery.min.js"></script>--}}
 <script src="https://cdn.tiny.cloud/1/gfpdz9z1bghyqsb37fk7kk2ybi7pace2j9e7g41u4e7cnt82/tinymce/6/tinymce.min.js"
     referrerpolicy="origin"></script>
-
+@stack('vendor_script')
 <!-- Main JS -->
 <script src="{{ asset ('themes/admin/assets/js/main.js')}}"></script>
 <script src="{{mix('js/app.js')}}"></script>

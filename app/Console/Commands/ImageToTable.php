@@ -154,6 +154,53 @@ class ImageToTable extends Command
 
     }
 
+    public function uploadImage(string $filepath,string $originalFilename) {
+
+        $context = stream_context_create(array(
+            'ssl' => array(
+                'verify_peer' => true,
+                'verify_peer_name' => true,
+            ),
+        ));
+
+
+//        if ( ! $this->url_exists($url) ) {
+//            echo 'Skipping URL ' . $url .' File Does not exists.' . PHP_EOL;
+//            return;
+//        }
+
+        $generatedFilename = Str::random(40);
+        $fileExtension = pathinfo($filepath,PATHINFO_EXTENSION);
+        $sizes = config('image-settings')['sizes'];
+//        $imageContent = file_get_contents($url);
+        $imageContent = file_get_contents($filepath, true, $context);
+        $baseOriginal = 'uploads/org/'.date('Y').'/'.date('m');
+        Storage::disk('local')->put($baseOriginal.'/'.$generatedFilename.'.'.$fileExtension,$imageContent);
+
+        foreach ($sizes as $sizeName => $sizeConfig) {
+            $resizeImage = \Intervention\Image\ImageManagerStatic::make(Storage::disk('local')->get($baseOriginal.'/'.$generatedFilename.'.'.$fileExtension));
+            $resizeImage->resize($sizeConfig['width'], $sizeConfig['height'], function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $resizeImage->encode();
+            $baseDir = 'uploads/' . $sizeName . '/' . date("Y") . '/' . date('m');
+            Storage::disk('local')->put($baseDir . '/' . $generatedFilename.'.'.$fileExtension, $resizeImage->__toString());
+        }
+
+        $image = new Images();
+        $image->fill([
+            'filename'  => $generatedFilename,
+            'original_filename' => $originalFilename,
+            'filepath'  => date("Y").'/'.date('m').'/'.$generatedFilename.'.'.$fileExtension,
+            'sizes' => [],
+            'access_type'   => 'path'
+        ]);
+
+        $image->save();
+
+        return $image;
+    }
 
 // Function to check if a URL exists
     function url_exists($url)

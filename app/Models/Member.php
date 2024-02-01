@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -180,14 +181,21 @@ class Member extends Authenticatable
         return $full_name;
     }
 
-    public function profileImage() {
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     */
+    public function profileImage() : HasOneThrough {
         return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
                     ->where('relation',self::class)
                     ->where('type','profile_picture')
                     ->latest();
     }
 
-    public function memberIDMedia() {
+    /**
+     * @return HasOneThrough
+     */
+    public function memberIDMedia(): HasOneThrough {
         return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id')
             ->where('relation',self::class)
             ->where('type','id_card')

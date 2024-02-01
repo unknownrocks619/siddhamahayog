@@ -2,9 +2,11 @@
 
 namespace App\Classes\Helpers;
 use App\Models\ImageRelation as FileRelation;
+use App\Models\Images;
 use App\Models\Images as ModelsImage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as ImageManager;
 
 class Image
@@ -151,8 +153,42 @@ class Image
             return $result;
         }
 
-
-
         return $result;
+    }
+
+    public static function urlToImage(string $url,$originalSource = 'dharmasala-processing') {
+
+        $originalFilename = pathinfo($url, PATHINFO_FILENAME);
+        $generatedFilename = Str::random(40);
+        $fileExtension = pathinfo($url,PATHINFO_EXTENSION);
+        $sizes = config('image-settings')['sizes'];
+        $originalFileSource = $originalSource.'/'.$originalFilename.'.'.$fileExtension;
+        $baseOriginal = 'uploads/org/'.date('Y').'/'.date('m');
+        Storage::disk('local')->copy($originalFileSource,$baseOriginal.'/'.$generatedFilename.'.'.$fileExtension);
+
+        foreach ($sizes as $sizeName => $sizeConfig) {
+
+            $resizeImage = \Intervention\Image\ImageManagerStatic::make(Storage::disk('local')->get($baseOriginal.'/'.$generatedFilename.'.'.$fileExtension));
+            $resizeImage->resize($sizeConfig['width'], $sizeConfig['height'], function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $resizeImage->encode();
+            $baseDir = 'uploads/' . $sizeName . '/' . date("Y") . '/' . date('m');
+            Storage::disk('local')->put($baseDir . '/' . $generatedFilename.'.'.$fileExtension, $resizeImage->__toString());
+        }
+
+        $image = new Images();
+        $image->fill([
+            'filename'  => $generatedFilename,
+            'original_filename' => $originalFilename,
+            'filepath'  => date("Y").'/'.date('m').'/'.$generatedFilename.'.'.$fileExtension,
+            'sizes' => [],
+            'access_type'   => 'path'
+        ]);
+
+        $image->save();
+
+        return $image;
     }
 }

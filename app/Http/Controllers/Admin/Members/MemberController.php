@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin\Members;
 
 use App\Console\Commands\ImageToTable;
+use App\Http\Controllers\Admin\Dharmasala\BookingController;
 use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
-use App\Models\MemberNotes;
 use App\Models\Program;
 use App\Models\ProgramBatch;
 use App\Models\ProgramHoliday;
@@ -109,19 +109,12 @@ class MemberController extends Controller
                 'gender'        => 'required',
                 'phone_number'  => 'required',
                 'city'         => 'required',
-                'street_address'    => 'required',
+                'address'    => 'required',
                 'country'       => 'required',
+                'password'      => 'required_if:enable_login,1'
             ]);
 
-            if ( $source && $source == 'dharmasala') {
-                $request->validate([
-                    'check_in' => 'required',
-                    'id_card'   => 'required',
-                    'media' => 'required',
-                    'room_number'   => 'required',
-                ]);
-            }
-
+            $member = null;
 
             $fill = [
                 'first_name'    => $request->post('first_name'),
@@ -130,79 +123,83 @@ class MemberController extends Controller
                 'phone_number'  =>  $request->post('phone_number'),
                 'country'       => $request->post('country'),
                 'city'          => $request->post('city'),
-                'street_address'    => $request->post('street_address'),
+                'address'    => ['street_address' => $request->post('address')],
                 'date_of_birth' => $request->post('date_of_birth'),
                 'gender'        => $request->post('gender')
             ];
-
 
             $full_name = $fill['first_name'];
 
             if ( $fill['middle_name'] ) {
                 $full_name .= " " . $fill['middle_name'];
             }
+
             $full_name .= " " . $fill['last_name'];
 
             $fill['full_name']  = $full_name;
 
             // if email exists and is not empty;
-            if ( $request->post('email') ) {
-                $memberExists = Member::where('email',$request->post('email'))->exists();
+            $member = Member::where('email',$request->post('email'))->first();
 
-                if ( $memberExists ) {
-                    return $this->json(false, 'Email already exists.');
-                }
-
-                $fill['email'] = $request->post('email');
-            }
-
-            $member = null;
-
-            if ($source && $source == 'darmasala') {
-
-                // setup only booking info.
+            if (! $member ) {
                 $member = new Member();
                 $member->fill($fill);
-                if ( $request->post('online_registration') ) {
-
-                    if ( ! $member->save() ) {
-                        return $this->json(false,'Unable to save user info.');
-                    }
-
-                }
-
-                $carbonCheckIn = Carbon::createFromFormat('Y-m-d\TH:i', $request->post('check_in'));
-
-                $room = DharmasalaBuildingRoom::where('id',$request->post('room_number'))->first();
-
-                $dharmasala = new DharmasalaBooking();
-                $dharmasala->fill([
-                    'building_id'   => $room->building_id,
-                    'room_id'       => $room->room_id,
-                    'floor_id'      => $room->floor_id,
-                    'member_id'     => $member?->getKey(),
-                    'room_number'   => $room->room_number,
-                    'building_name' => $room->building?->building_name,
-                    'floor_name'    => $room->floor?->floor_name,
-                    'full_name'     => $member->full_name,
-                    'email'         => $member->email,
-                    'phone_number'  => $member->phone_number,
-                    'check_in'      => $carbonCheckIn->format('Y-m-d'),
-                    'check_in_time' => $carbonCheckIn->format('H:i A'),
-                    'check_out'     => null,
-                    'profile'       => null,
-                    'status'        => DharmasalaBooking::CHECKED_IN
-                ]);
-
-                $dharmasala->save();
-
-                return $this->json(true,'Member Registration & Booking Complete.','redirect',['location' => route('admin.dharmasala.building.list')]);
-
+                $member->source = 'dharmasala';
+                $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
+                $member->sharing_code = Str::random(8);
             }
 
+            $member->email = $request->post('email');
+
+            try {
+                $dharmasalaResponse = null;
+                DB::transaction(function() use ($member,$request, $source, &$dharmasalaResponse) {
+                    $member->save();
+
+                    if ( $request->has('dharmasala') && $request->get('dharmasala') == true) {
+                        $dharmasalaResponse = (new BookingController())->createNewUserBooking($request,$member);
+                    }
+
+                });
+
+            } catch (\Error $error ) {
+                return $this->json(false,'Failed to create. Error: '. $error->getMessage());
+            }
+
+            if ($dharmasalaResponse){
+                return $dharmasalaResponse;
+            }
             return $this->json(true,'New Member Registration created.','reload');
         }
+
         return view("admin.members.create");
+    }
+
+    public function memberVerification(Request $request) {
+
+        $view = 'admin.members.partials.new-registration';
+        $memberSearch = collect([]);
+        $params = [];
+
+        if (! $request->get('new-registration')) {
+            $memberSearch = Member::where('email',$request->post('userKeyword'))
+                ->orWhere('phone_number','LIKE','%'.$request->post('userKeyword').'%')
+                ->orWhere('full_name','LIKE','%'.$request->post('userKeyword').'%')
+                ->limit(20)
+                ->with(['profileImage'])
+                ->get();
+
+            if ($memberSearch->count() ) {
+                $view = 'admin.members.partials.member-selection';
+                $params['members'] = $memberSearch;
+            }
+        }
+
+        $email = filter_var($request->post('userKeyword'),FILTER_VALIDATE_EMAIL);
+        $params['email'] = $email;
+        $params['dharmasala'] = $request->post('dharmasala');
+
+        return $this->json(true,'','validatePartials',['view' => view($view,$params)->render()]);
     }
 
     /**

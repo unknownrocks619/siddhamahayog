@@ -69,7 +69,7 @@
                     <th>Check In Date</th>
                     <th>Check Out Date</th>
                     <th>Booking Status</th>
-{{--                    <th>QR Code</th>--}}
+                    <th>QR Code</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -83,7 +83,7 @@
                         <th>Check In Date</th>
                         <th>Check Out Date</th>
                         <th>Booking Status</th>
-{{--                        <th>QR Code</th>--}}
+                        <th>QR Code</th>
                         <th></th>
                     </tr>
                 </tfoot>
@@ -152,10 +152,10 @@
                     data: "status",
                     name: "status"
                 },
-                // {
-                //     data : 'qr',
-                //     name : 'qr'
-                // },
+                {
+                    data : 'qr',
+                    name : 'qr'
+                },
                 {
                     data: "action",
                     name: "action",

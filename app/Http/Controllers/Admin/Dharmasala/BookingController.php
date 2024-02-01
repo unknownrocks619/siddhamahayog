@@ -11,6 +11,7 @@ use App\Models\Donation;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use DataTables;
@@ -188,6 +189,12 @@ class BookingController extends  Controller
         }
         return view('admin.dharmasala.booking.list',$params);
     }
+    
+    public function confirmation(Request $request , DharmasalaBooking $booking) {
+        $booking->load('getChildBookings');
+
+        return view('admin.dharmasala.booking.confirmation',['booking' => $booking]);
+    }
 
     public function create(Request $request, DharmasalaBuildingRoom $room = null, DharmasalaBuildingFloor $floor=null, DharmasalaBuilding $building=null) {
 //        $request->validate([
@@ -216,6 +223,7 @@ class BookingController extends  Controller
 
         $error = [];
         foreach ($request->post('members') as $key => $value) {
+
             $member = $memberRecord->where('id',$value)->first();
 
             if ( ! $member) {
@@ -259,6 +267,7 @@ class BookingController extends  Controller
         return $this->json(true,' New booking confirmed.','reload');
 
     }
+
     public function selectUsers(Request $request) {
         // search member and display result.
         $members = Member::where('email', $request->member)
@@ -340,5 +349,207 @@ class BookingController extends  Controller
         }
 
         return $this->json(true,'Check Out Success','reload');
+    }
+
+    public function updateRoom(DharmasalaBooking $booking) {
+
+    }
+
+    public function createNewUserBooking(Request $request,Member $member=null) {
+        $request->validate([
+//            'check_in' => 'required',
+            'id_card'   => 'required',
+            'live_webcam_image' => 'required',
+        ]);
+
+
+        // First save main member detail.
+        $booking = new DharmasalaBooking();
+
+        $booking->fill([
+            'room_id'   => $request->post('room_number') ?? 0,
+            'member_id' =>$member?->getKey() ?? $request->post('member'),
+            'room_number'   => 0,
+            'full_name' => $member?->full_name() ?? $request->post('first_name') . ' ' . $request->post('last_name'),
+            'email' => $member->email,
+            'phone_number'  => $member->phone_number,
+            'profile'   => $member?->profileImage()->first()?->getKey(),
+            'id_card'   => $member?->memberIDMedia()->first()?->getKey(),
+            'status'    => DharmasalaBooking::PROCESSING,
+            'uuid'      => Str::uuid(),
+        ]);
+
+        // If Image is captured through camera
+        if ($request->post('live_webcam_image') ) {
+
+            $isUrl = str($request->post('live_webcam_image'))->contains('http');
+
+            if ($isUrl) {
+                $mediaImage = $request->post('live_webcam_image');
+            } else {
+                $mediaImage = $this->uploadMemberMedia($request,$request->post('live_webcam_image'),'path');
+            }
+
+             $booking->profile = (Image::urlToImage($mediaImage))?->getKey();
+        }
+
+
+        if ($request->file('id_card') ) {
+
+            $idImageCard = (Image::uploadOnly($request->file('id_card')));
+
+            if (  isset ($idImageCard[0]) ) {
+                $booking->id_card = $idImageCard[0]->getKey();
+            }
+
+        } elseif (! $request->file('id_card') && $request->post('id_card_image') ) {
+
+            $isUrl = str($request->post('id_card_image'))->contains('http');
+
+            if ( ! $isUrl) {
+                $idMediaImage = $request->post('id_card_image');
+            } else {
+                $idMediaImage = $this->uploadMemberMedia($request,$request->post('id_card_image'),'path');
+            }
+
+            $booking->id_card = (Image::urlToImage($idMediaImage))?->getKey();
+        }
+
+        if ($request->post('room_number') ) {
+            $room = DharmasalaBuildingRoom::with(['building','floor'])->find($request->post('room-number'));
+
+            if ( $room ) {
+
+                $booking->room_number = $room->room_number;
+                $booking->room_id = $room->getKey();
+                $booking->building_id = $room->building_id;
+                $booking->floor_id = $room->floor_id;
+                $booking->building_name = $room->building?->building_name;
+                $booking->floor_name = $room->floor?->floor_name;
+            }
+        }
+
+        $booking->save();
+        
+
+        if ($request->post('connectorFullName') && is_array($request->post('connectorFullName')) ) {
+
+            $bulkInsert = [];
+        
+            foreach ($request->post('connectorFullName') as $key => $relationFullName) {
+
+                $innerArray = [
+                    'full_name' => $relationFullName,
+                    'relation_with_parent'  => $request->post('relation')[$key],
+                    'phone_number'   => $request->post('relationPhoneNumber')[$key],
+                    'created_at' => Carbon::now(),
+                    'updated_at'    => Carbon::now(),
+                    'id_parent' => $booking->getKey(),
+                    'room_id'   => 0,
+                    'room_number'   => 0,
+                    'status'    => DharmasalaBooking::PROCESSING
+                ];
+
+                // now save image for this relation.
+                $imageRelationURL = $request->post('relationImage')[$key];
+                $checkImage = str($imageRelationURL)->contains('http');
+
+                if (  ! $checkImage ) {
+                    $imageRelationURL = $this->uploadMemberMedia($imageRelationURL);
+                }
+
+                $innerArray['profile'] = (Image::urlToImage($imageRelationURL))?->getKey();
+
+                if ($innerArray['profile']) {
+                    $innerArray['check_in'] = Carbon::now()->format('Y-m-d');
+                    $innerArray['check_in_time'] = Carbon::now()->format("H:i:s");
+                }
+
+                $bulkInsert[] = $innerArray;
+            }
+
+            DharmasalaBooking::insert($bulkInsert);
+            
+        }
+
+        return $this->json(true,'Booking Created. Please Confirm Your','redirect',['location' => route('admin.dharmasala.booking.confirmation',['booking' => $booking])]);
+
+    }
+
+    public function uploadMemberMedia(Request $request, $base64Path=null,$return=null) {
+        if (! $base64Path ) {
+            $request->validate([
+                'image' => 'required'
+            ]);
+        }
+
+        $imageData = $base64Path ?? $request->post('image');
+        $base64Image = substr($imageData, strpos($imageData, ',') + 1);
+        // Decode base64 image data
+        $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64Image));
+        $filename = time().uniqid() . '.png';
+
+        Storage::disk('local')->put('dharmasala-processing/' . $filename, $image);
+
+        if ( ! $return ) {
+            return $this->json(true,'Image Captured',null,['path' => asset('dharmasala-processing/'.$filename)]);
+        } else {
+            return asset('dharmasala-processing/'.$filename);
+        }
+    }
+
+    public function update(Request $request , DharmasalaBooking $booking) {
+
+        if ($request->post('room_number') ) {
+
+            $room = DharmasalaBuildingRoom::with(['building','floor'])->findOrFail($request->post('room_number'));
+            $booking->room_number = $room->room_number;
+            $booking->room_id = $room->getKey();
+            $booking->building_id = $room->building?->getKey();
+            $booking->building_name = $room->building?->building_name;
+            $booking->floor_id = $room->floor?->getKey();
+            $booking->floor_name = $room->floor?->floor_name;
+        }
+        
+        if ( $request->post('id_card_media') )  {
+
+        }
+
+        if ($request->post('live_media') ) {
+
+        }
+
+        if ($request->post('check_in')) {
+            $carbonTime = Carbon::createFromFormat();
+        }
+
+        if ( $request->post('check_out')) {
+
+        }
+
+        if ($request->post('full_name') ) {
+
+        }
+
+        if ($request->post('phone_number') ) {
+            
+        }
+
+        if ($request->post('removeRelation') ) {
+
+        }
+
+        if ( $request->post('addRelation') ) {
+
+        }
+
+        if ( ! $booking->save() ) {
+            return $this->json(false,'Error: unable to update record.');
+        }
+
+        $jsCallback = $request->callback ?? null;
+        $params = $request->params ?? [];
+
+        return $his->json(true,'Information Updated.',$jsCallback,$params);
     }
 }

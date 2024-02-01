@@ -79,12 +79,14 @@ $(function () {
     window.handleOKResponse = function (response) {
         if (response.status == 200) {
             messageBox(response.state, response.msg);
-
             if ((response.callback !== null || response.callback !== '')) {
                 let fn = window[response.callback];
 
                 if (typeof (fn) === 'function') {
-                    fn(response.params);
+                    return fn(response.params);
+                }
+                if (fn === undefined && typeof (window.memberRegistration[response.callback]) === 'function') {
+                    return window.memberRegistration[response.callback](response.params);
                 }
             }
         }
@@ -156,7 +158,7 @@ $(function () {
             type: (status) ? 'success' : 'danger',
             allow_dismiss: true,
             showProgressbar: true,
-            timer: 100000,
+            timer: 0.1,
             animate: {
                 enter: 'animated fadeInDown',
                 exit: 'animated fadeOutUp'
