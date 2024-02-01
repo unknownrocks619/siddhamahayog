@@ -46,7 +46,7 @@ class MemberController extends Controller
             $datatable = DataTables::of(Member::all_members($searchTerm))
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
-                   return strip_tags($row->full_name);
+                   return htmlspecialchars(strip_tags($row->full_name));
                 })
                 ->addColumn('country', function ($row) {
                     // return $row->countries->country_name;

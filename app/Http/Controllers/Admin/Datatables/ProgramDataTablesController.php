@@ -66,7 +66,7 @@ class ProgramDataTablesController extends Controller
             })
             ->addColumn('full_name', function ($row) {
 
-                return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program-section','_refID' => $row->section_id])."'>".$row->full_name."</a>";
+                return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program-section','_refID' => $row->section_id])."'>".htmlspecialchars(strip_tags($row->full_name))."</a>";
             })
             ->addColumn('phone_number', function ($row) {
                 return $row->phone_number ?? 'N/A';
@@ -100,7 +100,7 @@ class ProgramDataTablesController extends Controller
                     return 'N/A';
                 }
                 if ($row->member_country && ! (int) $row->member_country) {
-                    return $row->member_country;
+                    return htmlspecialchars(strip_tags($row->member_country));
                 }
 
                 return $row->country_name;
@@ -113,14 +113,14 @@ class ProgramDataTablesController extends Controller
 
                 $addressDecode = json_decode($row->address);
                 if ( isset($addressDecode->street_address) ) {
-                    return $addressDecode->street_address;
+                    return htmlspecialchars(strip_tags($addressDecode->street_address));
                 }
 
                 if ( $row->personal_detail ) {
                     $detailDecode = json_decode($row->personal_detail);
 
                     if (isset($detailDecode->street_address) ) {
-                        return $detailDecode->street_address;
+                        return htmlspecialchars(strip_tags($detailDecode->street_address));
                     }
                 }
 
@@ -157,7 +157,7 @@ class ProgramDataTablesController extends Controller
 
             })
             ->addColumn('full_name', function ($row) {
-                return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program-section','_refID' => $row->section_id])."'>".$row->full_name."</a>";
+                return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program-section','_refID' => $row->section_id])."'>".htmlspecialchars(strip_tags($row->full_name))."</a>";
             })
             ->addColumn('phone_number', function ($row) {
                 return $row->phone_number ?? 'N/A';
@@ -191,10 +191,10 @@ class ProgramDataTablesController extends Controller
                     return 'N/A';
                 }
                 if ($row->member_country && ! (int) $row->member_country) {
-                    return $row->member_country;
+                    return htmlspecialchars(strip_tags($row->member_country));
                 }
 
-                return $row->country_name;
+                return htmlspecialchars(strip_tags($row->country_name));
 
             })
             ->addColumn('full_address', function($row) {
@@ -204,14 +204,14 @@ class ProgramDataTablesController extends Controller
 
                 $addressDecode = json_decode($row->address);
                 if ( isset($addressDecode->street_address) ) {
-                    return $addressDecode->street_address;
+                    return htmlspecialchars(strip_tags($addressDecode->street_address));
                 }
 
                 if ( $row->personal_detail ) {
                     $detailDecode = json_decode($row->personal_detail);
 
                     if (isset($detailDecode->street_address) ) {
-                        return $detailDecode->street_address;
+                        return htmlspecialchars(strip_tags($detailDecode->street_address));
                     }
                 }
 
