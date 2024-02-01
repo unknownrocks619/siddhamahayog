@@ -324,13 +324,13 @@ class AdminProgramController extends Controller
 
                 })
                 ->addColumn('$rawColumns', function ($row) {
-                    return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".$row->full_name."</a>";
+                    return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".strip_tags($row->full_name)."</a>";
                 })
                 ->addColumn('phone_number', function ($row) {
                     return $row->phone_number ?? 'N/A';
                 })
                 ->addColumn('email', function ($row) {
-                    return $row->email ?? 'N/A';
+                    return strip_tags($row->email) ?? 'N/A';
                 })
                 ->addColumn('total_payment', function ($row) {
                     if ( ! $row->member_payment ) {
@@ -370,14 +370,14 @@ class AdminProgramController extends Controller
 
                     $addressDecode = json_decode($row->address);
                     if ( isset($addressDecode->street_address) ) {
-                        return $addressDecode->street_address;
+                        return strip_tags($addressDecode->street_address);
                     }
 
                     if ( $row->personal_detail ) {
                         $detailDecode = json_decode($row->personal_detail);
 
                         if (isset($detailDecode->street_address) ) {
-                            return $detailDecode->street_address;
+                            return strip_tags($detailDecode->street_address);
                         }
                     }
 
