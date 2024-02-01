@@ -323,8 +323,8 @@ class AdminProgramController extends Controller
                     return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
 
                 })
-                ->addColumn('$rawColumns', function ($row) {
-                    return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".strip_tags($row->full_name)."</a>";
+                ->addColumn('full_name', function ($row) {
+                    return htmlspecialchars(strip_tags($row->full_name));
                 })
                 ->addColumn('phone_number', function ($row) {
                     return $row->phone_number ?? 'N/A';
@@ -386,10 +386,10 @@ class AdminProgramController extends Controller
 
                 })
                 ->addColumn('action', function ($row) {
-                    $action ='';
+                    $action ='<a href="'.route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id]).'"><i class="fas fa-eye"></i></a>';
                     return $action;
                 })
-                ->rawColumns(["total_payment", "action", "roll_number",'full_name'])
+                ->rawColumns(["total_payment", "action", "roll_number"])
                 ->make(true);
             return $datatable;
         }
