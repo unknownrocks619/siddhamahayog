@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Members;
 
+use App\Classes\Helpers\Image;
 use App\Console\Commands\ImageToTable;
 use App\Http\Controllers\Admin\Dharmasala\BookingController;
 use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
+use App\Models\ImageRelation;
+use App\Models\Images;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\MemberInfo;
@@ -114,7 +117,6 @@ class MemberController extends Controller
                 'password'      => 'required_if:enable_login,1'
             ]);
 
-            $member = null;
 
             $fill = [
                 'first_name'    => $request->post('first_name'),
@@ -138,10 +140,20 @@ class MemberController extends Controller
 
             $fill['full_name']  = $full_name;
 
-            // if email exists and is not empty;
-            $member = Member::where('email',$request->post('email'))->first();
+            if ( $request->post('exisiting_member') && $request->post('memberID') ) {
+                $member = Member::find($request->post('memberID'));
+            } else {
+
+                $request->validate([
+                    'email' => 'required|email'
+                ]);
+
+                // if email exists and is not empty;
+                $member = Member::where('email',$request->post('email'))->first();
+            }
 
             if (! $member ) {
+
                 $member = new Member();
                 $member->fill($fill);
                 $member->source = 'dharmasala';
@@ -155,6 +167,37 @@ class MemberController extends Controller
                 $dharmasalaResponse = null;
                 DB::transaction(function() use ($member,$request, $source, &$dharmasalaResponse) {
                     $member->save();
+
+                    if ($request->file('id_card') ) {
+                        $memberIDCard = Image::uploadImage($request->file('id_card'),$member);
+
+                        if (isset ($memberIDCard[0]['relation'])) {
+                            $memberCardType = $memberIDCard[0]['relation'];
+                            $memberCardType->type = 'id_card';
+                            $memberCardType->save();
+                        }
+
+                    } elseif (! $request->file('id_card') && $request->post('id_card_image') ) {
+
+                        $isUrl = str($request->post('id_card_image'))->contains('http');
+
+                        if ( $isUrl) {
+
+                            $idMediaImage = $request->post('id_card_image');
+                        } else {
+                            $idMediaImage = (new BookingController())->uploadMemberMedia($request,$request->post('id_card_image'),'path');
+                        }
+                        $uploadImageFromUrl = Image::urlToImage($idMediaImage,'dharmasala-processing');
+
+                        if (! $uploadImageFromUrl instanceof  Images)  {
+                            throw new \Error('Unable to verify ID Card. Please try again or try uploading image.');
+                        }
+
+                        $imageRelation = (new ImageRelation())->storeRelation($member,$uploadImageFromUrl);
+                        $imageRelation->type = 'id_card';
+                        $imageRelation->saveQuietly();
+
+                    }
 
                     if ( $request->has('dharmasala') && $request->get('dharmasala') == true) {
                         $dharmasalaResponse = (new BookingController())->createNewUserBooking($request,$member);
@@ -172,7 +215,12 @@ class MemberController extends Controller
             return $this->json(true,'New Member Registration created.','reload');
         }
 
-        return view("admin.members.create");
+        $member = null;
+        if ($request->get('member') ) {
+            $member = Member::find($request->get('member'));
+        }
+
+        return view("admin.members.create",['member' => $member]);
     }
 
     public function memberVerification(Request $request) {
@@ -181,7 +229,7 @@ class MemberController extends Controller
         $memberSearch = collect([]);
         $params = [];
 
-        if (! $request->get('new-registration')) {
+        if (! $request->get('new-registration') && ! $request->get('member')) {
             $memberSearch = Member::where('email',$request->post('userKeyword'))
                 ->orWhere('phone_number','LIKE','%'.$request->post('userKeyword').'%')
                 ->orWhere('full_name','LIKE','%'.$request->post('userKeyword').'%')
@@ -193,6 +241,10 @@ class MemberController extends Controller
                 $view = 'admin.members.partials.member-selection';
                 $params['members'] = $memberSearch;
             }
+        }
+
+        if ( $request->get('member') ) {
+            $params['member'] = Member::find($request->get('member'));
         }
 
         $email = filter_var($request->post('userKeyword'),FILTER_VALIDATE_EMAIL);

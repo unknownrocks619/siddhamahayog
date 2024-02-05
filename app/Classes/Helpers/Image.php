@@ -95,7 +95,6 @@ class Image
             list($width, $height) = getimagesize($image->getRealPath());
 
             foreach ($settings['sizes'] as $folder => $option) {
-
                 $resizeImage = ImageManager::make($image->getRealPath());
                 $resizeImage->resize($option['height'], $option['width'], function ($constraint) {
                     $constraint->aspectRatio();
@@ -103,8 +102,7 @@ class Image
                 });
                 $resizeImage->encode();
                 $baseDir = $folder . '/' . date("Y") . '/' . date('m');
-
-                Storage::disk('local')->put($baseDir . '/' . $generatedFilename, $resizeImage->__toString());
+                Storage::disk('local')->put('uploads'.'/'.$baseDir . '/' . $generatedFilename, $resizeImage->__toString());
             }
 
             $image->store('uploads/org/' . date('Y') . '/' . date('m'));
@@ -173,9 +171,11 @@ class Image
                 $constraint->aspectRatio();
                 $constraint->upsize();
             });
+
             $resizeImage->encode();
             $baseDir = 'uploads/' . $sizeName . '/' . date("Y") . '/' . date('m');
             Storage::disk('local')->put($baseDir . '/' . $generatedFilename.'.'.$fileExtension, $resizeImage->__toString());
+
         }
 
         $image = new Images();
@@ -188,7 +188,6 @@ class Image
         ]);
 
         $image->save();
-
         return $image;
     }
 }

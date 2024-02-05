@@ -71,6 +71,7 @@ export class MemberRegistration {
 
     enableCamera(elm,params={}) {
         let _this = this;
+
         if (! navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             Swal.fire({
                 title: 'Media plugin Error',
@@ -94,6 +95,11 @@ export class MemberRegistration {
         // reset previous Image / input.
         $(_videoWrapper).find('img').removeAttr('src').addClass('d-none');
         $(_videoWrapper).find('input').val('');
+
+        // hide image if requested.
+        if ( params.hideImage) {
+            $(params.hideImage).addClass('d-none')
+        }
 
         // Enable camera Stream.
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -124,7 +130,6 @@ export class MemberRegistration {
                 .drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
 
         const image = canvas.toDataURL('image/png',1);
-        $(_wrapperElement).find(params.field).val(image);
 
 
         this.postRecord('/admin/dharmasala/bookings/upload-capture-media',{'image': image}).then(function(response) {
@@ -132,7 +137,10 @@ export class MemberRegistration {
             // Assign image path to field.
             if (response.data.params && response.data.params.path) {
                 $(_wrapperElement).find(params.field).val(response.data.params.path);
+            } else {
+                $(_wrapperElement).find(params.field).val(image);
             }
+            $(params.field).trigger('change');
 
         }).catch((error)=>{
             Swal.fire({
@@ -142,9 +150,15 @@ export class MemberRegistration {
             })
 
             console.error(error);
+            $(_wrapperElement).find(params.field).val(image);
+
         });
 
-        $(_wrapperElement).find('img').attr('src',image).removeClass('d-none');
+        if (params.displayImage) {
+                $(params.displayImage).attr('src',image).removeClass('d-none');
+        } else {
+            $(_wrapperElement).find('img').attr('src',image).removeClass('d-none');
+        }
 
         canvas.remove();
 
@@ -158,6 +172,10 @@ export class MemberRegistration {
             tracks.forEach(track => track.stop());
             // Reset the video source
             this.videoElement.srcObject = null;
+        }
+
+        if (! params.parentHide ) {
+            $(_wrapperElement).addClass('d-none')
         }
     }
 

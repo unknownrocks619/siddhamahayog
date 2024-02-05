@@ -41,6 +41,9 @@ Route::prefix('admin/dharmasala')
                     ->group(function () {
                         Route::get('list/{filter?}',[BookingController::class,'index'])
                                 ->name('admin.dharmasala.booking.list');
+                        Route::match(['post'],'update/{booking}',[BookingController::class,'update'])
+                                ->name('admin.dharmasala.booking.update');
+
                         Route::get('confirmation/{booking}',[BookingController::class,'confirmation'])
                                 ->name('admin.dharmasala.booking.confirmation');
 
@@ -64,6 +67,12 @@ Route::prefix('admin/dharmasala')
 
                         Route::post('upload-capture-media',[BookingController::class,'uploadMemberMedia'])
                                 ->name('admin.dharmasala.save-camera-image');
+
+                        Route::post('update-booking-status/{booking}/{type}',[BookingController::class,'bookingConfirmation'])
+                                ->name('admin.dharmasala.update-booking-status');
+
+                        Route::get('quick-navigation/{booking}',[BookingController::class,'bookingQuickEditAjax'])
+                                ->name('admin.dharmasala.quick-navigation');
                     });
 
             /** Amenities */

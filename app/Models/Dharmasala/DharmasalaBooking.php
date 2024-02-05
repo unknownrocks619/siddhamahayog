@@ -84,4 +84,8 @@ class DharmasalaBooking extends Model
             ->where('type','id')
             ->latest();
     }
+
+    public function parentBooking() {
+        return $this->belongsTo(self::class,'id_parent');
+    }
 }

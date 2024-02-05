@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin\Datatables;
 
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
+use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Program;
 use App\Models\ProgramSection;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Carbon;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProgramDataTablesController extends Controller
 {
@@ -15,6 +18,7 @@ class ProgramDataTablesController extends Controller
     public $searchTerm = null;
     protected array $rawColumns = [];
 
+    protected int $totalRecord = 0;
     /**
      * Set Search Term
      * @param $searchTerm
@@ -40,7 +44,7 @@ class ProgramDataTablesController extends Controller
     }
 
     public function getSectionStudents(Program $program, ProgramSection $section) {
-        $datatable = DataTables::of($section->section_student($program,$this->getSearchTerm()))
+        $datatable = DataTables::collection($section->section_student($program,$this->getSearchTerm()))
             ->addColumn('roll_number', function ($row) use ($program) {
 
                 if ( $program->getKey() == 5 ) {
@@ -136,7 +140,7 @@ class ProgramDataTablesController extends Controller
     }
 
     public function getBatchStudent(Program $program, Batch $batch) {
-        $datatable = DataTables::of($batch->batchProgramStudent($program,$this->getSearchTerm()))
+        $datatable = DataTables::collection($batch->batchProgramStudent($program,$this->getSearchTerm()))
             ->addColumn('roll_number', function ($row) use ($program) {
 
                 if ( $program->getKey() == 5 ) {
@@ -224,5 +228,91 @@ class ProgramDataTablesController extends Controller
                 return $action;
             });
         return $datatable->rawColumns($this->rawColumns)->make(true);
+    }
+
+    public function dharmasalaBookingList(Request $request, $filter=null, $searchTerm="") {
+
+        $bookingsModel = DharmasalaBooking::select("*");
+
+        if ( $filter ) {
+            $bookingsModel->where('status',(int) $filter);
+        }
+
+        if ($searchTerm ) {
+            $bookingsModel->where(function($query) use ($searchTerm){
+
+                $query->where('full_name','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('floor_name','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('building_name','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('room_number','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('email','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('check_in','LIKE','%'.$searchTerm.'%')
+                    ->OrWhere('check_out','LIKE','%'.$searchTerm.'%');
+            });
+        }
+
+        if ( $request->user ) {
+            $bookingsModel->where('email',$request->user);
+            $params['sort']['user'] =  $request->user;
+        }
+
+        if ( $request->check_in) {
+            $bookingsModel->where('check_in',$request->check_in);
+            $params['sort']['check_in'] = $request->check_in;
+        }
+
+        if ( $request->filter_room) {
+            $bookingsModel->where('room_number',$request->filter_room);
+            $params['sort']['filter_room'] = $request->filter_room;
+        }
+
+        if ( $request->check_out) {
+            $bookingsModel->where('check_out',$request->check_out);
+            $params['sort']['check_out'] = $request->check_out;
+        }
+
+
+        $datatable =  DataTables::collection($bookingsModel->get())
+            ->addColumn('full_name',function($row){
+                $action = "<a href='".route('admin.dharmasala.booking.list',['user' => $row->email])."'>";
+                $action .= $row->full_name;
+                $action .= "</a>";
+                return $action;
+            })
+            ->addColumn('floor_name', fn($row) => $row->floor_name)
+            ->addColumn('room_number', function($row){
+                $action = "<a href='".route('admin.dharmasala.booking.list',['filter_room' => $row->room_number])."'>";
+                $action .= $row->room_number;
+                $action .= "</a>";
+                return $action;
+            })
+            ->addColumn('email' , fn($row) => $row->email)
+            ->addColumn('check_in', function($row) use ($request) {
+                $action = "<a href='".route('admin.dharmasala.booking.list',['check_in' => $row->check_in])."'>";
+                $action .= $row->check_in;
+                $action .= "</a>";
+                return $action;
+            })
+            ->addColumn('check_out' ,function($row) {
+                $action = "<a href='".route('admin.dharmasala.booking.list',['check_out' => $row->check_out])."'>";
+                $action .= $row->check_out;
+                $action .= "</a>";
+                return $action;
+            })
+            ->addColumn('status', function($row) {
+                return DharmasalaBooking::STATUS[$row->status];
+            })
+            ->addColumn('qr' , function($row) {
+                if (! $row->uuid) {
+                    return 'N/A';
+                }
+                return  QrCode::generate($row->uuid);
+            })
+            ->addColumn('action', function ($row) {
+                return view('admin.datatable-view.dharmasala.booking-action',['booking' => $row]);
+            });
+
+        return $datatable->rawColumns(["action",'status','qr','full_name','check_in','check_out','room_number'])
+                        ->make(true);
     }
 }

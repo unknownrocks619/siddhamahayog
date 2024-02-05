@@ -4,7 +4,13 @@
     }
 @endphp
 <div class="row mt-3">
-    <div class="{{$dharmasala== true ? 'col-md-7' : 'col-md-5'}} mx-auto">
+    <div class="{{$dharmasala== true ? 'col-md-7' : 'col-md-12'}} mx-auto">
+
+        @if($member)
+            <input type="hidden" name="memberID" value="{{$member->getKey()}}" class="form-control d-none" />
+            <input type="hidden" name="exisiting_member" value="1" class="form-control d-none" />
+        @endif
+
         <div class="card">
             <div class="card-body">
                 <!-- 1. Delivery Address -->
@@ -147,6 +153,19 @@
 
                     <hr>
                 @endif
+
+                @if($member )
+                    <div class="row m-3 g-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email
+                                    <sup class="text-danger">*</sup>
+                                </label>
+                                <input type="email" id="email" value="{{$member->email}}" disabled class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
             <div class="card-footer ">
                 <div class="row">
@@ -191,10 +210,12 @@
                             <label for="id_card" class="d-flex justify-content-between align-items-center">
                                 <span>
                                     ID Card
-                                    <sup class="text-danger">*</sup>
+                                    @if( ! $member || !$member?->memberIDMedia)
+                                        <sup class="text-danger">*</sup>
+                                    @endif
                                 </span>
                                 <span>
-                                    <button type="button" onclick="window.memberRegistration.enableCamera(this,{'cameraID' : '#idCameraContainer'})" class="btn btn-primary btn-icon">
+                                    <button type="button" onclick="window.memberRegistration.enableCamera(this,{'cameraID' : '#idCameraContainer',hideImage : '.id-card-preview-tag'})" class="btn btn-primary btn-icon">
                                         <i class="fas fa-camera"></i>
                                     </button>
                                 </span>
@@ -205,14 +226,14 @@
 
                         </div>
                     </div>
+                    <img class="id-card-preview-tag @if( ! $member && !$member->memberIDMedia) d-none @endif img-fluid" style="max-height:300px;" src="@if($member && $member->memberIDMedia) {{\App\Classes\Helpers\Image::getImageAsSize($member->memberIDMedia->filepath,'s')}} @endif" />
                     <div class="col-md-12 text-end d-none videoContainer" id="idCameraContainer">
                         <video class="border" style="min-height: 300px; min-width: 100%"></video>
-                        <img class="d-none img-fluid" style="max-height:300px;" src="" />
                         <div class="my-2 d-none" id="id_card_picture">
                             <input type="hidden" name="id_card_image" id="id_card" class="form-control id_card_image" />
                         </div>
 
-                        <button class="btn btn-primary btn-sm" type="button" onclick="window.memberRegistration.captureImage(this,{parent: '#idCameraContainer', field : '.id_card_image'})"> Capture Image</button>
+                        <button class="btn btn-primary btn-sm" type="button" onclick="window.memberRegistration.captureImage(this,{parent: '#idCameraContainer', field : '.id_card_image',displayImage: '.id-card-preview-tag'})"> Capture Image</button>
                     </div>
                 </div>
                 <hr />
@@ -232,7 +253,7 @@
                         <button class="btn btn-primary" type="button" onclick="window.memberRegistration.enableCamera(this,{cameraID: '.live_web_cam_capture'})">
                             Start Camera
                         </button>
-                        <button class="btn btn-danger capture-image" type="button" onclick="window.memberRegistration.captureImage(this,{parent:'.live_web_cam_capture',field : '.live_web_cam_image'})">
+                        <button class="btn btn-danger capture-image" type="button" onclick="window.memberRegistration.captureImage(this,{parent:'.live_web_cam_capture',field : '.live_web_cam_image',parentHide : true})">
                             Capture Image
                         </button>
                     </div>

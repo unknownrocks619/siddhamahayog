@@ -2,6 +2,7 @@
 
 namespace App\Models\Dharmasala;
 
+use App\Models\DharmasalaAmenity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -46,6 +47,10 @@ class DharmasalaBuildingRoom extends Model
         'guest'     => 'Guest',
         'paid'      => 'Paid'
     ];
+
+    public function amenities(){
+        return DharmasalaAmenity::whereIn('id', json_decode($this->amenities));
+    }
 
     public function building() {
         return $this->belongsTo(DharmasalaBuilding::class,'building_id');

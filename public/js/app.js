@@ -5378,7 +5378,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_member__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./partials/member */ "./resources/js/partials/member.js");
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _partials_booking__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./partials/booking */ "./resources/js/partials/booking.js");
  //================== partials ======================//
+
+
 
 
 
@@ -5391,6 +5394,8 @@ __webpack_require__.r(__webpack_exports__);
 
 $(function () {
   "use strict";
+
+  window.dharmasalaBooking = new _partials_booking__WEBPACK_IMPORTED_MODULE_10__.Booking();
   /**
    * Ajax Setup
    */
@@ -5760,6 +5765,373 @@ $(document).on('click', '.ajax-modal', function (event) {
 
 /***/ }),
 
+/***/ "./resources/js/partials/booking.js":
+/*!******************************************!*\
+  !*** ./resources/js/partials/booking.js ***!
+  \******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Booking": () => (/* binding */ Booking)
+/* harmony export */ });
+/* harmony import */ var _member__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./member */ "./resources/js/partials/member.js");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+
+
+var _memberClass = /*#__PURE__*/new WeakMap();
+
+var _bookingID = /*#__PURE__*/new WeakMap();
+
+var _loading = /*#__PURE__*/new WeakMap();
+
+var _lastLoading = /*#__PURE__*/new WeakMap();
+
+var _disabled = /*#__PURE__*/new WeakMap();
+
+var _postRequest = /*#__PURE__*/new WeakSet();
+
+var _getRequest = /*#__PURE__*/new WeakSet();
+
+var Booking = /*#__PURE__*/function () {
+  function Booking() {
+    _classCallCheck(this, Booking);
+
+    _classPrivateMethodInitSpec(this, _getRequest);
+
+    _classPrivateMethodInitSpec(this, _postRequest);
+
+    _classPrivateFieldInitSpec(this, _memberClass, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldInitSpec(this, _bookingID, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldInitSpec(this, _loading, {
+      writable: true,
+      value: false
+    });
+
+    _classPrivateFieldInitSpec(this, _lastLoading, {
+      writable: true,
+      value: 0
+    });
+
+    _classPrivateFieldInitSpec(this, _disabled, {
+      writable: true,
+      value: false
+    });
+  }
+
+  _createClass(Booking, [{
+    key: "updateBookingInfo",
+    value: function updateBookingInfo(elm, bookingID) {
+      var param = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      console.log(_classPrivateFieldGet(this, _disabled));
+
+      if (_classPrivateFieldGet(this, _disabled) === true || _classPrivateFieldGet(this, _disabled)) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      var _this = this;
+
+      param[$(elm).attr('name')] = $(elm).is('select') === true ? $(elm).find(":selected").val() : $(elm).val();
+      console.log(param);
+
+      if (bookingID !== _classPrivateFieldGet(this, _bookingID)) {
+        param['silent'] = true;
+        param['primaryInfo'] = _classPrivateFieldGet(this, _bookingID);
+      } else {
+        param['silent'] = false;
+      }
+
+      _classPrivateMethodGet(_this, _postRequest, _postRequest2).call(_this, '/admin/dharmasala/bookings/update/' + bookingID, param).then(function (response) {
+        var _responseData = response.data;
+
+        if (_responseData.params.targetDIV && _responseData.params.view) {
+          $(_responseData.params.targetDIV).html(_responseData.params.view);
+        }
+
+        console.log('Response Log: ', _responseData);
+      })["catch"](function (error) {
+        Swal.fire({
+          title: 'Error',
+          text: "Failed to updated failed.",
+          icon: 'error'
+        });
+        console.error(error.message());
+      });
+    }
+  }, {
+    key: "bookingNavigation",
+    value: function bookingNavigation(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      if (_classPrivateFieldGet(this, _disabled) === true) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      if (_classPrivateFieldGet(this, _loading) == true || _classPrivateFieldGet(this, _lastLoading) == bookingID) {
+        return;
+      }
+
+      _classPrivateFieldSet(this, _lastLoading, bookingID);
+
+      _classPrivateFieldSet(this, _loading, true);
+
+      var _url = '/admin/dharmasala/bookings/quick-navigation/' + bookingID;
+
+      var _this = this;
+
+      _classPrivateMethodGet(_this, _getRequest, _getRequest2).call(_this, _url, params).then(function (response) {
+        $('#confirmationNavigation').html(response.data.params.view);
+
+        _classPrivateFieldSet(_this, _loading, false);
+      })["catch"](function (error) {
+        _classPrivateFieldSet(_this, _loading, false);
+      });
+    }
+  }, {
+    key: "quickBookingModal",
+    value: function quickBookingModal() {}
+  }, {
+    key: "quickShortCutBooking",
+    value: function quickShortCutBooking() {}
+  }, {
+    key: "enableCamera",
+    value: function enableCamera(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      if (_classPrivateFieldGet(this, _disabled) === true) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      if (!_classPrivateFieldGet(this, _memberClass)) {
+        _classPrivateFieldSet(this, _memberClass, new _member__WEBPACK_IMPORTED_MODULE_0__.MemberRegistration());
+      }
+
+      _classPrivateFieldGet(this, _memberClass).enableCamera(this, params);
+    }
+  }, {
+    key: "captureImage",
+    value: function captureImage(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      if (_classPrivateFieldGet(this, _disabled) === true) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      if (!_classPrivateFieldGet(this, _memberClass)) {
+        Swal.fire({
+          title: 'Error',
+          text: "Camera not initialized.",
+          icon: 'error'
+        });
+        console.error(error.message());
+        return;
+      }
+
+      _classPrivateFieldGet(this, _memberClass).captureImage(elm, params);
+    }
+  }, {
+    key: "uploadMedia",
+    value: function uploadMedia(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      if (_classPrivateFieldGet(this, _disabled) === true) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      var file = elm.files[0];
+
+      if (!file) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unable to select file.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      var formData = new FormData();
+      formData.append($(elm).attr('name'), file);
+
+      _classPrivateMethodGet(this, _postRequest, _postRequest2).call(this, '/admin/dharmasala/bookings/update/' + bookingID, formData).then(function (response) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          $(params.preview).removeAttr('src').attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(file);
+        $(response.data.params.targetDIV).html(response.data.params.view);
+      })["catch"](function (error) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unable to upload selected File. Please check your file permission.",
+          icon: 'error'
+        });
+        console.error(error.message());
+      });
+    }
+  }, {
+    key: "setInitialBookingID",
+    value: function setInitialBookingID(bookingID) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      if (_classPrivateFieldGet(this, _bookingID)) {
+        Swal.fire({
+          title: 'Error',
+          text: "Not allowed to change booking information.",
+          icon: 'error'
+        });
+        return;
+      }
+
+      _classPrivateFieldSet(this, _bookingID, bookingID);
+
+      if (params.disabled) {
+        this.setBooking(params.disabled);
+      }
+    }
+  }, {
+    key: "confirmBooking",
+    value: function confirmBooking(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var _this = this;
+
+      if (_classPrivateFieldGet(_this, _disabled) === true) {
+        Swal.fire({
+          title: 'Error',
+          text: "Unauthorized Action",
+          icon: 'error'
+        });
+      }
+
+      _classPrivateMethodGet(_this, _postRequest, _postRequest2).call(_this, '/admin/dharmasala/bookings/update-booking-status/' + bookingID + '/confirmation', params).then(function (response) {
+        window.handleOKResponse(response.data);
+      })["catch"](function (error) {
+        window.handle422Case(error.data);
+        window.handleBadResponse(error.data);
+      });
+    }
+  }, {
+    key: "enableAllBookingFields",
+    value: function enableAllBookingFields(elm, bookingID) {
+      var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+      var _this = this;
+
+      Swal.fire({
+        title: 'Confirm your Action !!',
+        text: "This booking was already confirmed, Do you wish to update the information for this booking.",
+        showConfirmButton: true,
+        showCloseButton: true,
+        showCancelButton: true
+      }).then(function (action) {
+        if (action.isConfirmed === true) {
+          _this.setBooking();
+
+          $('#confirmationNavigation').find('input, select, button').removeAttr('disabled').removeClass('disabled');
+        }
+      });
+    }
+  }, {
+    key: "setBooking",
+    value: function setBooking() {
+      var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      _classPrivateFieldSet(this, _disabled, status);
+    }
+  }]);
+
+  return Booking;
+}();
+
+function _postRequest2(_url) {
+  var body = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+  if (_classPrivateFieldGet(this, _disabled) === true) {
+    Swal.fire({
+      title: 'Error',
+      text: "Unauthorized Action.",
+      icon: 'error'
+    });
+    return;
+  }
+
+  return axios.post(_url, body, {
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+}
+
+function _getRequest2(_url) {
+  var body = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  return axios.get(_url, {
+    headers: {
+      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+  });
+}
+
+/***/ }),
+
 /***/ "./resources/js/partials/member.js":
 /*!*****************************************!*\
   !*** ./resources/js/partials/member.js ***!
@@ -5841,7 +6213,12 @@ var MemberRegistration = /*#__PURE__*/function () {
       $(_videoWrapper).removeClass('d-none'); // reset previous Image / input.
 
       $(_videoWrapper).find('img').removeAttr('src').addClass('d-none');
-      $(_videoWrapper).find('input').val(''); // Enable camera Stream.
+      $(_videoWrapper).find('input').val(''); // hide image if requested.
+
+      if (params.hideImage) {
+        $(params.hideImage).addClass('d-none');
+      } // Enable camera Stream.
+
 
       navigator.mediaDevices.getUserMedia({
         video: true
@@ -5870,14 +6247,17 @@ var MemberRegistration = /*#__PURE__*/function () {
       canvas.height = this.videoElement.videoHeight;
       canvas.getContext('2d').drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
       var image = canvas.toDataURL('image/png', 1);
-      $(_wrapperElement).find(params.field).val(image);
       this.postRecord('/admin/dharmasala/bookings/upload-capture-media', {
         'image': image
       }).then(function (response) {
         // Assign image path to field.
         if (response.data.params && response.data.params.path) {
           $(_wrapperElement).find(params.field).val(response.data.params.path);
+        } else {
+          $(_wrapperElement).find(params.field).val(image);
         }
+
+        $(params.field).trigger('change');
       })["catch"](function (error) {
         Swal.fire({
           title: 'Media Error',
@@ -5885,8 +6265,15 @@ var MemberRegistration = /*#__PURE__*/function () {
           icon: 'error'
         });
         console.error(error);
+        $(_wrapperElement).find(params.field).val(image);
       });
-      $(_wrapperElement).find('img').attr('src', image).removeClass('d-none');
+
+      if (params.displayImage) {
+        $(params.displayImage).attr('src', image).removeClass('d-none');
+      } else {
+        $(_wrapperElement).find('img').attr('src', image).removeClass('d-none');
+      }
+
       canvas.remove();
       $(_wrapperElement).find('video').addClass('d-none');
       $(elm).addClass('d-none').attr('disabled', 'disabled');
@@ -5900,6 +6287,10 @@ var MemberRegistration = /*#__PURE__*/function () {
         }); // Reset the video source
 
         this.videoElement.srcObject = null;
+      }
+
+      if (!params.parentHide) {
+        $(_wrapperElement).addClass('d-none');
       }
     }
   }, {

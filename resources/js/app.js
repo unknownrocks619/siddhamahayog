@@ -9,9 +9,14 @@ import './partials/programs';
 import './partials/room.js';
 import './partials/member';
 import './partials/transaction';
+import './partials/booking';
+import {Booking} from "./partials/booking";
+
 
 $(function () {
     "use strict";
+
+    window.dharmasalaBooking = new Booking();
 
     /**
      * Ajax Setup

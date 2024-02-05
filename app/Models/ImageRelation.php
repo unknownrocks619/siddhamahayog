@@ -26,4 +26,17 @@ class ImageRelation extends Model
     public function image() {
         return $this->hasOne(Images::class,'id','image_id');
     }
+
+    public function storeRelation(Model $uploadFrom , Images $image) {
+        $fileRelation = new self();
+        $fileRelation->fill([
+            'image_id' => $image->getKey(),
+            'relation' => $uploadFrom::class,
+            'relation_id' => $uploadFrom->getKey()
+        ]);
+
+        $fileRelation->save();
+
+        return $fileRelation;
+    }
 }

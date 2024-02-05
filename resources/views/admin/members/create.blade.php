@@ -49,7 +49,9 @@
                     </div>
 
                     <div id="postVerificationPage">
-
+                        @if($member)
+                            @include('admin.members.partials.new-registration',['member' => $member])
+                        @endif
                     </div>
 
                 </form>

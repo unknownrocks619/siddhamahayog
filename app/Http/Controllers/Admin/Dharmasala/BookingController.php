@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Dharmasala;
 use App\Classes\Helpers\Image;
+use App\Http\Controllers\Admin\Datatables\ProgramDataTablesController;
 use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuilding;
@@ -9,6 +10,7 @@ use App\Models\Dharmasala\DharmasalaBuildingFloor;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
 use App\Models\Donation;
 use App\Models\Member;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -38,158 +40,12 @@ class BookingController extends  Controller
         }
 
         if ($request->ajax() && $request->wantsJson()) {
-
             $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
-            $bookingsModel = DharmasalaBooking::select("*");
-
-            if ( $filter ) {
-                $bookingsModel->where('status',(int) $filter);
-            }
-
-            if ($searchTerm ) {
-                $bookingsModel->where(function($query) use ($searchTerm){
-
-                $query->where('full_name','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('floor_name','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('building_name','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('room_number','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('email','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('check_in','LIKE','%'.$searchTerm.'%')
-                                ->OrWhere('check_out','LIKE','%'.$searchTerm.'%');
-                });
-            }
-
-            if ( $request->user ) {
-                $bookingsModel->where('email',$request->user);
-                $params['sort']['user'] =  $request->user;
-            }
-
-            if ( $request->check_in) {
-                $bookingsModel->where('check_in',$request->check_in);
-                $params['sort']['check_in'] = $request->check_in;
-            }
-
-            if ( $request->filter_room) {
-                $bookingsModel->where('room_number',$request->filter_room);
-                $params['sort']['filter_room'] = $request->filter_room;
-            }
-
-            if ( $request->check_out) {
-                $bookingsModel->where('check_out',$request->check_out);
-                $params['sort']['check_out'] = $request->check_out;
-            }
-
-            $datatable = DataTables::of($bookingsModel->get())
-                ->addIndexColumn()
-                ->addColumn('full_name',function($row){
-                    $action = "<a href='".route('admin.dharmasala.booking.list',['user' => $row->email])."'>";
-                        $action .= $row->full_name;
-                    $action .= "</a>";
-                    return $action;
-                })
-                ->addColumn('floor_name', fn($row) => $row->floor_name)
-                ->addColumn('room_number', function($row){
-                    $action = "<a href='".route('admin.dharmasala.booking.list',['filter_room' => $row->room_number])."'>";
-                        $action .= $row->room_number;
-                    $action .= "</a>";
-                    return $action;
-                })
-                ->addColumn('email' , fn($row) => $row->email)
-                ->addColumn('check_in', function($row) use ($request) {
-                    $action = "<a href='".route('admin.dharmasala.booking.list',['check_in' => $row->check_in])."'>";
-                        $action .= $row->check_in;
-                    $action .= "</a>";
-                    return $action;
-                })
-                ->addColumn('check_out' ,function($row) {
-                    $action = "<a href='".route('admin.dharmasala.booking.list',['check_out' => $row->check_out])."'>";
-                        $action .= $row->check_out;
-                    $action .= "</a>";
-                    return $action;
-                })
-                ->addColumn('status', function($row) {
-                    return DharmasalaBooking::STATUS[$row->status];
-                })
-                ->addColumn('qr' , fn($row) => QrCode::generate($row->uuid))
-                ->addColumn('action', function ($row) {
-                    $action = [];
-
-                    $today = Carbon::today();
-                    $checkInDate = Carbon::createFromFormat('Y-m-d', $row->check_in);
-
-                    if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($row->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
-                        $action[] = [
-                            'route' => '',
-                            'label' => 'Check In',
-                            'class' => 'btn btn-primary data-confirm',
-                            'attribute' => [
-                                'data-confirm' => 'Confirm Check In User. ',
-                                'data-method'   => 'POST',
-                                'data-action'   => route('admin.dharmasala.booking-check-in-reservation',['booking' => $row->getKey()])
-                            ]
-                        ];
-
-                        $action[] = [
-                            'route'   => '',
-                            'label'   => 'Cancel ' . DharmasalaBooking::STATUS[$row->status],
-                            'class' => 'btn btn-danger data-confirm',
-                            'attribute' => [
-                                'data-confirm'  => 'You are about to cancel active booking.',
-                                'data-method'   => 'POST',
-                                'data-action'   => route('admin.dharmasala.booking-cancel-reservation',['booking' => $row->getKey()]),
-                            ]
-                        ];
-                    }
-
-                    if ($row->status == DharmasalaBooking::CHECKED_IN) {
-                        $action[] = [
-                            'route' => '',
-                            'label' => 'Check Out',
-                            'class' => 'btn btn-success ajax-modal' ,
-                            'attribute' => [
-                                'data-bs-target'    => '#checkOut',
-                                'data-bs-toggle'    => 'modal',
-                                'data-action'   => route('admin.modal.display',['view' => 'dharmasala.booking.check-out','booking' => $row->getKey()]),
-                                'data-method'   => 'get'
-                            ]
-                        ];
-                    }
-
-                    if ( ! $checkInDate->isToday() && $today->lessThan($checkInDate) &&  ! in_array( $row->status,[DharmasalaBooking::CANCELLED, DharmasalaBooking::CHECKED_IN, DharmasalaBooking::CHECKED_OUT]) ) {
-                        $action[] = [
-                                'route' => '',
-                                'class' => 'btn btn-danger data-confirm',
-                                'label' => 'Cancel '. DharmasalaBooking::STATUS[$row->status],
-                                'attribute' => [
-                                    'data-confirm' => 'You are about to cancel a expired booking. Proceed with your action ?',
-                                    'data-action'   => route('admin.dharmasala.booking-cancel-reservation',['booking' => $row->getKey()]),
-                                    'data-method'   => 'POST'
-                                ]
-                            ];
-                    }
-
-                    $actionButton = "";
-
-                    foreach ($action as $value) {
-                        $actionButton .= "<button class=' me-1 {$value['class']}'";
-
-                        foreach ($value['attribute'] as $attributeKey => $attributeValue) {
-                            $actionButton .= " " . $attributeKey .'="'.$attributeValue .'"';
-                        }
-
-                        $actionButton .= ">";
-                        $actionButton .= $value['label'];
-                        $actionButton .= "</butotn>";
-                    }
-                    return $actionButton;
-                })
-                ->rawColumns(["action",'status','qr','full_name','check_in','check_out','room_number'])
-                ->make(true);
-            return $datatable;
+            return (new ProgramDataTablesController())->dharmasalaBookingList($request,$filter,$searchTerm);
         }
         return view('admin.dharmasala.booking.list',$params);
     }
-    
+
     public function confirmation(Request $request , DharmasalaBooking $booking) {
         $booking->load('getChildBookings');
 
@@ -355,13 +211,205 @@ class BookingController extends  Controller
 
     }
 
+    /**
+     * Update Booking update status.
+     * @param Request $request
+     * @param DharmasalaBooking $booking
+     * @param $type
+     * @return \Illuminate\Http\Response
+     */
+    public function bookingConfirmation(Request $request, DharmasalaBooking $booking, $type = 'confirmation') {
+
+        $message = "Booking Successfully Confirmed.";
+        $jsCallback = request()->post('callback');
+        $params = request()->post('params') ?? [];
+
+        if ($type == 'confirmation') {
+
+            if (! $booking->room_number ) {
+                return $this->json(false,"Please assign room to user.");
+            }
+
+            if (! $booking->profile) {
+                return $this->json(false,'Please click live image of the user.');
+            }
+
+            if (! $booking->id_card) {
+                return $this->json(false, 'Please provide valid Id Card.');
+            }
+
+            if (!$booking->uuid) {
+                $booking->uuid = Str::uuid();
+            }
+
+            $booking->status = DharmasalaBooking::CHECKED_IN;
+            $today = Carbon::now();
+
+            if (! $booking->check_in) {
+                $booking->check_in = $today->format('Y-m-d');
+                $booking->check_in_time = $today->format('H:i:s');
+            }
+
+            if ($request->post('update-children') ) {
+
+                $existsEmpty =  $booking->getChildBookings()->where(function(Builder $query){
+                    $query->whereNull('check_in')
+                            ->orWhereNull('profile');
+                })->exists();
+
+                if ( $existsEmpty ) {
+                    return $this->json(false,'One of family & Friends is missing information.',['error' => 'Please check in all details. Unable to confirm booking.']);
+                }
+
+                foreach ($booking->getChildBookings()->get() as $children) {
+
+                    if (! $children->check_in ) {
+
+                        $children->check_in = $today->format('Y-m-d');
+                        $children->check_in_time = $today->format('H:i:s');
+                    }
+
+                    if ( ! $children->room_number) {
+
+                        $children->room_id = $booking->room_id;
+                        $children->room_number = $booking->room_number;
+                        $children->floor_id = $booking->floor_id;
+                        $children->floor_name = $booking->floor_name;
+                        $children->building_id = $booking->building_id;
+                        $children->building_name = $booking->building_name;
+                    }
+                    $children->status = DharmasalaBooking::CHECKED_IN;
+                    $children->save();
+
+                }
+            }
+
+        }
+
+        if ($type == 'check-out') {
+
+            $booking->status = DharmasalaBooking::CHECKED_OUT;
+            $today = Carbon::today();
+            $booking->check_out_time = $today->format('H:i A');
+
+            // check if donation is provided.
+            if ($request->post('donation') && $request->post('donation') > 0) {
+                $type = 'Dharmasala - Cash';
+
+                if ($request->post('esewa')) {
+                    $type = "Dharmasala - Esewa";
+                }
+
+                if ($request->post('fonepay')) {
+                    $type = "Dharmasala - FonePay";
+                }
+
+                if ($request->post('bank_transfer')) {
+                    $type = 'Dharmasala - Bank Transfer';
+                }
+
+                $donation = new Donation();
+
+                $donation->fill([
+                    'member_id' => $booking->member_id,
+                    'amount' => $request->post('donation'),
+                    'type' => $type,
+                    'verified' => true,
+                    'remarks' => ['remarks' => $request->post('remark'), 'refId' => $request->post('refId'), 'amt' => $request->post('donation')]
+                ]);
+
+                $donation->save();
+            }
+
+            if ($request->post('group') ) {
+
+                $booking->getChildBookings()
+                                    ->where('status',DharmasalaBooking::CHECKED_IN)
+                                    ->update(['status' => DharmasalaBooking::CHECKED_OUT]);
+
+            }
+
+            $message = $request->post('group') ? 'Group' : ' ';
+            $message .= " Checkout success.";
+
+            if (  request()->action ) {
+                $jsCallback = 'ajaxDataTableReload';
+                $params['sourceID'] = 'bookingTable';
+            }
+
+            if (! $jsCallback ) {
+                $jsCallback = 'reload';
+            }
+        }
+
+        if ($type == 'check-in') {
+
+            $booking->status = DharmasalaBooking::CHECKED_IN;
+            $today = Carbon::today();
+            $booking->check_in_time = $today->format('H:i A');
+
+            $checkInCarbon = Carbon::createFromFormat('Y-m-d',$booking->check_in);
+
+            if ( ! $checkInCarbon->isToday() ) {
+                $booking->check_in = $today->format('Y-m-d');
+            }
+
+            if (! $booking->save() ) {
+                return $this->json(false,'Unable to check in user.');
+            }
+
+            if (  request()->action ) {
+                $jsCallback = 'ajaxDataTableReload';
+                $params['sourceID'] = 'bookingTable';
+            }
+
+            if ( ! $jsCallback )  {
+                $jsCallback = 'reload';
+            }
+
+        }
+
+        if ($type == 'cancel') {
+
+            $booking->status = DharmasalaBooking::CANCELLED;
+
+            if ($request->post('cancel-all') ) {
+                $booking->getChildBookings()->update(['status' => DharmasalaBooking::CANCELLED]);
+            }
+            if (  request()->action ) {
+                $jsCallback = 'ajaxDataTableReload';
+                $params['sourceID'] = 'bookingTable';
+            }
+
+            if ( ! $jsCallback){
+                $jsCallback = 'reload';
+            }
+        }
+
+        if ( $booking->isDirty() ) {
+            $booking->save();
+        }
+
+        return $this->json(true,$message,$jsCallback,$params);
+    }
     public function createNewUserBooking(Request $request,Member $member=null) {
         $request->validate([
 //            'check_in' => 'required',
-            'id_card'   => 'required',
+//            'id_card'   => 'required',
             'live_webcam_image' => 'required',
         ]);
 
+        if (! $member->memberIDMedia ) {
+            if (! $request->post('id_card_image') ) {
+
+                $request->validate(['id_card' => 'required']);
+            }
+
+            if (! $request->file('id_card') ) {
+
+                $request->validate(['id_card_image' => 'required']);
+            }
+        }
 
         // First save main member detail.
         $booking = new DharmasalaBooking();
@@ -389,33 +437,13 @@ class BookingController extends  Controller
             } else {
                 $mediaImage = $this->uploadMemberMedia($request,$request->post('live_webcam_image'),'path');
             }
-
              $booking->profile = (Image::urlToImage($mediaImage))?->getKey();
         }
 
-
-        if ($request->file('id_card') ) {
-
-            $idImageCard = (Image::uploadOnly($request->file('id_card')));
-
-            if (  isset ($idImageCard[0]) ) {
-                $booking->id_card = $idImageCard[0]->getKey();
-            }
-
-        } elseif (! $request->file('id_card') && $request->post('id_card_image') ) {
-
-            $isUrl = str($request->post('id_card_image'))->contains('http');
-
-            if ( ! $isUrl) {
-                $idMediaImage = $request->post('id_card_image');
-            } else {
-                $idMediaImage = $this->uploadMemberMedia($request,$request->post('id_card_image'),'path');
-            }
-
-            $booking->id_card = (Image::urlToImage($idMediaImage))?->getKey();
-        }
+        $booking->id_card = $member->memberIDMedia?->getKey();
 
         if ($request->post('room_number') ) {
+
             $room = DharmasalaBuildingRoom::with(['building','floor'])->find($request->post('room-number'));
 
             if ( $room ) {
@@ -430,12 +458,12 @@ class BookingController extends  Controller
         }
 
         $booking->save();
-        
+
 
         if ($request->post('connectorFullName') && is_array($request->post('connectorFullName')) ) {
 
             $bulkInsert = [];
-        
+
             foreach ($request->post('connectorFullName') as $key => $relationFullName) {
 
                 $innerArray = [
@@ -469,7 +497,7 @@ class BookingController extends  Controller
             }
 
             DharmasalaBooking::insert($bulkInsert);
-            
+
         }
 
         return $this->json(true,'Booking Created. Please Confirm Your','redirect',['location' => route('admin.dharmasala.booking.confirmation',['booking' => $booking])]);
@@ -509,38 +537,61 @@ class BookingController extends  Controller
             $booking->building_name = $room->building?->building_name;
             $booking->floor_id = $room->floor?->getKey();
             $booking->floor_name = $room->floor?->floor_name;
-        }
-        
-        if ( $request->post('id_card_media') )  {
 
+        }
+
+        if ( $request->post('captured_id_card') )  {
+
+            $isUrl = str($request->post('captured_id_card'))->contains('http');
+
+            if ($isUrl) {
+                $mediaImage = $request->post('captured_id_card');
+            } else {
+                $mediaImage = $this->uploadMemberMedia($request,$request->post('captured_id_card'),'path');
+            }
+
+            $booking->id_card = (Image::urlToImage($mediaImage))?->getKey();
         }
 
         if ($request->post('live_media') ) {
+            $idImageCard = (Image::uploadOnly($request->file('uploadIDCard')));
 
+            if (  isset ($idImageCard[0]) ) {
+                $booking->profile = $idImageCard[0]->getKey();
+            }
         }
 
         if ($request->post('check_in')) {
-            $carbonTime = Carbon::createFromFormat();
+            $carbonTime = Carbon::createFromFormat('Y-m-d\TH:i',$request->post('check_in'));
+            $booking->check_in = $carbonTime->format('Y-m-d');
+            $booking->check_in_time = $carbonTime->format('H:i:s');
         }
 
         if ( $request->post('check_out')) {
+            $carbonTime = Carbon::createFromFormat('Y-m-d\TH:i',$request->post('check_out'));
+            $booking->check_out = $carbonTime->format('Y-m-d');
+            $booking->check_out_time = $carbonTime->format('H:i:s');
 
         }
 
         if ($request->post('full_name') ) {
-
+            $booking->full_name = $request->post('full_name');
         }
 
         if ($request->post('phone_number') ) {
-            
+            $booking->phone_number = $request->post('phone_number');
         }
 
         if ($request->post('removeRelation') ) {
-
+            $booking->getChildBookings()->where('id',$request->post('removeRelation'))->delete();
         }
 
-        if ( $request->post('addRelation') ) {
+        if ($request->file('uploadIDCard') ) {
+            $idImageCard = (Image::uploadOnly($request->file('uploadIDCard')));
 
+            if (  isset ($idImageCard[0]) ) {
+                $booking->id_card = $idImageCard[0]->getKey();
+            }
         }
 
         if ( ! $booking->save() ) {
@@ -550,6 +601,63 @@ class BookingController extends  Controller
         $jsCallback = $request->callback ?? null;
         $params = $request->params ?? [];
 
-        return $his->json(true,'Information Updated.',$jsCallback,$params);
+        if ($request->post('primaryInfo')) {
+            $booking = DharmasalaBooking::find($request->post('primaryInfo'));
+        }
+
+        $params =[
+            'targetDIV' => $request->post('targetDIV') ?? '#confirmationDetail',
+            'view'  => view('admin.dharmasala.booking.partials.confirmation-detail',['booking' => $booking])->render()
+        ];
+
+        return $this->json(true,'Information Updated.',$jsCallback,$params);
+    }
+
+    public function addFamilyToBooking(Request $request, DharmasalaBooking $booking) {
+
+        $bulkInsert = [];
+
+        foreach ($request->post('connectorFullName') as $key => $relationFullName) {
+
+            $innerArray = [
+                'full_name' => $relationFullName,
+                'relation_with_parent'  => $request->post('relation')[$key],
+                'phone_number'   => $request->post('relationPhoneNumber')[$key],
+                'created_at' => Carbon::now(),
+                'updated_at'    => Carbon::now(),
+                'id_parent' => $booking->getKey(),
+                'room_id'   => 0,
+                'room_number'   => 0,
+                'status'    => DharmasalaBooking::PROCESSING
+            ];
+
+            // now save image for this relation.
+            $imageRelationURL = $request->post('relationImage')[$key];
+            $checkImage = str($imageRelationURL)->contains('http');
+
+            if (  ! $checkImage ) {
+                $imageRelationURL = $this->uploadMemberMedia($imageRelationURL);
+            }
+
+            $innerArray['profile'] = (Image::urlToImage($imageRelationURL))?->getKey();
+
+            if ($innerArray['profile']) {
+                $innerArray['check_in'] = Carbon::now()->format('Y-m-d');
+                $innerArray['check_in_time'] = Carbon::now()->format("H:i:s");
+            }
+
+            $bulkInsert[] = $innerArray;
+        }
+
+        DharmasalaBooking::insert($bulkInsert);
+    }
+
+    public function bookingQuickEditAjax(Request $request, DharmasalaBooking $booking) {
+
+        if ($request->ajax() ) {
+            return $this->json(true,'','',['view' => view('admin.dharmasala.booking.partials.confirmation',['booking' => $booking])->render()]);
+        }
+
+        abort(404);
     }
 }

@@ -6,18 +6,11 @@
     </h4>
     <div class="row mb-2">
         <div class="col-md-12 text-end">
-            <button class="btn btn-info me-1 waves-effect waves-light collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#addBooking" aria-expanded="false" aria-controls="addBooking">
-                <i class="fas fa-user me-1"></i>Booking with New User
-            </button>
-            <button class="btn btn-primary me-1 waves-effect waves-light collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#addBooking" aria-expanded="false" aria-controls="addBooking">
+            <a class="btn btn-primary me-1 waves-effect waves-light collapsed"
+                    href="{{route('admin.members.create',['dharmasala'=>true])}}"
+                    >
                 <i class="fas fa-plus me-1"></i>Add New Booking
-            </button>
+            </a>
 
             <div class="collapse" id="addBooking">
                 <div class="card">

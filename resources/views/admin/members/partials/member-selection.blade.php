@@ -1,3 +1,11 @@
+@php
+$route = route('admin.members.create') . "?";
+$dharmasala = request()->dharmasala ? true  : false;
+
+if ($dharmasala) {
+    $route .= "dharmasala=true";
+}
+@endphp
 <div class="row mt-2">
 @foreach ($members as $member)
     <div class="col-md-6 my-2">
@@ -16,7 +24,7 @@
                         <span><b>Phone Number: </b> {{$member->phone_number}}</span>
                     </div>
                     <div class="col text-end">
-                        <button class="btn btn-primary">Select User</button>
+                        <a href="{{$route}}&member={{$member->getKey()}}" class="btn btn-primary">Select User</a>
                     </div>
 
                 </div>
