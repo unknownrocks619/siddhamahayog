@@ -30,13 +30,13 @@ class AdminFileManagerController extends Controller
         try {
             $video->save();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Unable to update record. Error: '. $th->getMessage(),null,[],200,url()->previous());
             //throw $th;
-            $request->session()->flash("error", "Unable to update record. Error: " . $th->getMessage());
-            return back()->withInput();
+            // $request->session()->flash("error", "Unable to update record. Error: " . $th->getMessage());
+            // return back()->withInput();
         }
 
-        $request->session()->flash("success", "Record udpated.");
-        return back();
+        return $this->returnResponse(true,'Record Updated.',null,[],200,url()->previous());
     }
 
     public function update_resource()
@@ -50,21 +50,35 @@ class AdminFileManagerController extends Controller
         //     "file_address" => "required|in:program_course_resources,lession"
         // ]);
         // dd(ucwords($request->file_address));
+
         if ($request->file_address == "program_lession") {
+
             $resource_model = ProgramChapterLession::find($request->file_id);
         } elseif ($request->file_address == "program_resources") {
+
             $resource_model = ProgramCourseResources::find($request->file_id);
         }
+
         try {
             $resource_model->delete();
         } catch (\Throwable $th) {
+            return $this->returnResponse(false,'Unable to delete. Error: '. $th->getMessage(),null,[],200,url()->previous());
             //throw $th
-            $request->session()->flash('error', "Unable to delete. Error: " . $th->getMessage());
-            return back();
+            // $request->session()->flash('error', "Unable to delete. Error: " . $th->getMessage());
+            // return back();
+        }
+        
+        $jsCallback = $request->jscallback;
+        $params = [];
+        
+        if ($request->sourceID) {
+            $params['sourceID'] = $request->sourceID;
         }
 
-        $request->session()->flash("success", "Selected Resourec deleted.");
-        return back();
+        return $this->returnResponse(true,'Selected Resources was deleted.',$jsCallback,$params,200,url()->previous());
+
+        // $request->session()->flash("success", "Selected Resourec deleted.");
+        // return back();
     }
 
     /**

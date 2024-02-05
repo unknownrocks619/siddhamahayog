@@ -82,6 +82,7 @@ class AdminProgramCourseController extends Controller
 
     public function delete_course(ProgramCourse $course)
     {
+        dd('hello');
         // check if this have any lession and resources
         try {
             DB::transaction(function () use ($course) {
@@ -110,6 +111,7 @@ class AdminProgramCourseController extends Controller
         if ($request->ajax() && $request->wantsJson()) {
 
             $all_lession = $course->lession()->orderBy('sort', 'asc')->get();
+
             $datatable = DataTables::of($all_lession)
                 ->setRowData(['data-order' =>  fn ($row) => $row->getKey()])
                 ->setRowId(function ($row) {
@@ -126,11 +128,11 @@ class AdminProgramCourseController extends Controller
                 ->addColumn("status", function ($row) {
                     $return = "";
                     if ($row->video_lock) {
-                        $return .= "<span class='badge badge-danger'>";
+                        $return .= "<span class='badge bg-label-danger'>";
                         $return .= "Locked";
                         $return .= "</span>";
                     } else {
-                        $return .= "<span class='badge badge-success'>";
+                        $return .= "<span class='badge bg-label-success'>";
                         $return .= strtoupper($row->status);
                         $return .= "</span>";
                     }
@@ -140,33 +142,23 @@ class AdminProgramCourseController extends Controller
                     $lession = $row->lession_name;
                     return $lession;
                 })
-                ->addColumn('uploaded_date', fn ($row) => $row->lession_date)
+                ->addColumn('uploaded_date', fn ($row) => "<span class='text-primary'>".$row->lession_date."</span>")
                 ->addColumn('video_link', function ($row) {
                     return "<a href='{$row->video_link}' target='_blank'>Open</a>";
                 })
-                ->addColumn('action', function ($row) use ($program) {
+                ->addColumn('action', function ($row) use ($program,$course) {
                     $return  = "";
 
-                    $return .= "<a href='" . route('admin.videos.admin_edit_video_by_program', [$program->getKey(), $row->getKey()]) . "' data-target='#addNewLession' data-toggle='modal' class='btn btn-sm btn-info mx-2 edit-video-link'>";
-                    $return .= '<svg xmlns="http://www.w3.org/2000/svg"
-                    width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2">
-                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                    </svg>';
+                    $return .= "<a href='" . route('admin.videos.admin_edit_video_by_program', [$program->getKey(), $row->getKey()]) . "' data-target='#addNewLession' data-toggle='modal' class='btn btn-info mx-2 edit-video-link'>";
+                    $return .= '<i class="fas fa-pencil"></i>';
                     $return .= "</a>";
 
-                    $return .= "<a href='" . route("admin.resources.admin_delete_resource", ['file_id' => $row->id, 'file_address' => 'program_lession']) . "' class='btn btn-danger btn-sm remove-video-link'>";
-                    $return .= '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                </svg>';
-                    $return .= "</a>";
+                    $return .= "<button data-method='get' data-action='" . route("admin.resources.admin_delete_resource", ['file_id' => $row->id, 'file_address' => 'program_lession','jscallback' => 'ajaxDataTableReload','sourceID' => 'lession_ajax_'.$course->getKey()]) . "' class='btn btn-danger data-confirm'>";
+                    $return .= '<i class="fas fa-trash"></i>';
+                    $return .= "</button>";
                     return $return;
                 })
-                ->rawColumns(["darg_icon", "status", "video_link", "lession_name", 'action'])
+                ->rawColumns(["darg_icon", "status", "video_link", "lession_name", 'action',"uploaded_date"])
                 ->make(true);
             return $datatable;
         }

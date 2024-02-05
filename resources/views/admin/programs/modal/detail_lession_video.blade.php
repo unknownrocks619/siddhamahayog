@@ -1,6 +1,8 @@
-<div class="modal-header bg-dark text-white d-flex justify-content-between">
-    <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small> Videos</small>
-    </h4>
+<div class="card-header d-flex justify-content-between align-items-center">
+    <div>        
+        <h4 class="title" id="largeModalLabel">{{ $course->course_name }}  (Videos)
+        </h4>
+    </div>
 
     <div class="row mt-3">
         <div class="col-md-12">
@@ -12,7 +14,8 @@
     </div>
 
 </div>
-<div class="row">
+
+<div class="card-body">
     <div class="col-md-12">
         <div class="table-responsive">
             <table
@@ -34,6 +37,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="newCourse" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="modal_content">
@@ -129,11 +133,12 @@
         </div>
     </div>
 </div>
+
 <script>
     window.dataTableList = $('#lession_ajax_{{ $course->id }}').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ url()->full() }}',
+        ajax: "{{ route('admin.program.courses.admin_program_video_list_lession_modal',['program' => $course->program_id,'course'=>$course->getKey()]) }}",
         columns: [{
                 data: 'status',
                 name: "status"
@@ -156,8 +161,8 @@
         ],
         displayIndex: true,
         dataIndex: true,
-        "ordering": false,
-        paging: false,
+        ordering: false,
+        paging: true,
 
 
     });
