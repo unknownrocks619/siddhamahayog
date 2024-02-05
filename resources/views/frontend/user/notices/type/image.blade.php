@@ -13,9 +13,9 @@
                     <div class="col-md-12">
                         <img class="img-responsive img-fluid" src="{{ asset($notice->settings->path) }}" alt="{{ $notice->title }}" srcset="{{ asset($notice->settings->path) }}">
                     </div>
-                    <button data-href="{{ asset($notice->settings->path) }}" class="btn btn-outline-primary clikcable">
-                        Download File
-                    </button>
+{{--                    <button data-href="{{ asset($notice->settings->path) }}" class="btn btn-outline-primary clikcable">--}}
+{{--                        Download File--}}
+{{--                    </button>--}}
                 </div>
             </div>
         </div>
