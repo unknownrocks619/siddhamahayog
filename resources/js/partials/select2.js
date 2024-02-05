@@ -5,9 +5,15 @@ window.ajaxReinitalize = function (element, options = {}) {
 
         if (!$(element).hasClass('ajax-select-2')) {
 
-            $(element).select2(options);
+            if ($(element).closest('[data-dropdown]').length) {
 
+                console.log('#'+$(element).closest('[data-dropdown]').attr('data-dropdown'));
+                options.dropdownParent = '#'+$(element).closest('[data-dropdown]').attr('data-dropdown')
+            }
+
+            $(element).select2(options);
         } else {
+
             let action = $(element).data('action');
             options.ajax = {
                 url: action,
@@ -25,12 +31,12 @@ window.ajaxReinitalize = function (element, options = {}) {
                     return { results: data };
                 }
             }
-            console.log('select2',$(element).closest('[data-dropdown]'))
             if ($(element).closest('[data-dropdown]').length) {
 
                 console.log('#'+$(element).closest('[data-dropdown]').attr('data-dropdown'));
                 options.dropdownParent = '#'+$(element).closest('[data-dropdown]').attr('data-dropdown')
             }
+            console.log('options: ', options);
             $(element).select2(options)
 
         }

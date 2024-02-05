@@ -4,7 +4,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 
-    <div  data-dropdown="quickUserView" class="modal-body">
+    <div data-dropdown="quickUserView" class="modal-body">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -15,7 +15,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="scholarship_type">Scholarship Type <sup class="text-danger">*</sup></label>
-                    <select name="scholarship_type" id="scholarship_type" class="form-control">
+                    <select name="scholarship_type" data-dropdown-parent="#quickUserView" id="scholarship_type" class="form-control">
                         <option value="" selected disabled>Please select Scholarship Type</option>
                         @foreach(\App\Models\Scholarship::TYPES as $key => $value)
                             <option value="{{$key}}">{{$value}}</option>
