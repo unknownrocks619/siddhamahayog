@@ -323,14 +323,14 @@ class AdminProgramController extends Controller
                     return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
 
                 })
-                ->addColumn('$rawColumns', function ($row) {
-                    return "<a href='".route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id])."'>".$row->full_name."</a>";
+                ->addColumn('full_name', function ($row) {
+                    return htmlspecialchars(strip_tags($row->full_name));
                 })
                 ->addColumn('phone_number', function ($row) {
                     return $row->phone_number ?? 'N/A';
                 })
                 ->addColumn('email', function ($row) {
-                    return $row->email ?? 'N/A';
+                    return strip_tags($row->email) ?? 'N/A';
                 })
                 ->addColumn('total_payment', function ($row) {
                     if ( ! $row->member_payment ) {
@@ -370,14 +370,14 @@ class AdminProgramController extends Controller
 
                     $addressDecode = json_decode($row->address);
                     if ( isset($addressDecode->street_address) ) {
-                        return $addressDecode->street_address;
+                        return strip_tags($addressDecode->street_address);
                     }
 
                     if ( $row->personal_detail ) {
                         $detailDecode = json_decode($row->personal_detail);
 
                         if (isset($detailDecode->street_address) ) {
-                            return $detailDecode->street_address;
+                            return strip_tags($detailDecode->street_address);
                         }
                     }
 
@@ -386,10 +386,10 @@ class AdminProgramController extends Controller
 
                 })
                 ->addColumn('action', function ($row) {
-                    $action ='';
+                    $action ='<a href="'.route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id]).'"><i class="fas fa-eye"></i></a>';
                     return $action;
                 })
-                ->rawColumns(["total_payment", "action", "roll_number",'full_name'])
+                ->rawColumns(["total_payment", "action", "roll_number"])
                 ->make(true);
             return $datatable;
         }

@@ -429,7 +429,7 @@ class ProgramStudentFeeController extends Controller
             $html .= "<tr>";
             $html .= "<td>" . htmlspecialchars($fee_detail->remarks->bank_name) . "</td>";
             $html .= "<td>" . htmlspecialchars($fee_detail->remarks->upload_date) . "</td>";
-            $html .= "<td>" . strtoupper($fee_detail->student->full_name) . "</td>";
+            $html .= "<td>" . strtoupper(htmlspecialchars(strip_tags($fee_detail->student->full_name))) . "</td>";
             $html .= "</tr>";
             $html .= "</tbody>";
             $html .= "</table>";
@@ -451,7 +451,7 @@ class ProgramStudentFeeController extends Controller
 
                 ->addColumn('member_name', function ($row) use ($program) {
                     $member = "<a href='" . route('admin.members.show',['member' => $row->id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";
-                    $member .= htmlspecialchars($row->full_name);
+                    $member .= htmlspecialchars(strip_tags($row->full_name));
                     $member .= "</a>";
 
                     return $member;
@@ -460,7 +460,7 @@ class ProgramStudentFeeController extends Controller
                     return $row->email;
                 })
                 ->addColumn('phone_number', function ($row) {
-                   return $row->phone_number;
+                   return htmlspecialchars(strip_tags($row->phone_number));
                 })
                 ->addColumn('Joined Dated', function ($row) {
                     return date('Y-m-d' ,strtotime($row->joined_date));

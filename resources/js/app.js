@@ -163,10 +163,15 @@ $(function () {
             type: (status) ? 'success' : 'danger',
             allow_dismiss: true,
             showProgressbar: true,
-            timer: 0.1,
+            delay: 500,
+            timer: 500,
             animate: {
                 enter: 'animated fadeInDown',
                 exit: 'animated fadeOutUp'
+            },
+            placement : {
+                from: 'bottom',
+                align: 'right',
             }
         });
     }
