@@ -45,14 +45,17 @@ class AdminProgramController extends Controller
             $datatable = DataTables::of($programs)
                 ->addIndexColumn()
                 ->addColumn('program_name', function ($row) {
+
                     $program = $row->program_name;
                     $program .= "<br />";
+
                     if ($row->program_type == "paid") {
                         $program .= "<span class='text-success px-2'>PAID</span>";
                     } else {
                         $program .= "<span class='text-warning px-2'>" . strtoupper($row->program_type) . "</span>";
                     }
                     return $program;
+
                 })
                 ->addColumn('program_duration', function ($row) {
                     return ($row->program_duration) ? "Ongoing" : $row->program_duration;
@@ -60,17 +63,18 @@ class AdminProgramController extends Controller
                 ->addColumn('sections', function ($row) {
                     $sectionHTML = '';
                     foreach ($row->sections ?? [] as $section) {
+                        
                         $sectionStudentCount = $section->program_students_count;
 
                         if ( ! in_array(auth()->user()->role_id, Program::STUDENT_COUNT_ACCESS) ){
                             $sectionStudentCount = 0;
                         }
-
+                        $link = route('admin.program.sections.admin_list_all_section',['program'=>$row->getKey(),'current_tab' => $section->slug]);
                         if ($section->default) {
-                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger">'.$section->section_name .':{'.$sectionStudentCount.'}</span>';
+                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger"><a href="'.$link.'">'.$section->section_name .':{'.$sectionStudentCount.'}</a></span>';
                             continue;
                         }
-                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary">'.$section->section_name .':{'.$sectionStudentCount.'}</span>';
+                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary"><a href="'.$link.'">'.$section->section_name .':{'.$sectionStudentCount.'}</a></span>';
                     }
                     return $sectionHTML;
                 })

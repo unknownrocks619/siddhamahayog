@@ -29,14 +29,14 @@
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             @foreach ($all_sections as $section)
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link @if(($current_tab && $current_tab == str($section->section_name)->slug()->value()) || (! $current_tab && $loop->first)) active @endif" id="section-{{$section->getKey()}}-tab" data-bs-toggle="tab" data-bs-target="#tabContent_{{$section->getKey()}}" type="button" role="tab" aria-controls="home" aria-selected="true">
+                                    <button class="nav-link @if(($current_tab && $current_tab == $section->slug) || (! $current_tab && $loop->first)) active @endif" id="section-{{$section->getKey()}}-tab" data-bs-toggle="tab" data-bs-target="#tabContent_{{$section->getKey()}}" type="button" role="tab" aria-controls="home" aria-selected="true">
                                         {{$section->section_name}}</button>
                                 </li>
                             @endforeach
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             @foreach ($all_sections as $section)
-                                <div class="tab-pane fade show @if(($current_tab && $current_tab == str($section->section_name)->slug()->value()) || (! $current_tab && $loop->first)) active @endif" id="tabContent_{{$section->getKey()}}" role="tabpanel" aria-labelledby="section-{{$section->getKey()}}-tab">
+                                <div class="tab-pane fade show @if(($current_tab && $current_tab == $section->slug) || (! $current_tab && $loop->first)) active @endif" id="tabContent_{{$section->getKey()}}" role="tabpanel" aria-labelledby="section-{{$section->getKey()}}-tab">
                                     <div class="card-datatable table-responsive my-2 border-bottom">
                                         <div class="row">
                                             <div class="col-md-12 d-flex justify-content-between align-items-center">

@@ -42,7 +42,7 @@ class AdminProgramSectionController extends Controller
             ->with(['programStudents'])
             ->latest()->get();
 
-        return view('admin.programs.section.index', compact("all_sections", "program","current_tab"));
+            return view('admin.programs.section.index', compact("all_sections", "program","current_tab"));
     }
 
     public function student_list_per_section(Program $program, $section = null)
