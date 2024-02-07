@@ -43,7 +43,8 @@ class Live extends Model
 
     public function programCordinate()
     {
-        return $this->guessBelongsToRelation(Member::class, "started_by");
+        return $this->belongsTo(Member::class,'started_by');
+        // return $this->guessBelongsToRelation(Member::class, "started_by");
     }
 
     public function attendances()

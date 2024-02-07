@@ -45,25 +45,29 @@
                             <td>
                                 @php
                                     $todayCarbon = \Illuminate\Support\Carbon::now();
-                                    $checkInCarbon = \Illuminate\Support\Carbon::createFromFormat('Y-m-d',$userInfo->check_in);
-                                    $checkOutCarbon = \Illuminate\Support\Carbon::createFromFormat('Y-m-d',$userInfo->check_out);
+
+                                    $checkInCarbon = null;
+                                    if ($userInfo->check_in) {
+                                        $checkInCarbon = \Illuminate\Support\Carbon::createFromFormat('Y-m-d',$userInfo->check_in);
+                                    }
+
+                                    $checkOutCarbon=null;
+                                    if ($userInfo->check_out) {
+                                        $checkOutCarbon = \Illuminate\Support\Carbon::createFromFormat('Y-m-d',$userInfo->check_out);
+                                    }
                                 @endphp
-                                    @if ( $checkInCarbon->greaterThanOrEqualTo($todayCarbon) ||  $userInfo->status == \App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN)
+                                    @if ( $checkInCarbon?->greaterThanOrEqualTo($todayCarbon) ||  $userInfo->status == \App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN)
                                         <button class="btn btn-danger btn-icon data-confirm"><i class="ti ti-logout ti-sm"></i></button>
-                                    @endif
-
-                                    @if ( $checkInCarbon->greaterThanOrEqualTo($todayCarbon) &&  $userInfo->status !== \App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN)
-                                        <button class="btn btn-danger">Cancel Reservation</button>
-                                    @endif
-
-                                    @if ($todayCarbon->greaterThanOrEqualTo($checkOutCarbon) )
+                                    @elseif ($checkInCarbon?->greaterThanOrEqualTo($todayCarbon) && $checkOutCarbon?->greaterThanOrEqualTo($todayCarbon) && in_array($userInfo->status,[\App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN,\App\Models\Dharmasala\DharmasalaBooking::BOOKING,\App\Models\Dharmasala\DharmasalaBooking::RESERVED]))
+                                        <button class="btn btn-danger btn-icon data-confirm"><i class="ti ti-logout ti-sm"></i></button>
+                                    @elseif($todayCarbon?->greaterThanOrEqualTo($checkOutCarbon) )
                                         <button class="btn btn-danger btn-icon data-confirm"><i class="ti ti-logout meti-sm"></i></button>
                                     @endif
 
-                                    @if ($checkInCarbon->greaterThanOrEqualTo($todayCarbon) && $checkOutCarbon->greaterThanOrEqualTo($todayCarbon) && in_array($userInfo->status,[\App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN,\App\Models\Dharmasala\DharmasalaBooking::BOOKING,\App\Models\Dharmasala\DharmasalaBooking::RESERVED]))
-                                        <button class="btn btn-danger btn-icon data-confirm"><i class="ti ti-logout ti-sm"></i></button>
+                                    @if ( $checkInCarbon?->greaterThanOrEqualTo($todayCarbon) &&  $userInfo->status !== \App\Models\Dharmasala\DharmasalaBooking::CHECKED_IN)
+                                        <button class="btn btn-danger">Cancel Reservation</button>
                                     @endif
-
+                                        
                             </td>
                         </tr>
                     @endforeach

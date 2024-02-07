@@ -54,7 +54,7 @@
                                             <div class="d-flex">
                                                 <button class="btn btn-primary ajax-modal me-1"
                                                         data-bs-toggle="modal"
-                                                        data-bs-target="#roomForm"
+                                                        data-bs-target="#addRoom"
                                                         data-action="{{route('admin.modal.display',['view' => 'dharmasala.rooms.create','building' => $building->getKey(),'floor' => $floor->getKey()])}}">
                                                     <i class="fas fa-plus"></i> Add Rooms</button>
                                                 <button class="btn btn-danger btn-icon data-confirm"
@@ -113,8 +113,9 @@
     <x-modal modal="buildingModal">
         @include('admin.modal.dharmasala.building.create');
     </x-modal>
+    
     <x-modal modal="editModal"></x-modal>
     <x-modal modal="dharmasalaFloorForm"></x-modal>
-    <x-modal modal="roomForm"></x-modal>
+    <x-modal modal="addRoom"></x-modal>
     <x-modal modal="assignUserToRoom"></x-modal>
 @endsection

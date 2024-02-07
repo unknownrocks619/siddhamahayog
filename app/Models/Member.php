@@ -20,10 +20,12 @@ class Member extends Authenticatable
         "address" => "object",
         "created_at" => "datetime",
         "profile" => "object",
-        "remarks" => "object"
+        "remarks" => "object",
+        'member_uuid'   => 'uuid'
     ];
 
     protected $fillable = [
+        "member_uuid",
         "full_name",
         "first_name",
         "middle_name",

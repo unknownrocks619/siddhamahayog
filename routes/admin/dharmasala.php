@@ -33,6 +33,7 @@ Route::prefix('admin/dharmasala')
                     ->group( function() {
                         Route::get('list',[RoomController::class,'index'])->name('admin.dharmasala.rooms.list');
                         Route::match(['get','post'],'create/{building?}/{floor?}',[RoomController::class,'create'])->name('admin.dharmasala.rooms.create');
+                        Route::match(['get','post'],'edit/{room}',[RoomController::class,'edit'])->name('admin.dharmasala.room.edit');
                         Route::match(['get','post','delete'],'delete/{room}',[RoomController::class,'delete'])->name('admin.dharmasala.rooms.delete');
                     });
 
@@ -73,19 +74,28 @@ Route::prefix('admin/dharmasala')
 
                         Route::get('quick-navigation/{booking}',[BookingController::class,'bookingQuickEditAjax'])
                                 ->name('admin.dharmasala.quick-navigation');
+
+                        Route::match(['get','post'],'quick-check-in',[BookingController::class,'quickBookingCheckIn'])
+                                ->name('amdmin.dharmasala.quick-booking');
                     });
 
             /** Amenities */
             Route::prefix('amenities')
                     ->group(function() {
                         Route::get('list',[AmenitiesController::class,'index'])->name('admin.dharmasala.amenities.list');
+                        Route::match(['post','get'],'edit/{amenity}',[AmenitiesController::class,'edit'])->name('admin.dharmasala.amenities.edit');
+
+                        Route::match(['post','get'],'create',[AmenitiesController::class,'store'])
+                                ->name('admin.dharmasala.amenities.create');
+                        Route::match(['delete','post'],'delete/{amenity}',[AmenitiesController::class,'delete'])
+                                ->name('admin.dharmasala.amenities.delete');
                     });
 
 
             /** Online Bookings */
             Route::prefix('online-booking')
                     ->group( function() {
-                        Route::get('list',[OnlineBookingController::class,'index'])->name('admin.dharmasala.online-booking.list');
+                        Route::get('list/',[OnlineBookingController::class,'index'])->name('admin.dharmasala.online-booking.list');
                     });
 
         });

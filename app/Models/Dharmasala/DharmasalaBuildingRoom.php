@@ -48,8 +48,17 @@ class DharmasalaBuildingRoom extends Model
         'paid'      => 'Paid'
     ];
 
-    public function amenities(){
-        return DharmasalaAmenity::whereIn('id', json_decode($this->amenities));
+    public $casts = [
+        'amenities' => 'array'
+    ];
+
+    public function roomAmenities(){
+        // $amenities = $this->amenities;
+        // if ( ! $$amenities ) {
+        //     $amenities = [];
+        // }
+
+        return DharmasalaAmenity::whereIn('id', $this->amenities ?? [])->get();
     }
 
     public function building() {

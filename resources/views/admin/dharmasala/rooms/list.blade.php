@@ -22,6 +22,7 @@
                         <th>Floor</th>
                         <th>Status</th>
                         <th>Total Capacity</th>
+                        <th>Amenities</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -56,8 +57,19 @@
                             <td>
                                 {{$room->room_capacity ??  'Not Set' }}
                             </td>
+                            <td>
+                                @if($room->roomAmenities()->count())
+                                    @foreach ($room->roomAmenities() as $amenities)
+                                        <span class="mx-1 badge bg-label-primary">
+                                            {{$amenities->amenity_name}}
+                                        </span>
+                                    @endforeach
+                                @else
+                                        No Amenities Associated
+                                @endif
+                            </td>
                             <th>
-                                <a href="" class="btn btn-primary btn-icon">
+                                <a href="{{route('admin.dharmasala.room.edit',['room' => $room])}}" class="btn btn-primary btn-icon">
                                     <i class="fas fa-pencil"></i>
                                 </a>
                                 <button data-method="post"

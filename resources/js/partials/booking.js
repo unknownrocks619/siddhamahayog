@@ -7,6 +7,18 @@ export class Booking {
     #loading = false;
     #lastLoading = 0;
     #disabled = false;
+    
+
+    constructor() {
+        if ($(document).find('input[id="quickCheckIn"]').length) {
+            let _this = this;
+            $('input[id="quickCheckIn"]').on('keypress', function(){
+                console.log('cont');
+                _this.quickCheckIn(this);
+            })
+
+        }
+    }
 
     #postRequest(_url,body={}) {
         if (this.#disabled === true) {
@@ -261,4 +273,62 @@ export class Booking {
         this.#disabled = (status)
     }
 
+    quickCheckIn(elm) {
+        
+        if (parseInt($(elm).val().length) !== 36)  {
+            return;
+        }
+        
+        let _this = this;
+        let _displayDivWrapper = $('#booking-status');
+        let _errorWrapper = $('#errorDisplay');
+
+        _errorWrapper.addClass('d-none')
+        _displayDivWrapper.addClass('d-none');
+
+        _this.#postRequest('/admin/dharmasala/bookings/quick-check-in',{bookingID : $(elm).val()})
+            .then(function(response) {
+                let _data = response.data;
+                
+
+                if (! _data.state ) {
+                    return;
+                }
+
+                _displayDivWrapper.removeClass('d-none')
+                
+                if (_data.params.class) {
+
+                    _displayDivWrapper.find('div.col-md-12').removeClass('bg-succes')
+                                                            .removeClass('bg-danger')
+                                                            .addClass(_data.params.class)
+                }
+                if (_data.params.records.room_number) {
+
+                    _displayDivWrapper.find('#RoomNumber').text('Room Number :' + _data.params.records.room_number)
+                }
+
+                if (_data.params.records.floor_name) {
+                    _displayDivWrapper.find('#Floor').text(_data.params.records.floor_name).removeClass('d-none')
+                } else {
+                    _displayDivWrapper.find('#Floor').addClass('d-none');
+                }
+                console.log(_data.params.records);
+                if (_data.params.records.building_name) {
+                    _displayDivWrapper.find('#Building').text(_data.params.records.floor_name).removeClass('d-none')
+                } else {
+                    _displayDivWrapper.find('#Building').addClass('d-none')
+                }
+
+            }).catch((error) => {
+                console.log('error: ', error.response);
+                _errorWrapper.find('div.col-md-12').text(error.response.data.msg);
+                _errorWrapper.removeClass('d-none');
+            });
+
+        setTimeout(() => {
+            _displayDivWrapper.addClass('d-none');
+            _errorWrapper.addClass('d-none');
+        }, 5000);
+    }
 }

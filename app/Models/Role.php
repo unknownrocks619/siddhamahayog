@@ -30,6 +30,7 @@ class Role extends Model
     public const SUPER_ADMIN = 1;
     public const ADMIN = 13;
     public const CENTER_ADMIN = 9;
+    public const SUPPORT=8;
 
     protected $casts = [
         'role_category' => 'array'

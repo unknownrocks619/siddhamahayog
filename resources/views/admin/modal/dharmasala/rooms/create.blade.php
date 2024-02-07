@@ -108,6 +108,21 @@
                 </div>
             </div>
         </div>
+
+        @if(App\Models\DharmasalaAmenity::count())
+            <div class="row mt-5" data-dropdown="addRoom">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="amenities">Amenities</label>
+                        <select multiple name="amenities[]" id="amenities" class="form-control">
+                            @foreach(App\Models\DharmasalaAmenity::get() as $amenity)
+                                <option value="{{$amenity->getKey()}}">{{$amenity->amenity_name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     <div class="modal-footer">
@@ -115,3 +130,9 @@
         <button type="submit" class="btn btn-primary">Add New Room</button>
     </div>
 </form>
+
+@if(request()->ajax())
+    <script>
+        window.select2Options();
+    </script>
+@endif

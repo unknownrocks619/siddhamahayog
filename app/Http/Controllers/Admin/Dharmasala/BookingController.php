@@ -660,4 +660,51 @@ class BookingController extends  Controller
 
         abort(404);
     }
+
+    public function quickBookingCheckIn(Request $request) {
+
+        $profileImage=false;
+        $profileID = false;
+
+        if ($request->post() && $request->ajax() ) {
+            
+            if (! $request->post('bookingID') ) {
+                return $this->json(false,'Please Scan your booking ID.');
+            }
+
+            // check if user needs to captuer image.
+
+            $booking = DharmasalaBooking::select(['room_number','building_name','floor_name','profile','id_card','status'])->where('uuid',$request->post('bookingID'))->first();
+
+            if ( ! $booking) {   
+                return $this->json(false,'Invalid Booking ID',['class' => 'bg-danger text-white','text' => 'Invalid Booking ID','records' => []]);
+            }
+
+            if (!  in_array($booking->status, [DharmasalaBooking::RESERVED,DharmasalaBooking::BOOKING,DharmasalaBooking::CHECKED_IN]) ) {
+                return $this->json(false,'Booking Already Expired.');
+            }
+
+            if (in_array($booking->status,[DharmasalaBooking::RESERVED,DharmasalaBooking::BOOKING])) {
+                $today = Carbon::today();
+                $booking->status = DharmasalaBooking::CHECKED_IN;
+                $booking->check_in = $today->format('Y-m-d');
+                $booking->check_in_time = $today->format('H:i:s');
+                $booking->save();
+            }
+            
+
+
+            return $this->json(true,'ID Match',null,
+                            [
+                                'class' => 'bg-success text-white',
+                                'text' => 'Your Room Information.',
+                                'records' => [
+                                        'room_number' => $booking->room_number,
+                                        'building_name' => $booking->building_name,
+                                        'floor_name' => $booking->floor_name]
+                            ]);
+            
+        }
+        return view('admin.dharmasala.booking.quick-booking-check-in');
+    }
 }
