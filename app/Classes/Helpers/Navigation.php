@@ -10,8 +10,8 @@ class Navigation
 {
     public static function adminParentAsideNavigationItems() {
 
-        if ( cache()->has('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION') ) {
-            return cache()->get('ADMIN_'.auth()->id().'_PARENT_ASIDE_NAVIGATION');
+        if ( cache()->has('ADMIN_'.auth()->guard('admin')->id().'_PARENT_ASIDE_NAVIGATION') ) {
+            // return cache()->get('ADMIN_'.auth()->guard('admin')->id().'_PARENT_ASIDE_NAVIGATION');
         }
 
         $navigations = NavigationPosition::where('nav_position','aside')->get();
@@ -19,9 +19,9 @@ class Navigation
         $permission = [];
 
         foreach ($navigations as $navigation) {
-            if ( ! in_array('*',$navigation->permission) && ! in_array(auth()->user()->role_id,$navigation->permission) && (int) auth()->user()->role_id !== Role::SUPER_ADMIN) {
-                continue;
-            }
+            // if ( ! in_array('*',$navigation->permission) && ! in_array(auth()->guard('admin')->user()->role_id,$navigation->permission) && (int) auth()->guard('admin')->user()->role_id !== Role::SUPER_ADMIN) {
+            //     continue;
+            // }
 
             $permission[] =  $navigation;
         }
@@ -36,16 +36,16 @@ class Navigation
 
             foreach ($nav_items->navigationItems as $nav) {
 
-                if ( ! in_array('*',$nav->permission) && !in_array(auth()->user()->role_id, $nav->permission) && (int) auth()->user()->role_id !== Role::SUPER_ADMIN) {
-                    continue;
+                if ( ! in_array('*',$nav->permission) && !in_array(auth()->guard('admin')->user()->role_id, $nav->permission) && (int) auth()->guard('admin')->user()->role_id !== Role::SUPER_ADMIN) {
+                    // continue;
                 }
 
                 $items[] = $nav;
             }
         }
 
-        session()->put('ADMIN_'.auth()->id().'_'.auth()->user()->role_id.'_PARENT_ASIDE_NAVIGATION',$items);
-        return session()->get('ADMIN_'.auth()->id().'_'.auth()->user()->role_id.'_PARENT_ASIDE_NAVIGATION');
+        session()->put('ADMIN_'.auth()->id().'_'.auth()->guard('admin')->user()->role_id.'_PARENT_ASIDE_NAVIGATION',$items);
+        return session()->get('ADMIN_'.auth()->id().'_'.auth()->guard('admin')->user()->role_id.'_PARENT_ASIDE_NAVIGATION');
     }
 
 }
