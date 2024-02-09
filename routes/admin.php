@@ -41,9 +41,8 @@ Route::get("/zoom", function () {
 
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(["auth", "admin"])
+    ->middleware(["admin"])
     ->group(function () {
-
         Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {
 
@@ -147,6 +146,7 @@ Route::prefix('admin')
         /**
          * Centers
          */
+        include __DIR__.'/admin/centers.php';
 
         /**
          * Exams
@@ -229,10 +229,12 @@ Route::prefix('admin')
                     });
             });
 
-        /**
+        
+            /**
          * Notices
          */
         include __DIR__.'/admin/notices.php';
+        
         /**
          * Settings
          */
@@ -240,7 +242,8 @@ Route::prefix('admin')
         /**
          * Resources
          */
-        include __DIR__.'/admin/resources.php';
+       
+         include __DIR__.'/admin/resources.php';
         /**
          * Calender
          */

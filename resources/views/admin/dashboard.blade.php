@@ -3,7 +3,7 @@
 @section('main')
 
     <div class="row">
-        @if(in_array(auth()->user()->role_id,[App\Models\Role::SUPER_ADMIN,App\Models\Role::ADMIN,App\Models\Role::ACTING_ADMIN]))
+        @if(auth()->guard('admin')->user()->isSuperAdmin())
             @php
                 $lives = App\Models\Live::where('live',true)->with(['program','sections','zoomAccount'])->get();
             @endphp
@@ -78,7 +78,7 @@
             <!--/ Website Analytics -->
         @endif    
 
-        @if(in_array(auth()->user()->role_id,[App\Models\Role::DHARMASHALA,App\Models\Role::SUPER_ADMIN,App\Models\Role::ADMIN]))
+        @if(auth()->guard('admin')->user()->isSuperAdmin())
             <!-- Sales Overview -->
             <div class="col-lg-6 col-sm-6 mb-4">
                 <div class="card">
@@ -116,7 +116,7 @@
         @endif
 
         
-        @if(in_array(auth()->user()->role_id,[App\Models\Role::SUPER_ADMIN,App\Models\Role::ADMIN,App\Models\Role::SUPPORT]))
+        @if(auth()->guard('admin')->user()->isSuperAdmin())
         <!-- Support Tracker -->
         <div class="col-md-6 mb-4">
             <div class="card h-100">

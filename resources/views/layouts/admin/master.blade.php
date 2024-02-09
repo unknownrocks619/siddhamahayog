@@ -46,6 +46,8 @@
     </style>
 </head>
 <body>
+@if(auth()->guard('admin')->check())
+
 <!-- Layout wrapper -->
 <div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
     <div class="layout-container">
@@ -78,6 +80,11 @@
 <!-- Drag Target Area To SlideIn Menu On Small Screens -->
 <div class="drag-target"></div>
 
+@else
+    <div class="container">
+        @yield('main')
+    </div>
+@endif
 
 <script src="{{ asset ('themes/admin/assets/vendor/libs/jquery/jquery.js')}}"></script>
 <script src="{{ asset ('themes/admin/assets/vendor/libs/popper/popper.js')}}"></script>

@@ -13,4 +13,8 @@ class CenterMemberController extends Controller
     {
         // $allMembers
     }
+
+    public function create() {
+        
+    }
 }

@@ -28,7 +28,7 @@
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                     <a class="nav-link dropdown-toggle hide-arrow" id="avatarDropDown" href="javascript:void(0);" data-bs-toggle="dropdown">
                         <div class="avatar avatar-online">
-                            <img src="{{profile()}}" alt class="rounded-circle">
+                            {{-- <img src="{{profile()}}" alt class="rounded-circle"> --}}
                         </div>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -37,12 +37,12 @@
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
                                         <div class="avatar avatar-online">
-                                            <img src="{{profile()}}" alt class="rounded-circle">
+                                            {{-- <img src="{{profile()}}" alt class="rounded-circle"> --}}
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <span class="fw-medium d-block">{{auth()->user()->full_name}}</span>
-                                        <small class="text-muted">{{\App\Models\Role::$roles[auth()->user()->role_id]}}</small>
+                                        <span class="fw-medium d-block">{{auth()->guard('admin')->user()->full_name()}}</span>
+                                        <small class="text-muted">{{-- \App\Models\Role::$roles[auth()->guard('admin')->user()->role_id]--}}</small>
                                     </div>
                                 </div>
                             </a>
@@ -51,7 +51,7 @@
                             <div class="dropdown-divider"></div>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{route('admin.members.show',['member' => auth()->id()])}}">
+                            <a class="dropdown-item" href="{{route('admin.members.show',['member' => auth()->guard('admin')->id()])}}">
                                 <i class="ti ti-user-check me-2 ti-sm"></i>
                                 <span class="align-middle">My Profile</span>
                             </a>

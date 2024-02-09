@@ -18,9 +18,9 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && (Role::ADMIN == auth()->user()?->role_id || Role::ACTING_ADMIN == auth()->user()?->role_id) || Role::SUPER_ADMIN == auth()->user()?->role_id) {
+        if (auth()->guard('admin')->check()) {
             return $next($request);
         }
-        return redirect()->route('login');
+        return redirect()->route('admin.users.login');
     }
 }
