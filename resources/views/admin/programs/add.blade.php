@@ -1,5 +1,7 @@
 @extends('layouts.admin.master')
+
 @push('title') Create Program @endpush
+
 @section('main')
     <h4 class="py-3 mb-4">
         <span class="text-muted fw-light"><a href="{{route('admin.program.admin_program_list')}}">Programs</a></span> Create

@@ -9,6 +9,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProgramStudentFeeDetail extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'program_id',
+        'student_id',
+        'program_student_fees_id',
+        'amount',
+        'amount_category',
+        'source',
+        'source_detail',
+        'verified',
+        'rejected',
+        'voucher_number',
+        'file',
+        'remarks',
+        'message',
+        'fee_added_by_user',
+        'remark_from_uploader',
+        'fee_added_by_center'
+    ];
+
     protected $casts = [
         "remarks" => "object",
         "file" => "object"

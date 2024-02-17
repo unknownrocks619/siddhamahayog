@@ -38,6 +38,7 @@ export class Booking {
             }
         })
     }
+    
     #getRequest(_url,body={}) {
         return axios.get(_url,{
             headers : {
@@ -45,6 +46,7 @@ export class Booking {
             }
         })
     }
+
     updateBookingInfo(elm,bookingID,param={}) {
         console.log(this.#disabled);
         if (this.#disabled === true || this.#disabled) {
@@ -149,6 +151,7 @@ export class Booking {
     }
 
     captureImage(elm,bookingID, params={}) {
+
         if (this.#disabled === true) {
 
             Swal.fire({

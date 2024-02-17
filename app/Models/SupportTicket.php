@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -9,10 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 class SupportTicket extends Model
 {
+    
     use HasFactory, SoftDeletes;
 
     protected $casts = [
         "media" => "object"
+    ];
+
+    CONST ACCESS =[
+        Rule::ADMIN,
+        Rule::SUPER_ADMIN,
+        Rule::SUPPORT
     ];
 
     public function user()

@@ -102,7 +102,7 @@ Route::prefix('programs')
         Route::prefix("fee")
             ->name('fee.')
             ->group(function () {
-                Route::get("/add/{program}", [ProgramStudentFeeController::class, "add_fee_to_student_by_program"])->name('admin_program_create_fee');
+                Route::match(['get','post'],"/add/{program?}", [ProgramStudentFeeController::class, "add_fee_to_student_by_program"])->name('admin_program_create_fee');
                 Route::get('/overview/{program}', [ProgramStudentFeeController::class, "fee_overview_by_program"])->name('admin_fee_overview_by_program');
                 Route::get("/transaction-program/{program}", [ProgramStudentFeeController::class, "transaction_by_program"])->name('admin_fee_transaction_by_program');
                 Route::get("/transaction/voucher/file/{fee_detail}", [ProgramStudentFeeController::class, "display_uploaded_voucher"])->name('admin_display_fee_voucher');

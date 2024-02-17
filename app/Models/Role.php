@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\RoleRule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +32,9 @@ class Role extends Model
     public const ADMIN = 13;
     public const CENTER_ADMIN = 9;
     public const SUPPORT=8;
-
+    public const CENTER = 2;
+    public const MEMBER = 7;
+    
     protected $casts = [
         'role_category' => 'array'
     ];
@@ -41,6 +44,17 @@ class Role extends Model
         self::SUPER_ADMIN,
         self::ACTING_ADMIN
     ];
+
+    public const CENTER_USER_ADD_LIST = [
+        2
+    ];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        
+    }
+    
 
     /**
      * Return Authorized Center for user

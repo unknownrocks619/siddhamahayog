@@ -2,12 +2,14 @@
 
 namespace App\Models\Dharmasala;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Database\Eloquent\BroadcastsEvents;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Images;
 use App\Models\ImageRelation;
+
 class DharmasalaBooking extends Model
 {
     use HasFactory, SoftDeletes;
@@ -53,6 +55,12 @@ class DharmasalaBooking extends Model
     public const BOOKING=5;
     public const PROCESSING=6;
     public const LEGACY = 7;
+
+    public const ACCESS =[
+        Rule::DHARMASALA,
+        Rule::ADMIN,
+        Rule::SUPER_ADMIN,
+    ];
 
     const IMAGES = [
         'profile'   => "Profile Image",

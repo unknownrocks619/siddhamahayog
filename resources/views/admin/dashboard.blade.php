@@ -1,9 +1,20 @@
 @extends('layouts.admin.master')
 
 @section('main')
+    <div class="col-md-12 my-3">
+        <div class="card">
+            <div class="card-header">
+                <a href="{{route('admin.members.create')}}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    Add New Member
+                </a>
+
+            </div>
+        </div>
+    </div>
 
     <div class="row">
-        @if(auth()->guard('admin')->user()->isSuperAdmin())
+        @if(in_array(adminUser()->role(), App\Models\Program::GO_LIVE_ACCESS))
             @php
                 $lives = App\Models\Live::where('live',true)->with(['program','sections','zoomAccount'])->get();
             @endphp
@@ -43,7 +54,7 @@
                                         @else
                                             <span class="label label-bg-primary">All Sections</span>
                                         @endif
-                                    </td>                                   
+                                    </td>
                                     <td>
                                         <div class="d-flex">
                                     <button type="button"
@@ -57,7 +68,7 @@
                                             data-method="POST"
                                             data-action="{{route('admin.program.live_program.end',$live->id)}}"
                                             type="button" class="btn btn-sm btn-danger data-confirm">End</button>
-    
+
                                         </div>
                                     </td>
                                 </tr>
@@ -71,14 +82,14 @@
                                 </tbody>
                             </table>
                         </div>
-                       
+
                     </div>
                 </div>
             </div>
             <!--/ Website Analytics -->
-        @endif    
+        @endif
 
-        @if(auth()->guard('admin')->user()->isSuperAdmin())
+        @if(in_array(adminUser()->role(), App\Models\Dharmasala\DharmasalaBooking::ACCESS))
             <!-- Sales Overview -->
             <div class="col-lg-6 col-sm-6 mb-4">
                 <div class="card">
@@ -97,7 +108,7 @@
                         </div>
                         <div class="d-none row " id="errorDisplay">
                             <div class="col-md-12 bg-danger fs-2 text-center text-white d-flex align-items-center justify-content-center">
-                                
+
                             </div>
                         </div>
                         <div class="row mt-4 d-none" id="booking-status">
@@ -115,8 +126,8 @@
             <!--/ Sales Overview -->
         @endif
 
-        
-        @if(auth()->guard('admin')->user()->isSuperAdmin())
+
+        @if(in_array(adminUser()->role(),App\Models\SupportTicket::ACCESS))
         <!-- Support Tracker -->
         <div class="col-md-6 mb-4">
             <div class="card h-100">
@@ -165,5 +176,23 @@
         </div>
         <!--/ Support Tracker -->
         @endif
+
+        @if(adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() )
+            <!-- Website Analytics -->
+            <div class="col-lg-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="cart-title mb-1">
+                            Programs
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                       @include('admin.programs.partials.program-list')
+                    </div>
+                </div>
+            </div>
+            <!--/ Website Analytics -->
+        @endif
     </div>
 @endsection
+@include('admin.programs.partials.footer-script')

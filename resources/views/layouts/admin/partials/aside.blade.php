@@ -12,7 +12,6 @@
                     @if($nav_item->child()->count() )
                         <ul class="menu-sub">
                             @foreach ($nav_item->child as $child_menu)
-                                @continue( ! in_array('*',$child_menu->permission) && !in_array(auth()->user()->role_id, $child_menu->permission) && (int) auth()->user()->role_id !== \App\Models\Role::SUPER_ADMIN)
 
                                 <li class="menu-item">
                                     <a href="@if( ! $child_menu->child()->count() && $child_menu->route){{route($child_menu->route,$child_menu->route_params ?? [])}}@endif" class="menu-link @if( $child_menu->child()->count()) menu-toggle @endif">
@@ -23,8 +22,6 @@
                                     @if($child_menu->child()->count())
                                         <ul class="menu-sub">
                                             @foreach ($child_menu->child as $children_menu)
-                                                @continue( ! in_array('*',$children_menu->permission) && !in_array(auth()->user()->role_id, $children_menu->permission) && (int) auth()->user()->role_id !== \App\Models\Role::SUPER_ADMIN)
-
                                                     <li class="menu-item">
                                                         <a href="@if($children_menu->route){{route($children_menu->route,$children_menu->route_params ?? [])}}@endif" class="menu-link">
                                                             @if($children_menu->icon) <i class="menu-icon tf-icons ti ti-{{$children_menu->icon}}"></i> @endif

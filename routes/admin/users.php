@@ -15,7 +15,10 @@ Route::prefix('admin/users')
 Route::prefix('admin/users')
     ->middleware(['admin'])
     ->group(function() {
-        Route::get('list',[UserController::class,'index'])->name('admin.users.list');
-        Route::match(['get','post'],'create',[UserController::class,'create'])->name('admin.users.create');
-
+        Route::get('list/{center?}',[UserController::class,'index'])->name('admin.users.list');
+        Route::match(['get','post'],'create/{center?}',[UserController::class,'create'])->name('admin.users.create');
+        Route::match(['get','post'],'edit/{user}/{center?}',[UserController::class,'edit'])->name('admin.users.edit');
+        Route::match(['delete','post'],'delete/{user}/{center?}',[UserController::class,'delete'])->name('admin.users.delete');
+        Route::match(['get','post'],'list/modal/center-add-list/{center}',[UserController::class,'modalUserList'])->name('admin.users.modal-user-list');
+        Route::post('logout',[UserController::class,'logout'])->name('admin.users.logout');
     });

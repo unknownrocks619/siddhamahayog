@@ -66,7 +66,7 @@
                             <div class="dropdown-divider"></div>
                         </li>
                         <li>
-                            <a class="dropdown-item data-confirm" data-confirm="All your unsaved changes will be lost.?" data-method="post" data-action="{{route('logout')}}"  href="#">
+                            <a class="dropdown-item data-confirm" data-confirm="All your unsaved changes will be lost.?" data-method="post" data-action="{{route('admin.users.logout')}}"  href="#">
                                 <i class="ti ti-logout me-2 ti-sm"></i>
                                 <span class="align-middle">Log Out</span>
                             </a>

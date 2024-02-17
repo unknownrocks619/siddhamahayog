@@ -41,6 +41,10 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware(['web','admin'])
                     ->group(base_path('routes/admin/dharmasala.php'));
+
+            Route::middleware(['web'])
+                    ->group(base_path('routes/center/index.php'));
+
         });
     }
 

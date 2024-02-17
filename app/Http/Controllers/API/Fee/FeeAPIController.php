@@ -34,7 +34,7 @@ class FeeAPIController extends Controller
                 $fee_detail->save();
             });
         } catch (\Throwable $th) {
-            return $this->json(false,'Unable to update fee status.',null);
+            return $this->json(false,'Unable to update fee status.');
 //            return response([
 //                "success" => false,
 //                "message" => "Unable to update fee status.",
@@ -68,6 +68,7 @@ class FeeAPIController extends Controller
             $notification->seen = false;
             $notification->save();
         }
+
         $callback = 'reload';
         $params = [];
         if ($request->get('source') == 'datatable' && $request->get('refresh')) {

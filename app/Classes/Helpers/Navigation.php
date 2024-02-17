@@ -17,11 +17,14 @@ class Navigation
         $navigations = NavigationPosition::where('nav_position','aside')->get();
 
         $permission = [];
+        $currentUserRole = auth()->guard('admin')->user();
 
         foreach ($navigations as $navigation) {
-            // if ( ! in_array('*',$navigation->permission) && ! in_array(auth()->guard('admin')->user()->role_id,$navigation->permission) && (int) auth()->guard('admin')->user()->role_id !== Role::SUPER_ADMIN) {
-            //     continue;
-            // }
+            if ( ! in_array('*',$navigation->permission) &&
+                 ! in_array($currentUserRole->role_id,$navigation->permission) 
+                 && ! $currentUserRole->isSuperAdmin()) {
+                continue;
+            }
 
             $permission[] =  $navigation;
         }
@@ -36,8 +39,10 @@ class Navigation
 
             foreach ($nav_items->navigationItems as $nav) {
 
-                if ( ! in_array('*',$nav->permission) && !in_array(auth()->guard('admin')->user()->role_id, $nav->permission) && (int) auth()->guard('admin')->user()->role_id !== Role::SUPER_ADMIN) {
-                    // continue;
+                if ( ! in_array('*',$nav->permission) 
+                    && !in_array($currentUserRole->role_id, $nav->permission) && 
+                    ! $currentUserRole->isSuperAdmin()) {
+                    continue;
                 }
 
                 $items[] = $nav;

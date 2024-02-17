@@ -19,7 +19,10 @@
                 <div class="row g-3 m-3">
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label" for="first_name">First Name</label>
+                            <label class="form-label" for="first_name">
+                                First Name
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <input type="text" value="{{$member?->first_name}}" id="first_name" name="first_name" class="form-control" placeholder="First Name">
                         </div>
                     </div>
@@ -33,7 +36,10 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label" for="last_name">Last Name</label>
+                            <label class="form-label" for="last_name">
+                                Last Name
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <input type="text" id="last_name" value="{{$member?->last_name}}" name="last_name" class="form-control" placeholder="Last Name">
                         </div>
                     </div>
@@ -43,14 +49,20 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label" for="date_of_birth">Date of Birth</label>
+                            <label class="form-label" for="date_of_birth">
+                                Date of Birth
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <input type="date" name="date_of_birth" value="{{$member?->date_of_birth}}" id="date_od_birth" class="form-control">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label" for="phone">Gender</label>
+                            <label class="form-label" for="phone">
+                                Gender
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <select name="gender" id="gender" class="form-control">
                                 <option value="male" @if($member?->gender == 'male') selected @endif>Male</option>
                                 <option value="female" @if($member?->gender == 'female') selected @endif>Female</option>
@@ -61,20 +73,21 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-label" for="phone_number">Phone Number</label>
+                            <label class="form-label" for="phone_number">
+                                Phone Number
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <input type="text" id="phone_number" value="{{$member?->phone_number}}" name="phone_number" class="form-control">
                         </div>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label" for="address">Address</label>
-                        <textarea name="address" class="form-control" id="address" rows="2" placeholder="1456, Mall Road">{{$member?->address?->street_address}}</textarea>
                     </div>
                 </div>
 
                 <div class="row g-3 m-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="country">Country</label>
+                            <label for="country">Country
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <select name="country" id="country" class="form-control">
                                 @foreach (\App\Models\Country::get() as $country)
                                     <option value="{{$country->getKey()}}" @if($country->getKey() == 153 || $member?->country == $country->getKey()) selected @endif>{{$country->name}}</option>
@@ -84,9 +97,18 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="city">City / State / Province</label>
+                            <label for="city">City / State / Province
+                                <sup class="text-danger">*</sup>
+                            </label>
                             <input type="text" name="city" id="city" class="form-control" value="{{$member?->city}}">
                         </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="address">Street Address
+                            <sup class="text-danger">*</sup>
+                        </label>
+                        <textarea name="address" class="form-control" id="address" rows="2" placeholder="1456, Mall Road">{{$member?->address?->street_address}}</textarea>
                     </div>
                 </div>
 
@@ -113,7 +135,6 @@
                         <div class="col-md-6 mb-3">
                             <div class="form-group">
                                 <label for="email">Email
-                                    <sup class="text-danger">*</sup>
                                 </label>
                                 <input type="text" name="email" id="email" @if($email) value="{{$email}}"  @endif @if($member) disabled @endif class="form-control">
                             </div>
@@ -134,7 +155,7 @@
                                         Confirm Password
                                         <sup class="text-danger">*</sup>
                                     </div>
-                                    <input type="password" name="password_confirm" id="password_confirm" class="form-control" />
+                                    <input type="password" name="password_confirmation" id="password_confirm" class="form-control" />
                                 </div>
                                 <div class="col-md-6 d-flex align-items-center justify-content-start">
                                     <label class="form-check-label me-1">Email Password </label>
@@ -166,6 +187,7 @@
                         </div>
                     </div>
                 @endif
+
             </div>
             <div class="card-footer ">
                 <div class="row">

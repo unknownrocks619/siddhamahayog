@@ -1,3 +1,12 @@
+@php
+/** @var  \App\Models\Program $program */
+
+$totalStat = collect($program->totalAdmissionFee('admission_fee'));
+$admission_fee = $totalStat->where('total_by','admission_fee')->first();
+$monthly_fee = $totalStat->where('total_by','monthly_fee')->first();
+$total_revenue = $totalStat->where('total_by','grand_total')->first();
+@endphp
+
 @extends('layouts.admin.master')
 @push('page_title') Program List @endpush
 @section('main')
@@ -12,16 +21,18 @@
             <div class="col-md-9 col-sm-12 mb-3">
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-primary">Sections</a>
-                        <a href="{{route('admin.program.batches.admin_batch_list', ['program' => $program->getKey()])}}" class="btn btn-primary">Batch</a>
-                        @if(in_array(auth()->user()->role_id, \App\Models\Program::GO_LIVE_ACCESS))
+                        @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+                            <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-primary">Sections</a>
+                            <a href="{{route('admin.program.batches.admin_batch_list', ['program' => $program->getKey()])}}" class="btn btn-primary">Batch</a>
+                        @endif
+                        @if(in_array(adminUser()->role(), \App\Models\Program::GO_LIVE_ACCESS))
                             @include('admin.datatable-view.programs.live',['row' => $program])
                         @endif
                     </div>
                 </div>
             </div>
         </div>
-        @if(auth()->user()->role_id == \App\Models\Role::SUPER_ADMIN)
+        @if(adminUser()->role()->isSuperAdmin())
             <div class="row">
                 <div class="col-xl-12 mb-4 col-lg-12 col-12">
                     @include('admin.programs.partials.statistics',['program' => $program])

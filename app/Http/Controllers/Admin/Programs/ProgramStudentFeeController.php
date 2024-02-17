@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Programs;
 
+use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use App\Models\Member;
 use App\Models\MemberNotification;
 use App\Models\Program;
 use App\Models\ProgramCourseFee;
+use App\Models\ProgramStudent;
 use App\Models\ProgramStudentFee;
 use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
@@ -94,9 +96,134 @@ class ProgramStudentFeeController extends Controller
     {
     }
 
-    public function add_fee_to_student_by_program(Program $program)
+    public function add_fee_to_student_by_program(Request $request, ?Program $program,?Member $member=null)
     {
-        return view('admin.programs.fee.add', compact('program'));
+        if ($request->ajax() ) {
+
+            $request->validate([
+                'amount' => 'required',
+                'voucher_type'  => 'required',
+                'voucher_number'    => 'required_if:voucher_type,voucher_entry'
+            ],[
+                'voucher_number.required_if' => 'Voucher Number is required.'
+            ]);
+
+            if ( ! $program?->getKey() ) {
+                $request->validate([
+                    'program' => 'required|int'
+                ]);
+
+                $program = Program::find($request->post('program'));
+            }
+            
+            if ( ! $member->getKey() ) {
+                
+                $request->validate([
+                    'member' => 'required|int'
+                ]);
+
+                $member = Member::find($request->post('member'));
+            }
+            
+
+            if ($request->post("voucher_type") == 'voucher_entry') {
+                
+                $voucherExists = ProgramStudentFeeDetail::where('program_id',$program->getKey())
+                                                        ->where('voucher_number',$request->post('voucher_number'))
+                                                        ->exists();
+
+                if ($voucherExists ) {
+                    return $this->json(false,'Voucher Already Uploaded.');
+                }
+
+            }
+
+            $full_address = $member->countries?->name  ?? $member->country;
+            $full_address .= $member->city ? ',' . $member->city : '';
+            $full_address .= ($member->address) ? ','. $member->address?->street_address : '';
+            
+            /**
+             * For Now Just validate using program_id & student id
+             * @todo Check Fee Entry based on batch, program and student.
+             */
+
+            $programStudent = ProgramStudent::where('student_id',$member->getKey())
+                                            ->where('program_id',$program->getKey())
+                                            ->where('active',true)
+                                            ->first();
+            if (! $programStudent ) {
+                return $this->json(false,'Please assign member in program first.');
+            }
+
+            $programCourseFee = ProgramStudentFee::where('program_id',$program->getKey())
+                                                        ->where('student_id',$member->getKey())
+                                                        ->where('student_batch_id',$programStudent->batch_id)
+                                                        ->first();            
+            if (! $programCourseFee) {
+                $full_name = $member->first_name.' '. $member->last_name;
+                $programCourseFee = new ProgramStudentFee();
+
+                $programCourseFee->fill([
+                    'program_id'    => $program->getKey(),
+                    'full_name' => ($member->full_name &&  empty($member->full_name)) ? $member->full_name : $full_name,
+                    'full_address' => $full_address,
+                    'phone_number'  => $member->phone_number,
+                    'student_batch_id' => $programStudent->batch_id,
+                    'total_amount'  => $request->post('amount'),
+                    'student_id'    => $member->getKey(),
+                    'program_student_id'    => $programStudent->getKey(),
+                ]);
+                
+                $programCourseFee->save();
+            }
+            
+
+            // insert record into coursedetail
+            $programCourseFeeDetail = new ProgramStudentFeeDetail();
+
+            /**
+             * @todo Check if voucher no and center_id matches the transaction.
+             * if so, prevent duplicate entry.
+             */
+            
+            $programCourseFeeDetail->fill([
+
+                'program_id'  => $program->getKey(),
+                'program_student_fees_id' => $programCourseFee->getKey(),
+                'amount'    => $request->post('amount'),
+                'amount_category'   => $request->post('amount_category') ?? 'hanumand_yagya_amount',
+                'source'    => $request->post('voucher_type'),
+                'source_detail' => ($request->post('voucher_type') == 'voucher_entry') ? 'Physical Voucher Entry' : 'Physical Bank Deposit',
+                'verified'  => true,
+                'rejected'  => false,
+                'voucher_number'    => $request->post('voucher_number'),
+                'remarks'   => (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) ? ['comment' => 'Center Entry'] : null,
+                'fee_added_by_user' => adminUser()->getKey(),
+                'fee_added_by_center'   => adminUser()->center_id,
+                'student_id'    => $member->getKey(),
+
+
+            ]);
+
+            $programCourseFeeDetail->save();
+            $programCourseFee->reCalculateTotalAmount();
+
+            /**
+             * Check if file was uploaded.
+             */
+            if ($request->file('voucher') ) {
+                $image = Image::uploadImage($request->file('voucher'),$programCourseFeeDetail);
+            }
+
+            if ($request->file('bank_voucher') ) {
+                $image = Image::uploadImage($request->file('bank_voucher'),$programCourseFeeDetail);
+            }
+            
+            // now reload the page for another
+            return $this->json(true,'Transaction was successful');
+        }
+
+        return view('admin.fees.direct-transaction', compact('program','member'));
     }
 
     public function store_fee_by_program(Request $request,  ?Member $member , ?Program $program)
@@ -350,6 +477,7 @@ class ProgramStudentFeeController extends Controller
                 ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
                 ->make(true);
         }
+
         return view('admin.fees.program.transactions', compact('program'));
     }
 
@@ -447,7 +575,7 @@ class ProgramStudentFeeController extends Controller
         if ($request->ajax() && $request->wantsJson()) {
             $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
 
-            return DataTables::of($program->nonPaidList($searchTerm))
+            return DataTables::of(( adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) ? collect([]) : $program->nonPaidList($searchTerm))
 
                 ->addColumn('member_name', function ($row) use ($program) {
                     $member = "<a href='" . route('admin.members.show',['member' => $row->id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";

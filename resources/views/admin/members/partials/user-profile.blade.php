@@ -10,9 +10,11 @@
                     @endif
                     <div class="user-info text-center">
                         <h4 class="mb-2">{{$member->full_name}}</h4>
-                        <span class="badge bg-label-secondary mt-1">
-                            {{\App\Models\Role::$roles[$member->role_id]}}
-                        </span>
+                        @if(adminUser()->role()->isAdmin() || adminUser()->role()->isSuperAdmin())
+                            <span class="badge bg-label-secondary mt-1">
+                                {{\App\Models\Role::$roles[$member->role_id]}}
+                            </span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -40,14 +42,16 @@
                         <span>{{$member->phone_numnber ?? 'N/A'}}</span>
                     </li>
                 </ul>
-                <div class="d-flex justify-content-center">
-                    <a href="#" class="me-3 data-confirm btn btn-label-danger suspend-user"  data-confirm="You will be Logged In As `{{$member->full_name}}`" data-method="post" data-action="{{route('admin.members.admin_login_as_user',$member->getKey())}}">View As</a>
-                </div>
+                @if(adminUser()->role()->isSuperAdmin())
+                    <div class="d-flex justify-content-center">
+                        <a href="#" class="me-3 data-confirm btn btn-label-danger suspend-user"  data-confirm="You will be Logged In As `{{$member->full_name}}`" data-method="post" data-action="{{route('admin.members.admin_login_as_user',$member->getKey())}}">View As</a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
-    @if(user()->role_id == \App\Models\Role::SUPER_ADMIN)
+    @if(adminUser()->role()->isSuperAdmin()))
         <!-- Plan Card -->
             <div class="card mb-4">
         <div class="card-body">
@@ -96,7 +100,9 @@
     </div>
         <!-- /Plan Card -->
     @endif
-    @include('admin.members.partials.statistics',['member' => $member])
+    @if(adminUser()->role()->isAdmin() || adminUser()->role()->isSuperAdmin())
+        @include('admin.members.partials.statistics',['member' => $member])
+    @endif 
     <!-- /Yagya Info -->
 </div>
 <!--/ User Sidebar -->

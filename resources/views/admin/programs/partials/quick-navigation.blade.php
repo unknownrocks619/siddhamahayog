@@ -1,7 +1,7 @@
 <div class="card">
     <div class="card-body">
         <ul class="list-unstyled mb-0">
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['syllabus_and_resources']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['syllabus_and_resources']['access']))
                 <li class="d-flex mb-4 pb-1 align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-primary">
@@ -20,7 +20,7 @@
                 </li>
             @endif
 
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['program_daily_attendance']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['program_daily_attendance']['access']))
                 <li class="d-flex mb-4 pb-1 align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-info"><i class="ti ti-code ti-md"></i></span>
@@ -36,7 +36,7 @@
                     </div>
                 </li>
             @endif
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['account_and_management']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['account_and_management']['access']))
                 <li class="d-flex mb-4 pb-1 align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-success"><i class="ti ti-currency-dollar ti-md"></i></span>
@@ -52,7 +52,7 @@
                     </div>
                 </li>
             @endif
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['assign_member_to_program']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['assign_member_to_program']['access']))
                 <li class="d-flex mb-4 pb-1 align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-warning"><i class="ti ti-brand-dribbble ti-md"></i></span>
@@ -66,7 +66,7 @@
                     </div>
                 </li>
             @endif
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['register_new_member_to_program']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['register_new_member_to_program']['access']))
                 <li class="d-flex mb-4 pb-1 align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-warning"><i class="ti ti-user ti-md"></i></span>
@@ -82,7 +82,7 @@
                     </div>
                 </li>
             @endif
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['scholarship_and_special_permission']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['scholarship_and_special_permission']['access']))
                 <li class="d-flex align-items-center pb-1 mb-4">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-free-rights ti-md"></i></span>
@@ -98,7 +98,7 @@
                 </li>
             @endif
 
-            @if(in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['vip_and_guest_list']['access']))
+            @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['vip_and_guest_list']['access']))
                 <li class="d-flex align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-vip ti-md"></i></span>
@@ -113,7 +113,7 @@
                 </li>
             @endif
 
-            @if ($program->getKey() == 5 && in_array(auth()->user()->role_id, \App\Models\Program::QUICK_NAVIGATION_ACCESS['grouping']['access']))
+            @if ($program->getKey() == 5 && in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['grouping']['access']))
                 <li class="d-flex align-items-center">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-vip ti-md"></i></span>

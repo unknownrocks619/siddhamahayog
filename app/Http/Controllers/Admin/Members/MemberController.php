@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin\Members;
 use App\Classes\Helpers\Image;
 use App\Console\Commands\ImageToTable;
 use App\Http\Controllers\Admin\Dharmasala\BookingController;
+use App\Http\Controllers\Admin\Programs\AdminProgramController;
+use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
 use App\Http\Controllers\Controller;
+use App\Models\CenterMember;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
 use App\Models\ImageRelation;
@@ -32,6 +35,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use DataTables;
+use Error;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -104,19 +108,24 @@ class MemberController extends Controller
     public function create(Request $request, $source = null)
     {
         if ( $request->post() )  {
-            // first create member
-            $request->validate([
-                'first_name'    => 'required',
-                'last_name'     => 'required',
-                'date_of_birth' => 'required',
-                'gender'        => 'required',
-                'phone_number'  => 'required',
-                'city'         => 'required',
-                'address'    => 'required',
-                'country'       => 'required',
-                'password'      => 'required_if:enable_login,1'
-            ]);
 
+            // first create member
+            if (! $request->post('memberID') ) {
+
+                $request->validate([
+                    'first_name' => 'required',
+                    'last_name' => 'required',
+                    'date_of_birth' => 'required',
+                    'gender' => 'required',
+                    'phone_number' => 'required',
+                    'city' => 'required',
+                    'address' => 'required',
+                    'country' => 'required',
+                    'email' => 'required_if:enable_login,1',
+                    'password' => 'required_if:enable_login,1|confirmed'
+                ],
+                    ['email.required_if' => 'Email Address is required.', 'password.required_if' => 'Password field is required.']);
+            }
 
             $fill = [
                 'first_name'    => $request->post('first_name'),
@@ -142,33 +151,49 @@ class MemberController extends Controller
 
             if ( $request->post('exisiting_member') && $request->post('memberID') ) {
                 $member = Member::find($request->post('memberID'));
-            } else {
 
-                $request->validate([
-                    'email' => 'required|email'
-                ]);
-
-                // if email exists and is not empty;
+            } elseif ($request->post('email')) {
                 $member = Member::where('email',$request->post('email'))->first();
             }
 
-            if (! $member ) {
+            if ($member ) {
 
+                $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
+                $member->phone_number = $fill['phone_number'] ?? $member->phone_number;
+                $member->country = $fill['country'] ?? $member->country;
+                $member->city = $fill['city'] ?? $member->city;
+                $member->address = $fill['address'] ?? $member->address;
+                $member->first_name = $fill['first_name'] ?? $member->first_name;
+                $member->last_name = $fill['last_name'] ?? $member->last_name;
+                $member->middle_name = $fill['middle_name'] ?? $member->middle_name;
+            } else {
                 $member = new Member();
                 $member->fill($fill);
-                $member->source = 'dharmasala';
+                $member->source = ($request->has('dharmasala') && $request->get('dharmasala') == true)  ? 'dharmasala' : 'admin_entry';
                 $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
                 $member->sharing_code = Str::random(8);
+                $member->email = $request->post('email') ?? 'random_email_'.Str::random(18).'_'.time().'@siddhamahayog.org';
             }
-
-            $member->email = $request->post('email');
 
             try {
                 $dharmasalaResponse = null;
+
                 DB::transaction(function() use ($member,$request, $source, &$dharmasalaResponse) {
-                    $member->save();
+
+                    /**
+                     * Save only if required.
+                     */
+                    if ($member->isDirty() ) {
+                        $member->full_name = $member->full_name();
+                        $member->save();
+                    }
+
+                    /**
+                     * Upload ID Card Image
+                     */
 
                     if ($request->file('id_card') ) {
+
                         $memberIDCard = Image::uploadImage($request->file('id_card'),$member);
 
                         if (isset ($memberIDCard[0]['relation'])) {
@@ -199,8 +224,83 @@ class MemberController extends Controller
 
                     }
 
+                    /**
+                     * Upload Profile Picture.
+                     */
+
+                     if ($request->file('profile_image') ) {
+
+                        $memberIDCard = Image::uploadImage($request->file('profile_image'),$member);
+
+                        if (isset ($memberIDCard[0]['relation'])) {
+                            $memberCardType = $memberIDCard[0]['relation'];
+                            $memberCardType->type = 'profile_picture';
+                            $memberCardType->save();
+                        }
+
+                    } elseif (! $request->file('profile_image') && $request->post('live_webcam_image') ) {
+
+                        $isUrl = str($request->post('live_webcam_image'))->contains('http');
+
+                        if ( $isUrl) {
+                            $idMediaImage = $request->post('live_webcam_image');
+                        } else {
+                            $idMediaImage = (new BookingController())->uploadMemberMedia($request,$request->post('live_webcam_image'),'path');
+                        }
+
+                        $uploadImageFromUrl = Image::urlToImage($idMediaImage,'dharmasala-processing');
+
+                        if (! $uploadImageFromUrl instanceof  Images)  {
+                            throw new \Error('Unable to verify Profile Image. Please try again or try uploading image.');
+                        }
+
+                        $imageRelation = (new ImageRelation())->storeRelation($member,$uploadImageFromUrl);
+                        $imageRelation->type = 'profile_picture';
+                        $imageRelation->saveQuietly();
+
+                    }
+
+                    /**
+                     * Insert record into dharmasal booking.
+                     */
                     if ( $request->has('dharmasala') && $request->get('dharmasala') == true) {
                         $dharmasalaResponse = (new BookingController())->createNewUserBooking($request,$member);
+                    }
+
+                    /**
+                     * Insert member into this center.
+                     */
+                    if ( ( adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) && ! CenterMember::where('member_id',$member->getKey())->where('center_id',adminUser()->center_id)->exists()){
+
+                        $centerMember = new CenterMember();
+                        $centerMember->fill([
+                            'member_id' => $member->getKey(),
+                            'center_id' => adminUser()->center_id
+                        ]);
+
+                        $centerMember->save();
+                    }
+
+
+                    if ($request->post('program_enroll') ) {
+
+                        $programControll = (new AdminProgramController())->registerMemberToProgram($request,$member);
+
+                        if (isset($programControll->original['state']) && ! $programControll->original['state']) {
+                            throw new Error($programControll->original['msg']);
+                        }
+
+                    }
+
+                    #Course Fee Entry
+                    if ($request->has('amount') || $request->has('voucher_type')) {
+
+                        $courseFeeEntry = (new ProgramStudentFeeController())->add_fee_to_student_by_program($request,null,$member);
+
+                        if (isset($courseFeeEntry->original['state']) && ! $courseFeeEntry->original['state']) {
+                            throw new Error($courseFeeEntry->original['msg']);
+                        }
+
                     }
 
                 });
@@ -210,9 +310,31 @@ class MemberController extends Controller
             }
 
             if ($dharmasalaResponse){
+
                 return $dharmasalaResponse;
             }
-            return $this->json(true,'New Member Registration created.','reload');
+
+            /**
+             * If member registration is done by
+             * centers than confirm for enrollment
+             * in one of the program.
+             *
+             * @info This is to avoid unnecessary enrollment of members only in the system.
+             * @todo Upgrade with better option.
+             */
+
+
+            $view = 'admin.programs.members.post-registration';
+            $params =['member' => $member];
+
+            if ($request->post('program_enroll') ) {
+                $params['program'] = Program::find($request->post('program'));
+                $view = 'admin.programs.members.post-enrollement-option';
+            }
+
+            return $this->json(true,'Member Registration Success.','validatePartials',[
+                'view'  => view($view,$params)->render()
+            ]);
         }
 
         $member = null;
@@ -277,7 +399,7 @@ class MemberController extends Controller
         ini_set('memory_limit',-1);
 
         $superAdmin = ['billing'];
-        if ( in_array($tab,$superAdmin) && user()->role_id != Role::SUPER_ADMIN) {
+        if ( in_array($tab,$superAdmin) && ! adminUser()->role()->isSuperAdmin() ) {
             return redirect()->route('admin.members.show',['member' => $member,'tab' => 'user-detail']);
         }
         //
@@ -356,13 +478,16 @@ class MemberController extends Controller
 
         if ($member->isDirty('email') && Member::where('email', $request->post('email'))
                 ->where('id', '!=', $member->getKey())
+                ->whereNotNull('email')
                 ->exists()) {
             return $this->json(false,'Email Already Exists. Unable to save Record.');
-//            session()->flash('Email Already exists. Unable to save record.');
-//            return back()->withInput();
         }
 
-        $member->role_id = $request->post('role');
+        if (adminUser()->role()->isSuperAdmin() ) {
+
+            $member->role_id = $request->post('role');
+        }
+
         $member->country = $request->post('country');
         $member->city = $request->post('city');
         $member->address = ["street_address" => $request->post('street_address')];
@@ -421,6 +546,7 @@ class MemberController extends Controller
      */
     public function add_member_to_program(Request $request, ?Program $program=null)
     {
+
         $data = [
             'program' => $program
         ];
@@ -479,6 +605,10 @@ class MemberController extends Controller
             'gender'            => $request->post('gender'),
             'gotra'             => $request->post('gotra'),
         ]);
+
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+            $member->role_id = Role::MEMBER;
+        }
 
         // get program batch
         $programBatch = ProgramBatch::where('batch_id',$request->post('current_batch'))
@@ -565,6 +695,7 @@ class MemberController extends Controller
             return view('admin.programs.members.partials.search_result', compact('members', 'program', 'batches', 'sections'));
 
         }
+
         return view('admin.programs.members.assign_student_to_program', compact('program'));
     }
 
@@ -738,10 +869,11 @@ class MemberController extends Controller
 
     public function reauthUser(Member $member)
     {
-        if ($member->role_id != 7) {
-            return $this->returnResponse(false,'Cannot debut admin Account');
+        if ( ! adminUser()->role()->isSuperAdmin() ) {
+            return $this->json(false,'You do not have permission to perform this action.');
         }
-        session()->put('adminAccount', auth()->id());
+
+        session()->put('adminAccount', true);
 
         if (!Auth::loginUsingId($member->getKey())) {
             return $this->returnResponse(false,'Oops ! Unable to use debug for this user.');
@@ -803,6 +935,10 @@ class MemberController extends Controller
     public function deleteUser(Member $member)
     {
 
+        if ( ! adminUser()->role()->isSuperAdmin() ) {
+            return $this->json(false,'You do not have permission to perform this action.');
+        }
+
         if (Role::ADMIN != user()->role_id) {
             session()->flash('error', 'You are not allowed to perform this action.');
             return back();
@@ -828,13 +964,9 @@ class MemberController extends Controller
                 $member->delete();
             });
         } catch (\Throwable $th) {
-            //throw $th;
-            dd($th->getMessage());
-            session()->flash('error', 'Unable to remove user: ' . $th->getMessage());
-            return back();
+            return $this->json(false,'Unable to to remove user. '. $th->getMessage());
         }
 
-        session()->flash('success', 'User information has been deleted.');
-        return redirect()->route('admin.members.all');
+        return $this->json(true,'User information deleted.','reload');
     }
 }

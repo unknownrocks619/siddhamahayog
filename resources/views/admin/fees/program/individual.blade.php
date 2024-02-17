@@ -27,7 +27,7 @@
                         <thead>
                         <tr>
                             <th>Category</th>
-                            <th>Source</th>
+                            <th>Source / Voucher Number</th>
                             <th>Status</th>
                             <th>Media</th>
                             <th>Amount</th>
@@ -35,7 +35,6 @@
                             <th>Action</th>
                         </tr>
                         </thead>
-
                         <tbody>
                         @foreach ($transaction->transactions as $all_detail_transaction)
                             <tr>
@@ -49,9 +48,13 @@
                                 </td>
 
                                 <td>
+                                    @if($all_detail_transaction->source == 'voucher_entry')
+                                        {{$all_detail_transaction->voucher_number}}
+                                    @else
                                     {{ $all_detail_transaction->source }}
                                     <hr />
                                     {!! $all_detail_transaction->source_detail !!}
+                                    @endif
                                 </td>
 
                                 <td>

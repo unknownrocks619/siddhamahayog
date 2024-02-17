@@ -315,4 +315,61 @@ class ProgramDataTablesController extends Controller
         return $datatable->rawColumns(["action",'status','qr','full_name','check_in','check_out','room_number'])
                         ->make(true);
     }
+
+    public function programList(Request $request,$type=null) {
+
+        $programs = Program::with(["defaultBatch",
+                "liveProgram" => function ($query) {
+                return $query->with(["sections" => function($query) {
+                    $query->with('programCenterStudent');
+                }]);
+            },'students','sections' => function ($query) {
+                $query->withCount('programStudents');
+            }]);
+
+            if ($type) {
+                $programs->where("program_type", $type)->latest()->get();
+            }
+            
+            $datatable = DataTables::of($programs)
+                ->addIndexColumn()
+                ->addColumn('program_name', function ($row) {
+                    
+                    return view('admin.datatable-view.programs.program-name',['program' => $row])->render();
+
+                })
+                ->addColumn('program_duration', function ($row) {
+                    return ($row->program_duration) ? "Ongoing" : $row->program_duration;
+                })
+                ->addColumn('sections', function ($row) {
+                    return view('admin.datatable-view.programs.program-section',['program' => $row])->render();
+                })
+                ->addColumn('total_student', function ($row) {
+
+                   return view('admin.datatable-view.programs.student-count',['program' => $row])->render();
+                })
+                ->addColumn('promote', function ($row) {
+                    return view('admin.datatable-view.programs.live',['row' => $row])->render();
+                })
+                ->addColumn('batch', function ($row) {
+
+                    if ($row->defaultBatch) {
+                        return ($row->defaultBatch->batch_name . "-" . $row->defaultBatch->batch_year . "/   " . $row->defaultBatch->batch_month);
+                    } else {
+                        if (! in_array(adminUser()->role(), Program::EDIT_PROGRAM_ACCESS) ) {
+                            return ' -- ';
+                        }
+                        return "<button data-action='" . route('admin.modal.display', ['view' => 'programs.batch.new','program' => $row->getKey(),'callback' => 'reload'] ) . "' data-bs-toggle='modal' data-bs-target='#newBatch' class='btn btn-link ajax-modal'>Add Batch</button>";
+                    }
+
+                })
+                ->addColumn('action', function ($row) {
+
+                    return view('admin.datatable-view.programs.action',['program' => $row])->render();
+                })
+                ->rawColumns(["program_name", "batch", "action", "promote","total_student",'sections'])
+                ->make(true);
+
+            return $datatable;
+    }
 }

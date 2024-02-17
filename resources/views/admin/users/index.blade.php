@@ -20,7 +20,7 @@
         </div>
 
         <div class="card-datatable table-responsive">
-            <table class="dt-responsive table" id="program-table">
+            <table class="dt-responsive table" id="userListtable">
                 <thead>
                 <tr>
                     <th>Full Name</th>
@@ -44,6 +44,14 @@
                                     <span class="badge bg-label-danger">No</span>
                                 @endif
                             </td>
+                            <td>
+                                <a href="{{route('admin.users.edit',['user' => $user])}}" class="btn btn-primary btn-icon">
+                                    <i class="fas fa-pencil"></i>
+                                </a>
+                                <button class="btn btn-danger btn-icon data-confirm" data-confirm="Confirm Delete User." data-method="post" data-action="{{route('admin.users.delete',['user' => $user])}}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
                         </tr>
 
                     @endforeach
@@ -52,3 +60,9 @@
         </div>
     </div>
 @endsection
+
+@push('page_script')
+    <script>
+        $('#userListtable').DataTable();
+    </script>
+@endpush

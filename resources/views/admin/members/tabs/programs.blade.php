@@ -36,7 +36,11 @@
                             {{ $member_program->created_at }}
                         </td>
                         <td>
-                            <button type="button" data-method="delete" data-action="{{ route('admin.program.enroll.admin_remove_student_from_program',$member_program->id) }}" data-confirm="Are you sure you want remove this user from program. If there are any active transaction for his user in the program you must first remove transaction" class="btn btn-sm btn-danger btn-small data-confirm">Remove</button>
+                            @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+                                <button type="button" data-method="delete" data-action="{{ route('admin.program.enroll.admin_remove_student_from_program',$member_program->id) }}" data-confirm="Are you sure you want remove this user from program. If there are any active transaction for his user in the program you must first remove transaction" class="btn btn-sm btn-danger btn-small data-confirm">Remove</button>
+                            @else
+                                <button type="button" disabled data-confirm="You do not have permission to perform this action." class="btn btn-sm btn-danger btn-small data-confirm">Remove</button>
+                            @endif
                         </td>
                     </tr>
                 @empty

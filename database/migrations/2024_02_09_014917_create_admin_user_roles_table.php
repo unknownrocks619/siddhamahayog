@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('admin_users', function (Blueprint $table) {
-            $table->integer('role_id');
+            $table->integer('role_id')->after('is_super_admin');
         });
     }
 

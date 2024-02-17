@@ -40,6 +40,7 @@
             </tr>
             </thead>
             <tbody>
+
             @forelse ($member->transactions as $transaction)
                 <tr>
                     <td>

@@ -142,6 +142,19 @@ if (!function_exists("user")) {
     }
 }
 
+if (!function_exists("adminUser")) {
+    function adminUser()
+    {
+        static $user = null;
+
+        if ($user) return $user;
+
+        $user = auth()->guard('admin')->user();
+        return $user;
+    }
+}
+
+
 if (!function_exists("profile")) {
     function profile()
     {

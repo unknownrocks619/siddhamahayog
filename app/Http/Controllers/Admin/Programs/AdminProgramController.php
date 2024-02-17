@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Programs;
 
+use App\Classes\Helpers\Roles\Rule;
+use App\Http\Controllers\Admin\Datatables\ProgramDataTablesController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use App\Models\Batch;
+use App\Models\Centers;
 use App\Models\Live;
 use App\Models\Member;
 use App\Models\Program;
@@ -28,97 +31,10 @@ class AdminProgramController extends Controller
 
     public function program_list(Request $request, $type = null)
     {
-
         if ($request->ajax() && $request->wantsJson()) {
 
-            $programs = Program::with(["defaultBatch",
-                "liveProgram" => function ($query) {
-                return $query->with(["sections"]);
-            },'students','sections' => function ($query) {
-                $query->withCount('programStudents');
-            }]);
-
-            if ($type) {
-                $programs->where("program_type", $type)->latest()->get();
-            }
-
-            $datatable = DataTables::of($programs)
-                ->addIndexColumn()
-                ->addColumn('program_name', function ($row) {
-
-                    $program = $row->program_name;
-                    $program .= "<br />";
-
-                    if ($row->program_type == "paid") {
-                        $program .= "<span class='text-success px-2'>PAID</span>";
-                    } else {
-                        $program .= "<span class='text-warning px-2'>" . strtoupper($row->program_type) . "</span>";
-                    }
-                    return $program;
-
-                })
-                ->addColumn('program_duration', function ($row) {
-                    return ($row->program_duration) ? "Ongoing" : $row->program_duration;
-                })
-                ->addColumn('sections', function ($row) {
-                    $sectionHTML = '';
-                    foreach ($row->sections ?? [] as $section) {
-                        
-                        $sectionStudentCount = $section->program_students_count;
-
-                        if ( ! in_array(auth()->user()->role_id, Program::STUDENT_COUNT_ACCESS) ){
-                            $sectionStudentCount = 0;
-                        }
-                        $link = route('admin.program.sections.admin_list_all_section',['program'=>$row->getKey(),'current_tab' => $section->slug]);
-                        if ($section->default) {
-                            $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-danger"><a href="'.$link.'">'.$section->section_name .':{'.$sectionStudentCount.'}</a></span>';
-                            continue;
-                        }
-                        $sectionHTML .= '<span class="mx-1 my-1 btn btn-label-primary"><a href="'.$link.'">'.$section->section_name .':{'.$sectionStudentCount.'}</a></span>';
-                    }
-                    return $sectionHTML;
-                })
-                ->addColumn('total_student', function ($row) {
-
-                    if (! in_array(auth()->user()->role_id,Program::STUDENT_COUNT_ACCESS)){
-                        return '<span class="btn-label-danger px-2 py-1">0</span>';
-                    }
-
-                    $totalStudent =  $row->students?->count() ?? 0;
-
-                    if ( ! $totalStudent ) {
-                        return '<span class="btn-label-danger px-2 py-1">0</span>';
-                    }
-                    return '<span class="btn-label-success px-2 py-1">'.$totalStudent.'</span>';
-                })
-                ->addColumn('promote', function ($row) {
-                    return view('admin.datatable-view.programs.live',['row' => $row])->render();
-                })
-                ->addColumn('batch', function ($row) {
-
-                    if ($row->defaultBatch) {
-                        return ($row->defaultBatch->batch_name . "-" . $row->defaultBatch->batch_year . "/   " . $row->defaultBatch->batch_month);
-                    } else {
-                        if (! in_array(auth()->user()->role_id, Program::EDIT_PROGRAM_ACCESS) ) {
-                            return ' -- ';
-                        }
-                        return "<button data-action='" . route('admin.modal.display', ['view' => 'programs.batch.new','program' => $row->getKey(),'callback' => 'reload'] ) . "' data-bs-toggle='modal' data-bs-target='#newBatch' class='btn btn-link ajax-modal'>Add Batch</button>";
-                    }
-
-                })
-                ->addColumn('action', function ($row) {
-                    $action = "<a href='" . route('admin.program.admin_program_detail', [$row->id]) . "' class='btn btn-primary btn-sm'><i class='fas fa-eye me-1'></i></a>";
-
-                    if(in_array(auth()->user()->role_id, Program::EDIT_PROGRAM_ACCESS)) {
-                        $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-info btn-sm mx-1'><i class='fas fa-pencil'></i></a>";
-                        $action .= "<a href='" . route('admin.program.admin_program_edit', [$row->id]) . "' class='btn btn-danger btn-sm'><i class='fas fa-trash'></a>";
-                    }
-
-                    return $action;
-                })
-                ->rawColumns(["program_name", "batch", "action", "promote","total_student",'sections'])
-                ->make(true);
-            return $datatable;
+            return (new ProgramDataTablesController())->programList($request,$type);
+            // return $datatable;
         }
         return view("admin.programs.index");
     }
@@ -309,7 +225,7 @@ class AdminProgramController extends Controller
             $datatable = DataTables::of($program->programStudentEnrolments($searchTerm))
                 ->addIndexColumn()
                 ->addColumn('roll_number', function ($row) use ($program) {
-
+                    
                     if ( $program->getKey() == 5 ) {
 
                         if ( ! $row->total_counter) {
@@ -321,6 +237,9 @@ class AdminProgramController extends Controller
                     }
 
                     if ( ! $row->roll_number) {
+                        if ( ! adminUser()->role()->isSuperAdmin() || ! adminUser()->role()->isAdmin() ) {
+                            return '<span class="label label-bg-dark px-1"> -</span>';
+                        }
                         return '<span class="label label-bg-dark px-1"><a href="" class="text-info"><i class="fas fa-plus"></i> Add Roll number</a></span>';
                     }
 
@@ -435,7 +354,7 @@ class AdminProgramController extends Controller
         $liveProgram->program_id = $program->id;
         $liveProgram->section_id = ($request->section) ? $request->section : null;
         $liveProgram->zoom_account_id = $request->zoom_account;
-        $liveProgram->started_by = auth()->id();
+        $liveProgram->started_by = adminUser()->getKey();
         $domain = str_shuffle('siddhamahayog') . ".org";
 
 
@@ -488,6 +407,7 @@ class AdminProgramController extends Controller
     public function endLiveSession(Live $live)
     {
         $live->live = false;
+        $live->closed_by = adminUser()->getKey();
         $program_message = $live->program->program_name;
 
         if ($live->section_id) {
@@ -549,14 +469,11 @@ class AdminProgramController extends Controller
     }
 
     public function rejoinSession(Live $live)
-    {
+    { 
         if (!$live->live) {
             return $this->returnResponse(false,'Program Already Closed',null,[],200,url()->current());
-//            session()->flash("error", "Program already closed.");
-//            return back();
         }
         return $this->returnResponse(true,'Session available.','redirectTab',['location' => $live->admin_start_url],200,$live->admin_start_url);
-//        return redirect()->to($live->admin_start_url);
     }
 
     public function liveProgram()
@@ -577,5 +494,88 @@ class AdminProgramController extends Controller
             return $query->with(['batch']);
         }, 'sections']);
         return view('admin.programs.modal.program_batch_and_section_modal', compact('program'));
+    }
+
+    public function registerMemberToProgram(Request $request, ?Member $member, ?Program $program=null) {
+
+        if (! $member ) {
+            $request->validate(['member' => 'required']);
+
+            $member = Member::find($request->post('member'));
+        }
+
+        if (! $program ) {
+            $request->validate(['program' => 'required']);
+
+            $program = Program::find($request->post('program'));
+        }
+
+        if ( ! $request->post('section') ) {
+            $programSection = $program->active_sections()->first();
+        } else {
+            $programSection = ProgramSection::find($request->post('section'));
+        }
+
+        if ( ! $request->post('batch') ) {
+            $programBatch = $program->active_batch()->first();
+        } else {
+            $programBatch = $program->batches()->where('batch_id',$request->post('batch'))->first();
+        }
+
+        // now check if this user is already in enrolled in the program.
+
+        $programStudent = ProgramStudent::where('program_id',$program->getKey())
+                                            ->where('student_id',$member->getKey())
+                                            ->first();
+
+        /**
+         * @info If user is from Center just check if user exists or not, nothing more..
+         */
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+            
+            /**
+             * If Center Force program to select from default one.
+             */
+            if ( $request->post('section') ) {
+                $programSection = $program->active_sections()->first();
+            }
+            
+            /**
+             * If Center Froce batch to be from default.
+             */
+            if ($request->post('batch') ) {
+                $programBatch = $program->active_batch()->first();
+            }
+
+            if ( $programStudent ) {
+                return $this->json(true,'Student Enrolled in program','reload');
+            }
+
+        }
+
+        if ( in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN]) && $programStudent) {
+
+            if ( $programStudent->batch_id = $programBatch->getKey() )  {
+
+                return $this->json(true,"Student Enrolled in program","reload");
+            }
+        }
+        
+        if (! $programStudent ) {
+
+            $programStudent = new ProgramStudent();
+
+            $programStudent->fill([
+                'program_id'=>$program->getKey(),
+                'student_id'    => $member->getKey(),
+                'batch_id'  => $programBatch->getKey(),
+                'program_section_id'    => $programSection->getKey(),
+                'active'    => true,
+            ]);
+
+            $programStudent->save();
+        }
+
+        return $this->json(true,'Enroleld Success','reload');
     }
 }

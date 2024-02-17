@@ -2,11 +2,27 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Program extends Model
+/**
+ * Program Model
+ *
+ * @property string $program_duration
+ * @property string|null $program_access
+ * @property string|null $admission_fee
+ * @property string|null $monthly_fee
+ * @property string $program_start_date
+ * @property string $program_end_date
+ * @property string|null $promote
+ * @property string $description
+ * @property float|int $overdue_allowed
+ * @property int $batch
+ * @property int $zoom
+ */
+class Program extends AdminModel
 {
     use HasFactory;
 
@@ -62,53 +78,54 @@ class Program extends Model
     ];
 
     public const GO_LIVE_ACCESS = [
-        Role::SUPER_ADMIN,
-        Role::ADMIN
+        Rule::SUPER_ADMIN,
+        Rule::ADMIN,
+        Rule::ACTING_ADMIN,
     ];
 
     public const EDIT_PROGRAM_ACCESS = [
-        Role::SUPER_ADMIN,
-        Role::ADMIN
+        Rule::SUPER_ADMIN,
+        Rule::ADMIN
     ];
 
     public const STUDENT_COUNT_ACCESS = [
-        Role::SUPER_ADMIN,
-        Role::ADMIN
+        Rule::SUPER_ADMIN,
+        Rule::ADMIN
     ];
 
     public const QUICK_NAVIGATION_ACCESS = [
         'syllabus_and_resources'    => [
             'label' => 'Syllabus / Resources',
-            'access'    => [Role::SUPER_ADMIN,Role::ACTING_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ACTING_ADMIN,Rule::ADMIN]
         ],
         'program_daily_attendance'  => [
             'label' => 'Program Daily Attendance',
-            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
         ],
         'account_and_management' => [
             'label' => 'Account Management',
-            'access'    => [Role::SUPER_ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::CENTER_ADMIN,Rule::CENTER]
         ],
 
         'assign_member_to_program'  => [
             'label' => 'Assign Member to Program',
-            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN,Rule::CENTER_ADMIN,Rule::CENTER]
         ],
         'register_new_member_to_program'    => [
             'label' => 'Register Member',
-            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN,Rule::CENTER_ADMIN,Rule::CENTER           ]
         ],
         'scholarship_and_special_permission' => [
             'label' => 'Scholarship & Special Permission',
-            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
         ],
         'vip_and_guest_list'    => [
             'label' => 'VIP / Guest Access List',
-            'access'    => [Role::SUPER_ADMIN,Role::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
         ],
         'grouping'  => [
             'label' => 'Group',
-            'access'    => [Role::SUPER_ADMIN]
+            'access'    => [Rule::SUPER_ADMIN]
         ]
     ];
 
@@ -283,6 +300,16 @@ class Program extends Model
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
 
+        if(adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+
+            $sql .= " INNER JOIN center_members cen_mem ";
+            $sql .= " ON cen_mem.member_id = member.id";
+            $sql .= " AND cen_mem.center_id =  ". adminUser()->center_id;
+
+        }
+
+
+
         $sql .= ' LEFT JOIN countries country ';
         $sql .= " on member.country = country.id";
 
@@ -351,6 +378,11 @@ class Program extends Model
         $sql .= " FROM program_student_fee_details prostufee";
         $sql .= " WHERE prostufee.verified  = 1";
         $sql .= " AND prostufee.program_id = ?";
+
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+            $sql .= " and prostufee.fee_added_by_center = ". adminUser()->center_id;
+        }
+
         $sql .=  " GROUP BY prostufee.amount_category";
         $sql .= " WITH ROLLUP";
 
@@ -437,6 +469,11 @@ class Program extends Model
         $sql .= " JOIN members member";
         $sql .= " ON member.id = fee_detail.student_id";
 
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+            $sql .= ' JOIN center_members cen_mem ';
+            $sql .= ' ON cen_mem.member_id = member.id ';
+        }
+
         $sql .= " WHERE fee_detail.program_id = ? ";
 
         if ($searchTerm) {
@@ -474,6 +511,10 @@ class Program extends Model
                 '%'.$searchTerm.'%',
             ]);
         }
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+            $sql .= ' AND fee_detail.fee_added_by_center =  ' .adminUser()->center_id;
+        }
+
 
         $sql .= " AND fee_detail.deleted_at IS NULL";
 

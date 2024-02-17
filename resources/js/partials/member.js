@@ -131,7 +131,6 @@ export class MemberRegistration {
 
         const image = canvas.toDataURL('image/png',1);
 
-
         this.postRecord('/admin/dharmasala/bookings/upload-capture-media',{'image': image}).then(function(response) {
 
             // Assign image path to field.

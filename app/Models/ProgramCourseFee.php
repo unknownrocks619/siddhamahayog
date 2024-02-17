@@ -9,4 +9,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProgramCourseFee extends Model
 {
     use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'program_id',
+        'admission_fee',
+        'monthly_fee',
+        'online',
+        'offline',
+        'active'
+    ];
 }

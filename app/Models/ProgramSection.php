@@ -22,6 +22,10 @@ class ProgramSection extends Model
         return $this->hasMany(ProgramStudent::class, "program_section_id");
     }
 
+    public function programCenterStudent(){
+        return $this->hasManyThrough(CenterMember::class,ProgramStudent::class,'program_id','member_id','program_id','student_id');
+    }
+
     public function section_student(Program $program, $searchTerm=null) {
         $selects = [
             'prostu.id AS program_student_id',

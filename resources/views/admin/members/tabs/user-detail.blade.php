@@ -41,7 +41,7 @@
                         <b>
                             Email
                         </b>
-                        <input type="email" name="email" id="email" class="form-control" value="{{ $member->email }}" />
+                        <input @if( ! adminUser()->role()->isSuperAdmin() ) disabled @endif type="email" name="email" id="email" class="form-control" value="{{ $member->email }}" />
                         @if($member->is_email_verified)
                             <span class="text-success mt-2">
                                                             Verified
@@ -73,18 +73,20 @@
             </div>
 
             <div class="row my-2 mt-4">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <b>
-                            Role
-                        </b>
-                        <select name="role" id="role" class="form-control">
-                            @foreach (\App\Models\Role::$roles as $index => $role)
-                                <option value="{{ $index }}" @if($index==$member->role_id) selected @endif>{{ $role }}</option>
-                            @endforeach
-                        </select>
+                @if( adminUser()->role()->isAdmin() || adminUser()->role()->isSuperAdmin() )
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <b>
+                                Role
+                            </b>
+                            <select name="role" id="role" class="form-control">
+                                @foreach (\App\Models\Role::$roles as $index => $role)
+                                    <option value="{{ $index }}" @if($index==$member->role_id) selected @endif>{{ $role }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
+                @endif
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="gotra">Gotra</label>
