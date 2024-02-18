@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('lives', function (Blueprint $table) {
             //
-            $table->unsignedInteger('started_by')->nullable()->after('domain');
+//            $table->unsignedInteger('started_by')->nullable()->after('domain');
         });
     }
 
