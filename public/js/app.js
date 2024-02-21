@@ -5421,6 +5421,15 @@ $(function () {
       $(_eventElm).addClass('show');
     }
   });
+
+  window.FormRuleEnable = function () {
+    if ($("div[data-enable-rule]").length >= 1) {
+      $(document).find('input,select,textarea').attr('disabled', 'disabled').addClass('disabled');
+      $(document).find("button[type='submit']").remove();
+    }
+  };
+
+  FormRuleEnable();
   $(document).on('click', '.data-confirm', function (event) {
     event.preventDefault();
     var confirmTitle = $(this).data('confirm');

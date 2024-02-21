@@ -28,10 +28,13 @@
     <div class="modal-footer">
         <div class="row">
             <div class="col-md-12 text-end">
-                <button class="submit btn btn-primary">
+                <button type="submit" class="submit btn btn-primary">
                     Enroll User
                 </button>
             </div>
         </div>
     </div>
 </form>
+<script>
+    window.FormRuleEnable();
+</script>

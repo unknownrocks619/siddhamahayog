@@ -1,17 +1,7 @@
 @extends('layouts.admin.master')
 
 @section('main')
-    <div class="col-md-12 my-3">
-        <div class="card">
-            <div class="card-header">
-                <a href="{{route('admin.members.create')}}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>
-                    Add New Member
-                </a>
-
-            </div>
-        </div>
-    </div>
+    @include('admin.dashboard.new-member-action-button')
 
     <div class="row">
         @if(in_array(adminUser()->role(), App\Models\Program::GO_LIVE_ACCESS))
@@ -87,7 +77,10 @@
                 </div>
             </div>
             <!--/ Website Analytics -->
+            @include('admin.dashboard.program-list')
         @endif
+        
+
 
         @if(in_array(adminUser()->role(), App\Models\Dharmasala\DharmasalaBooking::ACCESS))
             <!-- Sales Overview -->
@@ -179,18 +172,7 @@
 
         @if(adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() )
             <!-- Website Analytics -->
-            <div class="col-lg-12 mb-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="cart-title mb-1">
-                            Programs
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                       @include('admin.programs.partials.program-list')
-                    </div>
-                </div>
-            </div>
+            @include('admin.dashboard.program-list')
             <!--/ Website Analytics -->
         @endif
     </div>

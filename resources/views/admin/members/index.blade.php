@@ -14,8 +14,38 @@
     <div class="card">
         <h5 class="card-header">All Member List</h5>
         <div class="card-datatable table-responsive">
-            <table class="dt-responsive table" id="program-table">
-                <thead>
+            @if( ! in_array(adminUser()->role(),[
+                    App\Classes\Helpers\Roles\Rule::SUPER_ADMIN,
+                    App\Classes\Helpers\Roles\Rule::ADMIN,
+                    App\Classes\Helpers\Roles\Rule::CENTER,
+                    App\Classes\Helpers\Roles\Rule::CENTER_ADMIN,
+                ]))
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="text-secondary">
+                                You do not have permission to view this page.
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <table class="dt-responsive table" id="program-table">
+                    <thead>
+                        <tr>
+                            <th>Full name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Subscriptions</th>
+                            <th>Member Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+
+                    <tfoot>
                     <tr>
                         <th>Full name</th>
                         <th>Email</th>
@@ -24,22 +54,9 @@
                         <th>Member Date</th>
                         <th>Action</th>
                     </tr>
-                </thead>
-
-                <tbody>
-                </tbody>
-
-                <tfoot>
-                <tr>
-                    <th>Full name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Subscriptions</th>
-                    <th>Member Date</th>
-                    <th>Action</th>
-                </tr>
-                </tfoot>
-            </table>
+                    </tfoot>
+                </table>
+            @endif
         </div>
     </div>
     <!--/ Responsive Datatable -->
