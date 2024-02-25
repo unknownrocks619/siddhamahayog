@@ -45,7 +45,9 @@ class Program extends AdminModel
         'zoom',
         'slug',
         'program_name',
-        'program_type'
+        'program_type',
+        'admin_access_permission',
+        'admin_detail_permission'
     ];
     protected $hidden = [
         'created_at',
@@ -61,6 +63,10 @@ class Program extends AdminModel
         'id' => "Program ID"
     ];
 
+    protected $casts = [
+        'admin_detail_permission' => 'array',
+        'admin_access_permission'   => 'array'
+    ];
     public const PROGRAM_TYPES = [
         'open' => 'Open',
         'paid'  => 'Paid',
@@ -109,7 +115,7 @@ class Program extends AdminModel
 
         'assign_member_to_program'  => [
             'label' => 'Assign Member to Program',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN,Rule::CENTER_ADMIN,Rule::CENTER]
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
         ],
         'register_new_member_to_program'    => [
             'label' => 'Register Member',
@@ -454,6 +460,7 @@ class Program extends AdminModel
             'fee_detail.rejected',
             'fee_detail.remarks',
             'fee_detail.file',
+            'fee_detail.voucher_number',
             'fee_detail.created_at as transaction_date',
             'member.full_name',
             'member.email',

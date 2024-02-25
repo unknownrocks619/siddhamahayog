@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Members;
 
 use App\Classes\Helpers\Image;
+use App\Classes\Helpers\Roles\Rule;
 use App\Console\Commands\ImageToTable;
 use App\Http\Controllers\Admin\Dharmasala\BookingController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
@@ -473,19 +474,18 @@ class MemberController extends Controller
         $member->first_name = $request->post('first_name');
         $member->middle_name = $request->post('middle_name');
         $member->last_name = $request->post('last_name');
-        $member->phone_number = $request->post('phone_number');
-        $member->email = $request->post('email');
+
+        if(in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN] ) ) {
+            $member->phone_number = $request->post('phone_number');
+            $member->email = $request->post('email');
+            $member->role_id = $request->post('role');
+        }
 
         if ($member->isDirty('email') && Member::where('email', $request->post('email'))
                 ->where('id', '!=', $member->getKey())
                 ->whereNotNull('email')
                 ->exists()) {
             return $this->json(false,'Email Already Exists. Unable to save Record.');
-        }
-
-        if (adminUser()->role()->isSuperAdmin() ) {
-
-            $member->role_id = $request->post('role');
         }
 
         $member->country = $request->post('country');
@@ -495,7 +495,6 @@ class MemberController extends Controller
 
         try {
             $member->save();
-
             $this->updatePersonal($request,$member,$member->meta);
 
         } catch (\Throwable $th) {

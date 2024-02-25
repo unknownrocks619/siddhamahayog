@@ -58,7 +58,7 @@
                         <b>
                             Phone Number
                         </b>
-                        <input value="{{ old('phone_number',$member->phone_number) }}" type="text" name="phone_number" id="phone_number" class="form-control">
+                        <input @if( ! in_array(adminUser()->role(),[App\Classes\Helpers\Roles\Rule::SUPER_ADMIN,App\Classes\Helpers\Roles\Rule::ADMIN])) disabled  @else name="phone_number" @endif value="{{ old('phone_number',$member->phone_number) }}" type="text" id="phone_number" class="form-control">
                         @if($member->is_phone_verified)
                             <span class="text- mt-2">
                                                             Verified

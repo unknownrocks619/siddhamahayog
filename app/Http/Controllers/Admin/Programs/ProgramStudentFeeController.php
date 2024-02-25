@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Programs;
 
 use App\Classes\Helpers\Image;
+use App\Classes\Helpers\Roles\Rule;
+use App\Http\Controllers\Admin\Datatables\ProgramFeeDataTablesController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use Illuminate\Support\Facades\DB;
@@ -115,21 +117,22 @@ class ProgramStudentFeeController extends Controller
 
                 $program = Program::find($request->post('program'));
             }
-            
+
             if ( ! $member->getKey() ) {
-                
+
                 $request->validate([
                     'member' => 'required|int'
                 ]);
 
                 $member = Member::find($request->post('member'));
             }
-            
+
 
             if ($request->post("voucher_type") == 'voucher_entry') {
-                
+
                 $voucherExists = ProgramStudentFeeDetail::where('program_id',$program->getKey())
                                                         ->where('voucher_number',$request->post('voucher_number'))
+                                                        ->where('rejected',false)
                                                         ->exists();
 
                 if ($voucherExists ) {
@@ -141,7 +144,7 @@ class ProgramStudentFeeController extends Controller
             $full_address = $member->countries?->name  ?? $member->country;
             $full_address .= $member->city ? ',' . $member->city : '';
             $full_address .= ($member->address) ? ','. $member->address?->street_address : '';
-            
+
             /**
              * For Now Just validate using program_id & student id
              * @todo Check Fee Entry based on batch, program and student.
@@ -158,7 +161,7 @@ class ProgramStudentFeeController extends Controller
             $programCourseFee = ProgramStudentFee::where('program_id',$program->getKey())
                                                         ->where('student_id',$member->getKey())
                                                         ->where('student_batch_id',$programStudent->batch_id)
-                                                        ->first();            
+                                                        ->first();
             if (! $programCourseFee) {
                 $full_name = $member->first_name.' '. $member->last_name;
                 $programCourseFee = new ProgramStudentFee();
@@ -173,10 +176,10 @@ class ProgramStudentFeeController extends Controller
                     'student_id'    => $member->getKey(),
                     'program_student_id'    => $programStudent->getKey(),
                 ]);
-                
+
                 $programCourseFee->save();
             }
-            
+
 
             // insert record into coursedetail
             $programCourseFeeDetail = new ProgramStudentFeeDetail();
@@ -185,7 +188,7 @@ class ProgramStudentFeeController extends Controller
              * @todo Check if voucher no and center_id matches the transaction.
              * if so, prevent duplicate entry.
              */
-            
+
             $programCourseFeeDetail->fill([
 
                 'program_id'  => $program->getKey(),
@@ -218,7 +221,7 @@ class ProgramStudentFeeController extends Controller
             if ($request->file('bank_voucher') ) {
                 $image = Image::uploadImage($request->file('bank_voucher'),$programCourseFeeDetail);
             }
-            
+
             // now reload the page for another
             return $this->json(true,'Transaction was successful');
         }
@@ -327,6 +330,10 @@ class ProgramStudentFeeController extends Controller
     }
     public function fee_overview_by_program(Request $request, Program $program)
     {
+        if (!  in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN]) ) {
+            return redirect()->route('admin.program.fee.admin_fee_transaction_by_program',['program' => $program]);
+        }
+
         if ($request->ajax() && $request->wantsJson()) {
 
             $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
@@ -364,118 +371,10 @@ class ProgramStudentFeeController extends Controller
 
     public function transaction_by_program(Request $request, Program $program)
     {
+
         if ($request->ajax() && $request->wantsJson()) {
-            $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
 
-            return DataTables::of($program->transactionsDetail($searchTerm))
-                ->addColumn('transaction_date', function ($row) {
-                    return date("Y-m-d", strtotime($row->transaction_date));
-                })
-                ->addColumn('member_name', function ($row) use ($program) {
-                    $member = "<a href='" . route('admin.members.show',['member' => $row->member_id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";
-                    $member .= htmlspecialchars($row->full_name);
-                    $member .= "</a>";
-
-                    return $member;
-                })
-                ->addColumn('transaction_amount', function ($row) {
-                    if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
-                        $spanAmount = '<span class="transactionWrapper" data-table-wrapper="program_fee_overview" data-wrapper-id="'.$row->transaction_id.'">';
-                            $spanAmount .= "<span class='update-amount-fee-transaction' data-update-amount-id='update_span_{$row->transaction_id}'>". default_currency(strip_tags($row->amount)).'</span>';
-                            $spanAmount .= "<span class='update-amount-container d-flex align-items-center d-none' id='update_span_{$row->transaction_id}'>";
-                                $spanAmount .= "<input type='text' class='form-control' value='".strip_tags($row->amount)."' />";
-                                $spanAmount .= "<span class='text-success mx-2 update-transaction-update' style='cursor: pointer'><i class='fas fa-check'></i> </span>";
-                                $spanAmount .= "<span class='text-danger cancel-transaction-update' style='cursor: pointer'><i class='fas fa-close'></i> </span>";
-                            $spanAmount .= "</span>";
-                        $spanAmount .= "</span>";
-                    } else {
-                        $spanAmount = "<span>". default_currency(strip_tags($row->amount)).'</span>';
-                    }
-                    return $spanAmount;
-                })
-                ->addColumn('category', function ($row) {
-                    $seperate_category = explode("_", $row->amount_category);
-                    $category_text = "";
-                    foreach ($seperate_category as $value) {
-                        $category_text .= ucwords(strtolower($value)) . " ";
-                    }
-
-                    return $category_text;
-                })
-                ->addColumn('source', function ($row) {
-//                    $source = ucwords($row->source);
-//                    $source .= "<hr />";
-                    $source = htmlspecialchars($row->source_detail);
-                    return $source;
-                })
-                ->addColumn('status', function ($row) {
-                    $status = "";
-                    if ($row->verified) {
-                        $status .= '<span class="badge bg-label-success"><a href="#" title="Verified"><i class="fas fa-check"></i></a>';
-                    } else {
-                        $status .= '<span class="badge bg-label-danger"><a href="#" title="Rejected"><i class="fas fa-cancel"></i></a>';
-                    }
-                    $status .= "</span>";
-
-                    return $status;
-                })
-                ->addColumn('media', function ($row) use ($program) {
-                    $row->remarks = (json_decode( $row->remarks));
-                    if ($row->file) {
-                        $string =  "[<a class='ajax-modal' data-bs-toggle='modal' data-action='".route('admin.modal.display',['view' => 'fees.media.images','transactionID' => $row->transaction_id,'programID' => $program->getKey(),'memberID' => $row->member_id])."' data-bs-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->transaction_id) . "'> View Image </a>]";
-                        $string .= "<br /> Deposit Date: ";
-                        if ($row->remarks && isset($row->remarks->upload_date)) {
-                            $string .= $row->remarks->upload_date;
-                        } else {
-                            $string .= "N/A";
-                        }
-
-                        return $string;
-                    } else {
-                        $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);
-                        if ($searchString) {
-                            $string = "";
-//                            $string = "OID: " . $row->remarks->oid;
-//                            $string .= "<br />";
-                            $string .= "refId: " . $row->remarks->refId;
-                            return $string;
-                        }
-
-                        $searchString = \Illuminate\Support\Str::contains($row->source, 'stripe', true);
-
-                        if ($searchString) {
-                            $string = "Rate : " . $row->remarks->rate->exchange_data->buy . 'NRs';
-                            $string .= "<br />";
-                            $string .= "Currency: " . $row->remarks->paid_currency;
-                            $string .= "<br />";
-                            $string .= "Amount: " . $row->remarks->paid_amount;
-                            return $string;
-                        }
-
-                        return "Media Not Available";
-                    }
-                })
-                ->addColumn('action', function ($row) {
-
-                    $action = "<div class='d-flex justify-content-between'>";
-                    if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
-
-//                        $action .= "<form style='display:inline' method='PUT' class='transaction_action_form' action='" . route('admin.program.fee.api_update_fee_detail', [$row->transaction_id]) . "'>";
-//                        $action .= "<input type='hidden' name='update_type' value='status' />";
-
-                        if ($row->verified) {
-                            $action .= "<button data-method='PUT' data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id,'source' => 'datatable','refresh'=>1,'sourceID' => 'program_fee_overview'])."' data-confirm='You are about to change the transaction status to `Unverified` state. User will be notified about the change. Are you sure you want to continue ?' data-bs-original-title='Reject Transaction' data-bs-toggle='tooltip' type='submit' class='btn btn-danger btn-icon data-confirm'><i class='fas fa-close'></i></button>";
-                        } else {
-                            $action .= "<button  data-method='PUT'  data-action='".route('admin.program.fee.api_update_fee_detail', ['fee_detail' => $row->transaction_id,'source' => 'datatable','refresh' => true,'sourceID' => 'program_fee_overview'])."' data-confirm='You are about to update the transaction status to `Verified`. User will be notified about the changes. Do you wish to continue your action ?' type='submit' data-bs-toggle='tooltip' data-bs-original-title='Mark as verified Transaction' class='btn btn-success btn-icon data-confirm'><i class='fas fa-check'></i></button>";
-                        }
-                    }
-
-                    $action .= "<button type='button' data-confirm='You are about to delete selected transaction. This action cannot be undone. Do you wish to continue your action ?' data-method='DELETE' data-action='".route('admin.program.fee.api_delete_fee', ['fee' => $row->transaction_id])."' class='btn btn-warning btn-icon data-confirm'><i class='fas fa-trash'></i></button>";
-                    $action .= "</div>";
-                    return $action;
-                })
-                ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
-                ->make(true);
+            return (new ProgramFeeDataTablesController())->programTransactionList($request,$program);
         }
 
         return view('admin.fees.program.transactions', compact('program'));

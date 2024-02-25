@@ -327,14 +327,20 @@ class ProgramDataTablesController extends Controller
                 $query->withCount('programStudents');
             }]);
 
+            if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
+                $programs->where('id','5');
+            }
+
             if ($type) {
                 $programs->where("program_type", $type)->latest()->get();
             }
-            
+
+
+
             $datatable = DataTables::of($programs)
                 ->addIndexColumn()
                 ->addColumn('program_name', function ($row) {
-                    
+
                     return view('admin.datatable-view.programs.program-name',['program' => $row])->render();
 
                 })
@@ -372,4 +378,5 @@ class ProgramDataTablesController extends Controller
 
             return $datatable;
     }
+
 }

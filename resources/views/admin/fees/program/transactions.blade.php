@@ -9,9 +9,9 @@
             <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}" class="btn btn-danger btn-icon">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <button data-bs-target="#quickUserView" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'programs.guests.index','program' => $program->getKey()])}}" class="btn btn-primary btn-icon ajax-modal">
+            {{-- <button data-bs-target="#quickUserView" data-bs-toggle="modal" data-action="{{route('admin.modal.display',['view' => 'programs.guests.index','program' => $program->getKey()])}}" class="btn btn-primary btn-icon ajax-modal">
                 <i class="fas fa-plus"></i>
-            </button>
+            </button> --}}
         </div>
     </div>
 
@@ -27,7 +27,9 @@
                         <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Category</th>
+                            <th>
+                            @if($program->getKey() == 5) Voucher Number @else Category @endif
+                            </th>
                             <th>Status</th>
                             <th>Tx Info</th>
                             <th>Source</th>

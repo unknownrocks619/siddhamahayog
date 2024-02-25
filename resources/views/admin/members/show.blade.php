@@ -26,8 +26,6 @@
     <div class="row" @if( ! in_array(adminUser()->role(),[
         App\Classes\Helpers\Roles\Rule::SUPER_ADMIN,
         App\Classes\Helpers\Roles\Rule::ADMIN,
-        App\Classes\Helpers\Roles\Rule::CENTER,
-        App\Classes\Helpers\Roles\Rule::CENTER_ADMIN,
     ])) data-enable-rule='true' @endif>
         @include('admin.members.partials.user-profile',['member' => $member])
 
