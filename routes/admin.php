@@ -229,12 +229,12 @@ Route::prefix('admin')
                     });
             });
 
-        
+
             /**
          * Notices
          */
         include __DIR__.'/admin/notices.php';
-        
+
         /**
          * Settings
          */
@@ -242,7 +242,7 @@ Route::prefix('admin')
         /**
          * Resources
          */
-       
+
          include __DIR__.'/admin/resources.php';
         /**
          * Calender
@@ -326,4 +326,9 @@ Route::prefix('admin')
         Route::resource("widget", WidgetController::class);
 
         include __DIR__.'/admin/select2.php';
+
+        /**
+         * Permission Request
+         */
+        include __DIR__.'/admin/permissions-request.php';
     });

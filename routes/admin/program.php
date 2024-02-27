@@ -113,7 +113,7 @@ Route::prefix('programs')
                 Route::put("transaction/update/status/{fee_detail}", [FeeAPIController::class, "update_fee_status"])->name('api_update_fee_detail');
                 Route::delete("transaction/delete/{fee}", [FeeAPIController::class, "delete_fee_transaction"])->name('api_delete_fee');
                 Route::post('/transaction/update/amount/{transaction}',[FeeAPIController::class,'update_transaction_fee_amount'])->name('api_update_fee_amount');
-
+                Route::post('transaction/update/voucher-number/{transaction}',[FeeAPIController::class,'update_transaction_voucher_number'])->name('api_update_voucher_number');
             });
 
         Route::prefix('enroll')

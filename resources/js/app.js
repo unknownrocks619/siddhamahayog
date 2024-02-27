@@ -50,7 +50,7 @@ $(function () {
             $(document).find("button[type='submit']").remove();
         }
     }
-    
+
     FormRuleEnable();
 
     $(document).on('click', '.data-confirm', function (event) {
@@ -92,7 +92,14 @@ $(function () {
 
     window.handleOKResponse = function (response) {
         if (response.status == 200) {
-            messageBox(response.state, response.msg);
+            let type = null;
+
+            if (response.params && response.params.alert) {
+                type = response.params.alert;
+            }
+
+            messageBox(response.state, response.msg,null,type);
+
             if ((response.callback !== null || response.callback !== '')) {
                 let fn = window[response.callback];
 
@@ -119,7 +126,11 @@ $(function () {
      * @param data
      */
     window.handle422Case = function (data) {
-        messageBox(false, data.msg ? data.msg : data.message);
+        let type = null;
+        if (data.params && data.params.alert) {
+            type = data.params.alert;
+        }
+        messageBox(false, data.msg ? data.msg : data.message,null,type);
         $.each(data.errors, function (index, error) {
             let inputElement = $(`input[name="${index}"]`);
             let parentDiv = $(inputElement).closest('div.form-group');
@@ -162,12 +173,23 @@ $(function () {
      * @param message
      * @param icon
      */
-    window.messageBox = function (status, message, icon = null) {
+    window.messageBox = function (status, message, icon = null,type=null) {
+
         if (!icon && status == false) {
             icon = "<i class='fa fa-warning'></i>";
         } else if (!icon && status == true) {
             icon = "<i class='fa fa-check-square'></i>";
         }
+        if ( type && type =='swal') {
+            Swal.fire({
+                title: 'Message',
+                text: message,
+                showCloseButton: true,
+            })
+
+            return;
+        }
+
         $.notify(`${icon}<strong>${message}</strong>`, {
             type: (status) ? 'success' : 'danger',
             allow_dismiss: true,

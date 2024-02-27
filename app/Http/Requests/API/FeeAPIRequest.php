@@ -16,6 +16,7 @@ class FeeAPIRequest extends FormRequest
     public function authorize(Request $request)
     {
         $studentID = $this->fee_detail?->student_id ?? $this->transaction->student_id;
+
         if (adminUser()?->role()->isSuperAdmin()) {
             return true;
         }
@@ -29,6 +30,7 @@ class FeeAPIRequest extends FormRequest
         if ( auth()->check() && auth()->id() === $studentID) {
             return true;
         }
+
         return false;
 //        return (auth()->id() == ($this->fee_detail?->student_id ?? $this->transaction->student_id) || auth()->user()->role_id == 1) ? true : false;
     }

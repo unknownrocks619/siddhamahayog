@@ -307,7 +307,8 @@ class MemberController extends Controller
                 });
 
             } catch (\Error $error ) {
-                return $this->json(false,'Failed to create. Error: '. $error->getMessage());
+
+                return $this->json(false,'Failed to create. Error: '. $error->getMessage(),'',['alert' =>'swal']);
             }
 
             if ($dharmasalaResponse){

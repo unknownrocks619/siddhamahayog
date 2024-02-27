@@ -5469,7 +5469,13 @@ $(function () {
 
   window.handleOKResponse = function (response) {
     if (response.status == 200) {
-      messageBox(response.state, response.msg);
+      var type = null;
+
+      if (response.params && response.params.alert) {
+        type = response.params.alert;
+      }
+
+      messageBox(response.state, response.msg, null, type);
 
       if (response.callback !== null || response.callback !== '') {
         var fn = window[response.callback];
@@ -5499,7 +5505,13 @@ $(function () {
 
 
   window.handle422Case = function (data) {
-    messageBox(false, data.msg ? data.msg : data.message);
+    var type = null;
+
+    if (data.params && data.params.alert) {
+      type = data.params.alert;
+    }
+
+    messageBox(false, data.msg ? data.msg : data.message, null, type);
     $.each(data.errors, function (index, error) {
       var inputElement = $("input[name=\"".concat(index, "\"]"));
       var parentDiv = $(inputElement).closest('div.form-group');
@@ -5544,11 +5556,21 @@ $(function () {
 
   window.messageBox = function (status, message) {
     var icon = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var type = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
     if (!icon && status == false) {
       icon = "<i class='fa fa-warning'></i>";
     } else if (!icon && status == true) {
       icon = "<i class='fa fa-check-square'></i>";
+    }
+
+    if (type && type == 'swal') {
+      Swal.fire({
+        title: 'Message',
+        text: message,
+        showCloseButton: true
+      });
+      return;
     }
 
     $.notify("".concat(icon, "<strong>").concat(message, "</strong>"), {
@@ -6727,8 +6749,14 @@ window.setupTinyMceAll = function () {
 
 $(document).on('dblclick', '.update-amount-fee-transaction', function (event) {
   event.preventDefault();
-  $(document).find('.update-amount-fee-transaction').show();
-  $(document).find('.update-amount-container').addClass('d-none');
+
+  if ($(this).attr('data-target-element')) {
+    $(document).find($(this).attr('data-target-element').show());
+    $(document).find($(this).attr('data-target-element').addClass());
+  } else {
+    $(document).find('.update-amount-fee-transaction').show();
+    $(document).find('.update-amount-container').addClass('d-none');
+  }
 
   var _wrapper = $(this).closest('.transactionWrapper');
 
@@ -6757,6 +6785,15 @@ $(document).on('click', '.update-transaction-update', function (event) {
       'sourceID': $(_wrapperSpan).attr('data-table-wrapper')
     }
   };
+
+  if ($(this).attr('data-action')) {
+    _url = $(this).attr('data-action');
+  }
+
+  if ($(this).attr('data-params-key')) {
+    _body[$(this).attr('data-params-key')] = $(_wrapperSpan).find('input').val();
+  }
+
   $.ajax({
     method: 'post',
     url: _url,

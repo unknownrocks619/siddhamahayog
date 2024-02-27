@@ -58,7 +58,7 @@ window.reload = function () {
     window.location.reload();
 }
 
-window.messageBox = function (status, message, icon = null) {
+window.messageBox = function (status, message, icon = null,type=null) {
     if (!message || message == null || message == undefined) {
         return;
     }
