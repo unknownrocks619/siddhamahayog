@@ -234,7 +234,7 @@ class Program extends Model
         return $this->hasOne(Batch::class,'id','batch');
     }
 
-    public function programStudentEnrolments($searchTerm = null) {
+    public function programStudentEnrolments($searchTerm = null,$excludeList=[]) {
         $selects = [
             'pro.program_name',
             'pro.id AS program_id',
@@ -282,6 +282,10 @@ class Program extends Model
         $sql .=' INNER JOIN members member';
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
+
+        if (count($excludeList) ) {
+            $sql .= ' AND member.email NOT IN ("' . implode('" ,"',$excludeList) . '")';
+        }
 
         $sql .= ' LEFT JOIN countries country ';
         $sql .= " on member.country = country.id";
