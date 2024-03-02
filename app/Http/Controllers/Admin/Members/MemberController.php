@@ -150,6 +150,8 @@ class MemberController extends Controller
 
             $fill['full_name']  = $full_name;
 
+            $member = null;
+
             if ( $request->post('exisiting_member') && $request->post('memberID') ) {
                 $member = Member::find($request->post('memberID'));
 
@@ -158,7 +160,6 @@ class MemberController extends Controller
             }
 
             if ($member ) {
-
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
                 $member->phone_number = $fill['phone_number'] ?? $member->phone_number;
                 $member->country = $fill['country'] ?? $member->country;
