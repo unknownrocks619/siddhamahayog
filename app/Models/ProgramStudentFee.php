@@ -40,7 +40,7 @@ class ProgramStudentFee extends Model
     public function transactions()
     {
         $transactions =  $this->hasMany(ProgramStudentFeeDetail::class, "program_student_fees_id");
-        
+
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
             $transactions->where('fee_added_by_center',adminUser()->center_id);
         }
@@ -55,9 +55,9 @@ class ProgramStudentFee extends Model
     }
 
     /**
-     * Re Calculate total amount submitted by this 
-     * user for this particular program 
-     * 
+     * Re Calculate total amount submitted by this
+     * user for this particular program
+     *
      * @return void
      */
     public function reCalculateTotalAmount(): void {

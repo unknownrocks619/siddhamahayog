@@ -101,6 +101,12 @@ class ProgramSection extends Model
             $sql .= " AND yagya.program_id = section.program_id ";
         }
 
+        if (! adminUser()->role()->isSuperAdmin() || ! adminUser()->role()->isAdmin() ) {
+            $sql .= " JOIN center_members cen_mem ";
+            $sql .= " ON cen_mem.member_id = member.id ";
+            $sql .= " AND cen_mem.center_id = " . adminUser()->center_id;
+        }
+
         $sql .= " WHERE section.program_id = ?";
         $sql .= ' AND section.id = ?';
 

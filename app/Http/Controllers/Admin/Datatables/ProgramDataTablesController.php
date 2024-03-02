@@ -44,6 +44,7 @@ class ProgramDataTablesController extends Controller
     }
 
     public function getSectionStudents(Program $program, ProgramSection $section) {
+
         $datatable = DataTables::collection($section->section_student($program,$this->getSearchTerm()))
             ->addColumn('roll_number', function ($row) use ($program) {
 

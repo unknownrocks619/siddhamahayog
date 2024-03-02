@@ -13,7 +13,10 @@ use Illuminate\Http\Request;
 class AdminProgramGroupController extends Controller
 {
     //
-
+    public function list(Program $program) {
+        $groups = ProgramGrouping::withCount('groupMember')->where("program_id",$program->getKey())->get();
+        return view('admin.programs.groups.list',['program' => $program,'groups' => $groups]);
+    }
     public function index(Program $program) {
         ini_set('memory_limit',-1);
         $groupingRecord = collect(ProgramGrouping::singleGrouping($program));

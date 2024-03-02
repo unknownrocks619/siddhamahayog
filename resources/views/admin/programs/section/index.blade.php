@@ -13,7 +13,9 @@
             <div class="col-md-9 col-sm-12 mb-3">
                 <div class="row">
                     <div class="col-md-12 text-end">
-                        <a data-bs-target="#createNewSection" data-bs-toggle="modal" class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_list')}}"><i class="fas fa-plus"></i></a>
+                        @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+                            <a data-bs-target="#createNewSection" data-bs-toggle="modal" class="btn btn-danger btn-icon" href="{{route('admin.program.admin_program_list')}}"><i class="fas fa-plus"></i></a>
+                        @endif
                         <a href="{{route('admin.program.sections.admin_list_all_section', ['program' => $program->getKey()])}}" class="btn btn-secondary disabled">Sections</a>
                     </div>
                 </div>
@@ -42,7 +44,7 @@
                                             <div class="col-md-12 d-flex justify-content-between align-items-center">
                                                 <h4 class="card-header">{{$section->section_name}}</h4>
                                                 <div class="">
-                                                    @if( ! $section->default)
+                                                    @if( ! $section->default && adminUser()->role()->isSuperAdmin())
                                                     <button type="button"
                                                             data-method="post"
                                                             data-action="{{route('admin.program.sections.admin_program_section_delete',['programSection' => $section])}}"
@@ -57,10 +59,13 @@
                                                             data-confirm="Mark this section as default."
                                                             class="btn btn-info btn-icon data-confirm"><i class="fas fa-star"></i></button>
                                                     @endif
-                                                    <button class="btn btn-primary ajax-modal"
+                                                    @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+
+                                                        <button class="btn btn-primary ajax-modal"
                                                             data-action="{{route('admin.modal.display',['view' => 'programs.section.assign-student','program' => $program->getKey(),'section' => $section->getKey()])}}"
                                                             data-bs-target="#assignStudentToProgramSections"
                                                             data-bs-toggle="modal">Assign Student</button>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>

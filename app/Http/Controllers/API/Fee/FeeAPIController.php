@@ -118,7 +118,7 @@ class FeeAPIController extends Controller
 
     public function delete_fee_transaction(ProgramStudentFeeDetail $fee)
     {
-
+        $studentFee = $fee->student_fee;
         if ( ! adminUser()->role()->isSuperAdmin() ) {
             $updateRequest = new PermissionUpdate();
             $updateRequest->fill([
@@ -137,37 +137,27 @@ class FeeAPIController extends Controller
 
             $updateRequest->save();
             $params['alert'] = 'swal';
-            return $this->json(true,'Your request to delete transaction has been sent.','',$params);
+            return $this->json(true,'Your request to delete transaction has been sent.','reload',$params);
         }
 
         // check if fee is verified. deduct the amount from overview as well.
-        $fee->student_fee->total_amount = (float) ($fee->student_fee->total_amount ?? 0 )-  (float) $fee->amount;
+//        $fee->student_fee->total_amount = (float) ($fee->student_fee->total_amount ?? 0 )-  (float) $fee->amount;
         try {
-            DB::transaction(function () use ($fee) {
-                if ($fee->student_fee->total_amount < 0 ) {
-                    $fee->student_fee()->total_amount = 0;
-                }
-
-                if ($fee->student_fee->isDirty()) {
-                    $fee->student_fee->save();
-                }
-
-                $fee->delete();
-            });
+            $fee->delete();
         } catch (\Throwable $th) {
             return $this->returnResponse(false,'Unable to remove selected transaction',['error' => $th->getMessage()]);
         }
-
+        $studentFee->reCalculateTotalAmount();
         return $this->returnResponse(true,'Transaction Deleted.','reload');
     }
 
     public function update_transaction_fee_amount(FeeAPIRequest $request,ProgramStudentFeeDetail $transaction) {
+
         $request->validate([
             'amount'    => 'required'
         ]);
         $callback = 'reload';
         $params = [];
-
         if ($request->post('callback') ) {
             $callback = $request->post('callback');
         }
@@ -219,7 +209,9 @@ class FeeAPIController extends Controller
 
 
     public function update_transaction_voucher_number(FeeAPIRequest $request, ProgramStudentFeeDetail $transaction) {
-
+        $request->validate([
+            'voucher' => 'required'
+        ]);
         /**
          * Check if voucher number already exists.
          */
@@ -239,11 +231,9 @@ class FeeAPIController extends Controller
         }
 
         $params['alert'] = 'swal';
-
         if ( $exists ) {
             return $this->json(false,'Voucher Already exists.',$callback,$params);
         }
-
 
 
         if (! adminUser()->role()->isSuperAdmin()) {

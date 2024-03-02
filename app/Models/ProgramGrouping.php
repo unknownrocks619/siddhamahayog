@@ -110,4 +110,8 @@ class ProgramGrouping extends Model
 
     }
 
+    public function groupMember() {
+        return $this->hasMany(ProgramGroupPeople::class,"group_id");
+    }
+
 }

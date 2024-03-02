@@ -78,7 +78,7 @@
                                             </td>
                                             <th>
                                                 <button data-confirm="You are about to approve the request made by center. You will not be able revert the changes. Do you still wish to continue ?" data-method="post" data-action="{{route('admin.permission-request.list',['permission'=>$permission,'type'=>2])}}" class="btn btn-primary data-confirm">Approve</button>
-                                                <a href="" class="btn btn-danger">Reject</a>
+                                                <button type="button" data-confirm="Confirm Reject ? "  data-method="post" data-action="{{route('admin.permission-request.list',['permission'=>$permission,'type'=>3])}}"  class="btn btn-danger data-confirm">Reject</button>
                                             </th>
                                         </tr>
                                     @endforeach

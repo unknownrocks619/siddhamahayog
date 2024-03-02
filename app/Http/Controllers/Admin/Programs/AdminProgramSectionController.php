@@ -32,7 +32,6 @@ class AdminProgramSectionController extends Controller
             $sections = ProgramSection::where('program_id', $program->getKey())
                                             ->where('id',$request->get('section'))
                                             ->first();
-
             return view('admin.programs.section.partials.search_result', compact('members', 'program', 'sections'));
 
 
@@ -54,6 +53,7 @@ class AdminProgramSectionController extends Controller
         } elseif (!$section) {
             $sectionStudent->where('allow_all', true);
         }
+
         $selectedSection = $section;
         $sectionStudent = $sectionStudent->get();
         return view('admin.programs.all-access-list.index', compact('sectionStudent', 'program', 'selectedSection'));

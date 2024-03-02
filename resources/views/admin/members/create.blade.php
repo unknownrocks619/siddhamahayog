@@ -5,14 +5,23 @@
     if ($dharmasala) {
         $formAction = route('admin.members.create',['dharmasala' => true]);
     }
+
 @endphp
 @extends('layouts.admin.master')
 @push('page_title') Register New Member @endpush
 
 @section('main')
     <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
+            <div class="col-md-3 col-sm-12 mb-3">
+                <a href="{{route('admin.admin_dashboard',['program' => $program])}}" class="btn btn-danger btn-icon">
+                    <i class="fas fa-arrow-left"></i></a>
+            </div>
+        </div>
+
         <h4 class="py-3 mb-4">
-            <span class="text-muted fw-light">Member/</span>
+            <span class="text-muted fw-light">
+                <a href="{{route('admin.members.all')}}">Member</a> /</span>
             Create New Member
         </h4>
         <!-- Sticky Actions -->

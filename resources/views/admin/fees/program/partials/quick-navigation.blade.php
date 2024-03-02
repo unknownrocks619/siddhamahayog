@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </li>
-
+            @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
             <li class="d-flex mb-4 pb-1 align-items-center">
                 <div class="avatar flex-shrink-0 me-3">
                     <span class="avatar-initial rounded bg-label-info"><i class="ti ti-code ti-md"></i></span>
@@ -52,6 +52,7 @@
                     </div>
                 </div>
             </li>
+            @endif
             <li class="d-flex mb-4 pb-1 align-items-center">
                 <div class="avatar flex-shrink-0 me-3">
                     <span class="avatar-initial rounded bg-label-info"><i class="ti ti-plus ti-md"></i></span>
@@ -59,7 +60,7 @@
                 <div class="row w-100 align-items-center">
                     <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
                         <div class="mb-0 fw-medium">
-                            <a href="">
+                            <a href="{{route('admin.members.create')}}">
                                 Add Transaction
                             </a>
                         </div>

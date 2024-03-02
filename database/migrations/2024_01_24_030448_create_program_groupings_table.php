@@ -15,7 +15,14 @@ return new class extends Migration
     {
         Schema::create('program_groupings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('program_id')->index();
+            $table->unsignedBigInteger('batch_id')->nullable()->index();
+            $table->string('group_name');
+            $table->string('enable_auto_adding');
+            $table->longText('rules')->nullable();
+            $table->integer('id_card_sample')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

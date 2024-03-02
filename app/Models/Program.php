@@ -384,6 +384,7 @@ class Program extends AdminModel
         $sql .= " FROM program_student_fee_details prostufee";
         $sql .= " WHERE prostufee.verified  = 1";
         $sql .= " AND prostufee.program_id = ?";
+        $sql .= " AND prostufee.deleted_at IS NULL";
 
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
             $sql .= " and prostufee.fee_added_by_center = ". adminUser()->center_id;
@@ -465,7 +466,10 @@ class Program extends AdminModel
             'member.full_name',
             'member.email',
             'member.phone_number',
-            'member.id as member_id'
+            'member.id as member_id',
+            'pu.request_type',
+            'pu.status as pending_request_status',
+            'pu.relation_table',
         ];
         $binds = [$this->getKey()];
 
@@ -480,6 +484,11 @@ class Program extends AdminModel
             $sql .= ' JOIN center_members cen_mem ';
             $sql .= ' ON cen_mem.member_id = member.id ';
         }
+
+        $sql .= " LEFT JOIN permission_updates pu";
+        $sql .= " ON pu.relation_id = fee_detail.id";
+        $sql .= " AND pu.status = ".PermissionUpdate::STATUS_PENDING;
+
 
         $sql .= " WHERE fee_detail.program_id = ? ";
 
@@ -521,7 +530,6 @@ class Program extends AdminModel
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
             $sql .= ' AND fee_detail.fee_added_by_center =  ' .adminUser()->center_id;
         }
-
 
         $sql .= " AND fee_detail.deleted_at IS NULL";
 

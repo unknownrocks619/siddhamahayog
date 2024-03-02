@@ -1,5 +1,5 @@
-@foreach ($program->sections ?? [] as $section):
-    @php 
+@foreach ($program->sections ?? [] as $section)
+    @php
         $sectionStudentCount = $section->program_students_count;
         $link = route('admin.program.sections.admin_list_all_section',['program'=>$program->getKey(),'current_tab' => $section->slug]);
     @endphp

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Datatables;
 
 use App\Http\Controllers\Controller;
 use App\Models\Program;
+use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
 use DataTables;
 
@@ -14,7 +15,6 @@ class ProgramFeeDataTablesController extends Controller
     public function programTransactionList(Request $request, Program $program){
 
         $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
-
         return DataTables::of($program->transactionsDetail($searchTerm))
                         ->addColumn('transaction_date', function ($row) {
                             return date("Y-m-d", strtotime($row->transaction_date));
@@ -27,22 +27,9 @@ class ProgramFeeDataTablesController extends Controller
             return $member;
         })
         ->addColumn('transaction_amount', function ($row) {
-            if (!\Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true) && !\Illuminate\Support\Str::contains($row->source, 'stripe', true)) {
-                $spanAmount = '<span class="transactionWrapper" data-table-wrapper="program_fee_overview" data-wrapper-id="'.$row->transaction_id.'">';
-                    $spanAmount .= "<span class='update-amount-fee-transaction' data-update-amount-id='update_span_{$row->transaction_id}'>". default_currency(strip_tags($row->amount)).'</span>';
-                    $spanAmount .= "<span class='update-amount-container d-flex align-items-center d-none' id='update_span_{$row->transaction_id}'>";
-                        $spanAmount .= "<input type='text' class='form-control' value='".strip_tags($row->amount)."' />";
-                        $spanAmount .= "<span class='text-success mx-2 update-transaction-update' style='cursor: pointer'><i class='fas fa-check'></i> </span>";
-                        $spanAmount .= "<span class='text-danger cancel-transaction-update' style='cursor: pointer'><i class='fas fa-close'></i> </span>";
-                    $spanAmount .= "</span>";
-                $spanAmount .= "</span>";
-            } else {
-                $spanAmount = "<span>". default_currency(strip_tags($row->amount)).'</span>';
-            }
-            return $spanAmount;
+            return view('admin.datatable-view.program-fee.transaction-list.transaction_amount',['row' => $row])->render();
         })
         ->addColumn('category', function ($row)  use ($program){
-
            return view('admin.datatable-view.program-fee.transaction-list.category',['program' => $program,'row'=>$row]);
         })
         ->addColumn('source', function ($row) {
@@ -101,6 +88,19 @@ class ProgramFeeDataTablesController extends Controller
         ->addColumn('action', function ($row) {
 
             return view('admin.datatable-view.program-fee.transaction-list.action',['program' => $row]);
+        })
+        ->setRowClass( function ($row) {
+
+            if ( ! $row->request_type || $row->relation_table != ProgramStudentFeeDetail::class) {
+                return;
+            }
+
+           if ($row->request_type == 'update') {
+               return 'bg-label-warning';
+           }
+           if ($row->request_type == 'delete') {
+               return 'bg-label-danger';
+           }
         })
         ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
         ->make(true);
