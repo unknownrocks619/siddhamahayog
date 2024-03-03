@@ -225,7 +225,7 @@ class AdminProgramController extends Controller
             $datatable = DataTables::of($program->programStudentEnrolments($searchTerm))
                 ->addIndexColumn()
                 ->addColumn('roll_number', function ($row) use ($program) {
-                    
+
                     if ( $program->getKey() == 5 ) {
 
                         if ( ! $row->total_counter) {
@@ -469,7 +469,7 @@ class AdminProgramController extends Controller
     }
 
     public function rejoinSession(Live $live)
-    { 
+    {
         if (!$live->live) {
             return $this->returnResponse(false,'Program Already Closed',null,[],200,url()->current());
         }
@@ -532,14 +532,14 @@ class AdminProgramController extends Controller
          * @info If user is from Center just check if user exists or not, nothing more..
          */
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
-            
+
             /**
              * If Center Force program to select from default one.
              */
             if ( $request->post('section') ) {
                 $programSection = $program->active_sections()->first();
             }
-            
+
             /**
              * If Center Froce batch to be from default.
              */
@@ -560,7 +560,7 @@ class AdminProgramController extends Controller
                 return $this->json(true,"Student Enrolled in program","reload");
             }
         }
-        
+
         if (! $programStudent ) {
 
             $programStudent = new ProgramStudent();

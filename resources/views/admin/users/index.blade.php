@@ -10,7 +10,7 @@
             <a href="{{route('admin.users.create')}}" class="btn btn-primary btn-icon">
                 <i class="fas fa-plus"></i>
             </a>
-        
+
         </div>
     </div>
     <!-- Responsive Datatable -->
@@ -27,6 +27,7 @@
                     <th>Tagline</th>
                     <th>Email</th>
                     <th>Super Admin</th>
+                    <th>Role</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -44,6 +45,9 @@
                                     <span class="badge bg-label-danger">No</span>
                                 @endif
                             </td>
+                            <th>
+                                {{ \App\Models\Role::$roles[$user->role_id] }}
+                            </th>
                             <td>
                                 <a href="{{route('admin.users.edit',['user' => $user])}}" class="btn btn-primary btn-icon">
                                     <i class="fas fa-pencil"></i>

@@ -18,6 +18,9 @@ class Noticecontroller extends Controller
 
     public function index()
     {
+        if (! adminUser()->role()->isSuperAdmin() ) {
+            abort(404);
+        }
         $notices = Notices::latest()->get();
         return view("admin.notice.index", compact('notices'));
     }

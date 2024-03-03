@@ -306,15 +306,14 @@ class Program extends AdminModel
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
 
-        if(adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if ( ! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN])){
 
             $sql .= " INNER JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id";
-            $sql .= " AND cen_mem.center_id =  ". adminUser()->center_id;
+            $sql .= " AND cen_mem.center_id =  ? ";
 
+            $binds[] = adminUser()->center_id ? adminUser()->center_id : 0;
         }
-
-
 
         $sql .= ' LEFT JOIN countries country ';
         $sql .= " on member.country = country.id";
