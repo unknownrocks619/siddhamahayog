@@ -106,7 +106,7 @@ class ProgramStudent extends Model
         if (! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN])) {
             $sql .= " INNER JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = members.id ";
-            $sql .= " AND cen_mem.center_id = " .adminUser()->center_id;
+            $sql .= " AND cen_mem.center_id = " .adminUser()->center_id ?? 0;
         }
 
 

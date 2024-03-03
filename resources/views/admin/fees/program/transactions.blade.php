@@ -15,7 +15,9 @@
         </div>
     </div>
 
-    @include('admin.fees.program.partials.stat')
+    @if(adminUser()->role()->isSuperAdmin())
+        @include('admin.fees.program.partials.stat')
+    @endif
     <div class="row">
         <div class="col-md-10">
             <!-- Responsive Datatable -->
