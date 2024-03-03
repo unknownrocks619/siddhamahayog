@@ -77,6 +77,7 @@
                                                 @endif
                                             </td>
                                             <th>
+                                                <button data-action="{{route('admin.modal.display',['view' => 'request.transaction-detail','permission' => $permission->getKey()])}}" class="btn btn-info ajax-modal" data-bs-target="#transacitonDetailModal" data-bs-toggle="modal">Transaction Detail</button>
                                                 <button data-confirm="You are about to approve the request made by center. You will not be able revert the changes. Do you still wish to continue ?" data-method="post" data-action="{{route('admin.permission-request.list',['permission'=>$permission,'type'=>2])}}" class="btn btn-primary data-confirm">Approve</button>
                                                 <button type="button" data-confirm="Confirm Reject ? "  data-method="post" data-action="{{route('admin.permission-request.list',['permission'=>$permission,'type'=>3])}}"  class="btn btn-danger data-confirm">Reject</button>
                                             </th>
@@ -90,6 +91,7 @@
                 </div>
             </div>
     </div>
+    <x-modal modal="transacitonDetailModal"></x-modal>
 @endsection
 
 @push('page_script')

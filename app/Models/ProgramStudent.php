@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -101,16 +102,16 @@ class ProgramStudent extends Model
         $sql .= " INNER JOIN members ";
         $sql .= " ON members.id = program_students.student_id ";
         $sql .= " AND members.deleted_at IS NULL ";
-        
-        if (! adminUser()->role()->isSuperAdmin() || ! adminUser()->role()->isAdmin() ) {
-            $sql .= "INNER JOIN center_members cen_mem ";
+
+        if (! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN])) {
+            $sql .= " INNER JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = members.id ";
             $sql .= " AND cen_mem.center_id = " .adminUser()->center_id;
         }
 
 
         $sql .= " LEFT JOIN batches ON batches.id = program_students.batch_id ";
-        $sql .= "INNER JOIN program_sections on program_sections.id = program_students.program_section_id";
+        $sql .= " JOIN program_sections on program_sections.id = program_students.program_section_id";
         $sql .= " WHERE ";
         $sql .= " program_students.program_id = ?";
         $sql .= " AND program_students.deleted_at is NULL";
