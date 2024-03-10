@@ -148,7 +148,7 @@
                         <label for="amount">Amount
                             <sup class="text-danger">*</sup>
                         </label>
-                        <input type="text" name="amount" id="amount" class="form-control" />
+                        <input type="number" name="amount" id="amount" class="form-control" />
                     </div>
                 </div>
             </div>

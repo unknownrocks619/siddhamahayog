@@ -59,6 +59,14 @@ class MemberController extends Controller
                 ->addColumn('full_name', function ($row) {
                    return htmlspecialchars(strip_tags($row->full_name));
                 })
+                ->addColumn('email', function ($row) {
+                    $stringEmail = str($row->email);
+                    if ($stringEmail->contains('random_email_') ) {
+                        return 'N/A';
+                    }
+
+                    return $row->email;
+                })
                 ->addColumn('country', function ($row) {
                     // return $row->countries->country_name;
                     return $row->country_name ?? "NaN";
@@ -89,8 +97,8 @@ class MemberController extends Controller
                     return date('Y-m-d',strtotime($row->created_at));
                 })
                 ->addColumn('action', function ($row) {
-                    $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
-                    $action .= "<a href='" . route('admin.members.show', $row->member_id) . "' class='text-danger'><i class='ti ti-edit ti-sm me-2'></a>";
+                    // $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
+                    $action = "<a href='" . route('admin.members.show', $row->member_id) . "' class='text-danger'><i class='ti ti-edit ti-sm me-2'></a>";
                     return $action;
                 })
                 ->rawColumns(["program_involved", "action"])
@@ -98,6 +106,7 @@ class MemberController extends Controller
             return $datatable;
         }
 
+        
         return view('admin.members.index');
     }
 
@@ -126,6 +135,9 @@ class MemberController extends Controller
                     'password' => 'required_if:enable_login,1|confirmed'
                 ],
                     ['email.required_if' => 'Email Address is required.', 'password.required_if' => 'Password field is required.']);
+
+                $request->validate(['gotra' => 'required']);
+
             }
 
             $fill = [
@@ -137,7 +149,8 @@ class MemberController extends Controller
                 'city'          => $request->post('city'),
                 'address'    => ['street_address' => $request->post('address')],
                 'date_of_birth' => $request->post('date_of_birth'),
-                'gender'        => $request->post('gender')
+                'gender'        => $request->post('gender'),
+                'gotra'         => $request->post('gotra'),
             ];
 
             $full_name = $fill['first_name'];
@@ -161,13 +174,21 @@ class MemberController extends Controller
 
             if ($member ) {
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
-                $member->phone_number = $fill['phone_number'] ?? $member->phone_number;
                 $member->country = $fill['country'] ?? $member->country;
                 $member->city = $fill['city'] ?? $member->city;
                 $member->address = $fill['address'] ?? $member->address;
                 $member->first_name = $fill['first_name'] ?? $member->first_name;
                 $member->last_name = $fill['last_name'] ?? $member->last_name;
                 $member->middle_name = $fill['middle_name'] ?? $member->middle_name;
+
+                if ( ! $member->gotra ) {
+                    $member->gotra = $fill['gotra'];
+                }
+
+                if ( ! $member->phone_number && $fill['phone_number']) {
+                    $member->phone_number = $fill['phone_number'];
+                }
+
             } else {
                 $member = new Member();
                 $member->fill($fill);
@@ -181,11 +202,11 @@ class MemberController extends Controller
                 $dharmasalaResponse = null;
 
                 DB::transaction(function() use ($member,$request, $source, &$dharmasalaResponse) {
-
                     /**
                      * Save only if required.
                      */
                     if ($member->isDirty() ) {
+
                         $member->full_name = $member->full_name();
                         $member->save();
                     }
@@ -362,10 +383,18 @@ class MemberController extends Controller
                 ->with(['profileImage'])
                 ->get();
 
+            if (! $memberSearch->count() ) {
+                $searchTerm = str($request->post('userKeyword'));
+                if ($searchTerm->contains(':') ) {
+                    $registrationCode = explode(':',$request->post('userKeyword'));
+                    $memberSearch = Member::where('id',(int) $registrationCode[1])->with(['profileImage'])->get();
+                }
+            }
+
             if ($memberSearch->count() ) {
                 $view = 'admin.members.partials.member-selection';
                 $params['members'] = $memberSearch;
-            }
+            } else {}
         }
 
         if ( $request->get('member') ) {

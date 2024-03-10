@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -218,6 +219,11 @@ class Member extends Authenticatable
         return $full_name;
     }
 
+    protected function Email(): Attribute {
+        return Attribute::make(
+            get :fn(string $value) => str($value)->contains('random_email_') ? '' : $value,
+        );
+    }
     /**
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough

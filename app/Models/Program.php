@@ -310,9 +310,9 @@ class Program extends AdminModel
 
             $sql .= " INNER JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id";
-            $sql .= " AND cen_mem.center_id =  ? ";
+            $sql .= " AND cen_mem.center_id =   ";
 
-            $binds[] = adminUser()->center_id ? adminUser()->center_id : 0;
+            $sql .= adminUser()->center_id ? adminUser()->center_id : 0;
         }
 
         $sql .= ' LEFT JOIN countries country ';
@@ -373,7 +373,7 @@ class Program extends AdminModel
         }
 
         $sql .= " GROUP BY member.id";
-
+        
         return DB::select($sql,$binds);
     }
 
@@ -382,14 +382,15 @@ class Program extends AdminModel
         $sql .= "  COALESCE(amount_category, 'grand_total') AS total_by";
         $sql .= " FROM program_student_fee_details prostufee";
         $sql .= " WHERE prostufee.verified  = 1";
-        $sql .= " AND prostufee.program_id = ?";
-        $sql .= " AND prostufee.deleted_at IS NULL";
+        $sql .= " AND prostufee.program_id = ? ";
+        $sql .= " AND prostufee.deleted_at IS NULL ";
 
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
-            $sql .= " and prostufee.fee_added_by_center = ". adminUser()->center_id;
+            $sql .= " AND prostufee.fee_added_by_center = ";
+            $sql .= adminUser()->center_id ? adminUser()->center_id : 0;
         }
 
-        $sql .=  " GROUP BY prostufee.amount_category";
+        $sql .=  " GROUP BY prostufee.amount_category ";
         $sql .= " WITH ROLLUP";
 
         return DB::select($sql, [$this->getKey()]);
@@ -469,6 +470,7 @@ class Program extends AdminModel
             'pu.request_type',
             'pu.status as pending_request_status',
             'pu.relation_table',
+            'img.filepath as transaction_file',
         ];
         $binds = [$this->getKey()];
 
@@ -488,6 +490,14 @@ class Program extends AdminModel
         $sql .= " ON pu.relation_id = fee_detail.id";
         $sql .= " AND pu.status = ".PermissionUpdate::STATUS_PENDING;
 
+        $sql .= " LEFT JOIN image_relations imr ";
+        $sql .= ' ON imr.relation_id = fee_detail.id';
+        $sql .= ' AND imr.relation = "App\\\Models\\\ProgramStudentFeeDetail"';
+        $sql .= " AND imr.deleted_at IS NULL ";
+
+        $sql .= " LEFT JOIN images img ";
+        $sql .= ' ON img.id = imr.image_id';
+        $sql .= ' AND img.deleted_at IS NULL ';
 
         $sql .= " WHERE fee_detail.program_id = ? ";
 
@@ -527,11 +537,12 @@ class Program extends AdminModel
             ]);
         }
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
-            $sql .= ' AND fee_detail.fee_added_by_center =  ' .adminUser()->center_id;
+            $sql .= ' AND fee_detail.fee_added_by_center =  ' . adminUser()->center_id ? adminUser()->center_id : 0;
         }
 
         $sql .= " AND fee_detail.deleted_at IS NULL";
-
+        
+        // dd($sql,$binds);
         return DB::select($sql,$binds);
     }
 

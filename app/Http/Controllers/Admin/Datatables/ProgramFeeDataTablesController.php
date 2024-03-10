@@ -50,40 +50,7 @@ class ProgramFeeDataTablesController extends Controller
             return $status;
         })
         ->addColumn('media', function ($row) use ($program) {
-            $row->remarks = (json_decode( $row->remarks));
-            if ($row->file) {
-                $string =  "[<a class='ajax-modal' data-bs-toggle='modal' data-action='".route('admin.modal.display',['view' => 'fees.media.images','transactionID' => $row->transaction_id,'programID' => $program->getKey(),'memberID' => $row->member_id])."' data-bs-target='#imageFile' href='" . route('admin.program.fee.admin_display_fee_voucher', $row->transaction_id) . "'> View Image </a>]";
-                $string .= "<br /> Deposit Date: ";
-                if ($row->remarks && isset($row->remarks->upload_date)) {
-                    $string .= $row->remarks->upload_date;
-                } else {
-                    $string .= "N/A";
-                }
-
-                return $string;
-            } else {
-                $searchString = \Illuminate\Support\Str::contains($row->source_detail, 'e-sewa', true);
-                if ($searchString) {
-                    $string = "";
-//                            $string = "OID: " . $row->remarks->oid;
-//                            $string .= "<br />";
-                    $string .= "refId: " . $row->remarks->refId;
-                    return $string;
-                }
-
-                $searchString = \Illuminate\Support\Str::contains($row->source, 'stripe', true);
-
-                if ($searchString) {
-                    $string = "Rate : " . $row->remarks->rate->exchange_data->buy . 'NRs';
-                    $string .= "<br />";
-                    $string .= "Currency: " . $row->remarks->paid_currency;
-                    $string .= "<br />";
-                    $string .= "Amount: " . $row->remarks->paid_amount;
-                    return $string;
-                }
-
-                return "Media Not Available";
-            }
+            return view('admin.datatable-view.program-fee.transaction-list.media',['row' => $row,'program' => $program])->render();
         })
         ->addColumn('action', function ($row) {
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Console\Commands\ImageToTable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -46,5 +47,18 @@ class ProgramStudentFeeDetail extends Model
     public function program()
     {
         return $this->belongsTo(Program::class, "program_id");
+    }
+
+    public function voucherImage() {
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
+                    ->where('relation',ProgramStudentFeeDetail::class);
+    }
+
+    public function center() {
+        return $this->belongsTo(Centers::class,'fee_added_by_center');
+    }
+
+    public function staff(){
+        return $this->belongsTo(AdminUser::class,'fee_added_by_user');
     }
 }

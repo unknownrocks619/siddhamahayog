@@ -158,12 +158,21 @@ if (!function_exists("adminUser")) {
 if (!function_exists("profile")) {
     function profile()
     {
-        if ( ! user()->profileImage ) {
-            $hash = md5(user()->email);
-            return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
+
+        if (user() ) {
+            if ( ! user()?->profileImage ) {
+                $hash = md5(user()->email);
+                return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
+            }
+
+            return \App\Classes\Helpers\Image::getImageAsSize(user()->profileImage?->filepath,'xs');
+
         }
 
-        return \App\Classes\Helpers\Image::getImageAsSize(user()->profileImage?->filepath,'xs');
+        if (adminUser() ) {
+                $hash = md5(adminuser()->email);
+                return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
+        }
 //
 //        if (user()->profile && isset(user()->profile->full_path) ) {
 //            return user()->profile->full_path;

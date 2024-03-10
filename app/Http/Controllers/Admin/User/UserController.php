@@ -16,11 +16,18 @@ use function PHPSTORM_META\map;
 class UserController extends Controller
 {
     public function index() {
+        if ( ! \adminUser()->role()->isSuperAdmin() ) {
+            abort(401);
+        }
         $userStafs = AdminUser::get();
         return view('admin.users.index',['users' => $userStafs]);
     }
 
     public function create(Request $request, ?Centers $center) {
+        if ( ! \adminUser()->role()->isSuperAdmin() ) {
+            abort(401);
+        }
+
         if ( $request->post() ) {
 
             $request->validate([
@@ -46,7 +53,7 @@ class UserController extends Controller
             if ($request->post('role') == 1 ) {
                 $user->is_super_admin = true;
             }
-            
+
             if ($request->post('center') || $center) {
                 $user->center_id = $center->getKey() ?? $request->post('center');
             }
@@ -54,7 +61,7 @@ class UserController extends Controller
             if (AdminUser::where('email',$request->post('email'))->exists()) {
                 return $this->json(false,'Email Already Exists.');
             }
-            // store all 
+            // store all
 
             if( ! $user->save() ) {
                 return $this->json(false,'Unable to create new user.');
@@ -75,34 +82,50 @@ class UserController extends Controller
 
     public function edit(Request $request, AdminUser $user, ?Centers $center) {
 
+        if ( ! \adminUser()->role()->isSuperAdmin() ) {
+
+            if ( $user->getKey() != \adminUser()->getKey() ) {
+                abort(401);
+            }
+
+        }
+
+
         if ( $request->post() ) {
 
             $request->validate([
                 'firstname' => 'required|string',
                 'lastname'  => 'required|string',
-                'email' => 'required|email|string',
             ]);
-            
-            $user->fill([
-                'firstname' => $request->post('firstname'),
-                'lastname' => $request->post('lastname'),
-                'email' => $request->post('email'),
-                'tagline'   => $request->post('tagline'),
-                'active'    => true,
-                'is_super_admin'    => false,
-                'role_id'   => $request->post('role')
-            ]);
-            
-            if ($request->post('role') == 1 ) {
-                $user->is_super_admin = true;
+            if (adminUser()->role()->isSuperAdmin() ) {
+                $user->fill([
+                    'firstname' => $request->post('firstname'),
+                    'lastname' => $request->post('lastname'),
+                    'email' => $request->post('email'),
+                    'tagline'   => $request->post('tagline'),
+                    'active'    => true,
+                    'is_super_admin'    => false,
+                    'role_id'   => $request->post('role')
+                ]);
+                if ($request->post('role') == 1 ) {
+                    $user->is_super_admin = true;
+                }
+
+                if ($request->post('center') || $center) {
+                    $user->center_id = $center->getKey() ?? $request->post('center');
+                }
+
+
+            } else {
+                $user->fill([
+                    'firstname' => $request->post('firstname'),
+                    'lastname' => $request->post('lastname'),
+                ]);
             }
+
 
             if ($request->post('password') ) {
                 $user->password = Hash::make($request->post('password'));
-            }
-
-            if ($request->post('center') || $center) {
-                $user->center_id = $center->getKey() ?? $request->post('center');
             }
 
 
@@ -116,13 +139,13 @@ class UserController extends Controller
 
         return view('admin.users.edit',['user' => $user,'center'=> $center]);
     }
-    
+
     public function delete(AdminUser $user, ?Centers $center) {
 
         if ( $center->getKey() ) {
 
             $user->center_id = null;
-            
+
             if (! $user->save() ) {
                 return $this->json('Unable to remove user.');
             }
@@ -157,7 +180,7 @@ class UserController extends Controller
     }
 
     public function modalUserList(Request $request, Centers $center) {
-        
+
         $users = AdminUser::whereIn('id',$request->post('user_list'))->get();
 
         foreach ($users as $user) {

@@ -10,14 +10,22 @@
     </h4>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-3 col-sm-12 mb-3">
-                <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}" class="btn btn-danger btn-icon">
-                <i class="fas fa-arrow-left"></i></a>
+            <div class="col-md-12 col-sm-12 mb-3 d-flex justify-content-between">
+                <div>
+                    <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}" class="btn btn-danger btn-icon">
+                        <i class="fas fa-arrow-left"></i></a>
+                </div>
+                <div>
+                    <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}" class="btn btn-primary btn-icon">
+                        <i class="fas fa-plus"></i></a>
+
+                </div>
+
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-9 col-sm-12">
+            <div class="col-md-12 col-sm-12">
                 <div class="card">
                     <div class="card-header">
                         <h4>
@@ -69,10 +77,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-md-3 col-sm-12">
-                @include('admin.programs.partials.quick-navigation')
             </div>
         </div>
 

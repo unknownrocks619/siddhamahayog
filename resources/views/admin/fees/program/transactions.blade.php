@@ -19,10 +19,15 @@
         @include('admin.fees.program.partials.stat')
     @endif
     <div class="row">
-        <div class="col-md-10">
+        <div class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) col-md-10 @else col-md-12 @endif">
             <!-- Responsive Datatable -->
             <div class="card">
-                <h5 class="card-header">Transaction Overviews</h5>
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">Transaction Overviews</h5>
+                        <a href="{{route('admin.members.create')}}" class="btn btn-primary">Add Transaction</a>
+                    </div>
+                </div>
 
                 <div class="card-datatable table-responsive">
                     <table class="dt-responsive table" id="program_fee_overview">
@@ -50,7 +55,7 @@
             <!--/ Responsive Datatable -->
 
         </div>
-        <div class="col-md-2">
+        <div class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) col-md-2 @else col-md-2 d-none @endif">
             @include('admin.fees.program.partials.quick-navigation',['program' => $program])
         </div>
     </div>

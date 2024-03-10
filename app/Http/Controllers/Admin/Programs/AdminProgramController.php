@@ -41,6 +41,11 @@ class AdminProgramController extends Controller
 
     public function new_program(Request $request, $type = null)
     {
+
+        if (! adminUser()->isSuperAdmin() || ! adminUser()->isAdmin() ) {
+            abort (401);
+        }
+
         if ($request->post() ) {
 
             $request->validate(['program_name' => 'required']);
@@ -253,6 +258,12 @@ class AdminProgramController extends Controller
                     return $row->phone_number ?? 'N/A';
                 })
                 ->addColumn('email', function ($row) {
+                    $emailStr = str($row->email);
+
+                    if ($emailStr->contains('random_email_') ) {
+                        return 'N/A';
+                    } 
+
                     return strip_tags($row->email) ?? 'N/A';
                 })
                 ->addColumn('total_payment', function ($row) {

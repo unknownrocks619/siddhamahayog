@@ -74,8 +74,8 @@
                     <div class="row w-100 align-items-center">
                         <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
                             <div class="mb-0 fw-medium">
-                                <a href="{{ route('admin.members.create') }}">
-                                   {{\App\Models\Program::QUICK_NAVIGATION_ACCESS['register_new_member_to_program']['label']}}
+                                <a href="{{ route('admin.members.admin_add_member_to_program', ['program' => $program->id]) }}">
+                                    {{\App\Models\Program::QUICK_NAVIGATION_ACCESS['register_new_member_to_program']['label']}}
                                 </a>
                             </div>
                         </div>

@@ -7,6 +7,7 @@ use App\Classes\Helpers\Roles\Rule;
 use App\Http\Controllers\Admin\Datatables\ProgramFeeDataTablesController;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
+use App\Models\ImageRelation;
 use Illuminate\Support\Facades\DB;
 use App\Models\Member;
 use App\Models\MemberNotification;
@@ -103,7 +104,7 @@ class ProgramStudentFeeController extends Controller
         if ($request->ajax() ) {
 
             $request->validate([
-                'amount' => 'required',
+                'amount' => 'required|numeric',
                 'voucher_type'  => 'required',
                 'voucher_number'    => 'required_if:voucher_type,voucher_entry'
             ],[
@@ -215,11 +216,24 @@ class ProgramStudentFeeController extends Controller
              * Check if file was uploaded.
              */
             if ($request->file('voucher') ) {
+                
                 $image = Image::uploadImage($request->file('voucher'),$programCourseFeeDetail);
+
+                if (isset($image[0]) && isset($image[0]['relation']) && $image[0]['relation'] instanceof ImageRelation) {
+                    $imageRelation = $image[0]['relation'];
+                    $imageRelation->type = 'entry_voucher';
+                    $imageRelation->save();
+                }
+
             }
 
             if ($request->file('bank_voucher') ) {
                 $image = Image::uploadImage($request->file('bank_voucher'),$programCourseFeeDetail);
+                if (isset($image[0]) && isset($image[0]['relation']) && $image[0]['relation'] instanceof ImageRelation) {
+                    $imageRelation = $image[0]['relation'];
+                    $imageRelation->type = 'bank_voucher';
+                    $imageRelation->save();
+                }
             }
 
             // now reload the page for another

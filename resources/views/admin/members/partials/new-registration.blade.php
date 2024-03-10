@@ -77,11 +77,21 @@
                                 Phone Number
                                 <sup class="text-danger">*</sup>
                             </label>
-                            <input type="text" id="phone_number" value="{{$member?->phone_number}}" name="phone_number" class="form-control">
+                            <input type="text" id="phone_number" @if($member && $member->phone_number) disabled @endif value="{{$member?->phone_number}}" name="phone_number" class="form-control">
                         </div>
                     </div>
                 </div>
-
+                <div class="row g-3 m-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="gotra">Gotra
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <input type="text" value="{{$member?->gotra}}" name="gotra" id="gotra" class="form-control" />
+                        </div>
+                    </div>
+    
+                </div>
                 <div class="row g-3 m-3">
                     <div class="col-md-6">
                         <div class="form-group">
