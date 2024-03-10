@@ -15,7 +15,8 @@ class Centers extends Model
         'center_location',
         'center_contact_person',
         'center_email_address',
-        'active'
+        'active',
+        'default_currency'
     ];
 
     public function staffs(){

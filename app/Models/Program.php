@@ -378,7 +378,8 @@ class Program extends AdminModel
     }
 
     public function totalAdmissionFee() {
-        $sql = " SELECT SUM(amount) as total_amount, ";
+
+        $sql  = " SELECT SUM(amount) as total_amount, ";
         $sql .= "  COALESCE(amount_category, 'grand_total') AS total_by";
         $sql .= " FROM program_student_fee_details prostufee";
         $sql .= " WHERE prostufee.verified  = 1";
@@ -455,6 +456,9 @@ class Program extends AdminModel
             'fee_detail.program_student_fees_id as transaction_overview_id',
             'fee_detail.amount',
             'fee_detail.amount_category',
+            'fee_detail.exchange_rate',
+            'fee_detail.foreign_currency_amount',
+            'fee_detail.currency',
             'fee_detail.source',
             'fee_detail.source_detail',
             'fee_detail.verified',
@@ -502,6 +506,7 @@ class Program extends AdminModel
         $sql .= " WHERE fee_detail.program_id = ? ";
 
         if ($searchTerm) {
+
             $sql .= " AND ( ";
                 $sql .= " LOWER(member.full_name) LIKE ? ";
                 $sql .= " OR member.first_name LIKE ?";
@@ -537,12 +542,12 @@ class Program extends AdminModel
             ]);
         }
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
-            $sql .= ' AND fee_detail.fee_added_by_center =  ' . adminUser()->center_id ? adminUser()->center_id : 0;
+            $sql .= ' AND fee_detail.fee_added_by_center =  ' ;
+            $sql .= adminUser()->center_id ? adminUser()->center_id : 0;
         }
 
         $sql .= " AND fee_detail.deleted_at IS NULL";
-        
-        // dd($sql,$binds);
+
         return DB::select($sql,$binds);
     }
 

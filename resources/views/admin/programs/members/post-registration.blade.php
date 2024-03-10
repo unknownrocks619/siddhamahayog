@@ -151,6 +151,26 @@
                         <input type="number" name="amount" id="amount" class="form-control" />
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        {{adminUser()->center?->default_currency}}
+                        <label for="currency">Currency
+                            <sup class="text-danger">*</sup>
+                        </label>
+                        <select name="currency" id="currency" class="form-control">
+                            @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+                                <option value="NPR" selected>NPR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="USD">USD</option>
+                                <option value="CAD">CAD</option>
+                                <option value="AUD">AUD</option>
+                                <option value="EUR">EUR</option>
+                            @elseif(adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin())
+                                <option value="{{adminUser()->center?->default_currency ?? 'NPR'}}" selected>{{adminUser()->center?->default_currency ?? 'NPR'}}</option>
+                            @endif
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- / Payment Option -->

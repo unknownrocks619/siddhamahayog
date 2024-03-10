@@ -16,6 +16,8 @@ class ProgramStudentFeeDetail extends Model
         'student_id',
         'program_student_fees_id',
         'amount',
+        'currency',
+        'foreign_currency_amount',
         'amount_category',
         'source',
         'source_detail',

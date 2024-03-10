@@ -55,6 +55,21 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="col-md-6 mt-4">
+                            <div class="form-group">
+                                <label for="password">Default Currency</label>
+                                <select name="default_currency" id="default_currency" class="form-control">
+                                    <option value="NPR" @if($center->default_currency == 'NPR') selected @endif>NPR</option>
+                                    <option value="GBP"  @if($center->default_currency == 'GBP') selected @endif>GBP</option>
+                                    <option value="USD"  @if($center->default_currency == 'USD') selected @endif>USD</option>
+                                    <option value="CAD"  @if($center->default_currency == 'CAD') selected @endif>CAD</option>
+                                    <option value="AUD"  @if($center->default_currency == 'AUD') selected @endif>AUD</option>
+                                    <option value="EUR"  @if($center->default_currency == 'EUR') selected @endif>EUR</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>

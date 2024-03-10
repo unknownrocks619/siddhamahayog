@@ -16,6 +16,7 @@
         @endif
     </span>
 @else
+
     @php
         $seperate_category = explode("_", $row->amount_category);
         $category_text = "";
@@ -23,5 +24,5 @@
             $category_text .= ucwords(strtolower($value)) . " ";
         }
     @endphp
-    {{$category_text}};
+    {{$category_text}}; 
 @endif

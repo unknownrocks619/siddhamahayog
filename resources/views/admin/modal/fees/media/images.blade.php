@@ -43,6 +43,41 @@
                                 {{$transaction->remarks?->upload_date ?? $transaction->created_at}}
                             </td>
                         </tr>
+                        @if($transaction->currency != 'NPR')
+                        <tr>
+                            <th>
+                                Original Amount
+                            </th>
+                            <td>
+                                {{default_currency($transaction->foreign_currency_amount?? 0,$transaction->currency)}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Currency
+                            </th>
+                            <td>
+                                {{$transaction->currency}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Exchange Rate
+                            </th>
+                            <td>
+                                {{default_currency($transaction->exchange_rate)}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Converted Amount
+                            </th>
+                            <td>
+                                {{default_currency($transaction->amount)}}
+                            </td>
+                        </tr>
+                        @endif
+
                     </thead>
                 </table>
             </div>

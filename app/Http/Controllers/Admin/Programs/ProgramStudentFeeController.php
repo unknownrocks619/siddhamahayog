@@ -6,7 +6,9 @@ use App\Classes\Helpers\Image;
 use App\Classes\Helpers\Roles\Rule;
 use App\Http\Controllers\Admin\Datatables\ProgramFeeDataTablesController;
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\Frontend\CurrencyExchangeMiddleware;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
+use App\Models\CurrencyExchange;
 use App\Models\ImageRelation;
 use Illuminate\Support\Facades\DB;
 use App\Models\Member;
@@ -208,6 +210,40 @@ class ProgramStudentFeeController extends Controller
 
 
             ]);
+
+            if ($request->post('currency') && $request->post('currency') == 'NPR') {
+                $programCourseFeeDetail->currency = "NPR";
+                $programCourseFeeDetail->foreign_currency_account = $request->post('amount');
+
+            } else {
+
+                /**
+                 * Get Exchange rate for current currency.
+                 */
+                $exchangeRate = CurrencyExchange::where('exchange_date',date('Y-m-d'))
+                                                    ->where('exchange_from', strtolower($request->post('currency')))
+                                                    ->first();
+                if (! $exchangeRate ) {
+                    //insert if not available.
+                    (new CurrencyExchangeMiddleware())->storeTodayExchangeRate();
+                    
+                    $exchangeRate = CurrencyExchange::where('exchange_date',date('Y-m-d'))
+                    ->where('exchange_from', strtolower($request->post('currency')))
+                    ->first();
+
+                }
+
+                $programCourseFeeDetail->foreign_currency_amount = $request->post('amount');
+                $programCourseFeeDetail->currency = $request->post('currency');
+                $programCourseFeeDetail->amount = 0;
+
+                $amount = $request->post('amount');
+                $finalAmount = $amount * $exchangeRate?->exchange_data->sell ?? 0;
+                $programCourseFeeDetail->amount = $finalAmount;
+                $programCourseFeeDetail->exchange_rate = $exchangeRate?->exchange_data->sell;
+                $programCourseFeeDetail->currency = $request->post('currency');
+
+            }
 
             $programCourseFeeDetail->save();
             $programCourseFee->reCalculateTotalAmount();

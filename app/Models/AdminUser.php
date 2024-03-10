@@ -58,4 +58,8 @@ class AdminUser extends AdminAuth
     {
         return $this->hasMany(AdminUserPermission::class, 'user_id');
     }
+
+    public function center() {
+        return $this->belongsTo(Centers::class,'center_id');
+    }
 }

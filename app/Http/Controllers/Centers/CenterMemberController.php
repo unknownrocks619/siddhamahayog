@@ -42,7 +42,8 @@ class CenterMemberController extends Controller
                 'center_name' => 'required',
                 'center_location'   => 'required',
                 'center_email_address'  => 'required',
-                'active'    => 'required|in:1,0'
+                'active'    => 'required|in:1,0',
+                'default_currency' => 'required',
             ]);
 
             $center = new Centers();
@@ -50,7 +51,8 @@ class CenterMemberController extends Controller
                 'center_name'   => $request->post('center_name'),
                 'center_location'   => $request->post('center_location'),
                 'center_email_address'  => $request->post('center_email_address'),
-                'active'    => $request->post('active')
+                'active'    => $request->post('active'),
+                'default_currency'  => $request->post('default_currency'),
             ]);
 
             if (! $center->save() ) {
@@ -71,14 +73,16 @@ class CenterMemberController extends Controller
                 'center_name' => 'required',
                 'center_location'   => 'required',
                 'center_email_address'  => 'required',
-                'active'    => 'required|in:1,0'
+                'active'    => 'required|in:1,0',
+                'default_currency'  => 'required'
             ]);
 
             $center->fill([
                 'center_name'   => $request->post('center_name'),
                 'center_location'   => $request->post('center_location'),
                 'center_email_address'  => $request->post('center_email_address'),
-                'active'    => $request->post('active')
+                'active'    => $request->post('active'),
+                'default_currency'  => $request->post('default_currency')
             ]);
 
             if (! $center->update() ) {

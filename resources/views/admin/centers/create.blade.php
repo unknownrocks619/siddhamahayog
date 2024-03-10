@@ -55,6 +55,20 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="col-md-6 mt-4">
+                            <div class="form-group">
+                                <label for="password">Default Currency</label>
+                                <select name="default_currency" id="default_currency" class="form-control">
+                                    <option value="NPR" selected>NPR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="USD">USD</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="AUD">AUD</option>
+                                    <option value="EUR">EUR</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

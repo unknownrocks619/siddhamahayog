@@ -27,5 +27,19 @@
         <br />
         Amount: {{$row->remarks->paid_amount}};
 @else
-    Media Not Available
+    @if($row->currency != 'NPR')
+    <a 
+    class='ajax-modal' 
+    data-bs-toggle='modal' 
+    data-action="{{route('admin.modal.display',['view' => 'fees.media.images','transactionID' => $row->transaction_id,'programID' => $program->getKey(),'memberID' => $row->member_id])}}" 
+    data-bs-target='#imageFile' 
+    href="{{route('admin.program.fee.admin_display_fee_voucher', $row->transaction_id)}}"> 
+
+    Currency: {{$row->currency}}</a>
+    @else
+
+        Media Not Available
+    @endif 
+
+
 @endif
