@@ -59,7 +59,7 @@ class MemberEmergencyController extends Controller
 
         $memberToInclude = [];
 
-        foreach ($request->post('full_name') as $key => $full_name)  {
+        foreach ($request->post('full_name') ?? [] as $key => $full_name)  {
 
             $familyMember = MemberEmergencyMeta::where('phone_number', $request->post('phone_number')[$key])
                                                 ->where('member_id' , $member->getKey())
