@@ -54,7 +54,7 @@ class MemberEmergencyController extends Controller
             'contact_person.*' => 'required',
             'relation.*'    => 'required',
             'gotra.*'   => 'required',
-            'phone_number'  => 'required', 
+            'phone_number.*'  => 'required', 
         ]);
 
         $memberToInclude = [];
