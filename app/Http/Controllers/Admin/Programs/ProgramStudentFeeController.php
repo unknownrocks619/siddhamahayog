@@ -213,7 +213,7 @@ class ProgramStudentFeeController extends Controller
 
             if ($request->post('currency') && $request->post('currency') == 'NPR') {
                 $programCourseFeeDetail->currency = "NPR";
-                $programCourseFeeDetail->foreign_currency_account = $request->post('amount');
+                $programCourseFeeDetail->foreign_currency_amount = $request->post('amount');
 
             } else {
 

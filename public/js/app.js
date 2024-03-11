@@ -6359,6 +6359,17 @@ var MemberRegistration = /*#__PURE__*/function () {
       $("#familyMembers").append(_memberRow);
     }
   }, {
+    key: "programFamilyMember",
+    value: function programFamilyMember() {
+      var _memberRow = "\n                            <div class='col-md-12 wrapper-clone'>\n                                <div class='row'>\n                                    <div class=\"col-md-7 border-top mt-3\">\n                                        <div class=\"row\">\n                                            <div class=\"col-md-6 mt-3\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"full_name\">Full Name\n                                                        <sup class=\"text-danger\">*</sup>\n                                                    </label>\n                                                    <input type=\"text\" name=\"full_name[]\" class=\"form-control\">\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-6 mt-3\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"relation\">Relation</label>\n                                                    <input type=\"text\" name=\"relation[]\" id=\"\" class=\"form-control\">\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-6 mt-4\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"\">Gotra</label>\n                                                    <input type=\"text\" name=\"gotra[]\"  class=\"form-control\">\n                                                </div>\n                                            </div>\n                                            <div class=\"col-md-6 mt-4\">\n                                                <div class=\"form-group\">\n                                                    <label for=\"\">Phone Number</label>\n                                                    <input type=\"text\" name=\"phone_number[]\"  class=\"form-control\">\n                                                </div>\n                                            </div>\n\n                                        </div>\n                                    </div>\n                                    <div class=\"col-md-3  border-top mt-3\">\n                                        <div class=\"row mt-3\">\n                                            <div class=\"col-md-12 ProfileImageWrapper\">\n                                                <div class=\"form-group\">\n                                                    <div class=\"d-flex justify-content-between align-items-center mb-3\">\n                                                        <label for=\"family_photo\">\n                                                            ID Photo\n                                                        </label>\n                                                        <span\n                                                    onclick=\"window.memberRegistration.enableCamera(this,{cameraID: '.ProfileImageWrapper',hideImage : '.media_image_display'})\"\n                                                    class=\"btn btn-icon btn-primary\">\n                                                        <i class=\"fas fa-camera\"></i>\n                                                    </span>\n                                                    </div>\n                                                    <input type=\"file\" class=\"form-control\" name=\"family_photo[]\" id=\"family_photo\">\n\n                                                    <div class=\"col-md-12 text-end border mt-1\">\n                                                        <video id=\"webcam\" width=\"640\" height=\"480\" autoplay playsinline></video>\n                                                        <input type=\"hidden\" name=\"live_family_image[]\" class=\"d-none form-control media_profile_image\">\n                                \n                                                        <button\n                                                            type=\"button\"\n                                                            class=\"btn btn-primary btn-icon text-end\"\n                                                            onclick=\"window.memberRegistration.captureImage(this,{parent:'.ProfileImageWrapper',field : '.media_profile_image',parentHide : true,})\">\n                                \n                                                            <i class=\"fas fa-image\"></i>\n                                                        </button>                                    \n                                                        <img src=\"\" alt=\"\" class=\"media_image_display img-fluid d-none\">\n                                                    </div>\n                                                </div>\n                                            </div>\n                                        </div>\n                                    </div>\n                                    <div class='col-md-2  border-top mt-3 d-flex justify-content-end align-items-center'>\n                                        <button class='btn btn-danger btn-icon' type='button' onclick='window.memberRegistration.removeProgramFamilyMember(this)'><i class=\"fas fa-trash\"></i></button>\n                                    </div>\n                                </div>\n                            </div>\n                        ";
+      $("#familyMembers").append(_memberRow);
+    }
+  }, {
+    key: "removeProgramFamilyMember",
+    value: function removeProgramFamilyMember(elm) {
+      $(elm).closest('.wrapper-clone').remove();
+    }
+  }, {
     key: "enableCamera",
     value: function enableCamera(elm) {
       var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -6380,6 +6391,7 @@ var MemberRegistration = /*#__PURE__*/function () {
         _videoWrapper = $(params.cameraID);
       }
 
+      console.log('ideo camera opera', _videoWrapper);
       $(_videoWrapper).find('video').removeClass('d-none');
       _this.videoElement = $(_videoWrapper).find('video')[0];
       $(_videoWrapper).find('button').removeAttr('disabled').removeClass('d-none');
@@ -6388,7 +6400,9 @@ var MemberRegistration = /*#__PURE__*/function () {
       $(_videoWrapper).find('img').removeAttr('src').addClass('d-none');
       $(_videoWrapper).find('input').val(''); // hide image if requested.
 
-      if (params.hideImage) {
+      if ($(_videoWrapper).find(params.hideImage).length && params.hideImage) {
+        $(_videoWrapper).find(params.hideImage).addClass('d-none');
+      } else if (params.hideImage) {
         $(params.hideImage).addClass('d-none');
       } // Enable camera Stream.
 
@@ -6420,6 +6434,7 @@ var MemberRegistration = /*#__PURE__*/function () {
       canvas.height = this.videoElement.videoHeight;
       canvas.getContext('2d').drawImage(this.videoElement, 0, 0, canvas.width, canvas.height);
       var image = canvas.toDataURL('image/png', 1);
+      console.log(_wrapperElement);
       this.postRecord('/admin/dharmasala/bookings/upload-capture-media', {
         'image': image
       }).then(function (response) {

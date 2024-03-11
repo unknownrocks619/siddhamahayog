@@ -305,7 +305,7 @@ class MemberController extends Controller
                     }
 
 
-                    if ($request->post('program_enroll') ) {
+                    if ($request->post('program_enroll') && ! $request->post('family_confirmation')) {
 
                         $programControll = (new AdminProgramController())->registerMemberToProgram($request,$member);
 
@@ -324,6 +324,10 @@ class MemberController extends Controller
                             throw new Error($courseFeeEntry->original['msg']);
                         }
 
+                    }
+
+                    if ($request->has('family_confirmation') ) {
+                        (new MemberEmergencyController())->bulkInsert($request,$member);
                     }
 
                 });
@@ -351,9 +355,12 @@ class MemberController extends Controller
             $view = 'admin.programs.members.post-registration';
             $params =['member' => $member];
 
-            if ($request->post('program_enroll') ) {
-                $params['program'] = Program::find($request->post('program'));
+            if ($request->post('program_enroll') && $request->post('family_confirmation')) {
                 $view = 'admin.programs.members.post-enrollement-option';
+            } else if($request->post('program_enroll') && ! $request->post('family_confirmation')) {
+                $params['program'] = Program::find($request->post('program'));
+                $view ='admin.programs.members.family-confirmation';
+
             }
 
             return $this->json(true,'Member Registration Success.','validatePartials',[
