@@ -102,6 +102,17 @@ export class MemberRegistration {
                                                 </div>
                                             </div>
 
+                                            <div class="col-md-6 mt-4">
+                                                <div class="form-group">
+                                                    <label for="">Dikshya Type</label>
+                                                    <select name="dikshya_type[]" class="form-control">
+                                                        <option value="sadhana">Sadhana</option>
+                                                        <option value="saranagati">Saranagati</option>
+                                                        <option value="tarak">Tarak</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="col-md-3  border-top mt-3">
@@ -123,14 +134,14 @@ export class MemberRegistration {
                                                     <div class="col-md-12 text-end border mt-1">
                                                         <video id="webcam" width="640" height="480" autoplay playsinline></video>
                                                         <input type="hidden" name="live_family_image[]" class="d-none form-control media_profile_image">
-                                
+
                                                         <button
                                                             type="button"
                                                             class="btn btn-primary btn-icon text-end"
                                                             onclick="window.memberRegistration.captureImage(this,{parent:'.ProfileImageWrapper',field : '.media_profile_image',parentHide : true,})">
-                                
+
                                                             <i class="fas fa-image"></i>
-                                                        </button>                                    
+                                                        </button>
                                                         <img src="" alt="" class="media_image_display img-fluid d-none">
                                                     </div>
                                                 </div>

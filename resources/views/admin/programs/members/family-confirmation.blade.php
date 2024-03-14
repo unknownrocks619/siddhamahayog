@@ -14,7 +14,7 @@
                 <input type="hidden" name="exisiting_member" value="1" class="form-control d-none" />
                 <input type="hidden" name="family_confirmation" value="1" class="form-control d-none" />
                 <input type="hidden" name="program_enroll" value="1" class="form-control d-none" />
-                
+
             </div>
         </div>
         <div class="row">
@@ -32,7 +32,7 @@
             </div>
 
         </div>
-        
+
         <div class="row" id="familyMembers">
             @foreach ($member->emergency_contact()->with('profileImage')->where('contact_type','family')->get() as $familyMember)
                 <div class='col-md-12 wrapper-clone'>
@@ -65,7 +65,16 @@
                                         <input  @if($familyMember->confirmed_family) readonly @endif type="text" value="{{$familyMember->phone_number}}" name="phone_number[]"  class="form-control">
                                     </div>
                                 </div>
-
+                                <div class="col-md-6 mt-4">
+                                    <div class="form-group">
+                                        <label for="">Dikshya Type</label>
+                                        <select name="dikshya_type[]" class="form-control">
+                                            <option @if($familyMember->dikshya_type == 'sadhana') selected @endif value="sadhana">Sadhana</option>
+                                            <option @if($familyMember->dikshya_type == 'saranagati') selected @endif value="saranagati">Saranagati</option>
+                                            <option @if($familyMember->dikshya_type == 'tarak') selected @endif value="tarak">Tarak</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-3  border-top mt-3">
@@ -87,14 +96,14 @@
                                         <div class="col-md-12 text-end border mt-1">
                                             <video id="webcam" width="640" height="480" class="d-none" autoplay playsinline></video>
                                             <input type="hidden" name="live_family_image[]" class="d-none form-control media_profile_image">
-                    
+
                                             <button
                                                 type="button"
                                                 class="btn btn-primary btn-icon text-end d-none"
                                                 onclick="window.memberRegistration.captureImage(this,{parent:'.ProfileImageWrapper',field : '.media_profile_image',parentHide : true,})">
-                    
+
                                                 <i class="fas fa-image"></i>
-                                            </button>                                    
+                                            </button>
                                             <img @if($familyMember->profileImage) src="{{\App\Classes\Helpers\Image::getImageAsSize($familyMember->profileImage?->filepath,'m')}}" @else src="" @endif alt="" class="media_image_display img-fluid @if( ! $familyMember->profileImage) d-none @endif">
                                         </div>
                                     </div>

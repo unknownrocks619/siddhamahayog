@@ -54,7 +54,8 @@ class MemberEmergencyController extends Controller
             'contact_person.*' => 'required',
             'relation.*'    => 'required',
             'gotra.*'   => 'required',
-            'phone_number.*'  => 'required', 
+            'phone_number.*'  => 'required',
+            'dikshya_type.*' => 'required',
         ]);
 
         $memberToInclude = [];
@@ -65,14 +66,14 @@ class MemberEmergencyController extends Controller
                                                 ->where('member_id' , $member->getKey())
                                                 ->where('contact_type','family')
                                                 ->first();
-            
+
             if (! $familyMember) {
 
                 $familyMember = new MemberEmergencyMeta();
                 $familyMember->fill([
                     'member_id' => $member->getKey(),
                 ]);
-    
+
             }
 
             $familyMember->gotra = $request->post('gotra')[$key];
@@ -81,6 +82,7 @@ class MemberEmergencyController extends Controller
             $familyMember->contact_person = $full_name;
             $familyMember->contact_type = 'family';
             $familyMember->verified_family = true;
+            $familyMember->dikshya_type = $request->post('dikshya_type')[$key];
             $familyMember->save();
 
             /**
@@ -90,7 +92,7 @@ class MemberEmergencyController extends Controller
 
                 $memberIDCard = Image::uploadImage($request->file('family_photo')[$key],$familyMember);
                 if (isset ($memberIDCard[0]['relation'])) {
-                    
+
                     $memberCardType = $memberIDCard[0]['relation'];
                     $memberCardType->type = 'profile_picture';
                     $memberCardType->save();
