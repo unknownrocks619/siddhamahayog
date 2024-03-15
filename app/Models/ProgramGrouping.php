@@ -4,13 +4,46 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 class ProgramGrouping extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $joins = [];
+
+    protected $fillable = [
+        'program_id',
+        'batch_id',
+        'group_name',
+        'enable_auto_adding',
+        'rules',
+        'id_card_sample',
+        'id_card_print_width',
+        'id_card_print_height',
+        'id_card_print_position_x',
+        'id_card_print_position_y',
+        'enable_barcode',
+        'barcode_print_width',
+        'barcode_print_height',
+        'barcode_print_position_x',
+        'barcode_print_position_y',
+        'enable_personal_info',
+        'personal_info_print_width',
+        'personal_info_print_height',
+        'personal_info_print_position_x',
+        'personal_info_print_position_y',
+    ];
+
+    protected $casts = [
+        'rules' => 'array',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
+    ];
+
+    const IMAGE_TYPE = 'ID CARD';
 
     public static function singleGrouping(Program $program) {
         $selects = [
@@ -112,6 +145,17 @@ class ProgramGrouping extends Model
 
     public function groupMember() {
         return $this->hasMany(ProgramGroupPeople::class,"group_id");
+    }
+
+        /**
+     * @return HasOneThrough
+     */
+    public function memberIDMedia(): HasOneThrough {
+
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
+            ->where('relation',self::class)
+            ->where('type',self::IMAGE_TYPE)
+            ->latest();
     }
 
 }

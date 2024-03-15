@@ -3,7 +3,7 @@
 @endphp
 
 @extends('layouts.admin.master')
-@push('page_title') Group list@endpush
+@push('page_title') Group list @endpush
 @section('main')
     <h4 class="py-3 mb-4">
         <span class="text-muted fw-light"><a href="{{route('admin.program.admin_program_list')}}">Programs</a> / <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}">{{$program->program_name}}</a> /</span> Groups
@@ -16,7 +16,7 @@
                         <i class="fas fa-arrow-left"></i></a>
                 </div>
                 <div>
-                    <a href="{{route('admin.program.admin_program_detail',['program' => $program])}}" class="btn btn-primary btn-icon">
+                    <a href="{{route('admin.program.admin_program_group_create',['program' => $program])}}" class="btn btn-primary btn-icon">
                         <i class="fas fa-plus"></i></a>
 
                 </div>
@@ -58,7 +58,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            View | Edit
+                                            <a href="{{route('admin.program.admin_program_group_edit',['program' => $program,'group'=> $group])}}" class="btn btn-icon btn-primary">
+                                                <i class="fas fa-pencil"></i>
+                                            </a>
+                                            
                                         </td>
                                     </tr>
                                 @endforeach

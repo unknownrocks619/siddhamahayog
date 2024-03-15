@@ -5378,7 +5378,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var _partials_booking__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./partials/booking */ "./resources/js/partials/booking.js");
+/* harmony import */ var _partials_group_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./partials/group.js */ "./resources/js/partials/group.js");
  //================== partials ======================//
+
 
 
 
@@ -6302,6 +6304,131 @@ function _getRequest2(_url) {
     }
   });
 }
+
+/***/ }),
+
+/***/ "./resources/js/partials/group.js":
+/*!****************************************!*\
+  !*** ./resources/js/partials/group.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ProgramGrouping": () => (/* binding */ ProgramGrouping)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var ProgramGrouping = /*#__PURE__*/function () {
+  function ProgramGrouping() {
+    _classCallCheck(this, ProgramGrouping);
+  }
+
+  _createClass(ProgramGrouping, [{
+    key: "addRules",
+    value: function addRules(elm) {
+      var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var _html = "\n                <div class='col-md-12 group-add'>\n                    <div class='row mt-3'>\n                        <div class=\"col-md-4\">\n                            <div class=\"form-group\">\n                                <label>Amount</label>\n                                <input type=\"text\" name=\"amount[]\" class=\"form-control\">\n                            </div>\n                        </div>\n                        <div class=\"col-md-3\">\n                            <div class=\"form-group\">\n                                <label >Operator</label>\n                                <select name=\"operator[]\"  class=\"form-control\">\n                                    <option value=\"gt\"> > </option>\n                                    <option value=\"gtq\"> >= </option>\n                                    <option value=\"lt\"> < </option>\n                                    <option value=\"ltq\"> <= </option>\n                                    <option value=\"eq\"> = </option>\n                                </select>\n                            </div>\n                        </div>\n                        <div class=\"col-md-3\">\n                            <div class=\"form-group\">\n                                <label >Connector</label>\n                                <select name=\"connector[]\"  class=\"form-control\">\n                                    <option value=\"\">-</option>\n                                    <option value=\"or\">OR</option>\n                                    <option value=\"and\" selected>AND</option>\n                                </select>\n                            </div>\n                        </div>\n                        <div class=\"col-md-2 d-flex align-items-center justify-content-end action-button\">\n                            <button class=\"btn-danger btn-icon btn\" type='button' onclick=\"window.programGroup.removeRules(this)\"><i class=\"fas fa-trash\"></i></button>\n                        </div>\n                    </div>\n                </div>\n        ";
+
+      if (params.appendTo) {
+        $(elm).closest(params.appendTo).append(_html);
+      }
+
+      window.select2Options();
+    }
+  }, {
+    key: "removeRules",
+    value: function removeRules(elm) {
+      $(elm).closest('.group-add').remove();
+    }
+  }, {
+    key: "addPeople",
+    value: function addPeople() {}
+  }, {
+    key: "addFamily",
+    value: function addFamily() {}
+  }, {
+    key: "addIDCardArea",
+    value: function addIDCardArea() {
+      var _elm = $('#idCardArea');
+
+      var _width = $('input[name="id_width"]').val();
+
+      var _height = $('input[name="id_height"]').val();
+
+      var _position_x = $('input[name="id_position_x"]').val();
+
+      var _position_y = $('input[name="id_position_y"]').val();
+
+      var _styles = {
+        'min-width': _width + 'px',
+        'min-height': _height + 'px',
+        'left': _position_x + 'px',
+        'top': _position_y + 'px',
+        'position': 'absolute',
+        'border': '1px dashed'
+      };
+
+      _elm.css(_styles);
+    }
+  }, {
+    key: "barCodeArea",
+    value: function barCodeArea() {
+      var _elm = $('#barCodeArea');
+
+      var _width = $('input[name="barcode_width"]').val();
+
+      var _height = $('input[name="barcode_height"]').val();
+
+      var _position_x = $('input[name="barcode_position_x"]').val();
+
+      var _position_y = $('input[name="barcode_position_y"]').val();
+
+      var _styles = {
+        'min-width': _width + 'px',
+        'min-height': _height + 'px',
+        'left': _position_x + 'px',
+        'top': _position_y + 'px',
+        'position': 'absolute',
+        'border': '1px dashed red'
+      };
+
+      _elm.css(_styles);
+    }
+  }, {
+    key: "personalInfoArea",
+    value: function personalInfoArea() {
+      var _elm = $('#personalInfoArea');
+
+      var _width = $('input[name="personal_wpersonalth"]').val();
+
+      var _height = $('input[name="personal_height"]').val();
+
+      var _position_x = $('input[name="personal_position_x"]').val();
+
+      var _position_y = $('input[name="personal_position_y"]').val();
+
+      var _styles = {
+        'min-width': _width + 'px',
+        'min-height': _height + 'px',
+        'left': _position_x + 'px',
+        'top': _position_y + 'px',
+        'position': 'absolute',
+        'border': '1px dashed'
+      };
+
+      _elm.css(_styles);
+    }
+  }]);
+
+  return ProgramGrouping;
+}();
+window.programGroup = new ProgramGrouping();
 
 /***/ }),
 

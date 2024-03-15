@@ -11,7 +11,7 @@ import './partials/member';
 import './partials/transaction';
 import './partials/booking';
 import {Booking} from "./partials/booking";
-
+import './partials/group.js'
 
 $(function () {
     "use strict";

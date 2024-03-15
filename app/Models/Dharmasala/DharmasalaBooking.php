@@ -24,6 +24,7 @@ class DharmasalaBooking extends Model
         'building_name',
         'floor_name',
         'member_id',
+        'member_emergency_meta_id',
         'full_name',
         'email',
         'phone_number',
