@@ -68,10 +68,11 @@
                                 <div class="col-md-6 mt-4">
                                     <div class="form-group">
                                         <label for="">Dikshya Type</label>
-                                        <select name="dikshya_type[]" class="form-control">
-                                            <option @if($familyMember->dikshya_type == 'sadhana') selected @endif value="sadhana">Sadhana</option>
-                                            <option @if($familyMember->dikshya_type == 'saranagati') selected @endif value="saranagati">Saranagati</option>
-                                            <option @if($familyMember->dikshya_type == 'tarak') selected @endif value="tarak">Tarak</option>
+                                        <select name="dikshya_type[{{$loop->index}}][]" multiple class="form-control">
+                                            <option value="" @if(! $familyMember->dikshya_type) selected @endif>None</option>
+                                            <option @if( in_array('sadhana',explode(',',$familyMember->dikshya_type))) selected @endif value="sadhana">Sadhana</option>
+                                            <option @if( in_array('saranagati',explode(',',$familyMember->dikshya_type)))  selected @endif value="saranagati">Saranagati</option>
+                                            <option @if( in_array('tarak',explode(',',$familyMember->dikshya_type)))  selected @endif value="tarak">Tarak</option>
                                         </select>
                                     </div>
                                 </div>
@@ -129,3 +130,7 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    window.select2Options();
+</script>

@@ -75,14 +75,13 @@ class MemberEmergencyController extends Controller
                 ]);
 
             }
-
             $familyMember->gotra = $request->post('gotra')[$key];
             $familyMember->phone_number = $request->post('phone_number')[$key];
             $familyMember->relation  = $request->post('relation')[$key];
             $familyMember->contact_person = $full_name;
             $familyMember->contact_type = 'family';
             $familyMember->verified_family = true;
-            $familyMember->dikshya_type = $request->post('dikshya_type')[$key];
+            $familyMember->dikshya_type = implode(',',$request->post('dikshya_type')[$key] ?? []);
             $familyMember->save();
 
             /**

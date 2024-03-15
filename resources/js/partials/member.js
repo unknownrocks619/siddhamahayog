@@ -66,10 +66,10 @@ export class MemberRegistration {
                                 </div>`
 
         $("#familyMembers").append(_memberRow);
-
     }
 
     programFamilyMember(){
+        let _indexCount = $('#familyMembers').find('.wrapper-clone').length;
         let _memberRow = `
                             <div class='col-md-12 wrapper-clone'>
                                 <div class='row'>
@@ -105,7 +105,7 @@ export class MemberRegistration {
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
                                                     <label for="">Dikshya Type</label>
-                                                    <select name="dikshya_type[]" class="form-control">
+                                                    <select multiple name="dikshya_type[${_indexCount}][]" class="form-control">
                                                         <option value="sadhana">Sadhana</option>
                                                         <option value="saranagati">Saranagati</option>
                                                         <option value="tarak">Tarak</option>
@@ -156,6 +156,7 @@ export class MemberRegistration {
                         `
 
         $("#familyMembers").append(_memberRow);
+        window.select2Options();
 
     }
 
