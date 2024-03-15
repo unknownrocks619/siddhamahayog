@@ -41,7 +41,7 @@ Route::get("/zoom", function () {
 
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(["admin"])
+    ->middleware(['web',"admin"])
     ->group(function () {
         Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {

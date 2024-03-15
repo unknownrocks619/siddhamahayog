@@ -153,7 +153,6 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        {{adminUser()->center?->default_currency}}
                         <label for="currency">Currency
                             <sup class="text-danger">*</sup>
                         </label>

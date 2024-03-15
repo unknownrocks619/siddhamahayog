@@ -226,7 +226,7 @@ class ProgramStudentFeeController extends Controller
                 if (! $exchangeRate ) {
                     //insert if not available.
                     (new CurrencyExchangeMiddleware())->storeTodayExchangeRate();
-                    
+
                     $exchangeRate = CurrencyExchange::where('exchange_date',date('Y-m-d'))
                     ->where('exchange_from', strtolower($request->post('currency')))
                     ->first();
@@ -240,7 +240,7 @@ class ProgramStudentFeeController extends Controller
                 $amount = $request->post('amount');
                 $finalAmount = $amount * $exchangeRate?->exchange_data->sell ?? 0;
                 $programCourseFeeDetail->amount = $finalAmount;
-                $programCourseFeeDetail->exchange_rate = $exchangeRate?->exchange_data->sell;
+                $programCourseFeeDetail->exchange_rate = $exchangeRate?->exchange_data->sell ?? 0;
                 $programCourseFeeDetail->currency = $request->post('currency');
 
             }
@@ -252,7 +252,7 @@ class ProgramStudentFeeController extends Controller
              * Check if file was uploaded.
              */
             if ($request->file('voucher') ) {
-                
+
                 $image = Image::uploadImage($request->file('voucher'),$programCourseFeeDetail);
 
                 if (isset($image[0]) && isset($image[0]['relation']) && $image[0]['relation'] instanceof ImageRelation) {
