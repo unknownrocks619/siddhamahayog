@@ -232,7 +232,6 @@ class ProgramStudentFeeController extends Controller
                     ->first();
 
                 }
-                dd($exchangeRate);
 
                 $programCourseFeeDetail->foreign_currency_amount = $request->post('amount');
                 $programCourseFeeDetail->currency = $request->post('currency');
