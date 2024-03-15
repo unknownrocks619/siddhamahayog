@@ -102,15 +102,31 @@
             <!-- Payment Option -->
 
             <div class="row my-4">
+
                 <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="voucher_type">Voucher Type
-                            <sup class="text-danger">*</sup>
-                        </label>
-                        <select onchange="window.selectElementChange(this,'voucher_type')"  name="voucher_type" id="voucher_type" class="form-control">
-                            <option selected value="voucher_entry">Voucher Entry</option>
-                            <option value="voucher_upload">Bank Voucher</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="voucher_type">Voucher Type
+                                    <sup class="text-danger">*</sup>
+                                </label>
+                                <select onchange="window.selectElementChange(this,'voucher_type')"  name="voucher_type" id="voucher_type" class="form-control">
+                                    <option selected value="voucher_entry">Voucher Entry</option>
+                                    <option value="voucher_upload">Bank Voucher</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
+                                <label for="transaction_date">Transaction Date
+                                    <sup class="text-danger">*</sup>
+                                </label>
+                                <input type="text" placeholder="DD-MM-YYYY" value="{{date('d-m-Y')}}" name="transaction_date" id="transaction_date" class="form-control">
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -184,3 +200,6 @@
             </div>
         </div>
     </div>
+<script>
+    $('.step_one_search_option').hide();
+</script>

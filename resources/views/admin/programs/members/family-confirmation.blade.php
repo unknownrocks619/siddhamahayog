@@ -49,25 +49,33 @@
                                 </div>
                                 <div class="col-md-6 mt-3">
                                     <div class="form-group">
-                                        <label for="relation">Relation</label>
+                                        <label for="relation">Relation
+                                        <sup class="text-danger">*</sup>
+                                        </label>
                                         <input  @if($familyMember->confirmed_family) readonly @endif type="text" value="{{$familyMember->relation}}" name="relation[]" id="" class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mt-4">
                                     <div class="form-group">
-                                        <label for="">Gotra</label>
+                                        <label for="">Gotra
+                                            <sup class="text-danger">*</sup>
+                                        </label>
                                         <input  @if($familyMember->confirmed_family) readonly @endif type="text" value="{{$familyMember->gotra}}" name="gotra[]"  class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mt-4">
                                     <div class="form-group">
-                                        <label for="">Phone Number</label>
+                                        <label for="">Phone Number
+                                        <sup class="text-danger">*</sup>
+                                        </label>
                                         <input  @if($familyMember->confirmed_family) readonly @endif type="text" value="{{$familyMember->phone_number}}" name="phone_number[]"  class="form-control">
                                     </div>
                                 </div>
                                 <div class="col-md-6 mt-4">
                                     <div class="form-group">
-                                        <label for="">Dikshya Type</label>
+                                        <label for="">Dikshya Type
+                                        <sup class="text-danger">*</sup>
+                                        </label>
                                         <select name="dikshya_type[{{$loop->index}}][]" multiple class="form-control">
                                             <option value="" @if(! $familyMember->dikshya_type) selected @endif>None</option>
                                             <option @if( in_array('sadhana',explode(',',$familyMember->dikshya_type))) selected @endif value="sadhana">Sadhana</option>

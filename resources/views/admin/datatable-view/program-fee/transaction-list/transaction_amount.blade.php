@@ -4,7 +4,7 @@
             <span class='update-amount-fee-transaction' data-update-amount-id='update_span_{$row->transaction_id}'>{{default_currency(strip_tags($row->amount ? $row->amount : 0))}}</span>
             @if($row->currency != 'NPR')
             <br />
-            <span >Entry: {{default_currency(strip_tags($row->amount ? $row->amount : 0),$row->currency)}}</span>
+            <span >Entry: {{default_currency(strip_tags($row->foreign_currency_amount ? $row->foreign_currency_amount : 0),$row->currency)}}</span>
             @endif
 
             <span class='update-amount-container d-flex align-items-center d-none' id='update_span_{{$row->transaction_id}}'>

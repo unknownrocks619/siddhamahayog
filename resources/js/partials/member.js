@@ -85,27 +85,36 @@ export class MemberRegistration {
                                             </div>
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
-                                                    <label for="relation">Relation</label>
+                                                    <label for="relation">Relation
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="relation[]" id="" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
-                                                    <label for="">Gotra</label>
+                                                    <label for="">Gotra
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="gotra[]"  class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
-                                                    <label for="">Phone Number</label>
+                                                    <label for="">Phone Number
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="phone_number[]"  class="form-control">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
-                                                    <label for="">Dikshya Type</label>
+                                                    <label for="">Dikshya Type
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <select multiple name="dikshya_type[${_indexCount}][]" class="form-control">
+                                                        <option value="" selected>None</option>
                                                         <option value="sadhana">Sadhana</option>
                                                         <option value="saranagati">Saranagati</option>
                                                         <option value="tarak">Tarak</option>

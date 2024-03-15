@@ -11,7 +11,7 @@
 @push('page_title') Register New Member @endpush
 
 @section('main')
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-md-3 col-sm-12 mb-3">
                 <a href="{{route('admin.admin_dashboard',['program' => $program])}}" class="btn btn-danger btn-icon">
@@ -28,7 +28,7 @@
         <div class="row">
             <div class="col-12">
                 <form action="{{$formAction}}" method="post" class="ajax-component-form ajax-append member-registration">
-                    <div class="card step_one_search_option">
+                    <div class="card step_one_search_option" @if($member) style="display:none" @endif>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-12 mx-auto">

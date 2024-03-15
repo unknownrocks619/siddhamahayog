@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Programs;
 
 use App\Classes\Helpers\Image;
+use App\Classes\Helpers\NepaliDate;
 use App\Classes\Helpers\Roles\Rule;
 use App\Http\Controllers\Admin\Datatables\ProgramFeeDataTablesController;
 use App\Http\Controllers\Controller;
@@ -10,6 +11,7 @@ use App\Http\Middleware\Frontend\CurrencyExchangeMiddleware;
 use App\Http\Requests\Program\AdminCourseFeeRequest;
 use App\Models\CurrencyExchange;
 use App\Models\ImageRelation;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Member;
 use App\Models\MemberNotification;
@@ -108,10 +110,30 @@ class ProgramStudentFeeController extends Controller
             $request->validate([
                 'amount' => 'required|numeric',
                 'voucher_type'  => 'required',
-                'voucher_number'    => 'required_if:voucher_type,voucher_entry'
+                'voucher_number'    => 'required_if:voucher_type,voucher_entry',
+                'transaction_date'  => 'required'
             ],[
-                'voucher_number.required_if' => 'Voucher Number is required.'
+                'voucher_number.required_if' => 'Voucher Number is required.',
             ]);
+
+            $transactionDate = $request->post('transaction_date');
+            $explodeDate = explode('-',$transactionDate);
+
+            if ( count($explodeDate) <3 ) {
+                $request->validate(['transaction_date' => 'date:d-m-Y']);
+            }
+
+            if ( strlen($explodeDate[2]) !== 4 || (strlen($explodeDate[1]) !== 2 || $explodeDate[1] > 12) || (strlen($explodeDate[0]) !== 2 || $explodeDate[0] > 31)) {
+                return $this->json(false,'Invalid Date format.');
+            }
+
+            // check isNepali.
+            if ($explodeDate[2] > 2079) {
+                $nepaliDateHelper = new NepaliDate();
+                $engDate = $nepaliDateHelper->nep_to_eng($explodeDate[2],$explodeDate[1],$explodeDate[0]);
+                $transactionDate = $engDate['date'] .'-' .$engDate['month']. '-'.$engDate['year'];
+            }
+            $carbonTransactionDate = Carbon::createFromFormat('d-m-Y',$transactionDate);
 
             if ( ! $program?->getKey() ) {
                 $request->validate([
@@ -207,8 +229,6 @@ class ProgramStudentFeeController extends Controller
                 'fee_added_by_user' => adminUser()->getKey(),
                 'fee_added_by_center'   => adminUser()->center_id,
                 'student_id'    => $member->getKey(),
-
-
             ]);
 
             if ($request->post('currency') && $request->post('currency') == 'NPR') {
@@ -220,14 +240,14 @@ class ProgramStudentFeeController extends Controller
                 /**
                  * Get Exchange rate for current currency.
                  */
-                $exchangeRate = CurrencyExchange::where('exchange_date',date('Y-m-d'))
+                $exchangeRate = CurrencyExchange::where('exchange_date',$carbonTransactionDate->format('Y-m-d'))
                                                     ->where('exchange_from', strtolower($request->post('currency')))
                                                     ->first();
                 if (! $exchangeRate ) {
                     //insert if not available.
-                    (new CurrencyExchangeMiddleware())->storeTodayExchangeRate();
+                    (new CurrencyExchangeMiddleware())->storeTodayExchangeRate($carbonTransactionDate->format('Y-m-d'));
 
-                    $exchangeRate = CurrencyExchange::where('exchange_date',date('Y-m-d'))
+                    $exchangeRate = CurrencyExchange::where('exchange_date',$carbonTransactionDate->format('Y-m-d'))
                     ->where('exchange_from', strtolower($request->post('currency')))
                     ->first();
 
@@ -245,6 +265,7 @@ class ProgramStudentFeeController extends Controller
 
             }
 
+            $programCourseFeeDetail->created_at = $carbonTransactionDate->format("Y-m-d H:i:s");
             $programCourseFeeDetail->save();
             $programCourseFee->reCalculateTotalAmount();
 

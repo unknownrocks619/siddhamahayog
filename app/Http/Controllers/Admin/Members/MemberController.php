@@ -106,7 +106,7 @@ class MemberController extends Controller
             return $datatable;
         }
 
-        
+
         return view('admin.members.index');
     }
 
@@ -196,6 +196,14 @@ class MemberController extends Controller
                 $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
                 $member->sharing_code = Str::random(8);
                 $member->email = $request->post('email') ?? 'random_email_'.Str::random(18).'_'.time().'@siddhamahayog.org';
+            }
+
+            if ( ! $member->phone_number ) {
+                $request->validate(['phone_number' => 'required']);
+            }
+
+            if ( ! $member->gotra ) {
+                $request->validate(['gotra' => 'required']);
             }
 
             try {
