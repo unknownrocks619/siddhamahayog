@@ -18,7 +18,8 @@ class MemberEmergencyMeta extends Model
         'gender',
         'email_address',
         'phone_number',
-        'contact_number'
+        'contact_number',
+        'dikshya_type',
     ];
 
     // protected $casts = [

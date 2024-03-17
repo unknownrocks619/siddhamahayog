@@ -66,10 +66,10 @@ export class MemberRegistration {
                                 </div>`
 
         $("#familyMembers").append(_memberRow);
-
     }
 
     programFamilyMember(){
+        let _indexCount = $('#familyMembers').find('.wrapper-clone').length;
         let _memberRow = `
                             <div class='col-md-12 wrapper-clone'>
                                 <div class='row'>
@@ -85,20 +85,40 @@ export class MemberRegistration {
                                             </div>
                                             <div class="col-md-6 mt-3">
                                                 <div class="form-group">
-                                                    <label for="relation">Relation</label>
+                                                    <label for="relation">Relation
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="relation[]" id="" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
-                                                    <label for="">Gotra</label>
+                                                    <label for="">Gotra
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="gotra[]"  class="form-control">
                                                 </div>
                                             </div>
                                             <div class="col-md-6 mt-4">
                                                 <div class="form-group">
-                                                    <label for="">Phone Number</label>
+                                                    <label for="">Phone Number
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
                                                     <input type="text" name="phone_number[]"  class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6 mt-4">
+                                                <div class="form-group">
+                                                    <label for="">Dikshya Type
+                                                    <sup class="text-danger">*</sup>
+                                                    </label>
+                                                    <select multiple name="dikshya_type[${_indexCount}][]" class="form-control">
+                                                        <option value="" selected>None</option>
+                                                        <option value="sadhana">Sadhana</option>
+                                                        <option value="saranagati">Saranagati</option>
+                                                        <option value="tarak">Tarak</option>
+                                                    </select>
                                                 </div>
                                             </div>
 
@@ -123,14 +143,14 @@ export class MemberRegistration {
                                                     <div class="col-md-12 text-end border mt-1">
                                                         <video id="webcam" width="640" height="480" autoplay playsinline></video>
                                                         <input type="hidden" name="live_family_image[]" class="d-none form-control media_profile_image">
-                                
+
                                                         <button
                                                             type="button"
                                                             class="btn btn-primary btn-icon text-end"
                                                             onclick="window.memberRegistration.captureImage(this,{parent:'.ProfileImageWrapper',field : '.media_profile_image',parentHide : true,})">
-                                
+
                                                             <i class="fas fa-image"></i>
-                                                        </button>                                    
+                                                        </button>
                                                         <img src="" alt="" class="media_image_display img-fluid d-none">
                                                     </div>
                                                 </div>
@@ -145,6 +165,7 @@ export class MemberRegistration {
                         `
 
         $("#familyMembers").append(_memberRow);
+        window.select2Options();
 
     }
 

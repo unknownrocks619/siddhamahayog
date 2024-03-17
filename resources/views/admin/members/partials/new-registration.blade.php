@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-body">
                 <!-- 1. Delivery Address -->
-                <h4 class="mb-4 text-danger">2. Personal Info</h4>
+                <h4 class="mb-4 text-danger">Personal Info</h4>
 
                 <div class="row g-3 m-3">
                     <div class="col-md-4">
@@ -90,7 +90,7 @@
                             <input type="text" value="{{$member?->gotra}}" name="gotra" id="gotra" class="form-control" />
                         </div>
                     </div>
-    
+
                 </div>
                 <div class="row g-3 m-3">
                     <div class="col-md-6">
@@ -322,3 +322,9 @@
     </div>
         @endif
 </div>
+
+@if(request()->ajax())
+    <script>
+        $('.step_one_search_option').hide();
+    </script>
+@endif

@@ -11,7 +11,7 @@
 @push('page_title') Register New Member @endpush
 
 @section('main')
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid flex-grow-1 container-p-y">
         <div class="row">
             <div class="col-md-3 col-sm-12 mb-3">
                 <a href="{{route('admin.admin_dashboard',['program' => $program])}}" class="btn btn-danger btn-icon">
@@ -22,18 +22,30 @@
         <h4 class="py-3 mb-4">
             <span class="text-muted fw-light">
                 <a href="{{route('admin.members.all')}}">Member</a> /</span>
-            Create New Member
+            <a href="{{route('admin.members.create')}}">Create New Member</a>
         </h4>
         <!-- Sticky Actions -->
         <div class="row">
             <div class="col-12">
                 <form action="{{$formAction}}" method="post" class="ajax-component-form ajax-append member-registration">
-                    <div class="card step_one_search_option">
+                    <div class="card step_one_search_option" @if($member) style="display:none" @endif>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-lg-12 mx-auto">
+                                    <h4 class="mb-4 text-danger"><a href="#" onclick="window.memberRegistration.newRegistration({dharmasala:'{{$dharmasala}}'});return false" class="text-danger">1. New Registration</a></h4>
+                                    <div class="row g-3 m-3">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary"  onclick="window.memberRegistration.newRegistration({dharmasala:'{{$dharmasala}}'})" type="button">
+                                                New Registration
+                                                <i class="fas fa-users ms-2"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 mx-auto">
                                     <!-- 1. Delivery Address -->
-                                    <h4 class="mb-4 text-danger">1. Email / Phone Number Verification</h4>
+                                    <h4 class="mb-4 text-danger">2. Search Registered User</h4>
                                     <div class="row g-3 m-3">
                                         <div class="col-md-12">
                                             <div class="form-group">
@@ -42,10 +54,6 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12 text-end">
-                                            <button class="btn btn-primary"  onclick="window.memberRegistration.newRegistration({dharmasala:'{{$dharmasala}}'})" type="button">
-                                                New Registration
-                                                <i class="fas fa-users ms-2"></i>
-                                            </button>
                                             <button class="btn btn-primary"  onclick="window.memberRegistration.verifyEmail({dharmasala:'{{$dharmasala}}'})" type="button">
                                                 Check Detail
                                                 <i class="fas fa-arrow-right ms-2"></i>
@@ -53,6 +61,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
