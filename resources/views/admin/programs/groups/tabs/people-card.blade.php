@@ -1,11 +1,12 @@
-<div class="col-md-3">
+<div class="col-md-4">
     <div class="card">
-        <div class="card-header d-flex justify-content-between">
+        <div class="card-header">
             <h5 class="card-title">{{$people->full_name}}</h5>
-            <div>
-                <a href="">Add Family</a>
-                <a href="">Update Family</a>
-                <a href="">Add Room</a>
+
+            <div class="d-flex justify-content-between">
+                <a href="" data-bs-toggle='modal' data-bs-role='button' data-bs-target='#newFamily' class="ajax-modal"> <i class="fas fa-plus"></i> Add Family</a>
+                <a href=""  data-bs-toggle='modal' data-bs-role='button' data-bs-target='#selectMember' class="ajax-modal"> <i class="fas fa-refresh"></i> Update Family</a>
+                <a href="" data-bs-toggle='modal' data-bs-role='button' data-bs-target='#room-confirmation' class="ajax-modal"><i class="fas fa-bed"></i> Add Room</a>
             </div>
         </div>
         <div class="card-body">
