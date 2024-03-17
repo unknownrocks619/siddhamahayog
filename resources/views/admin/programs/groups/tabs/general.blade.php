@@ -5,7 +5,7 @@
                 <label for="group_name">Group name
                     <sup class="text-danger">*</sup>
                 </label>
-                <input type="text" name="group_name" id="group_name" class="form-control" />
+                <input type="text" name="group_name" value="{{$group->group_name}}" id="group_name" class="form-control" />
             </div>
         </div>
 

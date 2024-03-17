@@ -68,7 +68,12 @@ class AddPeopleToGroup extends Command
                                                 ->where('member_id', $groupUser->student_id)
                                                 ->first();
                 
-                if( ! $groupPeople ) {
+                /**
+                 *  Already Added.
+                 */
+                if( $groupPeople ) {
+                    continue;
+                }
 
                     $groupPeople = new ProgramGroupPeople();
 
@@ -85,7 +90,6 @@ class AddPeopleToGroup extends Command
                     ]);
 
                     $groupPeople->save();
-                }
 
                 // now check if dharmasa information is avilable for this user.
                 $bookingInfo = DharmasalaBooking::where('member_id',$groupPeople->studen_id)
