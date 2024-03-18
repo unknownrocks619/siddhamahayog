@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -101,11 +102,11 @@ class ProgramSection extends Model
             $sql .= " AND yagya.program_id = section.program_id ";
         }
 
-        if ( ! in_array(adminUser()->role(),[Role::SUPER_ADMIN,Role::ADMIN]) ){
+        if ( ! in_array(adminUser()->role_id,[Rule::SUPER_ADMIN,Role::ADMIN]) ){
 
             $sql .= " JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id ";
-            $sql .= " AND cen_mem.center_id = " . adminUser()->center_id;
+            $sql .= " AND cen_mem.center_id = " . adminUser()->center_id ?? 0;
         }
 
         $sql .= " WHERE section.program_id = ? ";
