@@ -19,3 +19,5 @@
     })
 @endphp
 <x-modal modal='selectMember'></x-modal>
+<x-modal modal='newFamily'></x-modal>
+<x-modal modal='newFamily'></x-modal>

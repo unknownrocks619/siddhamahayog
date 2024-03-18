@@ -19,4 +19,7 @@ Route::prefix('grouping/{program}')
 
             Route::match(['get','post'],'update-family-group/{group}/{people}',[AdminProgramGroupController::class,'updateFamilyGroup'])
                 ->name('admin_update_family_group');
+            Route::match(['get','post'],'add-family-group/{group}/{people}',[AdminProgramGroupController::class,'addFamilyGroup'])
+                ->name('admin_add_family_group');
+            
         });

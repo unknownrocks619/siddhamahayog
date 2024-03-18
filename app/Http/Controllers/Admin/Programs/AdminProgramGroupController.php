@@ -6,8 +6,10 @@ use App\Classes\Helpers\ExcelExport\ExcelExportDownload;
 use App\Classes\Helpers\ExcelExport\ExcelMultipleSheet;
 use App\Classes\Helpers\ExcelExport\ExportFromView;
 use App\Classes\Helpers\Image;
+use App\Http\Controllers\Admin\Members\MemberEmergencyController;
 use App\Http\Controllers\Controller;
 use App\Models\ImageRelation;
+use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\Program;
 use App\Models\ProgramGrouping;
@@ -299,7 +301,7 @@ class AdminProgramGroupController extends Controller
                 'email'         => $familyMember->email,
                 'gotra'     => $familyMember->gotra,
             ];
-            $createRequest = new Request([],$fillable);
+
             Validator::make($fillable,[
                 'full_name' => 'required|string',
                 'phone_number'  => 'requried',
@@ -333,6 +335,43 @@ class AdminProgramGroupController extends Controller
         // remove other groups.
         ProgramGroupPeople::where('id_parent',$people->getKey())->whereNotIn('id',$saveID)->delete();
         $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
-        return $this->json(true,'Family Information Updated.','updateGroupCardView',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
+        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
+    }
+
+     /**
+     * 
+     */
+    public function addFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+        $request = request()->capture();
+
+        $saveID = [];
+        $member = Member::where('id',$people->member_id)->first();
+        $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
+        
+        $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
+
+        foreach ($familyMembers as $familyMember)  {
+            $newFamily = new ProgramGroupPeople();
+
+            $newFamily->fill([
+                'member_id'     => $familyMember->getKey(),
+                'program_id'    => $program->getKey(),
+                'group_id'      => $group->getKey(),
+                'full_name'     => $familyMember->contact_person,
+                'phone_number'  => $familyMember->phone_number,
+                'email'         => $familyMember->email,
+                'id_parent'     => $people->getKey(),
+                'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                'is_card_generated' => false,
+                'group_uuid'    => Str::uuid(),
+                'is_parent'     => false,
+            ]);
+
+            $newFamily->save();
+        }
+
+        // remove other groups.
+        $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
+        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
     }
 }

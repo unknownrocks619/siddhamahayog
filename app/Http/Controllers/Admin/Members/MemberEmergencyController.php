@@ -49,7 +49,7 @@ class MemberEmergencyController extends Controller
 
     }
 
-    public function bulkInsert(Request $request, Member $member) {
+    public function bulkInsert(Request $request, Member $member,$returnInsert = false) {
         $request->validate([
             'contact_person.*' => 'required',
             'relation.*'    => 'required',
@@ -123,6 +123,10 @@ class MemberEmergencyController extends Controller
             $memberToInclude[] = $familyMember->getKey();
         }
 
+        if ( $returnInsert) {
+            return $memberToInclude;
+        }
+        
         $member->emergency()->where('contact_type','family')->whereNotIn('id',$memberToInclude)->delete();
     }
 }

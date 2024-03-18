@@ -115,7 +115,9 @@ export class ProgramGrouping {
     }
 
     updateFamilyGroup(params){
+
         console.log('card element: ', params);
+        
         let _cardElement = $('#'+params.cardID);
         this.#setCardLoader(true,_cardElement);
         let _getContentFrom = $(params.view).find('.card').html();
