@@ -79,7 +79,7 @@
             <!--/ Website Analytics -->
             @include('admin.dashboard.program-list')
         @endif
-        
+
 
 
         @if(in_array(adminUser()->role(), App\Models\Dharmasala\DharmasalaBooking::ACCESS))
@@ -176,5 +176,7 @@
             <!--/ Website Analytics -->
         @endif
     </div>
+    <x-modal modal="liveSessionModal"></x-modal>
+
 @endsection
 @include('admin.programs.partials.footer-script')

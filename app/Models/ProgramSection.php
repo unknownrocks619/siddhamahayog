@@ -101,8 +101,7 @@ class ProgramSection extends Model
             $sql .= " ON yagya.member_id = member.id";
             $sql .= " AND yagya.program_id = section.program_id ";
         }
-
-        if ( ! in_array(adminUser()->role_id,[Rule::SUPER_ADMIN,Role::ADMIN]) ){
+        if ( ! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN]) ){
 
             $sql .= " JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id ";
