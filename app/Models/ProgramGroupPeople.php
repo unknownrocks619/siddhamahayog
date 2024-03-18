@@ -21,6 +21,7 @@ class ProgramGroupPeople extends Model
         'program_id',
         'group_id',
         'is_parent',
+        'id_parent',
         'dharmasala_booking_id',
         'dharmasala_uuid',
         'access_permission',

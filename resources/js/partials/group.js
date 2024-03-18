@@ -1,5 +1,7 @@
 export class ProgramGrouping {
     
+    #currentCard;
+
     addRules(elm,params={}) {
 
     let _html =`
@@ -110,6 +112,39 @@ export class ProgramGrouping {
             'border'    : '1px dashed'
         }
         _elm.css(_styles);
+    }
+
+    updateFamilyGroup(params){
+        console.log('card element: ', params);
+        let _cardElement = $('#'+params.cardID);
+        this.#setCardLoader(true,_cardElement);
+        let _getContentFrom = $(params.view).find('.card').html();
+        $(_cardElement).html(_getContentFrom);
+    }
+
+    #setCardLoader(loading = true, elm={}) {
+        
+        let _closestCardElement = '';
+        /**
+         * Set Element on property
+         */
+        if (loading === true){
+            this.#currentCard = elm;
+            _closestCardElement = $(this.#currentCard).find('.card-error');
+            let _html =`<div class="alert alert-danger alert-dismissible fade show" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button><span class="fw-medium">Holy grail!</span> Your success/error message here.</div>`;
+            $(_closestCardElement).html(_html);
+            return ;
+        }
+
+        if ( elm ) {
+            _closestCardElement = $(elm).find('.card-error');
+
+        } else {
+            _closestCardElement = $(this.#currentCard).find('.card-error');
+        }
+
+        $(_closestCardElement).empty();
+
     }
 
 }

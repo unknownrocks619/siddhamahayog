@@ -5485,9 +5485,21 @@ $(function () {
         if (typeof fn === 'function') {
           return fn(response.params);
         }
+        /**
+         * For Member Registration
+         */
+
 
         if (fn === undefined && typeof window.memberRegistration[response.callback] === 'function') {
           return window.memberRegistration[response.callback](response.params);
+        }
+        /**
+         * For Group Registration
+         */
+
+
+        if (fn === undefined && typeof window.programGroup[response.callback] === 'function') {
+          return window.programGroup[response.callback](response.params);
         }
       }
     }
@@ -6324,9 +6336,38 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
+function _classPrivateMethodInitSpec(obj, privateSet) { _checkPrivateRedeclaration(obj, privateSet); privateSet.add(obj); }
+
+function _classPrivateFieldInitSpec(obj, privateMap, value) { _checkPrivateRedeclaration(obj, privateMap); privateMap.set(obj, value); }
+
+function _checkPrivateRedeclaration(obj, privateCollection) { if (privateCollection.has(obj)) { throw new TypeError("Cannot initialize the same private elements twice on an object"); } }
+
+function _classPrivateFieldGet(receiver, privateMap) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "get"); return _classApplyDescriptorGet(receiver, descriptor); }
+
+function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
+
+function _classPrivateFieldSet(receiver, privateMap, value) { var descriptor = _classExtractFieldDescriptor(receiver, privateMap, "set"); _classApplyDescriptorSet(receiver, descriptor, value); return value; }
+
+function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!privateMap.has(receiver)) { throw new TypeError("attempted to " + action + " private field on non-instance"); } return privateMap.get(receiver); }
+
+function _classApplyDescriptorSet(receiver, descriptor, value) { if (descriptor.set) { descriptor.set.call(receiver, value); } else { if (!descriptor.writable) { throw new TypeError("attempted to set read only private field"); } descriptor.value = value; } }
+
+function _classPrivateMethodGet(receiver, privateSet, fn) { if (!privateSet.has(receiver)) { throw new TypeError("attempted to get private field on non-instance"); } return fn; }
+
+var _currentCard = /*#__PURE__*/new WeakMap();
+
+var _setCardLoader = /*#__PURE__*/new WeakSet();
+
 var ProgramGrouping = /*#__PURE__*/function () {
   function ProgramGrouping() {
     _classCallCheck(this, ProgramGrouping);
+
+    _classPrivateMethodInitSpec(this, _setCardLoader);
+
+    _classPrivateFieldInitSpec(this, _currentCard, {
+      writable: true,
+      value: void 0
+    });
   }
 
   _createClass(ProgramGrouping, [{
@@ -6424,10 +6465,50 @@ var ProgramGrouping = /*#__PURE__*/function () {
 
       _elm.css(_styles);
     }
+  }, {
+    key: "updateFamilyGroup",
+    value: function updateFamilyGroup(params) {
+      console.log('card element: ', params);
+
+      var _cardElement = $('#' + params.cardID);
+
+      _classPrivateMethodGet(this, _setCardLoader, _setCardLoader2).call(this, true, _cardElement);
+
+      var _getContentFrom = $(params.view).find('.card').html();
+
+      $(_cardElement).html(_getContentFrom);
+    }
   }]);
 
   return ProgramGrouping;
 }();
+
+function _setCardLoader2() {
+  var loading = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+  var elm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var _closestCardElement = '';
+  /**
+   * Set Element on property
+   */
+
+  if (loading === true) {
+    _classPrivateFieldSet(this, _currentCard, elm);
+
+    _closestCardElement = $(_classPrivateFieldGet(this, _currentCard)).find('.card-error');
+    var _html = "<div class=\"alert alert-danger alert-dismissible fade show\" role=\"alert\"><button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button><span class=\"fw-medium\">Holy grail!</span> Your success/error message here.</div>";
+    $(_closestCardElement).html(_html);
+    return;
+  }
+
+  if (elm) {
+    _closestCardElement = $(elm).find('.card-error');
+  } else {
+    _closestCardElement = $(_classPrivateFieldGet(this, _currentCard)).find('.card-error');
+  }
+
+  $(_closestCardElement).empty();
+}
+
 window.programGroup = new ProgramGrouping();
 
 /***/ }),

@@ -8,10 +8,13 @@ use App\Classes\Helpers\ExcelExport\ExportFromView;
 use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Models\ImageRelation;
+use App\Models\MemberEmergencyMeta;
 use App\Models\Program;
 use App\Models\ProgramGrouping;
 use App\Models\ProgramGroupPeople;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AdminProgramGroupController extends Controller
 {
@@ -154,6 +157,10 @@ class AdminProgramGroupController extends Controller
         return view('admin.programs.groups.edit',['program' => $program,'group' => $group,'active_tab' => $tab,'tabs' => $tabs,'groups' => $groups]);
     }
 
+    /**
+     * 
+     */
+
     public function index(Program $program) {
         ini_set('memory_limit',-1);
         $groupingRecord = collect(ProgramGrouping::singleGrouping($program));
@@ -192,6 +199,10 @@ class AdminProgramGroupController extends Controller
         return $exportFromView->download('single-entry.xlsx');
     }
 
+    /**
+     * 
+     */
+
     public function familyGroup(Program $program) {
         ini_set('memory_limit',-1);
 
@@ -229,6 +240,10 @@ class AdminProgramGroupController extends Controller
         return $exportFromView->download('family-entry.xlsx');
     }
 
+    /**
+     * 
+     */
+
     public function downloadProgramStudent(Program $program) {
         $students = $program->programStudentEnrolments();
         $params = [
@@ -241,5 +256,83 @@ class AdminProgramGroupController extends Controller
         $exportFromView =new ExcelMultipleSheet($sheet);
         return $exportFromView->download('program-student-list.xlsx');
 
+    }
+
+
+    /**
+     * 
+     */
+    public function updateFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+        $request = request()->capture();
+
+        $saveID = [];
+
+        foreach ($request->post('families') as $family) {
+            
+                                // check if this family is already included in the 
+            $familyExists = ProgramGroupPeople::where('member_id',$family)
+                                                ->where('is_parent',false)
+                                                ->where('id_parent',$people->getKey())
+                                                ->where('group_id',$group->getKey())
+                                                ->first();
+            /**
+             * Do Nothing.
+             */
+            if ( $familyExists ) {
+                $saveID[] = $familyExists->getKey();
+                continue;
+            }
+
+
+
+            /**
+             * Get Family Info.
+             */
+            $familyMember = MemberEmergencyMeta::where('id', $family)->first();
+
+            /**
+             * Validate required field
+             */
+            $fillable = [
+                'full_name' => $familyMember->contact_person,
+                'phone_number'  => $familyMember->phone_number,
+                'email'         => $familyMember->email,
+                'gotra'     => $familyMember->gotra,
+            ];
+            $createRequest = new Request([],$fillable);
+            Validator::make($fillable,[
+                'full_name' => 'required|string',
+                'phone_number'  => 'requried',
+                'gotra'     => 'required',
+            ]);
+
+            /**
+             * 
+             */
+            $newFamily = new ProgramGroupPeople();
+
+            $newFamily->fill([
+                'member_id' => $family,
+                'program_id'    => $program->getKey(),
+                'group_id'      => $group->getKey(),
+                'full_name'     => $familyMember->contact_person,
+                'phone_number'  => $familyMember->phone_number,
+                'email'         => $familyMember->email,
+                'id_parent'     => $people->getKey(),
+                'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                'is_card_generated' => false,
+                'group_uuid'    => Str::uuid(),
+                'is_parent'     => false,
+            ]);
+
+            if ( ! $newFamily->save() ) {
+                continue;
+            }
+            $saveID[] = $newFamily->getKey();
+        }
+        // remove other groups.
+        ProgramGroupPeople::where('id_parent',$people->getKey())->whereNotIn('id',$saveID)->delete();
+        $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
+        return $this->json(true,'Family Information Updated.','updateGroupCardView',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
     }
 }

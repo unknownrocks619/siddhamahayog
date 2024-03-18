@@ -16,4 +16,7 @@ Route::prefix('grouping/{program}')
                 ->name('admin_program_grouping_family_index');
             Route::match(['get','post'],'program-student-download',[AdminProgramGroupController::class,'downloadProgramStudent'])
                 ->name('admin_program_grouping_family_index');
+
+            Route::match(['get','post'],'update-family-group/{group}/{people}',[AdminProgramGroupController::class,'updateFamilyGroup'])
+                ->name('admin_update_family_group');
         });

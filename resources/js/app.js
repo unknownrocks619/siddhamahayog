@@ -106,9 +106,21 @@ $(function () {
                 if (typeof (fn) === 'function') {
                     return fn(response.params);
                 }
+                /**
+                 * For Member Registration
+                 */
                 if (fn === undefined && typeof (window.memberRegistration[response.callback]) === 'function') {
                     return window.memberRegistration[response.callback](response.params);
                 }
+
+                /**
+                 * For Group Registration
+                 */
+
+                if (fn === undefined && typeof(window.programGroup[response.callback]) === 'function'){
+                    return window.programGroup[response.callback](response.params);
+                }
+
             }
         }
     }

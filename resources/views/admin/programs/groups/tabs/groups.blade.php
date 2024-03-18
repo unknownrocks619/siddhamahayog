@@ -18,3 +18,4 @@
         echo '</div>';
     })
 @endphp
+<x-modal modal='selectMember'></x-modal>
