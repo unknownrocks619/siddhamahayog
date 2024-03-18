@@ -221,7 +221,7 @@ class Member extends Authenticatable
 
     protected function Email(): Attribute {
         return Attribute::make(
-            get :fn(string $value) => str($value)->contains('random_email_') ? '' : $value,
+            get :fn(string|null $value) => str($value ?? '')->contains('random_email_') ? '' : $value,
         );
     }
     /**
