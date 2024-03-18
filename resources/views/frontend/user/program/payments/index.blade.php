@@ -29,7 +29,7 @@
                             <?php
 
                             $displayPaymentOption = false;
-                            $studentFee = user()->transactions()->where('program_id', $program->id)
+                            $studentFee = user()?->transactions()->where('program_id', $program->id)
                                 ->where('amount_category', 'admission_fee')
                                 ->sum('amount');
 
@@ -154,7 +154,7 @@
         </div>
     </div>
 </div>
-@if(site_settings('online_payment') || user()->role_id == 1)
+@if(site_settings('online_payment') || user()?->role_id == 1)
 <x-modal modal="paymentSelection">
     <div class="modal-header">
         <h5 class="modal-title" id="modalFullTitle">Select Payment Type</h5>
