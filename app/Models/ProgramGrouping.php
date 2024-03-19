@@ -45,6 +45,10 @@ class ProgramGrouping extends Model
 
     const IMAGE_TYPE = 'ID CARD';
 
+    /**
+     * @param Program $program
+     * @return array
+     */
     public static function singleGrouping(Program $program) {
         $selects = [
             'mem.full_name',
@@ -92,6 +96,10 @@ class ProgramGrouping extends Model
     }
 
 
+    /**
+     * @param Program $program
+     * @return array
+     */
     public static function familyGrouping(Program $program) {
         $selects = [
             'mem.full_name',
@@ -143,14 +151,17 @@ class ProgramGrouping extends Model
 
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function groupMember() {
         return $this->hasMany(ProgramGroupPeople::class,"group_id");
     }
 
-        /**
+    /**
      * @return HasOneThrough
      */
-    public function memberIDMedia(): HasOneThrough {
+    public function mediaSample(): HasOneThrough {
 
         return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
             ->where('relation',self::class)

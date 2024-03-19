@@ -16,7 +16,9 @@ class ProgramGroupPeople extends Model
         'email',
         'group_uuid',
         'is_card_generated',
+        'generated_id_card',
         'profile_id',
+        'member_id_card',
         'member_id',
         'program_id',
         'group_id',
@@ -31,6 +33,14 @@ class ProgramGroupPeople extends Model
 
     public function families() {
         return $this->hasMany(ProgramGroupPeople::class,'id_parent','id');
+    }
+
+    public function group() {
+        return $this->belongsTo(ProgramGrouping::class,'group_id');
+    }
+
+    public function profile() {
+        return $this->belongsTo(Images::class,'profile_id');
     }
 
 }

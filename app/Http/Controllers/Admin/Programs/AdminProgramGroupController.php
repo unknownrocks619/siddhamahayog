@@ -26,6 +26,10 @@ class AdminProgramGroupController extends Controller
         return view('admin.programs.groups.list',['program' => $program,'groups' => $groups]);
     }
 
+    /**
+     * @param Program $program
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     */
     public function create(Program $program) {
         $request = request()->capture();
 
@@ -33,7 +37,7 @@ class AdminProgramGroupController extends Controller
             $rules = [];
 
             foreach ($request->post('amount') as $index => $amount) {
-                
+
                 if ( ! isset ($rules[$amount]) ) {
                     $rules[$amount] = [];
                 }
@@ -42,7 +46,7 @@ class AdminProgramGroupController extends Controller
                     'operator'  => $request->post('operator')[$index],
                     'connector' => $request->post('connector')[$index],
                 ];
-            } 
+            }
             $rules['rules'] = $rules;
             $rules['connector'] = $request->post('connector');
 
@@ -73,14 +77,20 @@ class AdminProgramGroupController extends Controller
             }
 
             return $this->json(true,'Group Created.','redirect',['location' => route('admin.program.admin_program_group_edit',['program' => $program,'group' => $programGroup])]);
-            
+
         }
 
         return view('admin.programs.groups.create',['program' => $program]);
     }
 
+    /**
+     * @param Program $program
+     * @param ProgramGrouping $group
+     * @param $tab
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     */
     public function edit(Program $program, ProgramGrouping $group,$tab='general') {
-        
+
         $request = request()->capture();
 
         if ($request->ajax() ) {
@@ -88,7 +98,7 @@ class AdminProgramGroupController extends Controller
             $rules = [];
 
             foreach ($request->post('amount') as $index => $amount) {
-                
+
                 if ( ! isset ($rules[$amount]) ) {
                     $rules[$amount] = [];
                 }
@@ -97,7 +107,7 @@ class AdminProgramGroupController extends Controller
                     'operator'  => $request->post('operator')[$index],
                     'connector' => $request->post('connector')[$index],
                 ];
-            } 
+            }
             $rules['rules'] = $rules;
             $rules['connector'] = $request->post('connector');
 
@@ -139,12 +149,12 @@ class AdminProgramGroupController extends Controller
                 }
 
             }
-            
+
             /**
              * Insert ID Card Area.
              */
             return $this->json(true,'Group Created.','redirect',['location' => route('admin.program.admin_program_group_edit',['program' => $program,'group' => $group,'tab' => 'general'])]);
-            
+
         }
 
         $tabs = [
@@ -160,7 +170,8 @@ class AdminProgramGroupController extends Controller
     }
 
     /**
-     * 
+     * @param Program $program
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
 
     public function index(Program $program) {
@@ -202,7 +213,8 @@ class AdminProgramGroupController extends Controller
     }
 
     /**
-     * 
+     * @param Program $program
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
 
     public function familyGroup(Program $program) {
@@ -243,7 +255,8 @@ class AdminProgramGroupController extends Controller
     }
 
     /**
-     * 
+     * @param Program $program
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
 
     public function downloadProgramStudent(Program $program) {
@@ -262,7 +275,11 @@ class AdminProgramGroupController extends Controller
 
 
     /**
-     * 
+     * @param Request $request
+     * @param Program $program
+     * @param ProgramGrouping $group
+     * @param ProgramGroupPeople $people
+     * @return \Illuminate\Http\Response
      */
     public function updateFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
         $request = request()->capture();
@@ -270,8 +287,8 @@ class AdminProgramGroupController extends Controller
         $saveID = [];
 
         foreach ($request->post('families') as $family) {
-            
-                                // check if this family is already included in the 
+
+                                // check if this family is already included in the
             $familyExists = ProgramGroupPeople::where('member_id',$family)
                                                 ->where('is_parent',false)
                                                 ->where('id_parent',$people->getKey())
@@ -309,7 +326,7 @@ class AdminProgramGroupController extends Controller
             ]);
 
             /**
-             * 
+             *
              */
             $newFamily = new ProgramGroupPeople();
 
@@ -338,8 +355,12 @@ class AdminProgramGroupController extends Controller
         return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
     }
 
-     /**
-     * 
+    /**
+     * @param Request $request
+     * @param Program $program
+     * @param ProgramGrouping $group
+     * @param ProgramGroupPeople $people
+     * @return \Illuminate\Http\Response
      */
     public function addFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
         $request = request()->capture();
@@ -347,7 +368,7 @@ class AdminProgramGroupController extends Controller
         $saveID = [];
         $member = Member::where('id',$people->member_id)->first();
         $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
-        
+
         $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
 
         foreach ($familyMembers as $familyMember)  {
@@ -373,5 +394,14 @@ class AdminProgramGroupController extends Controller
         // remove other groups.
         $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
         return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
+    }
+
+    public function generateIDCard(ProgramGroupPeople $people) {
+        if (  ! $people->profile ) {
+            return $this->json(false,'User Do not have any profile image');
+        }
+        // get sample Image.
+        $sampleImage = Image::getImageAsSize($people->group->mediaSample->filepath,'org');
+        $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath,'org'));
     }
 }

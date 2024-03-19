@@ -190,4 +190,37 @@ class Image
         $image->save();
         return $image;
     }
+
+    /**
+     * @param $imagePath
+     * @param $position
+     * @param $offset_x
+     * @param $offset_y
+     * @param $width
+     * @param $height
+     * @return void
+     */
+    public static function insertImage($imagePath,$position,$offset_x, $offset_y,$width, $height) {
+        $manager =  ImageManager::make($imagePath);
+    }
+
+    /**
+     * @param string $imagePath
+     * @param float|int $width
+     * @param float|int $height
+     * @return string
+     */
+    public static function resizeImage(string $imagePath , float|int $width, float|int $height) {
+        $imageManager = ImageManager::make($imagePath);
+        $imageManager->resize($width,$height, function($constraint){
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+        $generatedFilename = Str::random(60);
+
+        $fileExtension = pathinfo(self::getImageAsSize($imagePath),PATHINFO_EXTENSION);
+        Storage::disk('local')->put('uploads/resized/' . $generatedFilename.'.'.$fileExtension, $imageManager->stream()->__toString());
+
+        return 'uploads/resized/'.$generatedFilename.'.'.$fileExtension;
+    }
 }

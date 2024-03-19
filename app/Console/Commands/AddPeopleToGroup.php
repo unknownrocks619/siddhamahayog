@@ -50,7 +50,7 @@ class AddPeopleToGroup extends Command
                 $item['amount'] = $amount;
                 return $item;
             })->sortKeys();
-            
+
             $groupUsers = ProgramStudentFee::where('program_id', $group->program_id)
                                                         ->where('student_batch_id',$group->batch_id)
                                                         ->where('total_amount' , '>=', $rules->first()['amount'])
@@ -67,11 +67,25 @@ class AddPeopleToGroup extends Command
                                                 ->where('program_id',$program->getKey())
                                                 ->where('member_id', $groupUser->student_id)
                                                 ->first();
-                
+
                 /**
                  *  Already Added.
                  */
                 if( $groupPeople ) {
+
+                    // update id and profile photo.
+                    if ($groupUser->member->memberIDMedia) {
+                        $groupPeople->member_id_card = $groupUser->member->memberIDMedia->getKey();
+                    }
+
+                    if ($groupUser->member->profileImage) {
+                        $groupPeople->profile_id = $groupUser->member->profileImage->getKey();
+                    }
+
+                    if ($groupUser->isDirty(['member_id_card','profile_id'])) {
+                        $groupUser->save();
+                    }
+
                     continue;
                 }
 
@@ -96,12 +110,12 @@ class AddPeopleToGroup extends Command
                                                 ->where('status',DharmasalaBooking::RESERVED)
                                                 ->latest()
                                                 ->first();
-                
+
                 if ( $bookingInfo ) {
                     $groupPeople->dharmasala_booking_id = $bookingInfo->getKey();
                     $groupPeople->dharmasala_uuid = $bookingInfo->uuid;
                 }
-                
+
                 // now import user profile Picture, and ID Card.
 
                 $groupPeople->profile_id = $groupUser->member->profileImage?->getKey();
@@ -112,7 +126,7 @@ class AddPeopleToGroup extends Command
                 $familyMembers = MemberEmergencyMeta::where('verified_family',true)
                                                         ->where('member_id',$group->member_id)
                                                         ->get();
-                
+
                 $familyOrder = 0;
 
                 foreach ($familyMembers as $familyMember) {
@@ -138,13 +152,13 @@ class AddPeopleToGroup extends Command
 
                         $groupFamilyPeople->save();
                     }
-                    
+
                     // check if this family member has profile picture.
                     $memberPhoto = $familyMember->profileImage;
                     if ($memberPhoto ) {
                         $groupFamilyPeople->profile_id = $memberPhoto->getKey();
                     }
-                    
+
                     /**
                      * Check for dharmasal booking info
                      */
