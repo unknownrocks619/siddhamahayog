@@ -62,6 +62,7 @@ class ProgramStudentFee extends Model
      * @return void
      */
     public function reCalculateTotalAmount(): void {
-        $this->saveQuietly(['total_amount' => $this->transactions()->where('rejected',false)->sum('amount')]);
+        $this->total_amount = $this->transactions()->where('rejected',false)->sum('amount');
+        $this->saveQuietly();
     }
 }

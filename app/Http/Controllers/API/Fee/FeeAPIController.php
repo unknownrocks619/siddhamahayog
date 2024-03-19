@@ -119,7 +119,9 @@ class FeeAPIController extends Controller
     public function delete_fee_transaction(ProgramStudentFeeDetail $fee)
     {
         $studentFee = $fee->student_fee;
+
         if ( ! adminUser()->role()->isSuperAdmin() ) {
+
             $updateRequest = new PermissionUpdate();
             $updateRequest->fill([
                 'relation_table' => $fee::class,
@@ -147,6 +149,7 @@ class FeeAPIController extends Controller
         } catch (\Throwable $th) {
             return $this->returnResponse(false,'Unable to remove selected transaction',['error' => $th->getMessage()]);
         }
+
         $studentFee->reCalculateTotalAmount();
         return $this->returnResponse(true,'Transaction Deleted.','reload');
     }

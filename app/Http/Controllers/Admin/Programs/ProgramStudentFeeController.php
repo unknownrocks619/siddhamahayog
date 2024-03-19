@@ -41,6 +41,7 @@ class ProgramStudentFeeController extends Controller
 
         $fee_detail->verified =  !$fee_detail->verified;
         $fee_detail->rejected =  !$fee_detail->reject;
+
         if ($fee_detail->verified) {
             $notification =  new MemberNotification;
             $notification->member_id = $fee_detail->student_id;
