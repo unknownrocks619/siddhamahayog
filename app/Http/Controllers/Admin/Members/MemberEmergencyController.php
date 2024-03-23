@@ -10,6 +10,7 @@ use App\Models\Images;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MemberEmergencyController extends Controller
 {
@@ -62,19 +63,26 @@ class MemberEmergencyController extends Controller
 
         foreach ($request->post('full_name') ?? [] as $key => $full_name)  {
 
+
             $familyMember = MemberEmergencyMeta::where('phone_number', $request->post('phone_number')[$key])
+                                                ->where('contact_person',$full_name)
                                                 ->where('member_id' , $member->getKey())
                                                 ->where('contact_type','family')
+                                                ->where('verified_family',true)
+                                                ->where('relation', $request->post('relation')[$key])
+                                                ->where('gotra',$request->post('gotra')[$key])
                                                 ->first();
-
-            if (! $familyMember) {
+            /**
+             * If Family doesn't exists create new instance.
+             */
+            if ( ! $familyMember ) {
 
                 $familyMember = new MemberEmergencyMeta();
                 $familyMember->fill([
                     'member_id' => $member->getKey(),
                 ]);
-
             }
+
             $familyMember->gotra = $request->post('gotra')[$key];
             $familyMember->phone_number = $request->post('phone_number')[$key];
             $familyMember->relation  = $request->post('relation')[$key];
@@ -97,7 +105,8 @@ class MemberEmergencyController extends Controller
                     $memberCardType->save();
                 }
 
-            } elseif ( isset($request->post('live_family_image')[$key]) && $request->post('live_family_image')[$key] ) {
+            }
+            elseif ( isset($request->post('live_family_image')[$key]) && $request->post('live_family_image')[$key] ) {
 
                 $isUrl = str($request->post('live_family_image')[$key])->contains('http');
 
@@ -123,6 +132,8 @@ class MemberEmergencyController extends Controller
             $memberToInclude[] = $familyMember->getKey();
         }
 
-        $member->emergency()->where('contact_type','family')->whereNotIn('id',$memberToInclude)->delete();
+        $member->emergency()
+                ->where('contact_type','family')
+                ->whereNotIn('id',$memberToInclude)->delete();
     }
 }
