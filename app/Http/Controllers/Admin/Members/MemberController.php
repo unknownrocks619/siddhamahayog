@@ -539,7 +539,7 @@ class MemberController extends Controller
 
         $member->country = $request->post('country');
         $member->city = $request->post('city');
-        $member->address = ["street_address" => $request->post('address')];
+        $member->address = ["street_address" => $request->post('street_address')];
         $member->full_name = $member->full_name();
 
         try {
