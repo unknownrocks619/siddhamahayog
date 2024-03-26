@@ -1,5 +1,5 @@
 export class ProgramGrouping {
-    
+
     #currentCard;
 
     addRules(elm,params={}) {
@@ -66,7 +66,7 @@ export class ProgramGrouping {
         let _height = $('input[name="id_height"]').val();
         let _position_x = $('input[name="id_position_x"]').val();
         let _position_y = $('input[name="id_position_y"]').val();
-            
+
         let _styles = {
             'min-width' : _width +'px',
             'min-height' : _height +'px',
@@ -84,7 +84,7 @@ export class ProgramGrouping {
         let _height = $('input[name="barcode_height"]').val();
         let _position_x = $('input[name="barcode_position_x"]').val();
         let _position_y = $('input[name="barcode_position_y"]').val();
-            
+
         let _styles = {
             'min-width' : _width +'px',
             'min-height' : _height +'px',
@@ -98,18 +98,18 @@ export class ProgramGrouping {
 
     personalInfoArea() {
         let _elm = $('#personalInfoArea');
-        let _width = $('input[name="personal_wpersonalth"]').val();
-        let _height = $('input[name="personal_height"]').val();
-        let _position_x = $('input[name="personal_position_x"]').val();
-        let _position_y = $('input[name="personal_position_y"]').val();
-            
+        let _width = $('input[name="personal_info_width"]').val();
+        let _height = $('input[name="personal_info_height"]').val();
+        let _position_x = $('input[name="personal_info_position_x"]').val();
+        let _position_y = $('input[name="personal_info_position_y"]').val();
+
         let _styles = {
             'min-width' : _width +'px',
             'min-height' : _height +'px',
             'left'      : _position_x + 'px',
             'top'       : _position_y + 'px',
             'position'  : 'absolute' ,
-            'border'    : '1px dashed'
+            'border'    : '1px dashed green'
         }
         _elm.css(_styles);
     }
@@ -117,7 +117,7 @@ export class ProgramGrouping {
     updateFamilyGroup(params){
 
         console.log('card element: ', params);
-        
+
         let _cardElement = $('#'+params.cardID);
         this.#setCardLoader(true,_cardElement);
         let _getContentFrom = $(params.view).find('.card').html();
@@ -125,7 +125,7 @@ export class ProgramGrouping {
     }
 
     #setCardLoader(loading = true, elm={}) {
-        
+
         let _closestCardElement = '';
         /**
          * Set Element on property

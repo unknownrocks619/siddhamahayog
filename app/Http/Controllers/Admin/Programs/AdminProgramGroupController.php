@@ -6,9 +6,11 @@ use App\Classes\Helpers\ExcelExport\ExcelExportDownload;
 use App\Classes\Helpers\ExcelExport\ExcelMultipleSheet;
 use App\Classes\Helpers\ExcelExport\ExportFromView;
 use App\Classes\Helpers\Image;
+use App\Classes\Helpers\InterventionImageHelper;
 use App\Http\Controllers\Admin\Members\MemberEmergencyController;
 use App\Http\Controllers\Controller;
 use App\Models\ImageRelation;
+use App\Models\Images;
 use App\Models\Member;
 use App\Models\MemberEmergencyMeta;
 use App\Models\Program;
@@ -31,6 +33,7 @@ class AdminProgramGroupController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create(Program $program) {
+
         $request = request()->capture();
 
         if ($request->ajax() ) {
@@ -340,13 +343,15 @@ class AdminProgramGroupController extends Controller
                 'id_parent'     => $people->getKey(),
                 'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
                 'is_card_generated' => false,
-                'group_uuid'    => Str::uuid(),
                 'is_parent'     => false,
             ]);
 
             if ( ! $newFamily->save() ) {
                 continue;
             }
+            $newFamily->group_uuid = \App\Classes\Helpers\Str::uuid($newFamily);
+            $newFamily->save();
+
             $saveID[] = $newFamily->getKey();
         }
         // remove other groups.
@@ -384,10 +389,12 @@ class AdminProgramGroupController extends Controller
                 'id_parent'     => $people->getKey(),
                 'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
                 'is_card_generated' => false,
-                'group_uuid'    => Str::uuid(),
                 'is_parent'     => false,
             ]);
 
+            $newFamily->save();
+
+            $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
             $newFamily->save();
         }
 
@@ -396,12 +403,69 @@ class AdminProgramGroupController extends Controller
         return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
     }
 
-    public function generateIDCard(ProgramGroupPeople $people) {
-        if (  ! $people->profile ) {
-            return $this->json(false,'User Do not have any profile image');
+    public function generateIDCard(Program $program, ProgramGrouping $group, ProgramGroupPeople $people)
+    {
+
+        if (!$people->profile) {
+            return $this->json(false, 'User Do not have any profile image');
         }
-        // get sample Image.
-        $sampleImage = Image::getImageAsSize($people->group->mediaSample->filepath,'org');
-        $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath,'org'));
+
+        $userResizedImage = $people->resized_image;
+
+        if (!$userResizedImage) {
+            // get sample Image.
+            $sampleImage = Image::getImageAsSize($people->group->mediaSample->filepath, 'org');
+            $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
+            $people->resized_image = $userResizedImage;
+            $people->save();
+        }
+
+        // check if barcode is generated
+        $barcodeImage = $people->barcode_image;
+
+        if (!$barcodeImage) {
+            $barcodeImage = Image::generateBarcode($people->group_uuid, $group->barcode_print_width, $group->barcode_print_height);
+            $people->barcode_image = $barcodeImage;
+            $people->save();
+        }
+
+        $idCard = $people->generated_id_card;
+
+        if (!$idCard) {
+            //
+            $sampleImage = $group->mediaSample;
+            $params = [
+                asset($userResizedImage) => [
+                    'positionX' => $group->id_card_print_position_x,
+                    'positionY' => $group->id_card_print_position_y,
+                ],
+                asset($barcodeImage) => [
+                    'positionX' => $group->barcode_print_position_x - 10,
+                    'positionY' => $group->barcode_print_position_y
+                ]
+            ];
+
+            $interventionImageInstance = InterventionImageHelper::insertImage(Image::getImageAsSize($sampleImage->filepath, 'org'), $params);
+
+            if ($interventionImageInstance) {
+                $people->generated_id_card = $interventionImageInstance;
+                $people->save();
+            }
+            InterventionImageHelper::insertText(asset($interventionImageInstance), [
+                $people->full_name,
+                'Kathmandu, Nepal',
+                'Phone: ' . $people->phone_number,
+                'Room: Laxman Sadhan, L201'
+            ],
+                $group->personal_info_print_width,
+                $group->personal_info_print_height,
+                $group->personal_info_print_position_x,
+                $group->personal_info_print_position_y
+            );
+
+        }
+
+        $people->is_card_generated = true;
+        $people->save();
     }
 }

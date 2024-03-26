@@ -5,6 +5,10 @@
             <button class="btn btn-success btn-icon">
                 <i class="fas fa-play"></i>
             </button>
+            <button class="btn btn-success btn-icon">
+                <i class="fas fa-card"></i>
+            </button>
+
         </div>
     </div>
 </div>
@@ -20,4 +24,4 @@
 @endphp
 <x-modal modal='selectMember'></x-modal>
 <x-modal modal='newFamily'></x-modal>
-<x-modal modal='newFamily'></x-modal>
+<x-modal modal='roomConfirmation'></x-modal>

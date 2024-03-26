@@ -5,7 +5,12 @@
     <div class="card" id="groupPeople_{{$people->getKey()}}">
         <div class="card-alert"></div>
         <div class="card-header">
-            <h5 class="card-title">{{$people->full_name}}</h5>
+            <div class="d-flex justify-content-between">
+                <h5 class="card-title">
+                    {{$people->full_name}}
+                </h5>
+                <a href="{{route('admin.program.admin_program_generate_card',['people' => $people,'program' => $people->program_id,'group' => $people->group_id])}}">Generate Card</a>
+            </div>
 
             <div class="d-flex justify-content-between">
                 <a href=""
@@ -26,10 +31,11 @@
                         <i class="fas fa-refresh"></i>
                         Update Family
                 </a>
-                <a href=""
+                <a href="{{route('admin.modal.display',['view' => 'programs.groups.dharmasala-booking','people' => $people->getKey(),'group' => $people->group_id])}}"
+                    data-action="{{route('admin.modal.display',['view' => 'programs.groups.dharmasala-booking','people' => $people->getKey(),'group' => $people->group_id])}}"
                     data-bs-toggle='modal'
                     data-bs-role='button'
-                    data-bs-target='#room-confirmation'
+                    data-bs-target='#roomConfirmation'
                     class="ajax-modal">
                         <i class="fas fa-bed"></i> Add Room
                 </a>

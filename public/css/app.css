@@ -811,6 +811,9 @@ select {
 .mr-4 {
   margin-right: 1rem;
 }
+.mr-5 {
+  margin-right: 1.25rem;
+}
 .block {
   display: block;
 }
@@ -1210,6 +1213,9 @@ select {
 .pt-8 {
   padding-top: 2rem;
 }
+.pt-5 {
+  padding-top: 1.25rem;
+}
 .pt-6 {
   padding-top: 1.5rem;
 }
@@ -1224,9 +1230,6 @@ select {
 }
 .pr-3 {
   padding-right: 0.75rem;
-}
-.pt-5 {
-  padding-top: 1.25rem;
 }
 .pb-4 {
   padding-bottom: 1rem;

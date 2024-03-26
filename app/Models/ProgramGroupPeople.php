@@ -13,6 +13,7 @@ class ProgramGroupPeople extends Model
     protected $fillable =[
         'full_name',
         'phone_number',
+        'address',
         'email',
         'group_uuid',
         'is_card_generated',
@@ -24,6 +25,7 @@ class ProgramGroupPeople extends Model
         'group_id',
         'is_parent',
         'id_parent',
+        'parent_relation',
         'dharmasala_booking_id',
         'dharmasala_uuid',
         'access_permission',
@@ -43,4 +45,8 @@ class ProgramGroupPeople extends Model
         return $this->belongsTo(Images::class,'profile_id');
     }
 
+
+    public function programGroup() {
+        return $this->belongsTo(ProgramGrouping::class,'group_id');
+    }
 }

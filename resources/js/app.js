@@ -17,7 +17,6 @@ $(function () {
     "use strict";
 
     window.dharmasalaBooking = new Booking();
-
     /**
      * Ajax Setup
      */

@@ -5972,6 +5972,23 @@ var Booking = /*#__PURE__*/function () {
 
         _this.quickCheckIn(this);
       });
+      var scannedData = '';
+      $(document).keydown(function (event) {
+        var key = event.key; // Check if the pressed key is alphanumeric or Enter
+
+        if (/^[a-zA-Z0-9]$/.test(key) || key === 'Enter') {
+          // Append the pressed key to the buffer
+          scannedData += key; // Check if Enter key is pressed (end of scan)
+
+          if (key === 'Enter') {
+            // Process the scanned data (e.g., send to server, display on screen, etc.)
+            console.log('Scanned Data:', scannedData); // Clear the buffer for the next scan
+
+            scannedData = '';
+          }
+        }
+      });
+      console.log('scanned data: ', scannedData);
     }
   }
 
@@ -6446,13 +6463,13 @@ var ProgramGrouping = /*#__PURE__*/function () {
     value: function personalInfoArea() {
       var _elm = $('#personalInfoArea');
 
-      var _width = $('input[name="personal_wpersonalth"]').val();
+      var _width = $('input[name="personal_info_width"]').val();
 
-      var _height = $('input[name="personal_height"]').val();
+      var _height = $('input[name="personal_info_height"]').val();
 
-      var _position_x = $('input[name="personal_position_x"]').val();
+      var _position_x = $('input[name="personal_info_position_x"]').val();
 
-      var _position_y = $('input[name="personal_position_y"]').val();
+      var _position_y = $('input[name="personal_info_position_y"]').val();
 
       var _styles = {
         'min-width': _width + 'px',
@@ -6460,7 +6477,7 @@ var ProgramGrouping = /*#__PURE__*/function () {
         'left': _position_x + 'px',
         'top': _position_y + 'px',
         'position': 'absolute',
-        'border': '1px dashed'
+        'border': '1px dashed green'
       };
 
       _elm.css(_styles);

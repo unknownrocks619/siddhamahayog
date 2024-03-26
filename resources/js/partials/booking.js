@@ -7,16 +7,38 @@ export class Booking {
     #loading = false;
     #lastLoading = 0;
     #disabled = false;
-    
+
 
     constructor() {
         if ($(document).find('input[id="quickCheckIn"]').length) {
+
             let _this = this;
-            $('input[id="quickCheckIn"]').on('keypress', function(){
+            $('input[id="quickCheckIn"]').on('keypress', function () {
                 console.log('cont');
                 _this.quickCheckIn(this);
             })
 
+            let scannedData = '';
+            $(document).keydown( function(event) {
+                let key = event.key;
+
+                // Check if the pressed key is alphanumeric or Enter
+                if (/^[a-zA-Z0-9]$/.test(key) || key === 'Enter') {
+                    // Append the pressed key to the buffer
+                    scannedData += key;
+
+                    // Check if Enter key is pressed (end of scan)
+                    if (key === 'Enter') {
+                        // Process the scanned data (e.g., send to server, display on screen, etc.)
+                        console.log('Scanned Data:', scannedData);
+
+                        // Clear the buffer for the next scan
+                        scannedData = '';
+                    }
+                }
+            });
+
+            console.log('scanned data: ', scannedData);
         }
     }
 
@@ -38,7 +60,7 @@ export class Booking {
             }
         })
     }
-    
+
     #getRequest(_url,body={}) {
         return axios.get(_url,{
             headers : {
@@ -277,11 +299,11 @@ export class Booking {
     }
 
     quickCheckIn(elm) {
-        
+
         if (parseInt($(elm).val().length) !== 36)  {
             return;
         }
-        
+
         let _this = this;
         let _displayDivWrapper = $('#booking-status');
         let _errorWrapper = $('#errorDisplay');
@@ -292,14 +314,14 @@ export class Booking {
         _this.#postRequest('/admin/dharmasala/bookings/quick-check-in',{bookingID : $(elm).val()})
             .then(function(response) {
                 let _data = response.data;
-                
+
 
                 if (! _data.state ) {
                     return;
                 }
 
                 _displayDivWrapper.removeClass('d-none')
-                
+
                 if (_data.params.class) {
 
                     _displayDivWrapper.find('div.col-md-12').removeClass('bg-succes')

@@ -101,15 +101,17 @@
         </div>
     </div>
 
-    @if($group->memberIDMedia)
+    @if($group->mediaSample)
         <div class="row mt-5">
-            <div class="col-md-4" style="position:relative">
-                <img src="{{App\Classes\Helpers\Image::getImageAsSize($group->memberIDMedia->filepath,'m')}}" class="img-fluid" />
+            <div class="col-md-8" style="position:relative">
+                <img src="{{App\Classes\Helpers\Image::getImageAsSize($group->mediaSample->filepath,'m')}}" style="width:{{$group->mediaSample->sizes['width']}}px !important; height:{{$group->mediaSample->sizes['height']}}px !important;" />
                 <div id="idCardArea" style="position: absolute;min-width:{{$group->id_card_print_width ?? 0}}px;min-height:{{$group->id_card_print_height ?? 0}}px;left:{{$group->id_card_print_position_x ?? 0}}px; top: {{$group->id_card_print_position_y ?? 0}}px;border: 1px dashed"></div>
                 <div id="barCodeArea"  style="position: absolute;min-width:{{$group->barcode_print_width ?? 0}}px;min-height:{{$group->barcode_print_height ?? 0}}px;left:{{$group->barcode_print_position_x ?? 0}}px; top: {{$group->barcode_print_position_y ?? 0}}px;border: 1px dashed red"></div>
-                <div id="personalInfoArea" style="position: absolute"></div>
+                <div id="personalInfoArea" style="position: absolute;min-width:{{$group->personal_info_print_width ?? 0}}px;min-height:{{$group->personal_info_print_height ?? 0}}px;left:{{$group->personal_info_print_position_x ?? 0}}px; top: {{$group->personal_info_print_position_y ?? 0}}px;border: 1px dashed green"></div>
             </div>
             <div class="col-md-4">
+
+                <!-- Photo Position -->
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -128,6 +130,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -146,45 +149,93 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="width">
-                                Bar Code Width
-                            </label>
-                            <input type="number" value="{{$group->barcode_print_width}}" onchange="window.programGroup.barCodeArea()" name="barcode_width" id="width" class="form-control">
+
+                <!-- Barcode Positin -->
+                <div class="row mt-5 border-top pt-5 ">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Bar Code Width
+                                    </label>
+                                    <input type="number" value="{{$group->barcode_print_width}}" onchange="window.programGroup.barCodeArea()" name="barcode_width" id="width" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Bar Code Height
+                                    </label>
+                                    <input type="number"  value="{{$group->barcode_print_height}}" onchange="window.programGroup.barCodeArea()" name="barcode_height" id="width" class="form-control">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="width">
-                                Bar Code Height
-                            </label>
-                            <input type="number"  value="{{$group->barcode_print_height}}" onchange="window.programGroup.barCodeArea()" name="barcode_height" id="width" class="form-control">
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Bar Code Position X
+                                    </label>
+                                    <input type="number"  value="{{$group->barcode_print_position_x}}" onchange="window.programGroup.barCodeArea()" name="barcode_position_x" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label >
+                                        Bar Code Position Y
+                                    </label>
+                                    <input type="number"  value="{{$group->barcode_print_position_y}}" onchange="window.programGroup.barCodeArea()" name="barcode_position_y"  class="form-control">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="width">
-                                Bar Code Position X
-                            </label>
-                            <input type="number"  value="{{$group->barcode_print_position_x}}" onchange="window.programGroup.barCodeArea()" name="barcode_position_x" class="form-control">
+
+                <!-- Text Position -->
+                <div class="row mt-5 border-top pt-5 ">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Text width
+                                    </label>
+                                    <input type="number" value="{{$group->personal_info_print_width}}" onchange="window.programGroup.personalInfoArea()" name="personal_info_width" id="text_width" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Text Height
+                                    </label>
+                                    <input type="number"  value="{{$group->personal_info_print_height}}" onchange="window.programGroup.personalInfoArea()" name="personal_info_height" id="text_height" class="form-control">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label >
-                                Bar Code Position Y
-                            </label>
-                            <input type="number"  value="{{$group->barcode_print_position_y}}" onchange="window.programGroup.barCodeArea()" name="barcode_position_y"  class="form-control">
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="width">
+                                        Text Start Position Position X
+                                    </label>
+                                    <input type="number"  value="{{$group->personal_info_print_position_x}}" onchange="window.programGroup.personalInfoArea()" name="personal_info_position_x" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label >
+                                        Text End Position Y
+                                    </label>
+                                    <input type="number"  value="{{$group->personal_info_print_position_y}}" onchange="window.programGroup.personalInfoArea()" name="personal_info_position_y"  class="form-control">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
+
         </div>
     @endif
 

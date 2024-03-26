@@ -34,9 +34,11 @@ class AddPeopleToGroup extends Command
      */
     public function handle()
     {
+        ini_set('memory_limit','-1');
         $program = Program::find($this->argument('programID'));
         // get all groups based on the id.
         $groups = ProgramGrouping::where('program_id',$program->getKey())->where('enable_auto_adding',TRUE)->get();
+
         foreach ($groups as $group) {
 
             echo 'Import Users into '. $group->group_name . PHP_EOL;
@@ -59,6 +61,7 @@ class AddPeopleToGroup extends Command
                                                             $query->with(['memberIDMedia','profileImage']);
                                                         }])
                                                         ->get();
+
             $peopleArrangementOrder = ProgramGroupPeople::where('group_id',$group->getKey())->max('order') ?? 0;
 
             foreach ($groupUsers as $groupUser) {
@@ -89,42 +92,43 @@ class AddPeopleToGroup extends Command
                     continue;
                 }
 
-                    $groupPeople = new ProgramGroupPeople();
+                echo 'Importing User : '. $groupUser->full_name . PHP_EOL;
 
-                    $groupPeople->fill([
-                        'member_id' => $groupUser->student_id,
-                        'group_id'  => $group->getKey(),
-                        'program_id'    => $program->getKey(),
-                        'is_parent' => true,
-                        'order' => $peopleArrangementOrder,
-                        'group_uuid'    => Str::uuid(),
-                        'is_card_generated' => false,
-                        'full_name' => ucwords($groupUser->full_name),
-                        'phone_number'  => $groupUser->phone_number,
-                    ]);
+                $groupPeople = new ProgramGroupPeople();
 
-                    $groupPeople->save();
+                $groupPeople->fill([
+                    'member_id' => $groupUser->student_id,
+                    'group_id'  => $group->getKey(),
+                    'program_id'    => $program->getKey(),
+                    'is_parent' => true,
+                    'order' => $peopleArrangementOrder,
+                    'is_card_generated' => false,
+                    'full_name' => ucwords($groupUser->full_name),
+                    'group_uuid' => \App\Classes\Helpers\Str::uuid(),
+                    'phone_number'  => $groupUser->member?->phone_number ?? $group->phone_number,
+                ]);
 
-                // now check if dharmasa information is avilable for this user.
-                $bookingInfo = DharmasalaBooking::where('member_id',$groupPeople->studen_id)
-                                                ->where('status',DharmasalaBooking::RESERVED)
-                                                ->latest()
-                                                ->first();
+                $full_address = "";
 
-                if ( $bookingInfo ) {
-                    $groupPeople->dharmasala_booking_id = $bookingInfo->getKey();
-                    $groupPeople->dharmasala_uuid = $bookingInfo->uuid;
+                if ( is_int($groupUser->member?->country) ) {
+                    $full_address .= $groupUser->member?->countries?->name;
+                    $full_address .= ', ';
                 }
+//4x3 in
 
-                // now import user profile Picture, and ID Card.
+                $full_address .= $groupUser->member?->city;
+                $full_address .= ', '. $groupUser->member?->address?->street_address;
+                $groupPeople->address = $full_address;
 
-                $groupPeople->profile_id = $groupUser->member->profileImage?->getKey();
-
+                $groupPeople->profile_id = $groupUser->member?->profileImage?->getKey();
+                $groupPeople->member_id_card = $groupUser->member?->memberIDMedia?->getKey();
+                
+                $groupPeople->save();
                 /**
                  * Add / Update Family Members.
                  */
                 $familyMembers = MemberEmergencyMeta::where('verified_family',true)
-                                                        ->where('member_id',$group->member_id)
+                                                        ->where('member_id',$groupUser->member->getKey())
                                                         ->get();
 
                 $familyOrder = 0;
@@ -145,12 +149,14 @@ class AddPeopleToGroup extends Command
                             'phone_number'  => $familyMember->phone_number,
                             'email' => $familyMember->email_address,
                             'order' => $familyOrder,
-                            'group_uuid'    => Str::uuid(),
+                            'group_uuid'    => \App\Classes\Helpers\Str::uuid(),
                             'is_parent' => false,
-                            'id_parent' => $groupPeople->getKey()
+                            'id_parent' => $groupPeople->getKey(),
+                            'parent_relation'   => $familyMember->relation,
                         ]);
 
                         $groupFamilyPeople->save();
+
                     }
 
                     // check if this family member has profile picture.
