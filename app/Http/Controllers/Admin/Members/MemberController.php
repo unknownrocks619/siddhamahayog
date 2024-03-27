@@ -152,7 +152,7 @@ class MemberController extends Controller
                 'gender'        => $request->post('gender'),
                 'gotra'         => $request->post('gotra'),
             ];
-
+            
             $full_name = $fill['first_name'];
 
             if ( $fill['middle_name'] ) {
@@ -173,10 +173,11 @@ class MemberController extends Controller
             }
 
             if ($member ) {
+
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
                 $member->country = $fill['country'] ?? $member->country;
                 $member->city = $fill['city'] ?? $member->city;
-                $member->address = $fill['address'] ?? $member->address;
+                $member->address =( isset($fill['address']['street_address']) && ! is_null($fill['address']['street_address']))? $fill['address'] : $member->address;
                 $member->first_name = $fill['first_name'] ?? $member->first_name;
                 $member->last_name = $fill['last_name'] ?? $member->last_name;
                 $member->middle_name = $fill['middle_name'] ?? $member->middle_name;
@@ -196,6 +197,7 @@ class MemberController extends Controller
                 $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
                 $member->sharing_code = Str::random(8);
                 $member->email = $request->post('email') ?? 'random_email_'.Str::random(18).'_'.time().'@siddhamahayog.org';
+                $member->address = $fill['address'];
             }
 
             if ( ! $member->phone_number ) {
@@ -213,11 +215,9 @@ class MemberController extends Controller
                     /**
                      * Save only if required.
                      */
-                    if ($member->isDirty() ) {
 
-                        $member->full_name = $member->full_name();
-                        $member->save();
-                    }
+                    $member->full_name = $member->full_name();
+                    $member->save();
 
                     /**
                      * Upload ID Card Image

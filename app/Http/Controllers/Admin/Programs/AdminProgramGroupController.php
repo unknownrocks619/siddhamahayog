@@ -468,4 +468,9 @@ class AdminProgramGroupController extends Controller
         $people->is_card_generated = true;
         $people->save();
     }
+
+    public function updateDharamasaBooking(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+
+        dd($request->all());
+    }
 }

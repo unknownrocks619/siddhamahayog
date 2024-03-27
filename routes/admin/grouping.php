@@ -21,5 +21,7 @@ Route::prefix('grouping/{program}')
                 ->name('admin_update_family_group');
             Route::match(['get','post'],'add-family-group/{group}/{people}',[AdminProgramGroupController::class,'addFamilyGroup'])
                 ->name('admin_add_family_group');
+            Route::match(['get','post'],'update-dharmasala/{group}/{people}',[AdminProgramGroupController::class,'updateDharamasaBooking'])
+                ->name('admin_group_dharamasal');
 
         });
