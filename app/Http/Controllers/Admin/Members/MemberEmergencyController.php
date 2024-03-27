@@ -30,13 +30,15 @@ class MemberEmergencyController extends Controller
                 'relation'  => $request->post('relation'),
                 'phone_number'  => $request->post('phone_number'),
                 'contact_type'  => $request->post('contact_type'),
+                'gotra'         => $request->post('gotra'),
+                'verified_family'   => true,
             ]);
 
             if (! $memberEmergency->save() ) {
                 return $this->json(false,' Unable to save emergency contact info.');
             }
 
-            return $this->json(true,'Emergency contact information created.');
+            return $this->json(true,'Emergency contact information created.','reload');
         }
     }
 
@@ -135,5 +137,28 @@ class MemberEmergencyController extends Controller
         $member->emergency()
                 ->where('contact_type','family')
                 ->whereNotIn('id',$memberToInclude)->delete();
+    }
+
+    public function uploadProfile(Request $request, Member $member, MemberEmergencyMeta $emergencyMeta) {
+
+        $request->validate([
+            'family_photo' => 'required'
+        ]);
+
+        if ($request->file('family_photo') ) {
+
+            $memberIDCard = Image::uploadImage($request->file('family_photo'),$emergencyMeta);
+
+            if (isset ($memberIDCard[0]['relation'])) {
+
+                $memberCardType = $memberIDCard[0]['relation'];
+                $memberCardType->type = 'profile_picture';
+                $memberCardType->save();
+
+            }
+
+        }
+
+        return $this->json(true,'Photo Uploaded','reload');
     }
 }

@@ -8,7 +8,7 @@ $(function(){
         encKey = $('form.ajax-form-login').attr('enc');
         $('form.ajax-form-login').removeAttr('enc')
     }
-    
+
 })
 
 $(document).on('submit', 'form.ajax-form', function (event) {
@@ -48,7 +48,7 @@ $('form.ajax-form-login').on('submit',function (event) {
         alert('Application Error.');
         return;
     }
-    
+
     let form = this;
     let formData = $(form).serializeArray();
 
@@ -134,7 +134,19 @@ $(document).on('submit', 'form.ajax-component-form', function (event) {
     })
 });
 
+$(document).on('change', '.ajax-auto-upload', function(event) {
 
+    event.preventDefault();
+
+    if ($(this).closest('form.ajax-component-form').length) {
+        $(this).closest('form.ajax-component-form').trigger('submit');
+        return;
+    }
+
+    if ($(this).attr('data-action') ) {
+
+    }
+})
 
 window.disableAllButtons = function (element = null) {
     if (!element) {

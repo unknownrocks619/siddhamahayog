@@ -9,4 +9,6 @@ Route::prefix('member/member-emergency')
                 ->name('member.emergency.add');
         Route::match(['delete','post'],'delete-emergency/{emergencyMeta}',[MemberEmergencyController::class,'delete'])
             ->name('member.emergency.delete');
+        Route::match(['post'],'upload-emergency-profile/{emergencyMeta}',[MemberEmergencyController::class,'uploadProfile'])
+            ->name('member.emergency.profile-upload');
     });

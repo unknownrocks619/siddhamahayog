@@ -26,7 +26,7 @@
     <div class="row" @if( ! in_array(adminUser()->role(),[
         App\Classes\Helpers\Roles\Rule::SUPER_ADMIN,
         App\Classes\Helpers\Roles\Rule::ADMIN,
-    ])) data-enable-rule='true' @endif>
+    ]) && ! in_array($tab,['media-info','emergency-info'])) data-enable-rule='true' @endif>
         @include('admin.members.partials.user-profile',['member' => $member])
 
         @include('admin.members.partials.user-detail',['member' => $member])
