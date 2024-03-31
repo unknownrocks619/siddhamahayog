@@ -19,7 +19,10 @@ class ProgramGrouping extends Model
         'batch_id',
         'group_name',
         'enable_auto_adding',
+        'id_parent',
         'rules',
+        'actual_print_width',
+        'actual_print_height',
         'id_card_sample',
         'id_card_print_width',
         'id_card_print_height',
@@ -35,6 +38,7 @@ class ProgramGrouping extends Model
         'personal_info_print_height',
         'personal_info_print_position_x',
         'personal_info_print_position_y',
+        'print_primary_colour'
     ];
 
     protected $casts = [
@@ -44,6 +48,7 @@ class ProgramGrouping extends Model
     ];
 
     const IMAGE_TYPE = 'ID CARD';
+    const IMAGE_RESIZED = 'RESIZED';
 
     /**
      * @param Program $program
@@ -167,6 +172,21 @@ class ProgramGrouping extends Model
             ->where('relation',self::class)
             ->where('type',self::IMAGE_TYPE)
             ->latest();
+    }
+
+     /**
+     * @return HasOneThrough
+     */
+    public function resizedImage(): HasOneThrough {
+
+        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
+            ->where('relation',self::class)
+            ->where('type',self::IMAGE_RESIZED)
+            ->latest();
+    }
+
+    public function children() {
+        return $this->hasMany(ProgramGrouping::class,'id_parent');
     }
 
 }

@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('grouping/{program}')
         ->group(function(){
             Route::get('list',[AdminProgramGroupController::class,'list'])->name('admin_program_grouping_list');
-            Route::match(['get','post'],'create',[AdminProgramGroupController::class,'create'])->name('admin_program_group_create');
-            Route::match(['get','post'],'edit/{group}/{tab?}',[AdminProgramGroupController::class,'edit'])->name('admin_program_group_edit');
-            Route::get('{group}/generate-id-card/{people}',[AdminProgramGroupController::class,'generateIDCard'])->name('admin_program_generate_card');
+            Route::match(['get','post'],'create/{group?}',[AdminProgramGroupController::class,'create'])->name('admin_program_group_create');
+            Route::match(['get','post'],'edit/{group}/{tab?}/{parentGroup?}',[AdminProgramGroupController::class,'edit'])->name('admin_program_group_edit');
+            Route::get('{group}/generate-id-card/{people}/{reset?}',[AdminProgramGroupController::class,'generateIDCard'])->name('admin_program_generate_card');
 
             Route::match(['get','post'],'list-options',[AdminProgramGroupController::class,'index'])
                 ->name('admin_program_grouping_index');
@@ -23,5 +23,8 @@ Route::prefix('grouping/{program}')
                 ->name('admin_add_family_group');
             Route::match(['get','post'],'update-dharmasala/{group}/{people}',[AdminProgramGroupController::class,'updateDharamasaBooking'])
                 ->name('admin_group_dharamasal');
+
+            Route::get('{group}/view-card/{people?}',[AdminProgramGroupController::class,'viewCard'])
+                ->name('amdmin_group_card_view');
 
         });

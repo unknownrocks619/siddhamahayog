@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as ImageManager;
+use Picqer\Barcode\BarcodeGeneratorHTML;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -216,7 +217,7 @@ class Image
         $imageManager = ImageManager::make($imagePath);
         $imageManager->resize($width,$height, function($constraint){
 //            $constraint->aspectRatio();
-            $constraint->upsize();
+            // $constraint->upsize();
         });
         $generatedFilename = Str::random(60);
 
@@ -227,18 +228,30 @@ class Image
     }
 
 
+    /**
+     * Generate Barcode Generator
+     * @param string $text
+     * @param int $width
+     * @param int $height
+     */
+    
     public static function generateBarcode(string $text, int $width, int $height) {
         $barcodeGenerator = new BarcodeGeneratorJPG();
         $orientation = ($width > $height) ? 'horizontal' : 'vertical';
-        $barcodeImage = $barcodeGenerator->getBarcode($text,$barcodeGenerator::TYPE_CODE_128);
+        $barcodeImage = $barcodeGenerator->getBarcode($text,$barcodeGenerator::TYPE_CODE_128,$width/ strlen($text),$height);
         $generatedFilename = Str::random(60);
         Storage::disk('local')->put("uploads/barcode/{$text}_".$generatedFilename.'.png',$barcodeImage);
 
         $filename =  "uploads/barcode/{$text}_".$generatedFilename.'.png';
 
-        InterventionImageHelper::horizontalOrientation(asset($filename),$filename);
+        // InterventionImageHelper::horizontalOrientation(asset($filename),$filename);
         InterventionImageHelper::resize(asset($filename),$width,$height,$filename);
 
         return $filename;
+    }
+
+    public static function dynamicBarCode(string $text) {
+        $htmlGenerator = new BarcodeGeneratorHTML();
+        return $htmlGenerator->getBarcode($text,$htmlGenerator::TYPE_CODE_128);
     }
 }

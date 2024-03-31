@@ -47,7 +47,39 @@
                                 </div>
 
                             </div>
+                            
 
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="print_size_height">Actual Print Size In Height (in Pixel)
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="number" name="print_size_height" id="print_size_height" class="form-control">
+                    
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="print_size_width">
+                                            Actual Print Size in Width (in Pixel)
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="number" name="print_size_width" id="print_size_width" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="primary_colour">Primary Colour
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <input type="color"  name="primary_colour" id="primary_colour" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row mt-4 mb-4 rule-wrapper">
                                 <div class="col-md-12 mb-3">
                                     <div class="form-group">

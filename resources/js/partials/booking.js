@@ -1,4 +1,4 @@
-import {MemberRegistration} from "./member";
+// import {MemberRegistration} from "./member";
 
 export class Booking {
 
@@ -14,7 +14,6 @@ export class Booking {
 
             let _this = this;
             $('input[id="quickCheckIn"]').on('keypress', function () {
-                console.log('cont');
                 _this.quickCheckIn(this);
             })
 
@@ -25,20 +24,23 @@ export class Booking {
                 // Check if the pressed key is alphanumeric or Enter
                 if (/^[a-zA-Z0-9]$/.test(key) || key === 'Enter') {
                     // Append the pressed key to the buffer
+
                     scannedData += key;
 
                     // Check if Enter key is pressed (end of scan)
                     if (key === 'Enter') {
                         // Process the scanned data (e.g., send to server, display on screen, etc.)
-                        console.log('Scanned Data:', scannedData);
-
+                        // console.log('scannedData:', scannedData ,typeof(scannedData));
+                        $('#quickCheckIn').val(scannedData.replace('Enter','')).trigger('keypress');
+                        // _this.quickCheckIn($('#quickCheckIn'));
                         // Clear the buffer for the next scan
                         scannedData = '';
                     }
+
                 }
             });
-
-            console.log('scanned data: ', scannedData);
+            
+            
         }
     }
 
@@ -70,7 +72,7 @@ export class Booking {
     }
 
     updateBookingInfo(elm,bookingID,param={}) {
-        console.log(this.#disabled);
+
         if (this.#disabled === true || this.#disabled) {
 
             Swal.fire({
@@ -101,7 +103,6 @@ export class Booking {
                     $(_responseData.params.targetDIV).html(_responseData.params.view)
                 }
 
-                console.log('Response Log: ',_responseData);
             })
             .catch(function(error){
                 Swal.fire({
@@ -300,10 +301,10 @@ export class Booking {
 
     quickCheckIn(elm) {
 
-        if (parseInt($(elm).val().length) !== 36)  {
+        console.log("element value: ", elm);
+            if ($(elm).val().length < 10)  {
             return;
         }
-
         let _this = this;
         let _displayDivWrapper = $('#booking-status');
         let _errorWrapper = $('#errorDisplay');
@@ -334,7 +335,7 @@ export class Booking {
                 }
 
                 if (_data.params.records.floor_name) {
-                    _displayDivWrapper.find('#Floor').text(_data.params.records.floor_name).removeClass('d-none')
+                    _displayDivWrapper.find('#Floor').text(_data.params.records.building_name).removeClass('d-none')
                 } else {
                     _displayDivWrapper.find('#Floor').addClass('d-none');
                 }
@@ -345,10 +346,13 @@ export class Booking {
                     _displayDivWrapper.find('#Building').addClass('d-none')
                 }
 
+                $('#quickCheckIn').val('')
+
             }).catch((error) => {
                 console.log('error: ', error.response);
                 _errorWrapper.find('div.col-md-12').text(error.response.data.msg);
                 _errorWrapper.removeClass('d-none');
+                $('#quickCheckIn').val('');
             });
 
         setTimeout(() => {

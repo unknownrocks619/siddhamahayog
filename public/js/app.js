@@ -5890,7 +5890,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Booking": () => (/* binding */ Booking)
 /* harmony export */ });
-/* harmony import */ var _member__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./member */ "./resources/js/partials/member.js");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -5915,8 +5914,6 @@ function _classExtractFieldDescriptor(receiver, privateMap, action) { if (!priva
 
 function _classApplyDescriptorGet(receiver, descriptor) { if (descriptor.get) { return descriptor.get.call(receiver); } return descriptor.value; }
 
-
-
 var _memberClass = /*#__PURE__*/new WeakMap();
 
 var _bookingID = /*#__PURE__*/new WeakMap();
@@ -5931,6 +5928,7 @@ var _postRequest = /*#__PURE__*/new WeakSet();
 
 var _getRequest = /*#__PURE__*/new WeakSet();
 
+// import {MemberRegistration} from "./member";
 var Booking = /*#__PURE__*/function () {
   function Booking() {
     _classCallCheck(this, Booking);
@@ -5968,8 +5966,6 @@ var Booking = /*#__PURE__*/function () {
       var _this = this;
 
       $('input[id="quickCheckIn"]').on('keypress', function () {
-        console.log('cont');
-
         _this.quickCheckIn(this);
       });
       var scannedData = '';
@@ -5982,13 +5978,14 @@ var Booking = /*#__PURE__*/function () {
 
           if (key === 'Enter') {
             // Process the scanned data (e.g., send to server, display on screen, etc.)
-            console.log('Scanned Data:', scannedData); // Clear the buffer for the next scan
+            // console.log('scannedData:', scannedData ,typeof(scannedData));
+            $('#quickCheckIn').val(scannedData.replace('Enter', '')).trigger('keypress'); // _this.quickCheckIn($('#quickCheckIn'));
+            // Clear the buffer for the next scan
 
             scannedData = '';
           }
         }
       });
-      console.log('scanned data: ', scannedData);
     }
   }
 
@@ -5996,7 +5993,6 @@ var Booking = /*#__PURE__*/function () {
     key: "updateBookingInfo",
     value: function updateBookingInfo(elm, bookingID) {
       var param = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      console.log(_classPrivateFieldGet(this, _disabled));
 
       if (_classPrivateFieldGet(this, _disabled) === true || _classPrivateFieldGet(this, _disabled)) {
         Swal.fire({
@@ -6025,8 +6021,6 @@ var Booking = /*#__PURE__*/function () {
         if (_responseData.params.targetDIV && _responseData.params.view) {
           $(_responseData.params.targetDIV).html(_responseData.params.view);
         }
-
-        console.log('Response Log: ', _responseData);
       })["catch"](function (error) {
         Swal.fire({
           title: 'Error',
@@ -6091,7 +6085,7 @@ var Booking = /*#__PURE__*/function () {
       }
 
       if (!_classPrivateFieldGet(this, _memberClass)) {
-        _classPrivateFieldSet(this, _memberClass, new _member__WEBPACK_IMPORTED_MODULE_0__.MemberRegistration());
+        _classPrivateFieldSet(this, _memberClass, new MemberRegistration());
       }
 
       _classPrivateFieldGet(this, _memberClass).enableCamera(this, params);
@@ -6241,7 +6235,9 @@ var Booking = /*#__PURE__*/function () {
   }, {
     key: "quickCheckIn",
     value: function quickCheckIn(elm) {
-      if (parseInt($(elm).val().length) !== 36) {
+      console.log("element value: ", elm);
+
+      if ($(elm).val().length < 10) {
         return;
       }
 
@@ -6275,7 +6271,7 @@ var Booking = /*#__PURE__*/function () {
         }
 
         if (_data.params.records.floor_name) {
-          _displayDivWrapper.find('#Floor').text(_data.params.records.floor_name).removeClass('d-none');
+          _displayDivWrapper.find('#Floor').text(_data.params.records.building_name).removeClass('d-none');
         } else {
           _displayDivWrapper.find('#Floor').addClass('d-none');
         }
@@ -6287,12 +6283,16 @@ var Booking = /*#__PURE__*/function () {
         } else {
           _displayDivWrapper.find('#Building').addClass('d-none');
         }
+
+        $('#quickCheckIn').val('');
       })["catch"](function (error) {
         console.log('error: ', error.response);
 
         _errorWrapper.find('div.col-md-12').text(error.response.data.msg);
 
         _errorWrapper.removeClass('d-none');
+
+        $('#quickCheckIn').val('');
       });
 
       setTimeout(function () {
@@ -6413,6 +6413,8 @@ var ProgramGrouping = /*#__PURE__*/function () {
   }, {
     key: "addIDCardArea",
     value: function addIDCardArea() {
+      var targetElm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+
       var _elm = $('#idCardArea');
 
       var _width = $('input[name="id_width"]').val();
@@ -6422,6 +6424,14 @@ var ProgramGrouping = /*#__PURE__*/function () {
       var _position_x = $('input[name="id_position_x"]').val();
 
       var _position_y = $('input[name="id_position_y"]').val();
+
+      if (targetElm != "") {
+        _elm = $('#' + targetElm);
+        _width = $('input.id_width').val();
+        _height = $('input.id_height').val();
+        _position_x = $('input.id_position_x').val();
+        _position_y = $('input.id_position_y').val();
+      }
 
       var _styles = {
         'min-width': _width + 'px',
@@ -6437,6 +6447,8 @@ var ProgramGrouping = /*#__PURE__*/function () {
   }, {
     key: "barCodeArea",
     value: function barCodeArea() {
+      var targetElm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
       var _elm = $('#barCodeArea');
 
       var _width = $('input[name="barcode_width"]').val();
@@ -6446,6 +6458,14 @@ var ProgramGrouping = /*#__PURE__*/function () {
       var _position_x = $('input[name="barcode_position_x"]').val();
 
       var _position_y = $('input[name="barcode_position_y"]').val();
+
+      if (targetElm != '') {
+        _elm = $('#' + targetElm);
+        _width = $('input.barcode_width').val();
+        _height = $('input.barcode_height').val();
+        _position_x = $('input.barcode_position_x').val();
+        _position_y = $('input.barcode_position_y').val();
+      }
 
       var _styles = {
         'min-width': _width + 'px',
@@ -6461,6 +6481,8 @@ var ProgramGrouping = /*#__PURE__*/function () {
   }, {
     key: "personalInfoArea",
     value: function personalInfoArea() {
+      var targetElm = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
       var _elm = $('#personalInfoArea');
 
       var _width = $('input[name="personal_info_width"]').val();
@@ -6470,6 +6492,14 @@ var ProgramGrouping = /*#__PURE__*/function () {
       var _position_x = $('input[name="personal_info_position_x"]').val();
 
       var _position_y = $('input[name="personal_info_position_y"]').val();
+
+      if (targetElm != '') {
+        _elm = $('#' + targetElm);
+        _width = $('input.personal_info_width').val();
+        _height = $('input.personal_info_height').val();
+        _position_x = $('input.personal_info_position_x').val();
+        _position_y = $('input.personal_info_position_y').val();
+      }
 
       var _styles = {
         'min-width': _width + 'px',

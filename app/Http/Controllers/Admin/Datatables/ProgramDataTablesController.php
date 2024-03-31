@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Datatables;
 
+use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\Dharmasala\DharmasalaBooking;
@@ -307,7 +308,8 @@ class ProgramDataTablesController extends Controller
                 if (! $row->uuid) {
                     return 'N/A';
                 }
-                return  QrCode::generate($row->uuid);
+                return Image::dynamicBarCode($row->uuid);
+                // return  QrCode::generate($row->uuid);
             })
             ->addColumn('action', function ($row) {
                 return view('admin.datatable-view.dharmasala.booking-action',['booking' => $row]);

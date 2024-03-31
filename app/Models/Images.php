@@ -25,4 +25,8 @@ class Images extends Model
         'information'   => 'array',
         'sizes' => 'array'
     ];
+
+    public function imageRelation() {
+        return $this->hasOne(ImageRelation::class,'image_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Classes\Helpers;
 
+use DivisionByZeroError;
 use Dompdf\Adapter\GD;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -15,6 +16,7 @@ class InterventionImageHelper
 
         $interventionImageInstance = ImageManagerStatic::make($originalSource);
         $extension = pathinfo($originalSource,PATHINFO_EXTENSION);
+
         if ( ! is_array($overlayImage) ){
 
              $overlayImage = [
@@ -49,7 +51,10 @@ class InterventionImageHelper
         $interventionImage->save($savePath);
     }
 
-    public static function insertText(string $fileUrl = '', string|array $texts, int|float $width, int|float $height, int $positionX, int $positionY, string $textColor = '#56DB3A', string $backgroundColor='#ffffff',$fallBack = false) {
+    /**
+     * 
+     */
+    public static function textToCanva(string $fileUrl = '', string|array $texts, int|float $width, int|float $height, int $positionX, int $positionY, string $textColor = '#002e5f', string $backgroundColor='#ffffff',$fallBack = false) {
 
         if ($fileUrl ) {
             $internVentionImage = ImageManagerStatic::make($fileUrl);
@@ -60,27 +65,55 @@ class InterventionImageHelper
         if ( is_string( $texts ) ) {
             $texts = [$texts];
         }
-        $startPositionX = 10;
-        $startPositionY =  10;
-        $canvaImage = ImageManagerStatic::canvas($width,$height,$backgroundColor);
 
+        $fontSize = 43;
+        $totalLength = 0;
+        $totalHeight = 0;
+        foreach ($texts as $text) {
+            $strlen = strlen($text);
+            if ($strlen > $totalLength ) {
+                $totalLength = $strlen;
+            }
+            $totalHeight++;
+        }
+
+        $fontSize =  $width / $totalLength;
+        $addExtra = $height / $totalHeight;
+        $startPositionX = 10;
+        $startPositionY =  5;
+        $canvaImage = ImageManagerStatic::canvas($width,$height,$backgroundColor);
         foreach ($texts as $text) {
 
-            $canvaImage->text($text,$startPositionX,$startPositionY,function(Font $font) use ($textColor,&$startPositionX,&$startPositionY, $width, $text,$fallBack) {
+            $canvaImage->text($text,$startPositionX,$startPositionY,function(Font $font) 
+                        use ($textColor,
+                                &$startPositionX,
+                                &$startPositionY, 
+                                $width, 
+                                $text,
+                                $fallBack,
+                                $fontSize,
+                                $addExtra) {
+
+                    
                 $font->color($textColor)
                     ->file(public_path('assets/fonts/Roboto-Bold.ttf'))
-                    ->size(43)
+                    ->size($fontSize)
                     ->align('left')
                     ->valign('top');
 
                 $size = $font->getBoxSize();
 
-                if ( $size['width']+10 >= $width ) {
-                    $font->size = ! $fallBack ? ( $width / strlen($text)) + 10 : ($width/strlen($text) + 5);
+                if ( $size['width']+10 <= $width ) {
+                    try {
+                        $font->size =  $width / strlen($text) + 5;
+                    } catch (DivisionByZeroError) {
+                        
+                    }
+                    
                     $size = $font->getBoxSize();
                 }
 
-                $startPositionY += $size['height'] + 30;
+                $startPositionY += $size['height'] + ($addExtra-15);
 
 
             });
@@ -99,5 +132,8 @@ class InterventionImageHelper
             return asset($path);
         }
     }
+
+
+
 
 }

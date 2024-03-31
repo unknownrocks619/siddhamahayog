@@ -60,12 +60,23 @@ export class ProgramGrouping {
 
     }
 
-    addIDCardArea() {
+    addIDCardArea(targetElm="") {
+        
         let _elm = $('#idCardArea');
         let _width = $('input[name="id_width"]').val();
         let _height = $('input[name="id_height"]').val();
         let _position_x = $('input[name="id_position_x"]').val();
         let _position_y = $('input[name="id_position_y"]').val();
+
+
+        if (targetElm != "") {
+            _elm = $('#'+targetElm);
+            _width = $('input.id_width').val();
+            _height = $('input.id_height').val();
+            _position_x = $('input.id_position_x').val();
+            _position_y = $('input.id_position_y').val();
+    
+        }
 
         let _styles = {
             'min-width' : _width +'px',
@@ -78,12 +89,23 @@ export class ProgramGrouping {
         _elm.css(_styles);
     }
 
-    barCodeArea() {
+    barCodeArea(targetElm='') {
+
         let _elm = $('#barCodeArea');
+
         let _width = $('input[name="barcode_width"]').val();
         let _height = $('input[name="barcode_height"]').val();
         let _position_x = $('input[name="barcode_position_x"]').val();
         let _position_y = $('input[name="barcode_position_y"]').val();
+
+        if (targetElm != '') {
+            _elm = $('#'+targetElm);
+            _width = $('input.barcode_width').val();
+            _height = $('input.barcode_height').val();
+            _position_x = $('input.barcode_position_x').val();
+            _position_y = $('input.barcode_position_y').val();
+        }
+
 
         let _styles = {
             'min-width' : _width +'px',
@@ -96,12 +118,24 @@ export class ProgramGrouping {
         _elm.css(_styles);
     }
 
-    personalInfoArea() {
+    personalInfoArea(targetElm='') {
+
         let _elm = $('#personalInfoArea');
+
+        
         let _width = $('input[name="personal_info_width"]').val();
         let _height = $('input[name="personal_info_height"]').val();
         let _position_x = $('input[name="personal_info_position_x"]').val();
         let _position_y = $('input[name="personal_info_position_y"]').val();
+
+        if (targetElm != '') {
+            _elm = $('#'+targetElm);
+            _width = $('input.personal_info_width').val();
+            _height = $('input.personal_info_height').val();
+            _position_x = $('input.personal_info_position_x').val();
+            _position_y = $('input.personal_info_position_y').val();
+                
+        }
 
         let _styles = {
             'min-width' : _width +'px',

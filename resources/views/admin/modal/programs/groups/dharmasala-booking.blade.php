@@ -1,8 +1,8 @@
 <?php
 $isInformationMissing = false;
 $people = \App\Models\ProgramGroupPeople::with(['families' => function ($query) {
-    $query->with('profile');
-}])->find(request()->get('people'));
+    $query->with('profile','dharmasala');
+},'dharmasala'])->find(request()->get('people'));
 $group = \App\Models\ProgramGrouping::where('id',request()->get('group'))->first();
 
 $profileID = null;
@@ -27,7 +27,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                             </label>
                             <select  name="room_number" id="room_number" class="form-control fs-5">
                                 @foreach ($rooms as $room)
-                                    <option value="{{$room->getKey()}}">
+                                    <option value="{{$room->getKey()}}" @if($people->dharmasala?->room_id == $room->getKey()) selected @endif>
                                         {{ $room->building?->building_name}} - {{$room->room_number}} ({{$room->floor?->floor_name}})
                                     </option>
                                 @endforeach
@@ -40,7 +40,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                             <label class="fs-5" for="check_in_date">Check In Date
                                 <sup class="text-danger">*</sup>
                             </label>
-                            <input type="date" name="check_in_date" id="check_in_date" class="form-control fs-5">
+                            <input type="date" name="check_in_date" @if($people->dharmasala?->check_in) value="{{$people->dharmasala?->check_in}}" @endif id="check_in_date" class="form-control fs-5">
                         </div>
                     </div>
 
@@ -50,7 +50,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                                 Check In Date
                                 <sup class="text-danger">*</sup>
                             </label>
-                            <input type="date" name="check_out_date" id="check_out_date" class="form-control fs-5">
+                            <input type="date" name="check_out_date"  @if($people->dharmasala?->check_out) value="{{$people->dharmasala?->check_out}}" @endif  id="check_out_date" class="form-control fs-5">
                         </div>
                     </div>
 
@@ -161,6 +161,23 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                         </div>
 
                         <div class="row mt-4 d-none family_check_row_{{$family->getKey()}}">
+                            <div class="row my-3">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="room_number" class="fs-5">
+                                            Select Room Number
+                                            <sup class="text-danger">*</sup>
+                                        </label>
+                                        <select  name="family_room_number[{{$family->getKey()}}]" id="room_number_{{$family->getKey()}}" class="form-control fs-5">
+                                            @foreach ($rooms as $room)
+                                                <option value="{{$room->getKey()}}">
+                                                    {{ $room->building?->building_name}} - {{$room->room_number}} ({{$room->floor?->floor_name}})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="fs-5" for="family_check_{{$family->getKey()}}">Check In Date</label>

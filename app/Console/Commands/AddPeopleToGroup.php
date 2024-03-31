@@ -105,6 +105,7 @@ class AddPeopleToGroup extends Command
                     'is_card_generated' => false,
                     'full_name' => ucwords($groupUser->full_name),
                     'group_uuid' => \App\Classes\Helpers\Str::uuid(),
+                    'email' => $groupUser->member?->email,
                     'phone_number'  => $groupUser->member?->phone_number ?? $group->phone_number,
                 ]);
 

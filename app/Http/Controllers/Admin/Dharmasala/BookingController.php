@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use DataTables;
+use Illuminate\Support\Facades\Cache;
 
 class BookingController extends  Controller
 {
@@ -672,9 +673,13 @@ class BookingController extends  Controller
                 return $this->json(false,'Please Scan your booking ID.');
             }
 
-            // check if user needs to captuer image.
+            $bookingID = $request->post('bookingID');
 
-            $booking = DharmasalaBooking::select(['room_number','building_name','floor_name','profile','id_card','status'])->where('uuid',$request->post('bookingID'))->first();
+
+            // check if user needs to captuer image.
+            $booking = DharmasalaBooking::select(['id','room_number','building_name','floor_name','profile','id_card','status'])
+                                            ->where('uuid',$bookingID)
+                                            ->first();
 
             if ( ! $booking) {   
                 return $this->json(false,'Invalid Booking ID',['class' => 'bg-danger text-white','text' => 'Invalid Booking ID','records' => []]);
@@ -683,13 +688,16 @@ class BookingController extends  Controller
             if (!  in_array($booking->status, [DharmasalaBooking::RESERVED,DharmasalaBooking::BOOKING,DharmasalaBooking::CHECKED_IN]) ) {
                 return $this->json(false,'Booking Already Expired.');
             }
-
             if (in_array($booking->status,[DharmasalaBooking::RESERVED,DharmasalaBooking::BOOKING])) {
-                $today = Carbon::today();
+                $today = now();
                 $booking->status = DharmasalaBooking::CHECKED_IN;
                 $booking->check_in = $today->format('Y-m-d');
                 $booking->check_in_time = $today->format('H:i:s');
-                $booking->save();
+                if (!  $booking->save() ) {
+                    return $this->json(false,'no message');
+                }
+
+                return $this->json(false,'sodf','',$booking->toArray());
             }
             
 

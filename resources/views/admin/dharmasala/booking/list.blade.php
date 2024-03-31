@@ -56,13 +56,13 @@
                 <thead>
                 <tr>
                     <th>Guest name</th>
-                    <th>Phone Number</th>
-                    <th>Email</th>
+                    {{-- <th>Phone Number</th>
+                    <th>Email</th> --}}
                     <th>Room Number</th>
                     <th>Check In Date</th>
                     <th>Check Out Date</th>
                     <th>Booking Status</th>
-                    <th>QR Code</th>
+                    <th>Code</th>
                     <th></th>
                 </tr>
                 </thead>
@@ -70,8 +70,8 @@
                 <tfoot>
                     <tr>
                         <th>Guest name</th>
-                        <th>Phone Number</th>
-                        <th>Email</th>
+                        {{-- <th>Phone Number</th>
+                        <th>Email</th> --}}
                         <th>Room Number</th>
                         <th>Check In Date</th>
                         <th>Check Out Date</th>
@@ -121,14 +121,14 @@
                     data : 'full_name',
                     name: 'full_name'
                 },
-                {
-                    data : 'phone_number',
-                    name : "phone_number"
-                },
-                {
-                  data : 'email',
-                  name : 'email'
-                },
+                // {
+                //     data : 'phone_number',
+                //     name : "phone_number"
+                // },
+                // {
+                //   data : 'email',
+                //   name : 'email'
+                // },
                 {
                     data: 'room_number',
                     name: 'room_number'

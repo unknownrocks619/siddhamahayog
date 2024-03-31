@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Dharmasala\DharmasalaBooking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,6 +38,10 @@ class ProgramGroupPeople extends Model
         return $this->hasMany(ProgramGroupPeople::class,'id_parent','id');
     }
 
+    public function parentFamily() {
+        return $this->belongsTo(ProgramGroupPeople::class,'id_parent','id');
+    }
+
     public function group() {
         return $this->belongsTo(ProgramGrouping::class,'group_id');
     }
@@ -48,5 +53,13 @@ class ProgramGroupPeople extends Model
 
     public function programGroup() {
         return $this->belongsTo(ProgramGrouping::class,'group_id');
+    }
+
+    public function dharmasala() {
+        return $this->belongsTo(DharmasalaBooking::class,'dharmasala_booking_id');
+    }
+
+    public function program() {
+        return $this->belongsTo(Program::class,'program_id');
     }
 }
