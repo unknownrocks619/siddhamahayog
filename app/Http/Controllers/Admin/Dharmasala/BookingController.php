@@ -668,7 +668,7 @@ class BookingController extends  Controller
         $profileID = false;
 
         if ($request->post() && $request->ajax() ) {
-            
+
             if (! $request->post('bookingID') ) {
                 return $this->json(false,'Please Scan your booking ID.');
             }
@@ -681,7 +681,7 @@ class BookingController extends  Controller
                                             ->where('uuid',$bookingID)
                                             ->first();
 
-            if ( ! $booking) {   
+            if ( ! $booking) {
                 return $this->json(false,'Invalid Booking ID',['class' => 'bg-danger text-white','text' => 'Invalid Booking ID','records' => []]);
             }
 
@@ -694,12 +694,11 @@ class BookingController extends  Controller
                 $booking->check_in = $today->format('Y-m-d');
                 $booking->check_in_time = $today->format('H:i:s');
                 if (!  $booking->save() ) {
-                    return $this->json(false,'no message');
+                    return $this->json(false,'Failed to retreived information. Please try again.');
                 }
 
-                return $this->json(false,'sodf','',$booking->toArray());
             }
-            
+
 
 
             return $this->json(true,'ID Match',null,
@@ -711,7 +710,7 @@ class BookingController extends  Controller
                                         'building_name' => $booking->building_name,
                                         'floor_name' => $booking->floor_name]
                             ]);
-            
+
         }
         return view('admin.dharmasala.booking.quick-booking-check-in');
     }

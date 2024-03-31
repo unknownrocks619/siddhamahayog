@@ -32,7 +32,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                                     </option>
                                 @endforeach
                             </select>
-                        </div>        
+                        </div>
                     </div>
 
                     <div class="col-md-6 mt-4">
@@ -58,7 +58,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
             </div>
             <!-- Avaibility Info -->
             <div class="col-md-4">
-                
+
             </div>
         </div>
 
@@ -175,7 +175,7 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>  
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -194,10 +194,10 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
                     </div>
                     <div class="col-md-4 text-end">
                         @if( ! $family->profile_id)
-                        @php($isMissingInformation=true)
+                        @php($isInformationMissing==true)
                             <h4 class="text-danger">Please Upload User Photo to Confirm Booking</h4>
                         @else
-                            <img src="{{App\Classes\Helpers\Image::getImageAsSize($people->profile->filepath,'s')}}" class="img-fluid"/>
+                            <img src="{{App\Classes\Helpers\Image::getImageAsSize($family->profile->filepath,'s')}}" class="img-fluid"/>
                         @endif
                     </div>
                 </div>
@@ -208,8 +208,8 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
     <div class="modal-footer">
         <div class="row">
             <div class="col-md-12 d-flex justify-content-end">
-                @if($isMissingInformation==true)
-                    <span class="text-danger mr-5">Some of the required information is missing from group. 
+                @if($isInformationMissing)
+                    <span class="text-danger mr-5">Some of the required information is missing from group.
                         Do you still wish to force room registration ?
                     </span>
                 @endif

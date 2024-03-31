@@ -52,15 +52,18 @@ class AddPeopleToGroup extends Command
                 $item['amount'] = $amount;
                 return $item;
             })->sortKeys();
-
-            $groupUsers = ProgramStudentFee::where('program_id', $group->program_id)
+//            dd($rules);
+            $groupUsersQuery = ProgramStudentFee::where('program_id', $group->program_id)
                                                         ->where('student_batch_id',$group->batch_id)
                                                         ->where('total_amount' , '>=', $rules->first()['amount'])
-                                                        ->where('total_amount' ,'<=' , $rules->last()['amount'])
                                                         ->with(['member' => function($query) {
                                                             $query->with(['memberIDMedia','profileImage']);
-                                                        }])
-                                                        ->get();
+                                                        }]);
+            if ($rules->count() > 1) {
+                $groupUsersQuery->where('total_amount' ,'<=' , $rules->last()['amount']);
+
+            }
+            $groupUsers  = $groupUsersQuery->get();
 
             $peopleArrangementOrder = ProgramGroupPeople::where('group_id',$group->getKey())->max('order') ?? 0;
 
@@ -123,7 +126,7 @@ class AddPeopleToGroup extends Command
 
                 $groupPeople->profile_id = $groupUser->member?->profileImage?->getKey();
                 $groupPeople->member_id_card = $groupUser->member?->memberIDMedia?->getKey();
-                
+
                 $groupPeople->save();
                 /**
                  * Add / Update Family Members.

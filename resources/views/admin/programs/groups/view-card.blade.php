@@ -63,33 +63,5 @@
             @endforeach
         </div>
     @endforeach
-    <div class="container">
-        <div class="section top-left">
-            
-        </div>
-        <div class="section top-right">
-            <p>Section 2</p>
-        </div>
-        <div class="section bottom-left">
-            <p>Section 3</p>
-        </div>
-        <div class="section bottom-right">
-            <p>Section 4</p>
-        </div>
-    </div>
-    <div class="container">
-        <div class="section top-left">
-            <p>Section 5</p>
-        </div>
-        <div class="section top-right">
-            <p>Section 6</p>
-        </div>
-        <div class="section bottom-left">
-            <p>Section 7</p>
-        </div>
-        <div class="section bottom-right">
-            <p>Section 8</p>
-        </div>
-    </div>
 </body>
 </html>
