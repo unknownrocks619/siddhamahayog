@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Classes\Helpers\Roles\Rule;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -141,10 +142,12 @@ class Member extends Authenticatable
     {
         $transactions =  $this->hasMany(ProgramStudentFeeDetail::class, 'student_id');
 
-        if ( adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (auth('admin')->check() && ! in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN])) {
+
             $transactions->where('fee_added_by_center', adminUser()->center_id);
         }
-         return $transactions;
+
+        return $transactions;
     }
 
     public function studentFeeOverview()
@@ -221,7 +224,7 @@ class Member extends Authenticatable
 
     protected function Email(): Attribute {
         return Attribute::make(
-            get :fn(string $value) => str($value)->contains('random_email_') ? '' : $value,
+            get :fn(string|null $value) => str($value ?? '')->contains('random_email_') ? '' : $value,
         );
     }
     /**

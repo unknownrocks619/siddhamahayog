@@ -88,6 +88,17 @@ $(function () {
         })
     })
 
+    $(document).on('click', '.triggerClick', function (event){
+
+        if ( ! $(this).attr('data-bs-target') || ! $($(this).attr('data-bs-target')).length) {
+            console.error('Invalid Target Element.');
+            return;
+        }
+
+        event.preventDefault();
+
+        $($(this).attr('data-bs-target')).trigger('click');
+    })
 
     window.handleOKResponse = function (response) {
         if (response.status == 200) {

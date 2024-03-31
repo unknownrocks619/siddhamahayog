@@ -1,6 +1,6 @@
 @php
     /** @var  \App\Models\Member $member */
-    $emergencyContacts = \App\Models\MemberEmergencyMeta::where('member_id',$member->getKey())->get();
+    $emergencyContacts = \App\Models\MemberEmergencyMeta::with('profileImage')->where('member_id',$member->getKey())->get();
 @endphp
 
     <!-- Project table -->
@@ -45,6 +45,12 @@
                             <input type="text" name="relation" value="" id="relation" class="form-control">
                         </div>
                     </div>
+                    <div class="col-md-6 mt-4">
+                        <div class="form-group">
+                            <label for="relation">Gotra</label>
+                            <input type="text" name="gotra" value="" id="relation" class="form-control">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row mt-4">
@@ -74,7 +80,24 @@
             @foreach ($emergencyContacts as $emergencyContact)
                 <tr>
                     <td>
+                        @if($emergencyContact->profileImage)
+                            <div class="d-flex justify-content-start align-items-center user-name">
+                                <div class="avatar-wrapper">
+                                    <div class="avatar me-2">
+                                        <img src="{{\App\Classes\Helpers\Image::getImageAsSize($emergencyContact->profileImage->filepath,'xs')}}"
+                                                alt="Avatar"
+                                             class="rounded-circle">
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <span class="emp_name text-truncate">
+                                        {{ucwords($emergencyContact->contact_person)}}
+                                    </span>
+                                </div>
+                            </div>
+                        @else
                         {{ucwords($emergencyContact->contact_person)}}
+                        @endif
                     </td>
                     <td>
                         {{$emergencyContact->relation}}
@@ -86,6 +109,12 @@
                         {{ucwords($emergencyContact->contact_type)}}
                     </td>
                     <th>
+                        <form action="{{route('admin.member.emergency.profile-upload',['emergencyMeta' => $emergencyContact])}}" class="ajax-component-form d-inline" method="post">
+                            <input type="file" name="family_photo" id="ajaxUpload{{$emergencyContact->getKey()}}" class="ajax-auto-upload d-none">
+                            <button type="button" data-bs-target="#ajaxUpload{{$emergencyContact->getKey()}}" class="btn btn-icon btn-info triggerClick">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                        </form>
                         <a href="#" class="btn btn-icon btn-danger data-confirm" data-action="{{route('admin.member.emergency.delete',['emergencyMeta'=>$emergencyContact,])}}" data-method="post">
                             <i class="ti ti-trash"></i>
                         </a>

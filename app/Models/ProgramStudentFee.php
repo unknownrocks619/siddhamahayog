@@ -41,7 +41,8 @@ class ProgramStudentFee extends Model
     {
         $transactions =  $this->hasMany(ProgramStudentFeeDetail::class, "program_student_fees_id");
 
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+
+        if (adminUser()?->role()->isCenter() || adminUser()?->role()->isCenterAdmin() ) {
             $transactions->where('fee_added_by_center',adminUser()->center_id);
         }
 
@@ -61,6 +62,7 @@ class ProgramStudentFee extends Model
      * @return void
      */
     public function reCalculateTotalAmount(): void {
-        $this->saveQuietly(['total_amount' => $this->transactions()->where('rejected',false)->sum('amount')]);
+        $this->total_amount = $this->transactions()->where('rejected',false)->sum('amount');
+        $this->saveQuietly();
     }
 }

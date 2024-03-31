@@ -373,7 +373,7 @@ class Program extends AdminModel
         }
 
         $sql .= " GROUP BY member.id";
-        
+
         return DB::select($sql,$binds);
     }
 
@@ -424,6 +424,7 @@ class Program extends AdminModel
         $sql .= " JOIN members member ";
         $sql .= " ON member.id = fees.student_id";
         $sql .= ' AND member.deleted_at IS NULL ';
+
         $sql .= " WHERE fees.program_id = ?";
         $sql .= " AND fees.deleted_at IS NULL ";
 
@@ -485,7 +486,7 @@ class Program extends AdminModel
         $sql .= " JOIN members member";
         $sql .= " ON member.id = fee_detail.student_id";
 
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN,Rule::ADMIN]) ){
             $sql .= ' JOIN center_members cen_mem ';
             $sql .= ' ON cen_mem.member_id = member.id ';
         }

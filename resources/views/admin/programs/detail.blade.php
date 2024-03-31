@@ -108,10 +108,10 @@ $total_revenue = $totalStat->where('total_by','grand_total')->first();
 
     </div>
     <x-modal modal="assignStudentToProgram"></x-modal>
+    <x-modal modal="liveSessionModal"></x-modal>
 @endsection
 
 @push('page_script')
-    <script src="{{ asset ('themes/admin/assets/vendor/libs/bs-stepper/bs-stepper.js')}}"></script>
 
     <script>
         $('#program-table').DataTable({
@@ -170,9 +170,5 @@ $total_revenue = $totalStat->where('total_by','grand_total')->first();
             ]
         });
 
-        $(function(){
-            var e=document.getElementById("quickUserView")
-            e.addEventListener("show.bs.modal",function(e){var t=document.querySelector("#wizard-create-app");if(null!==t){var n=[].slice.call(t.querySelectorAll(".btn-next")),c=[].slice.call(t.querySelectorAll(".btn-prev")),r=t.querySelector(".btn-submit");const a=new Stepper(t,{linear:!1});n&&n.forEach(e=>{e.addEventListener("click",e=>{a.next(),l()})}),c&&c.forEach(e=>{e.addEventListener("click",e=>{a.previous(),l()})}),r&&r.addEventListener("click",e=>{alert("Submitted..!!")})}})
-        })
     </script>
 @endpush

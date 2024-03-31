@@ -15,6 +15,7 @@ class MemberEmergencyMeta extends Model
         'member_id',
         'contact_person',
         'relation',
+        'contact_type',
         'gender',
         'email_address',
         'phone_number',

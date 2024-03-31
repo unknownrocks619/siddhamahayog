@@ -10,9 +10,9 @@
                     @endif
                     <div class="user-info text-center">
                         <h4 class="mb-2">{{$member->full_name}}</h4>
-                        @if(adminUser()->role()->isAdmin() || adminUser()->role()->isSuperAdmin())
+                        @if(in_array(adminUser()->role(),[\App\Classes\Helpers\Roles\Rule::SUPER_ADMIN,\App\Classes\Helpers\Roles\Rule::ADMIN]))
                             <span class="badge bg-label-secondary mt-1">
-                                {{\App\Models\Role::$roles[$member->role_id]}}
+                                {{\App\Models\Role::$roles[$member->role_id ?? 7]}}
                             </span>
                         @endif
                     </div>
@@ -102,7 +102,7 @@
     @endif
     @if(adminUser()->role()->isAdmin() || adminUser()->role()->isSuperAdmin())
         @include('admin.members.partials.statistics',['member' => $member])
-    @endif 
+    @endif
     <!-- /Yagya Info -->
 </div>
 <!--/ User Sidebar -->

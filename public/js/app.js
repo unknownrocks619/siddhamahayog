@@ -5468,6 +5468,15 @@ $(function () {
       }
     });
   });
+  $(document).on('click', '.triggerClick', function (event) {
+    if (!$(this).attr('data-bs-target') || !$($(this).attr('data-bs-target')).length) {
+      console.error('Invalid Target Element.');
+      return;
+    }
+
+    event.preventDefault();
+    $($(this).attr('data-bs-target')).trigger('click');
+  });
 
   window.handleOKResponse = function (response) {
     if (response.status == 200) {
@@ -5804,6 +5813,16 @@ $(document).on('submit', 'form.ajax-component-form', function (event) {
       enableAllButtons(form);
     }
   });
+});
+$(document).on('change', '.ajax-auto-upload', function (event) {
+  event.preventDefault();
+
+  if ($(this).closest('form.ajax-component-form').length) {
+    $(this).closest('form.ajax-component-form').trigger('submit');
+    return;
+  }
+
+  if ($(this).attr('data-action')) {}
 });
 
 window.disableAllButtons = function () {

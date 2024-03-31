@@ -29,13 +29,15 @@ class MemberEmergencyController extends Controller
                 'relation'  => $request->post('relation'),
                 'phone_number'  => $request->post('phone_number'),
                 'contact_type'  => $request->post('contact_type'),
+                'gotra'         => $request->post('gotra'),
+                'verified_family'   => true,
             ]);
 
             if (! $memberEmergency->save() ) {
                 return $this->json(false,' Unable to save emergency contact info.');
             }
 
-            return $this->json(true,'Emergency contact information created.');
+            return $this->json(true,'Emergency contact information created.','reload');
         }
     }
 
@@ -62,12 +64,19 @@ class MemberEmergencyController extends Controller
 
         foreach ($request->post('full_name') ?? [] as $key => $full_name)  {
 
+
             $familyMember = MemberEmergencyMeta::where('phone_number', $request->post('phone_number')[$key])
+                                                ->where('contact_person',$full_name)
                                                 ->where('member_id' , $member->getKey())
                                                 ->where('contact_type','family')
+                                                ->where('verified_family',true)
+                                                ->where('relation', $request->post('relation')[$key])
+                                                ->where('gotra',$request->post('gotra')[$key])
                                                 ->first();
-
-            if (! $familyMember) {
+            /**
+             * If Family doesn't exists create new instance.
+             */
+            if ( ! $familyMember ) {
 
                 $familyMember = new MemberEmergencyMeta();
                 $familyMember->fill([
@@ -75,6 +84,7 @@ class MemberEmergencyController extends Controller
                 ]);
 
             }
+
             $familyMember->gotra = $request->post('gotra')[$key];
             $familyMember->phone_number = $request->post('phone_number')[$key];
             $familyMember->relation  = $request->post('relation')[$key];
@@ -97,7 +107,8 @@ class MemberEmergencyController extends Controller
                     $memberCardType->save();
                 }
 
-            } elseif ( isset($request->post('live_family_image')[$key]) && $request->post('live_family_image')[$key] ) {
+            }
+            elseif ( isset($request->post('live_family_image')[$key]) && $request->post('live_family_image')[$key] ) {
 
                 $isUrl = str($request->post('live_family_image')[$key])->contains('http');
 
@@ -123,10 +134,31 @@ class MemberEmergencyController extends Controller
             $memberToInclude[] = $familyMember->getKey();
         }
 
-        if ( $returnInsert) {
-            return $memberToInclude;
+        $member->emergency()
+                ->where('contact_type','family')
+                ->whereNotIn('id',$memberToInclude)->delete();
+    }
+
+    public function uploadProfile(Request $request, Member $member, MemberEmergencyMeta $emergencyMeta) {
+
+        $request->validate([
+            'family_photo' => 'required'
+        ]);
+
+        if ($request->file('family_photo') ) {
+
+            $memberIDCard = Image::uploadImage($request->file('family_photo'),$emergencyMeta);
+
+            if (isset ($memberIDCard[0]['relation'])) {
+
+                $memberCardType = $memberIDCard[0]['relation'];
+                $memberCardType->type = 'profile_picture';
+                $memberCardType->save();
+
+            }
+
         }
-        
-        $member->emergency()->where('contact_type','family')->whereNotIn('id',$memberToInclude)->delete();
+
+        return $this->json(true,'Photo Uploaded','reload');
     }
 }
