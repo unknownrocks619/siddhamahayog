@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    @if(adminUser()->role()->isSuperAdmin()))
+    @if(adminUser()->role()->isSuperAdmin())
         <!-- Plan Card -->
             <div class="card mb-4">
         <div class="card-body">

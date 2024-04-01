@@ -5864,16 +5864,19 @@ $(document).on('click', '.ajax-modal', function (event) {
       $(ajaxIdElement).find('div#modal-content').html(response); // $("#" + ajaxIdName + "-modal-document").html(response);
       // document.getElementById(ajaxIdName + '-modal-document').innerHTML = response;
 
-      $(clickElement).removeAttr('disabled', false).removeClass('disabled'); // window.modalElement = new Modal($(ajaxIdElement));
-      // window.modalElement.show();
-      // // check for select 2 element.
-      // let select2Element = $('#' + ajaxIdName).find('select');
-      //
-      // if (select2Element.length) {
-      //     $.each(select2Element, function (index, elem) {
-      //         window.ajaxReinitalize(elem, { dropdownParent: $('#' + ajaxIdName) });
-      //     })
-      // }
+      $(clickElement).removeAttr('disabled', false).removeClass('disabled');
+      window.modalElement = new Modal($(ajaxIdElement));
+      window.modalElement.show(); // // check for select 2 element.
+
+      var select2Element = $('#' + ajaxIdName).find('select'); //
+
+      if (select2Element.length) {
+        $.each(select2Element, function (index, elem) {
+          window.ajaxReinitalize(elem, {
+            dropdownParent: $('#' + ajaxIdName)
+          });
+        });
+      }
     },
     error: function error(response) {
       messageBox(false, 'Unable to load ');

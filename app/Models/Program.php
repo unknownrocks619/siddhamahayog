@@ -132,6 +132,10 @@ class Program extends AdminModel
         'grouping'  => [
             'label' => 'Group',
             'access'    => [Rule::SUPER_ADMIN]
+        ],
+        'volunteer' => [
+            'label' => 'Volunteer For Program',
+            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
         ]
     ];
 
