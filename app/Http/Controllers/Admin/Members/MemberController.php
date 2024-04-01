@@ -458,7 +458,7 @@ class MemberController extends Controller
 
         $setNull = false;
 
-        if(config('app.env') != 'local')  {
+//        if(config('app.env') != 'local')  {
 
             if ($member->profile && isset ($member->profile->full_path)) {
 
@@ -482,7 +482,7 @@ class MemberController extends Controller
                 $setNull = true;
             }
 
-        }
+//        }
 
         if ($setNull === true) {
             $member->profile = null;
