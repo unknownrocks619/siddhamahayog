@@ -22,14 +22,20 @@
 
 @else
     @php
-        try {
-            $checkInDate = Carbon::createFromFormat('Y-m-d', $booking->check_in);
-        } catch (\Throwable $th) {
-            $checkInDate = Carbon::createFromFormat('Y-m-d H:i:s', $booking->check_in);
-        }
+        $checkInDate = null;
+        if ( $booking->check_in ) {
+            try {
+                $checkInDate = Carbon::createFromFormat('Y-m-d', $booking->check_in);
+            } catch (\Throwable $th) {
+                $checkInDate = Carbon::createFromFormat('Y-m-d H:i:s', $booking->check_in);
+            }
 
-    if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($booking->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
-        $action[] = [
+        }
+    if (  ! $checkInDate ) {
+        echo 'Invalid Date' . $booking->check_in;
+    } else {
+        if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($booking->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
+            $action[] = [
                         'tag' => 'button',
                         'route' => '',
                         'label' => 'Check In',
@@ -41,7 +47,7 @@
                         ]
                     ];
 
-        $action[] = [
+            $action[] = [
                         'tag' => 'button',
                         'route'   => '',
                         'label'   => 'Cancel ' . DharmasalaBooking::STATUS[$booking->status],
@@ -52,36 +58,38 @@
                             'data-action'   => route('admin.dharmasala.update-booking-status',['booking' => $booking->getKey(),'type' => 'cancel','action' => 'datatable']),
                         ]
                     ];
-    }
+        }
 
-    if ($booking->status == DharmasalaBooking::CHECKED_IN) {
-        $action[] = [
-                    'tag' => 'button',
-                    'route' => '',
-                    'label' => 'Check Out',
-                    'class' => 'btn btn-success ajax-modal' ,
-                    'attribute' => [
-                        'data-bs-target'    => '#checkOut',
-                        'data-bs-toggle'    => 'modal',
-                        'data-action'   => route('admin.modal.display',['view' => 'dharmasala.booking.check-out','booking' => $booking->getKey(),'action' => 'datatable']),
-                        'data-method'   => 'get'
-                    ]
-                ];
-    }
-
-    if ( ! $checkInDate->isToday() && $today->lessThan($checkInDate) &&  ! in_array( $booking->status,[DharmasalaBooking::CANCELLED, DharmasalaBooking::CHECKED_IN, DharmasalaBooking::CHECKED_OUT]) ) {
-        $action[] = [
+        if ($booking->status == DharmasalaBooking::CHECKED_IN) {
+            $action[] = [
                         'tag' => 'button',
                         'route' => '',
-                        'class' => 'btn btn-danger data-confirm',
-                        'label' => 'Cancel '. DharmasalaBooking::STATUS[$booking->status],
+                        'label' => 'Check Out',
+                        'class' => 'btn btn-success ajax-modal' ,
                         'attribute' => [
-                            'data-confirm' => 'You are about to cancel a expired booking. Proceed with your action ?',
-                            'data-action'   => route('admin.dharmasala.update-booking-status',['booking' => $booking->getKey(),'type' => 'cancel','action' => 'datatable']),
-                            'data-method'   => 'POST'
+                            'data-bs-target'    => '#checkOut',
+                            'data-bs-toggle'    => 'modal',
+                            'data-action'   => route('admin.modal.display',['view' => 'dharmasala.booking.check-out','booking' => $booking->getKey(),'action' => 'datatable']),
+                            'data-method'   => 'get'
                         ]
                     ];
+        }
+
+        if ( ! $checkInDate->isToday() && $today->lessThan($checkInDate) &&  ! in_array( $booking->status,[DharmasalaBooking::CANCELLED, DharmasalaBooking::CHECKED_IN, DharmasalaBooking::CHECKED_OUT]) ) {
+            $action[] = [
+                            'tag' => 'button',
+                            'route' => '',
+                            'class' => 'btn btn-danger data-confirm',
+                            'label' => 'Cancel '. DharmasalaBooking::STATUS[$booking->status],
+                            'attribute' => [
+                                'data-confirm' => 'You are about to cancel a expired booking. Proceed with your action ?',
+                                'data-action'   => route('admin.dharmasala.update-booking-status',['booking' => $booking->getKey(),'type' => 'cancel','action' => 'datatable']),
+                                'data-method'   => 'POST'
+                            ]
+                        ];
+        }
     }
+
     @endphp
 @endif
 
