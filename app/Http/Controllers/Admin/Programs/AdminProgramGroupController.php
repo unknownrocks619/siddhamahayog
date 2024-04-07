@@ -837,6 +837,7 @@ class AdminProgramGroupController extends Controller
         $cards = [];
 
         if ($people?->getKey() ) {
+            dump ($people);
             if (! $people->is_card_generated ) {
                 return $this->json(false,'Sorry Card has not been genered yet.');
             }
@@ -1048,13 +1049,13 @@ class AdminProgramGroupController extends Controller
             $group->delete();
             return $this->json(true,'Child Group Deleted.','reload');
         }
-        
+
         if ($request->type && $request->type == 'people') {
-            $group->groupMember()->delete();            
+            $group->groupMember()->delete();
             return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_group_edit',['program' => $program,'group' => $group,'tab' => 'groups'])]);
         } else {
             $group->children()->delete();
-            $group->groupMember()->delete();    
+            $group->groupMember()->delete();
             $group->delete();
             return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_grouping_list',['program' => $program])]);
         }
