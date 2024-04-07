@@ -14,7 +14,7 @@ class VolunteerController extends Controller
 {
     public function index(Program $program) {
         $request = request()->capture();
-        
+
         if ($request->ajax() ) {
             $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
 
@@ -34,7 +34,7 @@ class VolunteerController extends Controller
     public function updateStatus(Request $request, Program $program, ProgramVolunteer $volunteer, ?ProgramVolunteerAvailableDates $availableDates) {
 
         /**
-         * Apporved 
+         * Apporved
          */
         $request->validate([
             // 'type'  => 'nullable|in:rejected,approved',
@@ -56,7 +56,8 @@ class VolunteerController extends Controller
              * Send SMS.
              */
             if ($request->post('alert_sms') ) {
-                // 
+                //
+
             }
 
         } else {
