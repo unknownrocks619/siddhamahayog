@@ -440,7 +440,11 @@
 
                                 <!-- /Card Sample -->
 
-                                <div class="text-end">
+                                <div class="text-end my-4">
+                                    <button class="btn me-3 btn-danger data-confirm" data-method="post" data-action="{{route('admin.program.admin_program_group_delete',['group' => $children,'program' => $program])}}" data-confirm="You are about to delete Group Child This will do you wish to continue ?">
+                                        Delete Child
+                                    </button>
+
                                     <button class="btn btn-default" type="submit">
                                         <i class="fas fa-pencil me-2"></i>
                                         Update Child Info

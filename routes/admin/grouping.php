@@ -10,6 +10,9 @@ Route::prefix('grouping/{program}')
             Route::match(['get','post'],'edit/{group}/{tab?}/{parentGroup?}',[AdminProgramGroupController::class,'edit'])->name('admin_program_group_edit');
             Route::get('{group}/generate-id-card/{people}/{reset?}',[AdminProgramGroupController::class,'generateIDCard'])->name('admin_program_generate_card');
 
+            Route::post('delete-group/{group}',[AdminProgramGroupController::class,'deleteGroup'])
+                ->name('admin_program_group_delete');
+
             Route::match(['get','post'],'list-options',[AdminProgramGroupController::class,'index'])
                 ->name('admin_program_grouping_index');
             Route::match(['get','post'],'family-options',[AdminProgramGroupController::class,'familyGroup'])
