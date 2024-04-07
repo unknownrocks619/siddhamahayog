@@ -8,6 +8,7 @@ use App\Models\Batch;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Program;
 use App\Models\ProgramSection;
+use App\Models\ProgramVolunteer;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Carbon;
@@ -319,6 +320,7 @@ class ProgramDataTablesController extends Controller
                         ->make(true);
     }
 
+   
     public function programList(Request $request,$type=null) {
 
         $programs = Program::with(["defaultBatch",
@@ -380,6 +382,50 @@ class ProgramDataTablesController extends Controller
                 ->make(true);
 
             return $datatable;
+    }
+
+    public function programVolunteerList(Request $request, Program $program, string $searchTerm='') {
+        $volunterQuery = ProgramVolunteer::where('program_id',$program->getKey());
+
+        if ($searchTerm != '') {
+            $volunterQuery->where("full_name",'LIKE','%'.$searchTerm.'%')
+                        ->orWhere('gotra','LIKE', '%'. $searchTerm.'%')
+                        ->orWhere('email','LIKE', '%'. $searchTerm.'%')
+                        ->orWhere('country','LIKE', '%'. $searchTerm.'%')
+                        ->orWhere('education','LIKE', '%'. $searchTerm.'%')
+                        ->orWhere('gender','LIKE', '%'.$searchTerm.'%');
+        }
+
+        $volunteers = $volunterQuery->get();
+
+        
+        $datatable =  DataTables::of($volunteers)
+                                    ->addColumn('full_name',function($row){
+                                        $action = "<a href='".route('admin.members.show',['member' => $row->member_id])."'>";
+                                        $action .= $row->full_name;
+                                        $action .= "</a>";
+                                        $action .= "<br />";
+                                        $action .= $row->email;
+                                        return $action;
+                                    })
+                                    ->addColumn('phone_number',fn($row) => $row->phone_number)
+                                    ->addColumn('email', fn($row) => $row->email)
+                                    ->addColumn('full_address', fn($row) => $row->full_address)
+                                    ->addColumn('education', fn($row) => $row->education)
+                                    ->addColumn('gender', fn($row) => $row->gender)
+                                    ->addColumn('profession', fn($row) => $row->profession)
+                                    ->addColumn('action', function ($row) use ($program){
+                                        $action = route('admin.program.volunteer.admin_volunteer_show',['program' => $program,'volunteer' => $row]);
+
+                                        $action = "<a class='btn btn-primary' href='{$action}'>";
+                                        $action .= "View Detail";
+                                        $action .= "</a>";
+                                        return $action;
+                                    })
+                                    ->rawColumns(['full_name','action'])
+                                    ->make(true);
+        return $datatable;
+
     }
 
 }

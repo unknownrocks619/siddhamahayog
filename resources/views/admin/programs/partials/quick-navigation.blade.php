@@ -99,7 +99,7 @@
             @endif
 
             @if(in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['vip_and_guest_list']['access']))
-                <li class="d-flex align-items-center">
+                <li class="d-flex align-items-center mb-4">
                     <div class="avatar flex-shrink-0 me-3">
                         <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-vip ti-md"></i></span>
                     </div>
@@ -114,9 +114,9 @@
             @endif
 
             @if ($program->getKey() == 5 && in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['grouping']['access']))
-                <li class="d-flex align-items-center">
+                <li class="d-flex align-items-center mb-1">
                     <div class="avatar flex-shrink-0 me-3">
-                        <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-vip ti-md"></i></span>
+                        <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-users ti-md"></i></span>
                     </div>
                     <div class="row w-100 align-items-center">
                         <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
@@ -127,6 +127,20 @@
                     </div>
                 </li>
             @endif
+                @if (in_array(adminUser()->role(), \App\Models\Program::QUICK_NAVIGATION_ACCESS['volunteer']['access']))
+                    <li class="d-flex align-items-center mb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-danger"><i class="ti ti-more ti-md"></i></span>
+                        </div>
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                <a href="{{ route('admin.program.volunteer.admin_volunteer_list', ['program' => $program]) }}" class="mb-0 fw-medium">
+                                    {{\App\Models\Program::QUICK_NAVIGATION_ACCESS['volunteer']['label']}}
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                @endif
         </ul>
     </div>
 </div>

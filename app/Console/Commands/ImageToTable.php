@@ -88,6 +88,9 @@ class ImageToTable extends Command
                     $this->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
                 }
 
+                /**
+                 * Before resetting profile please make sure, profile is available.
+                 */
                 $member->profile = null;
                 $member->save();
             }

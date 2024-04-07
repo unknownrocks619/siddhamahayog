@@ -176,7 +176,7 @@ class MemberController extends Controller
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
                 $member->country = $fill['country'] ?? $member->country;
                 $member->city = $fill['city'] ?? $member->city;
-                $member->address =( isset($fill['address']['street_address']) && ! is_null($fill['address']['street_address']))? $fill['address'] : $member->address;
+                $member->address = isset($fill['address']['street_address']) && ! is_null($fill['address']['street_address']) ? $fill['address'] : $member->address;
                 $member->first_name = $fill['first_name'] ?? $member->first_name;
                 $member->last_name = $fill['last_name'] ?? $member->last_name;
                 $member->middle_name = $fill['middle_name'] ?? $member->middle_name;

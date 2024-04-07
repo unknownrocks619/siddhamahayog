@@ -21,16 +21,16 @@ $(document).on('click', '.ajax-modal', function (event) {
             // $("#" + ajaxIdName + "-modal-document").html(response);
             // document.getElementById(ajaxIdName + '-modal-document').innerHTML = response;
             $(clickElement).removeAttr('disabled', false).removeClass('disabled');
-            // window.modalElement = new Modal($(ajaxIdElement));
-            // window.modalElement.show();
+            window.modalElement = new Modal($(ajaxIdElement));
+            window.modalElement.show();
             // // check for select 2 element.
-            // let select2Element = $('#' + ajaxIdName).find('select');
+            let select2Element = $('#' + ajaxIdName).find('select');
             //
-            // if (select2Element.length) {
-            //     $.each(select2Element, function (index, elem) {
-            //         window.ajaxReinitalize(elem, { dropdownParent: $('#' + ajaxIdName) });
-            //     })
-            // }
+            if (select2Element.length) {
+                $.each(select2Element, function (index, elem) {
+                    window.ajaxReinitalize(elem, { dropdownParent: $('#' + ajaxIdName) });
+                })
+            }
         },
         error: function (response) {
             messageBox(false, 'Unable to load ');
