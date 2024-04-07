@@ -32,7 +32,6 @@
 
         }
     if (  ! $checkInDate ) {
-        echo 'Invalid Date' . $booking->check_in;
         $action[] = [
                             'tag' => 'button',
                             'route' => '',
