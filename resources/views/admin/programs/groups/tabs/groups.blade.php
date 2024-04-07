@@ -2,8 +2,8 @@
     <div class="col-md-12 d-flex justify-content-between">
         <div></div>
         <div>
-            <button class="btn btn-success btn-icon">
-                <i class="fas fa-play"></i>
+            <button class="btn btn-danger data-confirm btn-icon" data-confirm="This will remove all the people from the group. This action cannot be undone ? do you wish to continue." data-method="post" data-action="{{route('admin.program.admin_program_group_delete',['group' => $group,'program' => $program,'type' => 'people'])}}">
+                <i class="fas fa-refresh"></i>
             </button>
             <button class="btn btn-success btn-icon" data-bs-toggle='modal' data-bs-target='#addMember'>
                 <i class="fas fa-add"></i>

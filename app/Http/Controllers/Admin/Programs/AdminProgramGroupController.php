@@ -1044,14 +1044,20 @@ class AdminProgramGroupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function deleteGroup(Request $request, Program $program, ProgramGrouping $group) {
-        $group->delete();
         if ($group->id_parent ) {
+            $group->delete();
             return $this->json(true,'Child Group Deleted.','reload');
         }
-        $group->children()->delete();
-        $group->groupMember()->delete();
-        $group->delete();
+        
+        if ($request->type && $request->type == 'people') {
+            $group->groupMember()->delete();            
+            return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_group_edit',['program' => $program,'group' => $group,'tab' => 'groups'])]);
+        } else {
+            $group->children()->delete();
+            $group->groupMember()->delete();    
+            $group->delete();
+            return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_grouping_list',['program' => $program])]);
+        }
 
-        return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_grouping_list',['program' => $program])]);
     }
 }
