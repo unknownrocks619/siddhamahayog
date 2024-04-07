@@ -22,11 +22,10 @@
 
 @else
     @php
-        if (strlen($booking->check_in) > 10 ) {
-
-            $checkInDate = Carbon::createFromFormat('Y-m-d H:i:s', $booking->check_in);
-        } else {
+        try {
             $checkInDate = Carbon::createFromFormat('Y-m-d', $booking->check_in);
+        } catch (\Throwable $th) {
+            $checkInDate = Carbon::createFromFormat('Y-m-d H:i:s', $booking->check_in);
         }
 
     if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($booking->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
