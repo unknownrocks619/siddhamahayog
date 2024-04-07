@@ -33,6 +33,17 @@
         }
     if (  ! $checkInDate ) {
         echo 'Invalid Date' . $booking->check_in;
+        $action[] = [
+                            'tag' => 'button',
+                            'route' => '',
+                            'class' => 'btn btn-danger data-confirm',
+                            'label' => 'Cancel '. DharmasalaBooking::STATUS[$booking->status],
+                            'attribute' => [
+                                'data-confirm' => 'You are about to cancel a expired booking. Proceed with your action ?',
+                                'data-action'   => route('admin.dharmasala.update-booking-status',['booking' => $booking->getKey(),'type' => 'cancel','action' => 'datatable']),
+                                'data-method'   => 'POST'
+                            ]
+                        ];
     } else {
         if (($today->greaterThanOrEqualTo($checkInDate) || $checkInDate->isToday()) && ! in_array($booking->status,[DharmasalaBooking::CHECKED_IN,DharmasalaBooking::CANCELLED,DharmasalaBooking::CHECKED_OUT])) {
             $action[] = [
