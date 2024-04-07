@@ -96,7 +96,7 @@ class AddPeopleToGroup extends Command
                     continue;
                 }
 
-                echo 'Importing User : '. $groupUser->full_name . PHP_EOL;
+                echo 'Importing User : '. $groupUser->full_name  . '('.$groupUser->student_id.')' . PHP_EOL;
 
                 $groupPeople = new ProgramGroupPeople();
 
@@ -107,7 +107,7 @@ class AddPeopleToGroup extends Command
                     'is_parent' => true,
                     'order' => $peopleArrangementOrder,
                     'is_card_generated' => false,
-                    'full_name' => ucwords($groupUser->full_name),
+                    'full_name' => ucwords($groupUser->member?->full_name),
                     'group_uuid' => \App\Classes\Helpers\Str::uuid(),
                     'email' => $groupUser->member?->email,
                     'phone_number'  => $groupUser->member?->phone_number ?? $group->phone_number,
