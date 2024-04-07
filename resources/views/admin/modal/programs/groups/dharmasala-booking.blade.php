@@ -54,7 +54,7 @@ if (isset($view) ) {
                     <div class="col-md-6 mt-4">
                         <div class="form-group">
                             <label class="fs-5" for="check_out_date">
-                                Check In Date
+                                Check Out Date
                                 <sup class="text-danger">*</sup>
                             </label>
                             <input type="date" name="check_out_date"  @if($people->dharmasala?->check_out) value="{{$people->dharmasala?->check_out}}" @endif  id="check_out_date" class="form-control fs-5">

@@ -38,6 +38,10 @@ class DownloadDatabase extends Command
         foreach ($tables as $table) {
             $tableName = reset($table);
 
+            if ($tableName == 'program_student_attendances') {
+                continue;
+            }
+
             dump( 'Taking Backup For: ' . $tableName );
             $tableData =  DB::table($tableName)->get();
             $tableCreate = DB::select("SHOW CREATE TABLE `" .  DB::getTablePrefix() . $tableName.'`');
