@@ -67,6 +67,9 @@
                                             <a href="{{route('admin.program.amdmin_group_card_view',['program' => $program,'group'=> $group])}}" class="btn btn-icon btn-primary">
                                                 <i class="fas fa-download"></i>
                                             </a>
+                                            <button data-method="post" data-action="{{route('admin.program.admin_program_group_delete',['program' => $program,'group'=> $group])}}" class="btn btn-icon btn-danger data-confirm" data-confirm="You are about to delete the group, this will delete all children group and all people associated with the group. Do you wish to continue.">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                             
                                         </td>
                                     </tr>

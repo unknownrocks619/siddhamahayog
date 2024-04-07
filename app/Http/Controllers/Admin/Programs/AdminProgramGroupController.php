@@ -1048,8 +1048,10 @@ class AdminProgramGroupController extends Controller
         if ($group->id_parent ) {
             return $this->json(true,'Child Group Deleted.','reload');
         }
-
         $group->children()->delete();
+        $group->groupMember()->delete();
+        $group->delete();
+
         return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_grouping_list',['program' => $program])]);
     }
 }
