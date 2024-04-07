@@ -100,6 +100,23 @@ $(function () {
         $($(this).attr('data-bs-target')).trigger('click');
     })
 
+    $(document).on('click','.js-close-element',function(event) {
+
+        if ( ! $($(this).data('bs-target')).length ) {
+            console.error('Element Not found.');
+            return;
+        }
+
+        if ( $(this).data('bs-type') === 'collapse') {
+            console.log('Element: ' , $($(this).data('bs-target')));
+            $($(this).data('bs-target')).removeClass('show').css({'display' : 'none !important'});
+            return
+        }
+
+        $($(this).data('bs-target')).hide();
+
+    })
+
     window.handleOKResponse = function (response) {
         if (response.status == 200) {
             let type = null;

@@ -69,14 +69,29 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 @foreach ($floor->rooms as $room)
+                                                    @php
+                                                        $defaultColour = 'btn-default';
+                                                        $occupied = $room->total_active_reserved_count;
+
+                                                        if ($room->total_active_reserved_count >= $room->room_capacity ) {
+                                                            $defaultColour = 'btn-danger';
+                                                        } else if ( $room->total_active_reserved_count >= ($room->room_capacity / 2) ) {
+                                                            $defaultColour = 'btn-warning';
+                                                        } else if ($room->total_active_reserved_count >= 1) {
+                                                            $defaultColour = 'btn-success';
+                                                        }
+
+                                                    @endphp
                                                     <div class="col-md-1 my-3">
-                                                        <button class="btn-default ajax-modal" data-action="{{route('admin.modal.display',['view' => 'dharmasala.booking.book-user','room' => $room->getKey()])}}" type="button" data-bs-target="#assignUserToRoom" data-bs-toggle="modal">
+                                                        <button class=" {{$defaultColour}} ajax-modal " data-action="{{route('admin.modal.display',['view' => 'dharmasala.booking.book-user','room' => $room->getKey()])}}" type="button" data-bs-target="#assignUserToRoom" data-bs-toggle="modal">
                                                             @if($room->room_type == "open")
                                                                 <i class="fas fa-tent fs-2"></i>
                                                             @else
                                                                 <i class="fas fa-bed fs-2"></i>
                                                             @endif
-                                                            <h5>{{$room->room_number}}</h5>
+                                                            
+                                                            <h5 class="mb-0">{{$room->room_number}}</h5>
+                                                            <p>{{$room->total_active_reserved_count}} / {{$room->room_capacity}} </p>
                                                         </button>
                                                     </div>
                                                 @endforeach

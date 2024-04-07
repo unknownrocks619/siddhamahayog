@@ -19,7 +19,7 @@
         @include('admin.fees.program.partials.stat')
     @endif
     <div class="row">
-        <div class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) col-md-10 @else col-md-12 @endif">
+        <div class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) col-md-12 @else col-md-12 @endif">
             <!-- Responsive Datatable -->
             <div class="card">
                 <div class="card-header">
@@ -28,12 +28,54 @@
                         <a href="{{route('admin.members.create')}}" class="btn btn-primary">Add Transaction</a>
                     </div>
                 </div>
-
+                
                 <div class="card-datatable table-responsive">
+                    <form action="{{url()->full()}}" method="get">
+                        <div class="row p-3 bg-light">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="filter_center">Filter By Center: </label>
+                                    <select name="filter_center" id="filter_center" class="form-control">
+                                        <option value="" disabled selected>Select Center</option>
+                                        @foreach (\App\Models\Centers::get() as $center)
+                                        <option value="{{$center->getKey()}}">{{$center->center_name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="filter_staff">Filter By Staff: </label>
+                                    <select name="filter_staff" id="filter_center" class="form-control">
+                                        <option value="" disabled selected>Select User To Filter</option>
+                                        @foreach (\App\Models\AdminUser::get() as $adminUser)
+                                        <option value="{{$adminUser->getKey()}}">{{$adminUser->full_name()}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-3">
+                                <button class="btn btn-primary">
+                                    Apply Filter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                     <table class="dt-responsive table" id="program_fee_overview">
                         <thead>
                         <tr>
                             <th>Name</th>
+                            @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
+                                <th>
+                                    Entry
+                                </th>
+                                <th>
+                                    Center
+                                </th>
+                            @endif
+
+
                             <th>
                             @if($program->getKey() == 5) Voucher Number @else Category @endif
                             </th>
@@ -55,8 +97,19 @@
             <!--/ Responsive Datatable -->
 
         </div>
-        <div class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) col-md-2 @else col-md-2 d-none @endif">
-            @include('admin.fees.program.partials.quick-navigation',['program' => $program])
+        <div  class="@if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) position-fixed bottom-50 end-0 @else col-md-2 d-none @endif">
+            <button class="btn btn-primary btn-icon" 
+            data-bs-toggle="collapse" data-bs-target="#transaction-quick-navigation" aria-expanded="false" aria-controls="collapseExample"
+            ><i class="fas fa-nav"></i></button>
+        </div>
+        <div class="collapse" id="transaction-quick-navigation">
+            <div class="col-md-2">
+                <div class="position-fixed bottom-0 left-0 text-end border border-danger">
+                    <button class="btn btn-danger btn-icon js-close-element text-end" data-bs-type="collapse" data-bs-target="#transaction-quick-navigation"><i class="fas fa-close"></i></button>
+                    @include('admin.fees.program.partials.quick-navigation',['program' => $program])
+                </div>
+            </div>
+    
         </div>
     </div>
     <x-modal modal="imageFile"></x-modal>
@@ -75,6 +128,10 @@
                     data: 'member_name',
                     name: "member_name"
                 },
+                @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin()) 
+                    {data : 'staff_name',name:'staff_name'},
+                    {data : 'center', name:'center'},
+                @endif
                 {
                     data: "category",
                     name: "category"

@@ -15,7 +15,15 @@ class ProgramFeeDataTablesController extends Controller
     public function programTransactionList(Request $request, Program $program){
 
         $searchTerm = isset($request->get('search')['value']) ? $request->get('search')['value'] : '';
-        return DataTables::of($program->transactionsDetail($searchTerm))
+        $filters = [];
+        if ($request->get('filter_center') ) {
+            $filters['center'] = $request->get('filter_center');
+        }
+        if ($request->get('filter_staff')) {
+            $filters['admin'] = $request->get('filter_staff');
+        }
+        
+        return DataTables::of($program->transactionsDetail($searchTerm,$filters))
                         ->addColumn('transaction_date', function ($row) {
                             return date("Y-m-d", strtotime($row->transaction_date));
                         })
@@ -26,6 +34,8 @@ class ProgramFeeDataTablesController extends Controller
 
             return $member;
         })
+        ->addColumn('staff_name', fn($row) => $row->staff_name)
+        ->addColumn('center', fn($row)=> $row->center_name)
         ->addColumn('transaction_amount', function ($row) {
             return view('admin.datatable-view.program-fee.transaction-list.transaction_amount',['row' => $row])->render();
         })

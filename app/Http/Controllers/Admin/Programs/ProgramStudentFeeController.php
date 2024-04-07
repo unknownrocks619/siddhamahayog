@@ -445,7 +445,6 @@ class ProgramStudentFeeController extends Controller
     {
 
         if ($request->ajax() && $request->wantsJson()) {
-
             return (new ProgramFeeDataTablesController())->programTransactionList($request,$program);
         }
 

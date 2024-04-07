@@ -48,6 +48,7 @@
     </div>
     <x-modal modal="quickUserView">
     </x-modal>
+
 @endsection
 
 @push('page_script')

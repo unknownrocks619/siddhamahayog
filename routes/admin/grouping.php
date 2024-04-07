@@ -17,14 +17,22 @@ Route::prefix('grouping/{program}')
             Route::match(['get','post'],'program-student-download',[AdminProgramGroupController::class,'downloadProgramStudent'])
                 ->name('admin_program_grouping_family_index');
 
-            Route::match(['get','post'],'update-family-group/{group}/{people}',[AdminProgramGroupController::class,'updateFamilyGroup'])
+            Route::match(['get','post'],'update-family-group/{group}/{people}/{view?}',[AdminProgramGroupController::class,'updateFamilyGroup'])
                 ->name('admin_update_family_group');
-            Route::match(['get','post'],'add-family-group/{group}/{people}',[AdminProgramGroupController::class,'addFamilyGroup'])
+            Route::match(['get','post'],'add-family-group/{group}/{people}/{view?}',[AdminProgramGroupController::class,'addFamilyGroup'])
                 ->name('admin_add_family_group');
             Route::match(['get','post'],'update-dharmasala/{group}/{people}',[AdminProgramGroupController::class,'updateDharamasaBooking'])
                 ->name('admin_group_dharamasal');
 
             Route::get('{group}/view-card/{people?}',[AdminProgramGroupController::class,'viewCard'])
                 ->name('amdmin_group_card_view');
+            
+            Route::match(['get','post'],'{group}/updateVerification/{people}',[AdminProgramGroupController::class,'updateVerification'])
+                ->name('admin_people_verification');
 
+            Route::get('search-group-member/{group}',[AdminProgramGroupController::class,'searchGroupMember'])
+                ->name('admin_grouping_member_list');
+            
+            Route::post('add-member-to-group/{group}',[AdminProgramGroupController::class,'addMemberToGroup'])
+                ->name('admin_add_member_to_group');
         });

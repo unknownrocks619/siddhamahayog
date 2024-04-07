@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\DB;
 class BuildingController extends  Controller
 {
     public function index() {
-        $buildings = DharmasalaBuilding::with(['floors'])->get();
+
+        $buildings = DharmasalaBuilding::with(['floors' => function($query) {
+            $query->with(['rooms' =>function ($query) {
+                $query->withCount('totalActiveReserved');
+            }]);
+        }])->get();
         return view("admin.dharmasala.building.index",['buildings' => $buildings]);
     }
     public function create(Request $request) {

@@ -49,10 +49,10 @@
                                 @foreach ($groups as $group)
                                     <tr>
                                         <td>{{$group->group_name}}</td>
-                                        <td>0</td>
+                                        <td>{{$group->group_member_count}}</td>
                                         <td>
-                                            @if($group->enable_auto_ading)
-                                                <span class="badge bg-label-sucess">Yes</span>
+                                            @if($group->enable_auto_adding)
+                                                <span class="badge bg-label-success">Yes</span>
                                             @else
                                                 <span class="badge bg-label-danger">No</span>
                                             @endif
@@ -60,6 +60,12 @@
                                         <td>
                                             <a href="{{route('admin.program.admin_program_group_edit',['program' => $program,'group'=> $group])}}" class="btn btn-icon btn-primary">
                                                 <i class="fas fa-pencil"></i>
+                                            </a>
+                                            <a href="{{route('admin.program.admin_program_group_edit',['program' => $program,'group'=> $group,'tab' => 'groups'])}}" class="btn btn-icon btn-primary">
+                                                <i class="fas fa-users"></i>
+                                            </a>
+                                            <a href="{{route('admin.program.amdmin_group_card_view',['program' => $program,'group'=> $group])}}" class="btn btn-icon btn-primary">
+                                                <i class="fas fa-download"></i>
                                             </a>
                                             
                                         </td>

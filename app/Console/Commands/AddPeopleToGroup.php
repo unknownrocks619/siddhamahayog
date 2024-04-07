@@ -72,6 +72,7 @@ class AddPeopleToGroup extends Command
                 $groupPeople = ProgramGroupPeople::where('group_id',$group->getKey())
                                                 ->where('program_id',$program->getKey())
                                                 ->where('member_id', $groupUser->student_id)
+                                                ->where('is_parent' , true)
                                                 ->first();
 
                 /**
@@ -193,4 +194,5 @@ class AddPeopleToGroup extends Command
             }
         }
     }
+
 }

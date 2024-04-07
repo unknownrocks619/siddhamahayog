@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ *
+ */
 class ProgramVolunteer extends Model
 {
     use HasFactory, SoftDeletes;
@@ -34,14 +37,23 @@ class ProgramVolunteer extends Model
         'availableDates',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function member() {
         return $this->belongsTo(Member::class,'member_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function program() {
         return $this->belongsTo(Program::class,'program_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function availableDates() {
         return $this->hasMany(ProgramVolunteerAvailableDates::class,'program_volunteer_id');
     }

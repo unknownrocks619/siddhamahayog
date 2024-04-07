@@ -10,7 +10,9 @@
                     Card Already Generated
                 </div>
             @endif
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between"  data-action="{{route('admin.program.admin_people_verification',['program' => $people->program_id,'group' => $people->group_id,'people' => $people])}}">
+                <input type="checkbox" name="verify[]" value="{{$people->getKey()}}" @if($people->verified) checked @endif onchange="window.programGroup.userVerification(this)" />
+
                 <h5 class="card-title">
                     {{$people->full_name}}
                 </h5>
@@ -73,11 +75,11 @@
                 <div class="row">
                     <div class="col-md-12">
                         <ul>
-                            <li>
-                                @if( ! $people->profile_id )
+                            @if( ! $people->profile_id )
+                                <li>
                                     <span class="text-danger">{{$people->full_name}} Profile Photo Is Missing</span>
+                                </li>
                                 @endif
-                            </li>
                             @foreach ($missingFamilyProfile as $family)
                                 <li>
                                     <span class="text-danger">{{$family}} Profile Photo Is Missing</span>
@@ -89,17 +91,17 @@
             @endif
 
             @if($people->is_card_generated)
-            <div class="row mt-2">
-                <div class="col-md-12 text-end">
-                    <button class="btn btn-danger btn-icon data-confirm"
-                            data-method="get"
-                            data-confirm="Card Has already been generated. Do you wish to reset the card and generate new ?"
-                            data-action="{{route('admin.program.admin_program_generate_card',['people' => $people,'program' => $people->program_id,'group' => $people->group_id,'reset' => true])}}" 
-                            data-bs-original-titl="Re Generate Card">
-                        <i class="fas fa-refresh"></i>
-                    </button>
+                <div class="row mt-2">
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-danger btn-icon data-confirm"
+                                data-method="get"
+                                data-confirm="Card Has already been generated. Do you wish to reset the card and generate new ?"
+                                data-action="{{route('admin.program.admin_program_generate_card',['people' => $people,'program' => $people->program_id,'group' => $people->group_id,'reset' => true])}}" 
+                                data-bs-original-titl="Re Generate Card">
+                            <i class="fas fa-refresh"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
             @endif
         </div>
     </div>

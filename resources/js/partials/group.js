@@ -1,7 +1,7 @@
 export class ProgramGrouping {
 
     #currentCard;
-
+    
     addRules(elm,params={}) {
 
     let _html =`
@@ -150,12 +150,38 @@ export class ProgramGrouping {
 
     updateFamilyGroup(params){
 
-        console.log('card element: ', params);
-
         let _cardElement = $('#'+params.cardID);
         this.#setCardLoader(true,_cardElement);
-        let _getContentFrom = $(params.view).find('.card').html();
+        let _getContentFrom = '';
+        if (_cardElement.is('tr') ) {
+            _getContentFrom = $($(params.view)[0]).html();
+            // console.log('tr element: ', $($(params.view)[0]).html());
+        } else {
+
+            _getContentFrom = $(params.view).find('.card').html();
+        }
         $(_cardElement).html(_getContentFrom);
+    }
+
+    userVerification(elm) {
+        let _verified = false;
+
+        if ($(elm).is(":checked") ) {
+            _verified = true;
+        }
+        let _url = $(elm).closest('tr').attr('data-action');
+
+        if (_url === undefined) {
+            _url = $(elm).parent().attr('data-action');
+        }
+
+        console.log('url: ' , _url);
+        let _body = {'verified' : _verified};
+        $.ajax({
+            type : "POST",
+            url : _url,
+            data : _body,
+        })
     }
 
     #setCardLoader(loading = true, elm={}) {

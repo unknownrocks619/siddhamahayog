@@ -128,10 +128,12 @@ class ProgramStudent extends Model
                 $sql .= ' members. email LIKE ?';
                 $sql .= " OR ";
                 $sql .= " members.phone_number LIKE ?";
+                $sql .= " OR ";
+                $sql .= " members.full_name LIKE ? ";
 
             $sql .= ")";
 
-            $binds = array_merge($binds,['%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%',]);
+            $binds = array_merge($binds,['%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%','%'.$searchTerm.'%']);
         }
 
         if ($limit ) {

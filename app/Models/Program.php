@@ -451,7 +451,7 @@ class Program extends AdminModel
 
         return DB::select($sql,$binds);
     }
-    public function transactionsDetail($searchTerm = null) {
+    public function transactionsDetail($searchTerm = null, array $filters=[]) {
         $selects = [
             'fee_detail.id as transaction_id',
             'fee_detail.program_student_fees_id as transaction_overview_id',
@@ -468,6 +468,10 @@ class Program extends AdminModel
             'fee_detail.file',
             'fee_detail.voucher_number',
             'fee_detail.created_at as transaction_date',
+            'fee_detail.fee_added_by_user as staff_id',
+            'fee_detail.fee_added_by_center as center_id',
+            'center.center_name',
+            'CONCAT(admin.firstname," ",admin.lastname) as staff_name',
             'member.full_name',
             'member.email',
             'member.phone_number',
@@ -476,6 +480,7 @@ class Program extends AdminModel
             'pu.status as pending_request_status',
             'pu.relation_table',
             'img.filepath as transaction_file',
+
         ];
         $binds = [$this->getKey()];
 
@@ -489,6 +494,26 @@ class Program extends AdminModel
         if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN,Rule::ADMIN]) ){
             $sql .= ' JOIN center_members cen_mem ';
             $sql .= ' ON cen_mem.member_id = member.id ';
+        } else {
+            if ( isset ($filters['admin']) ) {
+                $sql .= " JOIN admin_users admin ";
+                $sql .= " ON admin.id = fee_detail.fee_added_by_user";
+                $sql .= " AND admin.id = " . $filters['admin'];
+
+            } else {
+                $sql .= " LEFT JOIN admin_users admin ";
+                $sql .= " ON admin.id = fee_detail.fee_added_by_user";
+            }
+            
+            if (isset($filters['center']) ) {
+                $sql .= " JOIN centers center ";
+                $sql .= " ON center.id = fee_detail.fee_added_by_center";
+                $sql .= " AND center.id = " .$filters['center'];
+            } else {
+                $sql .= " LEFT JOIN centers center ";
+                $sql .= " ON center.id = fee_detail.fee_added_by_center";
+    
+            }
         }
 
         $sql .= " LEFT JOIN permission_updates pu";
@@ -519,13 +544,28 @@ class Program extends AdminModel
                 $sql .= " OR fee_detail.source LIKE ? ";
                 $sql .= " OR fee_detail.amount_category LIKE ? ";
                 $sql .= " OR fee_detail.amount LIKE ? ";
+                $sql .= ' OR fee_detail.voucher_number LIKE ? ';
+                if (in_array(adminUser()->role(), [Rule::SUPER_ADMIN,Rule::ADMIN])) {
+                        $sql .= " OR fee_detail.currency LIKE ? ";
+                        $sql .= " OR admin.firstname LIKE ? ";
+                        $sql .= " OR admin.lastname LIKE ? ";
+                        $sql .= " OR center.center_name LIKE ? ";
+                        $sql .= " OR fee_detail.student_id LIKE ?";
+
+                        $binds[] = '%'.$searchTerm . '%';
+                        $binds[] = '%'.$searchTerm . '%';
+                        $binds[] = '%'.$searchTerm . '%';
+                        $binds[] = '%'.$searchTerm . '%';
+                        $binds[] = '%'.$searchTerm . '%';
+                }
+
                 $sql .= " OR ( CASE WHEN 'verified' LIKE ? THEN verified = 1 ";
                 $sql .= "      WHEN 'pending' LIKE ? THEN verified = 0 AND rejected = 0";
                 $sql .= "      WHEN 'rejected' LIKE ? THEN rejected = 1 ";
                 $sql .= " END ";
                 $sql .= " ) ";
             $sql .= ") ";
-
+            
             $binds = array_merge ($binds, [
                 '%'.strtolower($searchTerm).'%',
                 '%'.$searchTerm.'%',
@@ -540,7 +580,10 @@ class Program extends AdminModel
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
                 '%'.$searchTerm.'%',
+                '%'.$searchTerm.'%',
             ]);
+
+
         }
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
             $sql .= ' AND fee_detail.fee_added_by_center =  ' ;

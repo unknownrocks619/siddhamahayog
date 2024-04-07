@@ -32,9 +32,8 @@ class AdminProgramSectionController extends Controller
             $sections = ProgramSection::where('program_id', $program->getKey())
                                             ->where('id',$request->get('section'))
                                             ->first();
+            
             return view('admin.programs.section.partials.search_result', compact('members', 'program', 'sections'));
-
-
         }
         //
         $all_sections = ProgramSection::where('program_id', $program->getKey())

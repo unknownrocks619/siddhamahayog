@@ -50,6 +50,9 @@ class ProgramGroupPeople extends Model
         return $this->belongsTo(Images::class,'profile_id');
     }
 
+    public function IDCard() {
+        return $this->belongsTo(Images::class,'member_id_card');
+    }
 
     public function programGroup() {
         return $this->belongsTo(ProgramGrouping::class,'group_id');

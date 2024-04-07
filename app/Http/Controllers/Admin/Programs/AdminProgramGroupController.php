@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Admin\Programs;
 
-use App\Classes\Helpers\ExcelExport\ExcelExportDownload;
 use App\Classes\Helpers\ExcelExport\ExcelMultipleSheet;
-use App\Classes\Helpers\ExcelExport\ExportFromView;
 use App\Classes\Helpers\Image;
 use App\Classes\Helpers\InterventionImageHelper;
+use App\Classes\Helpers\Str;
 use App\Http\Controllers\Admin\Members\MemberEmergencyController;
 use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBooking;
@@ -18,9 +17,9 @@ use App\Models\MemberEmergencyMeta;
 use App\Models\Program;
 use App\Models\ProgramGrouping;
 use App\Models\ProgramGroupPeople;
+use App\Models\ProgramStudent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class AdminProgramGroupController extends Controller
 {
@@ -253,11 +252,24 @@ class AdminProgramGroupController extends Controller
             ['name' => 'groups', 'label' => 'Groups'],
         ];
 
+        $view = 'card';
+        if (request()->has('view') && request()->get('view')) {
+            $view = 'table';
+        }
+
         $groups = ProgramGroupPeople::where('group_id',$group->getKey())
                                             ->with('families')
                                             ->where('is_parent',true);
 
-        return view('admin.programs.groups.edit',['program' => $program,'group' => $group,'active_tab' => $tab,'tabs' => $tabs,'groups' => $groups]);
+        return view('admin.programs.groups.edit',
+                                        [
+                                            'program' => $program,
+                                            'group' => $group,
+                                            'active_tab' => $tab,
+                                            'tabs' => $tabs,
+                                            'groups' => $groups,
+                                            'view'  => $view
+                                        ]);
     }
 
     /**
@@ -372,12 +384,12 @@ class AdminProgramGroupController extends Controller
      * @param ProgramGroupPeople $people
      * @return \Illuminate\Http\Response
      */
-    public function updateFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+    public function updateFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people, string $view='card') {
         $request = request()->capture();
 
         $saveID = [];
 
-        foreach ($request->post('families') as $family) {
+        foreach ($request->post('families') ?? [] as $family) {
 
                                 // check if this family is already included in the
             $familyExists = ProgramGroupPeople::where('member_id',$family)
@@ -444,8 +456,12 @@ class AdminProgramGroupController extends Controller
         }
         // remove other groups.
         ProgramGroupPeople::where('id_parent',$people->getKey())->whereNotIn('id',$saveID)->delete();
-        $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
-        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
+        if ($view == 'card') {
+            $viewBlade = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
+        } else {
+            $viewBlade = view('admin.programs.groups.tabs.people-table',['people' => $people])->render();
+        }
+        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $viewBlade]);
     }
 
     /**
@@ -455,11 +471,13 @@ class AdminProgramGroupController extends Controller
      * @param ProgramGroupPeople $people
      * @return \Illuminate\Http\Response
      */
-    public function addFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+    public function addFamilyGroup(Request $request, Program $program, ProgramGrouping $group, ProgramGroupPeople $people, string $view='card') {
+        
         $request = request()->capture();
 
         $saveID = [];
         $member = Member::where('id',$people->member_id)->first();
+
         $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
 
         $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
@@ -487,13 +505,16 @@ class AdminProgramGroupController extends Controller
         }
 
         // remove other groups.
-        $view = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
-        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
+        if ($view == 'card') {
+            $viewBlade = view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
+        } else {
+            $viewBlade = view('admin.programs.groups.tabs.people-table',['people' => $people])->render();
+        }
+        return $this->json(true,'Family Information Updated.','updateFamilyGroup',['cardID' => 'groupPeople_'.$people->getKey(),'view' => $viewBlade]);
     }
 
     public function generateIDCard(Program $program, ProgramGrouping $group, ProgramGroupPeople $people, bool $resetCard = false)
     {
-
 
         if (!$people->profile) {
             return $this->json(false, 'User Do not have any profile image');
@@ -502,6 +523,11 @@ class AdminProgramGroupController extends Controller
         if (! $people->is_parent) {
             $group = $group->children()->first();
         }
+
+        /**
+         * Generate Barcode info: 
+         */
+        dump ('Generating Barcode for: ' . $people->getKey());
 
         $userResizedImage = $people->resized_image;
 
@@ -513,7 +539,8 @@ class AdminProgramGroupController extends Controller
 
         if (!$userResizedImage) {
             // get sample Image.
-            $sampleImage = asset($group->resizedImage->filepath);
+           
+            $sampleImage = asset($group->resizedImage->filepath, (config('app.env') == 'local') ? false : true);
 
             $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
             $people->resized_image = $userResizedImage;
@@ -522,20 +549,17 @@ class AdminProgramGroupController extends Controller
 
         // check if barcode is generated
         $barcodeImage = $people->barcode_image;
-
         if (! $barcodeImage ) {
 
             $barcodeImage = Image::generateBarcode($people->group_uuid, $group->barcode_print_width, $group->barcode_print_height);
             $people->barcode_image = $barcodeImage;
             $people->save();
-
         }
 
         $idCard = $people->generated_id_card;
-
         if (!$idCard) {
             //
-            $sampleImage = asset($group->resizedImage->filepath);
+            $sampleImage = asset($group->resizedImage->filepath, (config('app.env') == 'local') ? false : true);
 
             $params = [
                 asset($userResizedImage) => [
@@ -782,10 +806,11 @@ class AdminProgramGroupController extends Controller
         return $this->json(true,"Group Dharmasal information updated.","updateFamilyGroup",['cardID' => 'groupPeople_'.$people->getKey(),'view' => $view]);
     }
 
-    public function viewCard(Program $program, ProgramGrouping $group, ?ProgramGroupPeople $people) {
+    public function viewCard(Request $request, Program $program, ProgramGrouping $group, ?ProgramGroupPeople $people) {
 
         $printCards = [];
         $cards = [];
+
         if ($people?->getKey() ) {
             if (! $people->is_card_generated ) {
                 return $this->json(false,'Sorry Card has not been genered yet.');
@@ -803,9 +828,37 @@ class AdminProgramGroupController extends Controller
                     $cards[] = asset($family->generated_id_card);
                 }
             }
+        } elseif($request->get('bulkPrint') ) {
+            $registrationCode = explode(',',$request->get('bulkPrint'));
+            $peoples = ProgramGroupPeople::where('is_card_generated',true)
+                                            ->where('is_parent', true)
+                                            ->where('group_id', $group->getKey())
+                                            ->whereIn('member_id',$registrationCode)
+                                            ->get();
+
+            foreach ($peoples as $people ) {
+
+                $cards[] = asset($people->generated_id_card);
+
+                if ($people->families()->count() ) {
+
+                    foreach ($people->families as $family) {
+                        
+                        if ( ! $family->is_card_generated ) {
+                            continue;
+                        }
+        
+                        $cards[] = asset($family->generated_id_card);
+                    }
+                }
+                
+            }
+            
+
         } else {
             $peoples = ProgramGroupPeople::where('is_card_generated',true)
                                             ->where('is_parent',true)
+                                            ->where('group_id',$group->getKey())
                                             ->get();
             
             foreach ($peoples as $people ) {
@@ -830,6 +883,113 @@ class AdminProgramGroupController extends Controller
         $printCards = array_chunk($cards,4);
 
 
-        return view('admin.programs.groups.view-card',['printCards' => $printCards]);
+        return view('admin.programs.groups.view-card',['printCards' => $printCards,'program' => $program,'group' => $group]);
+    }
+
+    public function updateVerification(Request $request,Program $program, ProgramGrouping $group, ProgramGroupPeople $people) {
+        
+        $people->verified = $request->post('verified') == 'true' ? 1 : 0;
+        $people->save();
+        return;
+    }
+
+    public function searchGroupMember(Request $request,Program $program, ProgramGrouping $group) {
+
+        $members = ProgramStudent::all_program_student($program,$request->member,15);
+        return view('admin.programs.groups.partials.search-result',['program' => $program,'members' => $members,'group' => $group]);
+    }
+
+    public function addMemberToGroup(Request $request, Program $program, ProgramGrouping $group) {
+        
+        /**
+         * Check if member is already available
+         */
+        $groupMember = ProgramGroupPeople::where('group_id',$group->getKey())
+                                            ->where('member_id', $request->post('memberID'))
+                                            ->where('is_parent', true)
+                                            ->first();
+
+        $member = Member::with(['emergency_contact','countries'])->find($request->post('memberID'));
+
+        if ( ! $groupMember ) {
+            $groupMember = new ProgramGroupPeople();
+            $groupMember->fill([
+                'member_id' => $member->getKey(),
+                'group_id'  => $group->getKey(),
+                'program_id'    => $program->getKey(),
+                'is_parent' => true,
+                'phone_number'  => $member->phone_number,
+                'email' => $member->email,
+                'full_name' => $member->full_name
+            ]);
+
+            $country = $member->countries?->name;
+
+            if ( ! $country ) {
+                $country .= $member->country;
+            }
+
+            $country .= ', ' .$member->city;
+            $country .= ', ';
+            $country .= $member->address ? $member->address->street_address : '';
+
+            $groupMember->address = $country;
+            $groupMember->group_uuid = \App\Classes\Helpers\Str::uuid();
+            $groupMember->is_card_generated = false;
+            $groupMember->generated_id_card = false;
+
+
+            if ($member->memberIDMedia) {
+                $groupMember->member_id_card = $member->memberIDMedia->getKey();
+            }
+
+            if ($member->profileImage) {
+                $groupMember->profile_id = $member->profileImage->getKey();
+            }
+
+            $groupMember->save();
+        }
+        
+        $families = $member->emergency_contact()->whereIn('id',$request->post('families') ?? [])->get();
+
+        foreach ($families as $family) {
+            // check if this family member has already been added.
+            $groupPeople = ProgramGroupPeople::where('group_id',$group->getKey())
+                                                ->where('member_id',$family->getKey())
+                                                ->where('is_parent',false)
+                                                ->where('id_parent',$groupMember->getKey())
+                                                ->first();
+            if ( ! $groupPeople ) {
+                $groupPeople = new ProgramGroupPeople;
+                $groupPeople->fill([
+                    'member_id' => $family->getKey(),
+                    'program_id'    => $program->getKey(),
+                    'group_id'  => $group->getKey(),
+                    'full_name' => $family->contact_person,
+                    'phone_number'  => $family->phone_number,
+                    'is_parent' => false,
+                    'address' => $groupMember->address,
+                    'group_uuid'    => Str::uuid(),
+                    'parent_relation'   => $family->relation,
+                    'email' => $family->email_address,
+                    'id_parent' => $groupMember->getKey()
+                ]);
+
+                $familyPhoto = $family->profileImage;
+
+                if ($familyPhoto) {
+                    $groupPeople->profile_id = $familyPhoto->getKey();
+                }
+
+                $groupPeople->save();
+
+            }
+        }
+        return response([
+            "success" => true,
+            "message" => "Member Enrolled.",
+            "redirect" => true,
+            "ajax" => true,
+        ]);
     }
 }

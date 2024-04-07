@@ -7,6 +7,13 @@ $group = \App\Models\ProgramGrouping::where('id',request()->get('group'))->first
 
 $profileID = null;
 $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor'])->get();
+
+$currentView = 'card';
+
+if (isset($view) ) {
+    $currentView = $view;
+}
+
 ?>
 <form action="{{route('admin.program.admin_group_dharamasal',['program' => $group->program_id,'group'=>$group,'people' => $people])}}" method="post" class="ajax-form">
     <div class="modal-header bg-light">
@@ -104,10 +111,10 @@ $rooms = App\Models\Dharmasala\DharmasalaBuildingRoom::with(['building','floor']
             </div>
             <div class="col-md-3 text-end d-flex justify-content-center align-items-center">
                 @if( ! $people->member_id_card)
-                @php($isMissingInformation=true)
-                    <h4 class="text-danger">ID Card Not Found</h4>
-                @else
-                <img src="{{App\Classes\Helpers\Image::getImageAsSize($people->profile->filepath,'s')}}" class="img-fluid"/>
+                    @php($isMissingInformation=true)
+                        <h4 class="text-danger">ID Card Not Found</h4>
+                    @else
+                <img src="{{App\Classes\Helpers\Image::getImageAsSize($people->IDCard->filepath,'s')}}" class="img-fluid"/>
 
                 @endif
             </div>

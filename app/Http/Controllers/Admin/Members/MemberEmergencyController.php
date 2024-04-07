@@ -59,7 +59,7 @@ class MemberEmergencyController extends Controller
             'phone_number.*'  => 'required',
             'dikshya_type.*' => 'required',
         ]);
-
+        
         $memberToInclude = [];
 
         foreach ($request->post('full_name') ?? [] as $key => $full_name)  {
@@ -93,6 +93,7 @@ class MemberEmergencyController extends Controller
             $familyMember->verified_family = true;
             $familyMember->dikshya_type = implode(',',$request->post('dikshya_type')[$key] ?? []);
             $familyMember->save();
+            
 
             /**
              * Upload Profile Picture.
@@ -134,9 +135,14 @@ class MemberEmergencyController extends Controller
             $memberToInclude[] = $familyMember->getKey();
         }
 
-        $member->emergency()
-                ->where('contact_type','family')
-                ->whereNotIn('id',$memberToInclude)->delete();
+        if ($returnInsert) {
+            return $memberToInclude;
+        }
+
+        // $member->emergency()
+        //         ->where('contact_type','family')
+        //         ->whereNotIn('id',$memberToInclude)->delete();
+
     }
 
     public function uploadProfile(Request $request, Member $member, MemberEmergencyMeta $emergencyMeta) {

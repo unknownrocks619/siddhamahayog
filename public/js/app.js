@@ -5477,6 +5477,22 @@ $(function () {
     event.preventDefault();
     $($(this).attr('data-bs-target')).trigger('click');
   });
+  $(document).on('click', '.js-close-element', function (event) {
+    if (!$($(this).data('bs-target')).length) {
+      console.error('Element Not found.');
+      return;
+    }
+
+    if ($(this).data('bs-type') === 'collapse') {
+      console.log('Element: ', $($(this).data('bs-target')));
+      $($(this).data('bs-target')).removeClass('show').css({
+        'display': 'none !important'
+      });
+      return;
+    }
+
+    $($(this).data('bs-target')).hide();
+  });
 
   window.handleOKResponse = function (response) {
     if (response.status == 200) {
@@ -6534,15 +6550,44 @@ var ProgramGrouping = /*#__PURE__*/function () {
   }, {
     key: "updateFamilyGroup",
     value: function updateFamilyGroup(params) {
-      console.log('card element: ', params);
-
       var _cardElement = $('#' + params.cardID);
 
       _classPrivateMethodGet(this, _setCardLoader, _setCardLoader2).call(this, true, _cardElement);
 
-      var _getContentFrom = $(params.view).find('.card').html();
+      var _getContentFrom = '';
+
+      if (_cardElement.is('tr')) {
+        _getContentFrom = $($(params.view)[0]).html(); // console.log('tr element: ', $($(params.view)[0]).html());
+      } else {
+        _getContentFrom = $(params.view).find('.card').html();
+      }
 
       $(_cardElement).html(_getContentFrom);
+    }
+  }, {
+    key: "userVerification",
+    value: function userVerification(elm) {
+      var _verified = false;
+
+      if ($(elm).is(":checked")) {
+        _verified = true;
+      }
+
+      var _url = $(elm).closest('tr').attr('data-action');
+
+      if (_url === undefined) {
+        _url = $(elm).parent().attr('data-action');
+      }
+
+      console.log('url: ', _url);
+      var _body = {
+        'verified': _verified
+      };
+      $.ajax({
+        type: "POST",
+        url: _url,
+        data: _body
+      });
     }
   }]);
 

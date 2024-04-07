@@ -2,10 +2,18 @@
     $member = App\Models\Member::with(['emergency_contact' => function($query){
         $query->where('contact_type','family');
     }])->where('id',request()->get('member'))->first();
+    
     $group = App\Models\ProgramGrouping::where('id',request()->get('group'))->first();
     $people = App\Models\ProgramGroupPeople::where('id',request()->get('people'))->first();
+
+    $currentView = 'card';
+
+    if (isset($layoutView) ) {
+        $currentView = 'table';
+    }
+
 @endphp
-<form method="post" class="ajax-form" action="{{route('admin.program.admin_update_family_group',['program' => $group->program_id,'group' => $group,'people' => $people])}}">
+<form method="post" class="ajax-form" action="{{route('admin.program.admin_update_family_group',['program' => $group->program_id,'group' => $group,'people' => $people,'view' => $currentView])}}">
     <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel1">Select Family For {{$member->full_name}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
