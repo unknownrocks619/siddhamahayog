@@ -48,11 +48,12 @@ class InterventionImageHelper
     public static function resize(string $fileURL, int|float $width, int|float $height, string $savePath) {
         $interventionImage = ImageManagerStatic::make($fileURL);
         $interventionImage->resize($width,$height);
-        $interventionImage->save($savePath);
+        Storage::disk('local')->put($savePath,$interventionImage->stream()->__toString());
+//        $interventionImage->save(St$savePath);
     }
 
     /**
-     * 
+     *
      */
     public static function textToCanva(string $fileUrl = '', string|array $texts, int|float $width, int|float $height, int $positionX, int $positionY, string $textColor = '#002e5f', string $backgroundColor='#ffffff',$fallBack = false) {
 
@@ -84,17 +85,17 @@ class InterventionImageHelper
         $canvaImage = ImageManagerStatic::canvas($width,$height,$backgroundColor);
         foreach ($texts as $text) {
 
-            $canvaImage->text($text,$startPositionX,$startPositionY,function(Font $font) 
+            $canvaImage->text($text,$startPositionX,$startPositionY,function(Font $font)
                         use ($textColor,
                                 &$startPositionX,
-                                &$startPositionY, 
-                                $width, 
+                                &$startPositionY,
+                                $width,
                                 $text,
                                 $fallBack,
                                 $fontSize,
                                 $addExtra) {
 
-                    
+
                 $font->color($textColor)
                     ->file(public_path('assets/fonts/Roboto-Bold.ttf'))
                     ->size($fontSize)
@@ -107,9 +108,9 @@ class InterventionImageHelper
                     try {
                         $font->size =  $width / strlen($text) + 5;
                     } catch (DivisionByZeroError) {
-                        
+
                     }
-                    
+
                     $size = $font->getBoxSize();
                 }
 
