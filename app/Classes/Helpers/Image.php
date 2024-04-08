@@ -238,7 +238,7 @@ class Image
     public static function generateBarcode(string $text, int $width, int $height) {
         $barcodeGenerator = new BarcodeGeneratorJPG();
         $orientation = ($width > $height) ? 'horizontal' : 'vertical';
-        $barcodeImage = $barcodeGenerator->getBarcode($text,$barcodeGenerator::TYPE_CODE_128,1,$height);
+        $barcodeImage = $barcodeGenerator->getBarcode($text,$barcodeGenerator::TYPE_CODE_128,2,$height);
 
         $generatedFilename = Str::random(20);
         Storage::disk('local')->put("uploads/barcode/{$text}_".$generatedFilename.'.png',$barcodeImage);
