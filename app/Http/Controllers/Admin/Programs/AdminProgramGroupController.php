@@ -610,7 +610,7 @@ class AdminProgramGroupController extends Controller
             InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
                 $group->personal_info_print_width,
                 $group->personal_info_print_height,
-                $group->personal_info_print_position_x-10,
+                $group->personal_info_print_position_x,
                 $group->personal_info_print_position_y,
                 $group->print_primary_colour
             );
@@ -852,7 +852,7 @@ class AdminProgramGroupController extends Controller
                         continue;
                     }
 
-                    $cards[] = asset($family->generated_id_card);
+                    $cards[] = Image::getImageAsSize($family->generated_id_card,'cards');
                 }
             }
         } elseif($request->get('bulkPrint') ) {
