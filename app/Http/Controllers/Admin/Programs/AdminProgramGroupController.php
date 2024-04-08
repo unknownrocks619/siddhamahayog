@@ -571,6 +571,7 @@ class AdminProgramGroupController extends Controller
         }
 
         $idCard = $people->generated_id_card;
+
         if (!$idCard) {
             //
             $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
@@ -608,14 +609,34 @@ class AdminProgramGroupController extends Controller
                 $text[] = $dharmsala->building_name . $dharmsala->room_number. "(".$dharmsala->floor_name.")";
             }
 
-            InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
+            $userInfo = InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
                 $group->personal_info_print_width,
                 $group->personal_info_print_height,
-                $group->personal_info_print_position_x,
+                $group->personal_info_print_position_x - 10,
                 $group->personal_info_print_position_y,
                 $group->print_primary_colour
             );
 
+            $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
+
+            // $params = [
+            //     Image::getImageAsSize($userInfo,'text') => [
+            //         'positionX' => $group->id_card_print_position_x-15,
+            //         'positionY' => $group->id_card_print_position_y,
+            //     ],
+            //     Image::getImageAsSize($barcodeImage,'barcode') => [
+            //         'positionX' => $group->barcode_print_position_x - 10,
+            //         'positionY' => $group->barcode_print_position_y
+            //     ]
+            // ];
+            $interventionImageInstance = InterventionImageHelper::insertImage(Image::getImageAsSize($people->generated_id_card,'cards'), Image::getImageAsSize($userInfo,'text'),$group->personal_info_print_position_x - 10,
+            $group->personal_info_print_position_y);
+            
+
+            if ($interventionImageInstance) {
+                $people->generated_id_card = $interventionImageInstance;
+                $people->save();
+            }
         }
 
         $people->is_card_generated = true;

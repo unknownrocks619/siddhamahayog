@@ -2,6 +2,7 @@
 
 namespace App\Classes\Helpers;
 
+use App\Classes\Helpers\Image as HelpersImage;
 use DivisionByZeroError;
 use Dompdf\Adapter\GD;
 use Illuminate\Support\Facades\Storage;
@@ -121,18 +122,19 @@ class InterventionImageHelper
 
         }
         $generateFilename = Str::random(30).'.png';
-        $path = 'uploads/text/'.$generateFilename;
-        Storage::disk('local')->put($path,$canvaImage->stream()->__toString());
+        $path = $generateFilename;
+        Storage::disk('local')->put('uploads/text/'.$path,$canvaImage->stream()->__toString());
 
-        if ( $fileUrl ) {
-            $internVentionImage->insert($canvaImage,'top-left',$positionX,$positionY);
-            $filepathInfo = pathinfo($fileUrl,PATHINFO_BASENAME);
-            Storage::disk('local')->put('uploads/cards/'.$filepathInfo, $internVentionImage->stream()->__toString());
-//            $internVentionImage->save('uploads/cards/'.$filepathInfo);
+//         if ( $fileUrl ) {
+//             $internVentionImage->insert(HelpersImage::getImageAsSize($canvaImage,'text'),'top-left',$positionX,$positionY);
+//             $filepathInfo = pathinfo($fileUrl,PATHINFO_BASENAME);
+//             Storage::disk('local')->put('uploads/cards/'.$filepathInfo, $internVentionImage->stream()->__toString());
+// //            $internVentionImage->save('uploads/cards/'.$filepathInfo);
 
-        } else {
-            return asset($path);
-        }
+//         } else {
+//             return $path;
+//         }
+        return $path;
     }
 
 
