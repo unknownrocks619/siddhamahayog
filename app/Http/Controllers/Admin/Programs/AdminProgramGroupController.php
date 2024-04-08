@@ -865,7 +865,7 @@ class AdminProgramGroupController extends Controller
 
             foreach ($peoples as $people ) {
 
-                $cards[] = Image::getImageAsSize($people->generated_id_card);
+                $cards[] = Image::getImageAsSize($people->generated_id_card,'cards');
 
                 if ($people->families()->count() ) {
 
@@ -875,7 +875,7 @@ class AdminProgramGroupController extends Controller
                             continue;
                         }
 
-                        $cards[] = asset($family->generated_id_card);
+                        $cards[] = Image::getImageAsSize($family->generated_id_card,'cards');
                     }
                 }
 
@@ -890,7 +890,7 @@ class AdminProgramGroupController extends Controller
 
             foreach ($peoples as $people ) {
 
-                $cards[] = asset($people->generated_id_card);
+                $cards[] = Image::getImageAsSize($people->generated_id_card,'cards');
 
                 if ($people->families()->count() ) {
 
@@ -900,7 +900,7 @@ class AdminProgramGroupController extends Controller
                             continue;
                         }
 
-                        $cards[] = asset($family->generated_id_card);
+                        $cards[] = Image::getImageAsSize($family->generated_id_card,'cards');
                     }
                 }
 
