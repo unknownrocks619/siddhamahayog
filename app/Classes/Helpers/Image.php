@@ -245,7 +245,7 @@ class Image
 
         $filename=  "{$text}_".$generatedFilename.'.png';
         // InterventionImageHelper::horizontalOrientation(asset($filename),$filename);
-        InterventionImageHelper::resize(Image::getImageAsSize($filename,'barcode'),$width,$height,$filename);
+//        InterventionImageHelper::resize(Image::getImageAsSize($filename,'barcode'),$width,$height,$filename);
 
         return $filename;
     }
