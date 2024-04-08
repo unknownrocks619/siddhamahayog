@@ -305,7 +305,7 @@
 
                                 <div class="row mt-5">
                                     <div class="col-md-8" style="position:relative">
-                                        <img src="{{App\Classes\Helpers\Image::getImageAsSize($children->resizedImage->filepath,'resized')}}" style="width:{{$children->actual_print_width}}px !important; height:{{$children->actual_print_height}}px !important;" />
+                                        <img src="{{App\Classes\Helpers\Image::getImageAsSize($children->resizedImage->filepath,'resized')}}" style="min-width:{{$children->actual_print_width}}px !important; min-height:{{$children->actual_print_height}}px !important;" />
                                         <div id="idCardAreaChild" style="position: absolute;min-width:{{$children->id_card_print_width ?? 0}}px;min-height:{{$children->id_card_print_height ?? 0}}px;left:{{$children->id_card_print_position_x ?? 0}}px; top: {{$children->id_card_print_position_y ?? 0}}px;border: 1px dashed"></div>
                                         <div id="barCodeAreaChild"  style="position: absolute;min-width:{{$children->barcode_print_width ?? 0}}px;min-height:{{$children->barcode_print_height ?? 0}}px;left:{{$children->barcode_print_position_x ?? 0}}px; top: {{$children->barcode_print_position_y ?? 0}}px;border: 1px dashed red"></div>
                                         <div id="personalInfoAreaChild" style="position: absolute;min-width:{{$children->personal_info_print_width ?? 0}}px;min-height:{{$children->personal_info_print_height ?? 0}}px;left:{{$children->personal_info_print_position_x ?? 0}}px; top: {{$children->personal_info_print_position_y ?? 0}}px;border: 1px dashed green"></div>

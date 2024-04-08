@@ -33,7 +33,7 @@ class InterventionImageHelper
             $interventionImageInstance->insert($insertImage,'top-left',$cordinates['positionX'],$cordinates['positionY']);
         }
 
-        $generatedFilename = Str::random(60);
+        $generatedFilename = Str::random(20);
         Storage::disk('local')->put('uploads/cards/'.$generatedFilename.'.'.$extension,$interventionImageInstance->stream()->__toString());
 
         return $generatedFilename.'.'.$extension;
@@ -48,7 +48,7 @@ class InterventionImageHelper
     public static function resize(string $fileURL, int|float $width, int|float $height, string $savePath) {
         $interventionImage = ImageManagerStatic::make($fileURL);
         $interventionImage->resize($width,$height);
-        Storage::disk('local')->put($savePath,$interventionImage->stream()->__toString());
+        Storage::disk('local')->put('uploads/barcode/'.$savePath,$interventionImage->stream()->__toString());
 //        $interventionImage->save(St$savePath);
     }
 
