@@ -131,6 +131,7 @@ class AdminProgramGroupController extends Controller
         $request = request()->capture();
         ini_set('memory_limit',-1);
         ini_set('max_execution_time', -1);
+        
         if ($request->ajax() ) {
 
             $rules = [];

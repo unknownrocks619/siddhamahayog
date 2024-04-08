@@ -23,6 +23,21 @@ class ProgramFeeDataTablesController extends Controller
             $filters['admin'] = $request->get('filter_staff');
         }
         
+        if ($request->get('filter_amount') && $request->get('amp;filter_type') ) {
+            $filter = $request->get('amp;filter_type');
+            $type = '>';
+            if ($filter == 'gte') {
+                $type = '>=';
+            } else if ($filter == 'lt') {
+                $type = "<";
+            } else if ($filter == 'lte' ) {
+                $type = "<=";
+            }
+            $filters['amount']['value'] = $request->get('filter_amount');
+            $filters['amount']['operator'] = $type;
+        }
+
+        
         return DataTables::of($program->transactionsDetail($searchTerm,$filters))
                         ->addColumn('transaction_date', function ($row) {
                             return date("Y-m-d", strtotime($row->transaction_date));

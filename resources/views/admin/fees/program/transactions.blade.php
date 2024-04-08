@@ -54,6 +54,24 @@
                                     </select>
                                 </div>
                             </div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="filter_staff">Filter By Amount: </label>
+                                    <input type="number" name="filter_amount" id="filter_amount" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="filter_type">Filter Type: </label>
+                                    <select name="filter_type" id="filter_type" class="form-control">
+                                        <option value="gt">Greater Than (>)</option>
+                                        <option value="lt">Less Than (<)</option>
+                                        <option value="gte">Greater Than Equals(>=)</option>
+                                        <option value="lte">Less Than Equals(<=)</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div class="col-md-12 mt-3">
                                 <button class="btn btn-primary">

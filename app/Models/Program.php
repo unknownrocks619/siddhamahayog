@@ -535,6 +535,10 @@ class Program extends AdminModel
 
         $sql .= " WHERE fee_detail.program_id = ? ";
 
+        if (isset($filters['amount']['value']) && isset($filters['amount']['operator'])) {
+            $sql .= ' AND amount ' . $filters['amount']['operator'] . ' '. $filters['amount']['value'];
+        }
+
         if ($searchTerm) {
 
             $sql .= " AND ( ";

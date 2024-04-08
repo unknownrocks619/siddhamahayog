@@ -45,7 +45,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($groups->get() as $people)
+                    @foreach ($groups->paginate(250) as $people)
                         {!! view('admin.programs.groups.tabs.people-table',['people' => $people])->render() !!}
                     @endforeach
                 </tbody>
