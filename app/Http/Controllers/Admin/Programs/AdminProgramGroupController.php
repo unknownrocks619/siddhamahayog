@@ -129,7 +129,8 @@ class AdminProgramGroupController extends Controller
     public function edit(Program $program, ProgramGrouping $group,$tab='general',?ProgramGrouping $parentGroup=null) {
 
         $request = request()->capture();
-
+        ini_set('memory_limit',-1);
+        ini_set('max_execution_time', -1);
         if ($request->ajax() ) {
 
             $rules = [];
@@ -864,7 +865,7 @@ class AdminProgramGroupController extends Controller
 
             foreach ($peoples as $people ) {
 
-                $cards[] = asset($people->generated_id_card);
+                $cards[] = Image::getImageAsSize($people->generated_id_card);
 
                 if ($people->families()->count() ) {
 
