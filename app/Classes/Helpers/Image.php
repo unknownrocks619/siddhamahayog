@@ -219,12 +219,12 @@ class Image
 //            $constraint->aspectRatio();
             // $constraint->upsize();
         });
-        $generatedFilename = Str::random(60);
+        $generatedFilename = Str::random(20);
 
         $fileExtension = pathinfo(self::getImageAsSize($imagePath),PATHINFO_EXTENSION);
         Storage::disk('local')->put('uploads/resized/' . $generatedFilename.'.'.$fileExtension, $imageManager->stream()->__toString());
 
-        return 'uploads/resized/'.$generatedFilename.'.'.$fileExtension;
+        return $generatedFilename.'.'.$fileExtension;
     }
 
 
@@ -234,18 +234,17 @@ class Image
      * @param int $width
      * @param int $height
      */
-    
+
     public static function generateBarcode(string $text, int $width, int $height) {
         $barcodeGenerator = new BarcodeGeneratorJPG();
         $orientation = ($width > $height) ? 'horizontal' : 'vertical';
         $barcodeImage = $barcodeGenerator->getBarcode($text,$barcodeGenerator::TYPE_CODE_128,$width/ strlen($text),$height);
-        $generatedFilename = Str::random(60);
+        $generatedFilename = Str::random(20);
         Storage::disk('local')->put("uploads/barcode/{$text}_".$generatedFilename.'.png',$barcodeImage);
 
-        $filename =  "uploads/barcode/{$text}_".$generatedFilename.'.png';
-
+        $filename=  "{$text}_".$generatedFilename.'.png';
         // InterventionImageHelper::horizontalOrientation(asset($filename),$filename);
-        InterventionImageHelper::resize(asset($filename,(config('app.env') == 'local') ? false : true),$width,$height,$filename);
+        InterventionImageHelper::resize(Image::getImageAsSize($filename,'barcode'),$width,$height,$filename);
 
         return $filename;
     }

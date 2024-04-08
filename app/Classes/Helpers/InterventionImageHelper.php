@@ -36,7 +36,7 @@ class InterventionImageHelper
         $generatedFilename = Str::random(60);
         Storage::disk('local')->put('uploads/cards/'.$generatedFilename.'.'.$extension,$interventionImageInstance->stream()->__toString());
 
-        return 'uploads/cards/'.$generatedFilename.'.'.$extension;
+        return $generatedFilename.'.'.$extension;
     }
 
     public static function horizontalOrientation($url,$savepath) {
@@ -127,7 +127,8 @@ class InterventionImageHelper
         if ( $fileUrl ) {
             $internVentionImage->insert($canvaImage,'top-left',$positionX,$positionY);
             $filepathInfo = pathinfo($fileUrl,PATHINFO_BASENAME);
-            $internVentionImage->save('uploads/cards/'.$filepathInfo);
+            Storage::disk('local')->put('uploads/cards/'.$filepathInfo, $internVentionImage->stream()->__toString());
+//            $internVentionImage->save('uploads/cards/'.$filepathInfo);
 
         } else {
             return asset($path);

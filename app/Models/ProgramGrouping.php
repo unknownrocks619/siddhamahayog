@@ -182,7 +182,7 @@ class ProgramGrouping extends Model
         return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
             ->where('relation',self::class)
             ->where('type',self::IMAGE_RESIZED)
-            ->latest();
+            ->orderByDesc('id');
     }
 
     public function children() {

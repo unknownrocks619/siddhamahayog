@@ -551,7 +551,7 @@ class AdminProgramGroupController extends Controller
         if (!$userResizedImage) {
             // get sample Image.
 
-            $sampleImage = asset($group->resizedImage->filepath, (config('app.env') == 'local') ? false : true);
+            $sampleImage = asset($group->resizedImage->filepath, false);
 
             $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
             $people->resized_image = $userResizedImage;
@@ -560,6 +560,7 @@ class AdminProgramGroupController extends Controller
 
         // check if barcode is generated
         $barcodeImage = $people->barcode_image;
+
         if (! $barcodeImage ) {
 
             $barcodeImage = Image::generateBarcode($people->group_uuid, $group->barcode_print_width, $group->barcode_print_height);
@@ -570,19 +571,18 @@ class AdminProgramGroupController extends Controller
         $idCard = $people->generated_id_card;
         if (!$idCard) {
             //
-            $sampleImage = asset($group->resizedImage->filepath, (config('app.env') == 'local') ? false : true);
+            $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
 
             $params = [
-                asset($userResizedImage) => [
+                Image::getImageAsSize($userResizedImage,'resized') => [
                     'positionX' => $group->id_card_print_position_x-15,
                     'positionY' => $group->id_card_print_position_y,
                 ],
-                asset($barcodeImage) => [
+                Image::getImageAsSize($barcodeImage,'barcode') => [
                     'positionX' => $group->barcode_print_position_x - 10,
                     'positionY' => $group->barcode_print_position_y
                 ]
             ];
-
             $interventionImageInstance = InterventionImageHelper::insertImage($sampleImage, $params);
 
 
@@ -606,7 +606,7 @@ class AdminProgramGroupController extends Controller
                 $text[] = $dharmsala->building_name . $dharmsala->room_number. "(".$dharmsala->floor_name.")";
             }
 
-            InterventionImageHelper::textToCanva(asset($interventionImageInstance), $text,
+            InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
                 $group->personal_info_print_width,
                 $group->personal_info_print_height,
                 $group->personal_info_print_position_x-10,
