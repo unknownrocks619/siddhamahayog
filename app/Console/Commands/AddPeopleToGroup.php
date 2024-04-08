@@ -38,7 +38,6 @@ class AddPeopleToGroup extends Command
         $program = Program::find($this->argument('programID'));
         // get all groups based on the id.
         $groups = ProgramGrouping::where('program_id',$program->getKey())->where('enable_auto_adding',TRUE)->get();
-
         foreach ($groups as $group) {
 
             echo 'Import Users into '. $group->group_name . PHP_EOL;
@@ -55,14 +54,14 @@ class AddPeopleToGroup extends Command
 //            dd($rules);
             $groupUsersQuery = ProgramStudentFee::where('program_id', $group->program_id)
                                                         ->where('student_batch_id',$group->batch_id)
-                                                        ->where('total_amount' , '>=', $rules->first()['amount'])
+                                                        ->where('total_amount' , '>=', (int)trim($rules->first()['amount']))
                                                         ->with(['member' => function($query) {
                                                             $query->with(['memberIDMedia','profileImage']);
                                                         }]);
             if ($rules->count() > 1) {
-                $groupUsersQuery->where('total_amount' ,'<=' , $rules->last()['amount']);
-
+                $groupUsersQuery->where('total_amount' ,'<=' ,(int) trim($rules->last()['amount']));
             }
+
             $groupUsers  = $groupUsersQuery->get();
 
             $peopleArrangementOrder = ProgramGroupPeople::where('group_id',$group->getKey())->max('order') ?? 0;
