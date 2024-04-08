@@ -837,12 +837,12 @@ class AdminProgramGroupController extends Controller
         $cards = [];
 
         if ($people?->getKey() ) {
-            dump ($people);
+
             if (! $people->is_card_generated ) {
                 return $this->json(false,'Sorry Card has not been genered yet.');
             }
 
-            $cards[] = asset($people->generated_id_card);
+            $cards[] = Image::getImageAsSize($people->generated_id_card,'cards');
 
             if ($people->families()->count() ) {
                 foreach ($people->families as $family) {
