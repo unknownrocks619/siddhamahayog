@@ -167,7 +167,7 @@ if (isset($view) ) {
                             </div>
                         </div>
 
-                        <div class="row mt-4 d-none family_check_row_{{$family->getKey()}}">
+                        <div id="family_{{$family->getKey()}}" class="row mt-4 d-none family_check_row_{{$family->getKey()}}">
                             <div class="row my-3">
                                 <div class="col-md-12">
                                     <div class="form-group">
@@ -175,7 +175,7 @@ if (isset($view) ) {
                                             Select Room Number
                                             <sup class="text-danger">*</sup>
                                         </label>
-                                        <select  name="family_room_number[{{$family->getKey()}}]" id="room_number_{{$family->getKey()}}" class="form-control fs-5">
+                                        <select data-dropdown="family_{{$family->getKey()}}" name="family_room_number[{{$family->getKey()}}]" id="room_number_{{$family->getKey()}}" class="form-control fs-5">
                                             @foreach ($rooms as $room)
                                                 <option value="{{$room->getKey()}}">
                                                     {{ $room->building?->building_name}} - {{$room->room_number}} ({{$room->floor?->floor_name}})
