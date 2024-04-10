@@ -8,6 +8,7 @@ Route::prefix('grouping/{program}')
             Route::get('list',[AdminProgramGroupController::class,'list'])->name('admin_program_grouping_list');
             Route::match(['get','post'],'create/{group?}',[AdminProgramGroupController::class,'create'])->name('admin_program_group_create');
             Route::match(['get','post'],'edit/{group}/{tab?}/{parentGroup?}',[AdminProgramGroupController::class,'edit'])->name('admin_program_group_edit');
+            Route::get('edit-ajax/{group}/{view}',[AdminProgramGroupController::class,'editAjax'])->name('admin_program_group_edit_view');
             Route::get('{group}/generate-id-card/{people}/{reset?}',[AdminProgramGroupController::class,'generateIDCard'])->name('admin_program_generate_card');
 
             Route::post('delete-group/{group}',[AdminProgramGroupController::class,'deleteGroup'])
@@ -38,4 +39,5 @@ Route::prefix('grouping/{program}')
             
             Route::post('add-member-to-group/{group}',[AdminProgramGroupController::class,'addMemberToGroup'])
                 ->name('admin_add_member_to_group');
-        });
+
+    });

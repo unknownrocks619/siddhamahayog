@@ -6,6 +6,7 @@ use App\Classes\Helpers\ExcelExport\ExcelMultipleSheet;
 use App\Classes\Helpers\Image;
 use App\Classes\Helpers\InterventionImageHelper;
 use App\Classes\Helpers\Str;
+use App\Http\Controllers\Admin\Datatables\ProgramDataTablesController;
 use App\Http\Controllers\Admin\Members\MemberEmergencyController;
 use App\Http\Controllers\Controller;
 use App\Models\Dharmasala\DharmasalaBooking;
@@ -258,11 +259,11 @@ class AdminProgramGroupController extends Controller
             ['name' => 'groups', 'label' => 'Groups'],
         ];
 
-        $view = 'card';
+        $view = 'table';
         if (request()->has('view') && request()->get('view')) {
-            $view = 'table';
+            $view = request()->get('view');
         }
-
+        
         $groups = ProgramGroupPeople::where('group_id',$group->getKey())
                                             ->with('families')
                                             ->where('is_parent',true);
@@ -276,6 +277,33 @@ class AdminProgramGroupController extends Controller
                                             'groups' => $groups,
                                             'view'  => $view
                                         ]);
+    }
+
+    public function editAjax(Program $program, ProgramGrouping $group, $view='card') {
+        $request = Request::capture();
+        if ($view == 'card') {
+            $groupPeopleQuery = ProgramGroupPeople::where('group_id',$group->getKey())
+                                            ->with('families')
+                                            ->where('is_parent',true);
+            if ($request->search) {
+
+                $searchTerm = $request->search;
+                $groupPeopleQuery->where(function($query) use ($searchTerm)  {
+                    $query->where('full_name','LIKE','%'.$searchTerm.'%')
+                            ->orWhere('phone_number','LIKE','%'.$searchTerm.'%')
+                            ->orWhere('email','LIKE','%'.$searchTerm.'%')
+                            ->orWhere('address','LIKE','%'.$searchTerm.'%');
+                });
+            }
+
+            $groupPeople = $groupPeopleQuery->paginate(150);
+            $view = view('admin.programs.groups.partials.people-card-row',['groups' => $groupPeople])->render();
+            return $this->json(true,'loaded','',['view' => $view]);
+        }
+
+        if ($view =='table') {
+            return (new ProgramDataTablesController())->programGroupPeopleList($request,$program,$group);
+        }
     }
 
     /**

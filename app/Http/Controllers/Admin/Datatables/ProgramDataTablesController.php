@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Batch;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Program;
+use App\Models\ProgramGrouping;
+use App\Models\ProgramGroupPeople;
 use App\Models\ProgramSection;
 use App\Models\ProgramVolunteer;
 use Illuminate\Http\Request;
@@ -427,5 +429,65 @@ class ProgramDataTablesController extends Controller
         return $datatable;
 
     }
+
+    public function programGroupPeopleList(Request $request, Program $program, ProgramGrouping $group ,string $searchTerm="") {
+        
+        $request->merge(['page' => $request->get('draw')]);
+        // $offsetSet = $request->get('draw') == 1 ? 0 : $request->get('draw') - 1 ;
+        // dd($offsetSet *);
+        $groupPeopleQuery = ProgramGroupPeople::where('group_id',$group->getKey())
+                                            ->with('families')
+                                            ->where('is_parent',true);
+        if ($request->get('search')['value'] && ! empty(trim($request->get('search')['value']))) {
+            $request->merge(['page' => 0]);
+            $searchTerm = $request->get('search')['value'];
+
+            $groupPeopleQuery->where(function($query) use ($searchTerm)  {
+                $query->where('full_name','LIKE','%'.$searchTerm.'%')
+                        ->orWhere('phone_number','LIKE','%'.$searchTerm.'%')
+                        ->orWhere('email','LIKE','%'.$searchTerm.'%')
+                        ->orWhere('address','LIKE','%'.$searchTerm.'%');
+            });
+        }
+        $groupPeople = $groupPeopleQuery->get();
+        
+        // $totalRecord = ProgramGroupPeople::where('group_id',$group->getKey())
+        //                                     ->with('families')
+        //                                     ->where('is_parent',true)
+        //                                     ->count();
+
+        $datatable =  DataTables::of($groupPeople)
+                                    ->addColumn('input',fn($people) => view('admin.datatable-view.programs.groups.input',['people' => $people])->render())
+                                    ->addColumn('full_name',fn($people) => view('admin.datatable-view.programs.groups.full_name',['people' => $people])->render())
+                                    ->addColumn('family', fn($people) => view('admin.datatable-view.programs.groups.family',['people' => $people])->render())
+                                    ->addColumn('remarks', fn($people) => view('admin.datatable-view.programs.groups.remarks',['people' => $people])->render())
+                                    ->setRowClass(function($people){
+                                       $missingFamilyProfile = [];
+
+                                        foreach ($people->families as $family) {
+                                            if( ! $family->profile_id){
+                                                $missingFamilyProfile[] = $family->full_name;
+                                            }
+                                        }
+                                        
+                                        if (count($missingFamilyProfile) >= 1 ) {
+                                            return 'bg-danger text-white';
+                                        } 
+
+                                        return '';
+
+                                        
+                                    })->setRowAttr([
+                                            'id' => fn($people) =>  'groupPeople_'.$people->getKey(),
+                                            'data-action' => fn($people) => route('admin.program.admin_people_verification',['program' => $people->program_id,'group' => $people->group_id,'people' => $people]),
+                                        ]
+                                    )
+                                    ->addColumn('action', fn($people) => view('admin.datatable-view.programs.groups.action',['people' => $people])->render())                                    
+                                    ->rawColumns(['full_name','action','family','input','remarks'])
+                                    // ->setTotalRecords($totalRecord)
+                                    ->make(true);
+        return $datatable;
+
+    } 
 
 }

@@ -51,17 +51,17 @@ class AddPeopleToGroup extends Command
                 $item['amount'] = $amount;
                 return $item;
             })->sortKeys();
-//            dd($rules);
+           dump($rules);
             $groupUsersQuery = ProgramStudentFee::where('program_id', $group->program_id)
                                                         ->where('student_batch_id',$group->batch_id)
-                                                        ->where('total_amount' , '>=', (int)trim($rules->first()['amount']))
+                                                        ->where('total_amount' , $this->queryOperator($rules->first()['operator']), (int)trim($rules->first()['amount']))
                                                         ->with(['member' => function($query) {
                                                             $query->with(['memberIDMedia','profileImage']);
                                                         }]);
             if ($rules->count() > 1) {
-                $groupUsersQuery->where('total_amount' ,'<=' ,(int) trim($rules->last()['amount']));
+                $groupUsersQuery->where('total_amount' ,$this->queryOperator($rules->last()['operator']) ,(int) trim($rules->last()['amount']));
             }
-
+            
             $groupUsers  = $groupUsersQuery->get();
 
             $peopleArrangementOrder = ProgramGroupPeople::where('group_id',$group->getKey())->max('order') ?? 0;
@@ -98,7 +98,6 @@ class AddPeopleToGroup extends Command
                 echo 'Importing User : '. $groupUser->full_name  . '('.$groupUser->student_id.')' . PHP_EOL;
 
                 $groupPeople = new ProgramGroupPeople();
-
                 $groupPeople->fill([
                     'member_id' => $groupUser->student_id,
                     'group_id'  => $group->getKey(),
@@ -106,7 +105,7 @@ class AddPeopleToGroup extends Command
                     'is_parent' => true,
                     'order' => $peopleArrangementOrder,
                     'is_card_generated' => false,
-                    'full_name' => ucwords($groupUser->member?->full_name),
+                    'full_name' => ucwords($groupUser->member?->full_name()),
                     'group_uuid' => \App\Classes\Helpers\Str::uuid(),
                     'email' => $groupUser->member?->email,
                     'phone_number'  => $groupUser->member?->phone_number ?? $group->phone_number,
@@ -194,4 +193,27 @@ class AddPeopleToGroup extends Command
         }
     }
 
+    private function queryOperator(string $operator) : string {
+        switch (strtolower($operator)){
+            case "gt":
+                return '>';
+                break;
+            case 'gtq':
+                return '>=';
+                break;
+
+            case 'lt':
+                return '<';
+                break;
+            case "ltq":
+                return '<=';
+                break;
+            case "eq":
+                return '=';
+                break;
+            default:
+                return '>';
+
+        }
+    }
 }

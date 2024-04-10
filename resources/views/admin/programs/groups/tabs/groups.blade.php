@@ -20,21 +20,21 @@
 </div>
 
 @if ($view == 'card')
-    @php 
-        $groups->chunk(3, function($groupsAll){
-            echo '<div class="row my-3">';
-                foreach($groupsAll as $people):
-                    echo view('admin.programs.groups.tabs.people-card',['people' => $people])->render();
-                endforeach;
-            echo '</div>';
-        })
-    @endphp
+    <div class="row">
+        <div class="col-md-12 my-2">
+            <div class="form-group">
+                <input type="search" class="searchCardView form-control py-2">
+            </div>
+        </div>
+        <div class="col-md-12" id="groups_people_list_card"></div>
+    </div>
+    
 @endif
 
 @if($view == 'table')
     <div class='row'>
         <div class='col-md-12 table-responsive'>
-            <table class='table table-hover table-bordered'>
+            <table class='table table-hover table-bordered' id="groups_people_list_table">
                 <thead>
                     <tr>
                         <th></th>
@@ -45,9 +45,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($groups->paginate(250) as $people)
-                        {!! view('admin.programs.groups.tabs.people-table',['people' => $people])->render() !!}
-                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -59,3 +56,103 @@
 <x-modal modal="addMember">
     @include('admin.modal.programs.groups.select-user',['program' => $program,'group' => $group])
 </x-modal>
+@if($view =='card')
+    @push('page_script')
+        <script>
+            $(document).ready(function() {
+                $.ajax({
+                    type : "get",
+                    url : "{{route('admin.program.admin_program_group_edit_view',['group' => $group,'program' => $program,'view' => 'card'])}}",
+                    success: function(response) {
+                        $('#groups_people_list_card').html(response.params.view);
+                    }
+                })
+            })
+            $('.serachCardView').on('change',function(event) {
+                if ($(this).val() == '' ) {
+                    $(this).trigger('keypress');
+                }
+            })
+            $('.searchCardView').keypress(function(event) {
+                let _this = this;
+                if ($(this).val() == '') {
+                    console.log('hello woere');
+                    let _page = $(document).find('.page-item.active').attr('data-current-page');
+                    $.ajax({
+                    type : "get",
+                    url : "{{route('admin.program.admin_program_group_edit_view',['group' => $group,'program' => $program,'view' => 'card'])}}?page="+_page,
+                        success: function(response) {
+                            $('#groups_people_list_card').html(response.params.view);
+                        }
+                    })
+
+                    return;
+                }
+                $.ajax({
+                    type : "get",
+                    url : "{{route('admin.program.admin_program_group_edit_view',['group' => $group,'program' => $program,'view' => 'card'])}}?search="+ $(_this).val(),
+                        success: function(response) {
+                            $('#groups_people_list_card').html(response.params.view);
+                        }
+                    })
+
+            })
+
+
+            $(document).on('click','[data-current-page]', function(event) {
+                event.preventDefault();
+                let _this = this;
+                $.ajax({
+                    type : "get",
+                    url : "{{route('admin.program.admin_program_group_edit_view',['group' => $group,'program' => $program,'view' => 'card'])}}?page="+$(_this).attr('data-current-page'),
+                    success: function(response) {
+                        $('#groups_people_list_card').html(response.params.view);
+                    }
+                })
+            })
+        </script>
+    @endpush
+@endif
+@if($view == 'table')
+    @push('page_script')
+    <script>
+        $('#groups_people_list_table').DataTable({
+            processing: true,
+            serverSide: true,
+            fixedHeader: true,
+            orderCellsTop: true,
+            pageLength: 150,
+            aaSorting: [],
+            ajax: "{{route('admin.program.admin_program_group_edit_view',['group' => $group,'program' => $program,'view' => 'table'])}}",
+            columns: [
+                {
+                    data: "input",
+                    name: "input"
+                },
+                {
+                    data: "full_name",
+                    name: "full_name"
+                },
+                {
+                    data: "family",
+                    name: "famili"
+                },
+                {
+                  data : 'remarks',
+                  name: 'remarks'
+                },
+                {
+                    data: "action",
+                    name: "action"
+                }
+            ]
+        });
+
+        // $(function(){
+        //     var e=document.getElementById("quickUserView")
+        //     e.addEventListener("show.bs.modal",function(e){var t=document.querySelector("#wizard-create-app");if(null!==t){var n=[].slice.call(t.querySelectorAll(".btn-next")),c=[].slice.call(t.querySelectorAll(".btn-prev")),r=t.querySelector(".btn-submit");const a=new Stepper(t,{linear:!1});n&&n.forEach(e=>{e.addEventListener("click",e=>{a.next(),l()})}),c&&c.forEach(e=>{e.addEventListener("click",e=>{a.previous(),l()})}),r&&r.addEventListener("click",e=>{alert("Submitted..!!")})}})
+        // })
+    </script>
+
+    @endpush
+@endif

@@ -211,6 +211,8 @@ class Member extends Authenticatable
      * Get Full name from member
      */
     public function full_name(): string {
+
+
         $full_name = ucwords($this->first_name);
 
         if ($this->middle_name) {

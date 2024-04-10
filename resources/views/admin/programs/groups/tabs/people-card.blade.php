@@ -1,7 +1,7 @@
 @php
     $missingFamilyProfile = []
 @endphp
-<div class="col-md-4">
+<div class="col-3">
     <div class="card" id="groupPeople_{{$people->getKey()}}">
         <div class="card-alert"></div>
         <div class="card-header">
