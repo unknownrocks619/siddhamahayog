@@ -567,7 +567,7 @@ class AdminProgramGroupController extends Controller
 
                 $newFamily->save();
 
-                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
+                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid();
                 $newFamily->save();
             }
 
@@ -589,7 +589,7 @@ class AdminProgramGroupController extends Controller
 
                 $newFamily->save();
 
-                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
+                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid();
                 $newFamily->save();
             }
         }
