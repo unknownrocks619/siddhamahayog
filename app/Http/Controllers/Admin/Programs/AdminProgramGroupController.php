@@ -135,7 +135,7 @@ class AdminProgramGroupController extends Controller
         $request = request()->capture();
         ini_set('memory_limit',-1);
         ini_set('max_execution_time', -1);
-        
+
         if ($request->ajax() ) {
 
             $rules = [];
@@ -297,7 +297,7 @@ class AdminProgramGroupController extends Controller
         if (request()->has('view') && request()->get('view')) {
             $view = request()->get('view');
         }
-        
+
         $groups = ProgramGroupPeople::where('group_id',$group->getKey())
                                             ->with('families')
                                             ->where('is_parent',true);
@@ -548,10 +548,10 @@ class AdminProgramGroupController extends Controller
         if ( $member ) {
 
             $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
-            $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();    
+            $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
             foreach ($familyMembers as $familyMember)  {
                 $newFamily = new ProgramGroupPeople();
-    
+
                 $newFamily->fill([
                     'member_id'     => $familyMember->getKey(),
                     'program_id'    => $program->getKey(),
@@ -564,9 +564,9 @@ class AdminProgramGroupController extends Controller
                     'is_card_generated' => false,
                     'is_parent'     => false,
                 ]);
-    
+
                 $newFamily->save();
-    
+
                 $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
                 $newFamily->save();
             }
@@ -574,7 +574,7 @@ class AdminProgramGroupController extends Controller
         } else {
             foreach ($request->post('full_name') as $index => $value) {
                 $newFamily = new ProgramGroupPeople();
-    
+
                 $newFamily->fill([
                     'member_id'     => 0,
                     'program_id'    => $program->getKey(),
@@ -586,9 +586,9 @@ class AdminProgramGroupController extends Controller
                     'is_card_generated' => false,
                     'is_parent'     => false,
                 ]);
-    
+
                 $newFamily->save();
-    
+
                 $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
                 $newFamily->save();
             }
@@ -654,11 +654,11 @@ class AdminProgramGroupController extends Controller
                     Log::error('Profile Picture Missing, '. $people->getKey(), $people->toArray());
                     dump('User Profile Image  Not Found.');
                 }
-    
+
                 $userResizedImage = Image::resizeImage($userProfilePath, $group->id_card_print_width, $group->id_card_print_height);
                 $people->resized_image = $userResizedImage;
                 $people->save();
-    
+
             }
         }
 
@@ -682,12 +682,12 @@ class AdminProgramGroupController extends Controller
             if ( ! $noProfile ) {
                 if (! Storage::disk('local')->exists('uploads/resized/'.$userResizedImage) ) {
                     $sampleImage = asset($group->resizedImage->filepath, false);
-    
+
                     $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
                     $people->resized_image = $userResizedImage;
                     $people->save();
                 }
-    
+
             }
 
             if (! Storage::disk('local')->exists('uploads/barcode/'.$barcodeImage) ) {
@@ -706,7 +706,7 @@ class AdminProgramGroupController extends Controller
                     'positionY' => $group->id_card_print_position_y,
                 ];
             }
-           
+
             $interventionImageInstance = InterventionImageHelper::insertImage($sampleImage, $params);
 
 
@@ -721,14 +721,14 @@ class AdminProgramGroupController extends Controller
                     $people->address,
                     (strtolower($people->phone_number) == 'n/a' || strtolower($people->phone_number) == 'na') ? '**********' : str($people->phone_number)->mask('*',4)->value()
                 ];
-    
+
             }
 
-            if ( ! count($text) ) {
+            if ( count($text) > 0 ) {
                 if (! $people->is_parent ) {
                     $text[1] = $people->parentFamily?->address;
                 }
-    
+
                 if ($people->dharmasala_booking_id) {
                     $dharmsala = $people->dharmasala;
                     $text[] = $dharmsala->building_name .'-'. $dharmsala->room_number;
@@ -742,7 +742,7 @@ class AdminProgramGroupController extends Controller
                     $group->personal_info_print_position_y,
                     $group->print_primary_colour
                 );
-            
+
                 $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
 
                 // $params = [
@@ -757,9 +757,9 @@ class AdminProgramGroupController extends Controller
                 // ];
                 $interventionImageInstance = InterventionImageHelper::insertImage(Image::getImageAsSize($people->generated_id_card,'cards'), Image::getImageAsSize($userInfo,'text'),$group->personal_info_print_position_x - 10,
                 $group->personal_info_print_position_y);
-        
+
             }
-            
+
 
             if ($interventionImageInstance) {
                 $people->generated_id_card = $interventionImageInstance;
@@ -1095,7 +1095,7 @@ class AdminProgramGroupController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function addMemberToGroup(Request $request, Program $program, ProgramGrouping $group) {
-        
+
         if( !$request->post('memberID') ) {
             $groupMember = new ProgramGroupPeople();
 
@@ -1181,7 +1181,7 @@ class AdminProgramGroupController extends Controller
                 $groupMember->save();
             }
         }
-        
+
 
         $families = $member->emergency_contact()->whereIn('id',$request->post('families') ?? [])->get();
 
@@ -1220,7 +1220,7 @@ class AdminProgramGroupController extends Controller
         }
 
         /**
-         * 
+         *
          */
 
         if ($request->post('transactionID') ) {
