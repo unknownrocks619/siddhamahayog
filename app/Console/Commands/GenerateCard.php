@@ -14,7 +14,7 @@ class generateCard extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:card {programID}';
+    protected $signature = 'generate:card {programID} {groupID?}';
 
     /**
      * The console command description.
@@ -30,7 +30,16 @@ class generateCard extends Command
      */
     public function handle()
     {
-        $generateCard = ProgramGroupPeople::with(['program','programGroup'])->where('is_card_generated',false)->get();
+        $generateCardQuery = ProgramGroupPeople::with(['program','programGroup'])->where('is_card_generated',false);
+        $programID = $this->argument('programID');
+        if ( $this->argument('groupID') ) {
+            $generateCardQuery->where('group_id',(int) $this->argument('groupID'));
+        }
+        if ($programID ) {
+            $generateCardQuery->where('program_id', (int)  $programID);
+        }
+
+        $generateCard = $generateCardQuery->get();
 
         foreach ($generateCard as $people) {
             (new AdminProgramGroupController())->generateIDCard($people->program,$people->programGroup,$people);
