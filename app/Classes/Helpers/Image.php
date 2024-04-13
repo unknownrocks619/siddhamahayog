@@ -222,7 +222,7 @@ class Image
         $generatedFilename = Str::random(20);
 
         $fileExtension = pathinfo(self::getImageAsSize($imagePath),PATHINFO_EXTENSION);
-        Storage::disk('local')->put('uploads/resized/' . $generatedFilename.'.'.$fileExtension, $imageManager->stream()->__toString());
+        Storage::disk('local')->put('uploads/resized/' . $generatedFilename.'.'.$fileExtension, $imageManager->encode('jpg',100)->__toString());
 
         return $generatedFilename.'.'.$fileExtension;
     }

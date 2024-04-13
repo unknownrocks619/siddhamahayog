@@ -13,7 +13,7 @@
 @endphp
 <form method="post" class="ajax-form" action="{{route('admin.program.admin_add_family_group',['program' => $group->program_id,'group' => $group,'people' => $people,'view' => $currentView])}}">
     <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel1">Add New Family {{$member->full_name}}</h5>
+        <h5 class="modal-title" id="exampleModalLabel1">Add New Family {{$member?->full_name}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
 

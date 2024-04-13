@@ -14,7 +14,7 @@ use Intervention\Image\ImageManagerStatic;
 class InterventionImageHelper
 {
     public static function insertImage(string $originalSource, array|string $overlayImage, int $positionX=0, int $positionY=0) {
-
+        
         $interventionImageInstance = ImageManagerStatic::make($originalSource);
         $extension = pathinfo($originalSource,PATHINFO_EXTENSION);
 
@@ -73,6 +73,11 @@ class InterventionImageHelper
         $totalHeight = 0;
         foreach ($texts as $text) {
             $strlen = strlen($text);
+
+            if ($strlen <= 10 ) {
+                $strlen = 12;
+            } 
+
             if ($strlen > $totalLength ) {
                 $totalLength = $strlen;
             }
@@ -102,6 +107,10 @@ class InterventionImageHelper
                     ->size($fontSize)
                     ->align('left')
                     ->valign('top');
+                
+                if (strlen($text) <= 10 ) {
+                    $font->size(18);
+                }
 
                 $size = $font->getBoxSize();
 

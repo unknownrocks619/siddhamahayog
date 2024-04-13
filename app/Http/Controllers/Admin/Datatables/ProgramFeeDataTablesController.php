@@ -42,6 +42,9 @@ class ProgramFeeDataTablesController extends Controller
                         ->addColumn('transaction_date', function ($row) {
                             return date("Y-m-d", strtotime($row->transaction_date));
                         })
+        ->addColumn('printable',function($row) use ($program) {
+            return view('admin.datatable-view.program-fee.transaction-list.printable',['row' => $row,'program' => $program])->render();
+        })
         ->addColumn('member_name', function ($row) use ($program) {
             $member = "<a href='" . route('admin.members.show',['member' => $row->member_id,'_ref' => 'transaction-detail','_refID' => $program->getKey(),'tab' => 'billing']) . "' class='text-info text-underline'>";
             $member .= htmlspecialchars($row->full_name);
@@ -94,7 +97,7 @@ class ProgramFeeDataTablesController extends Controller
                return 'bg-label-danger';
            }
         })
-        ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status"])
+        ->rawColumns(["member_name", "transaction_amount", "media", "action", "source", "status","printable"])
         ->make(true);
     }
 }

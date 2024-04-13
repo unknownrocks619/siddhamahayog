@@ -474,6 +474,7 @@ class Program extends AdminModel
             'fee_detail.created_at as transaction_date',
             'fee_detail.fee_added_by_user as staff_id',
             'fee_detail.fee_added_by_center as center_id',
+            'fee_detail.is_marked_to_print',
             'center.center_name',
             'CONCAT(admin.firstname," ",admin.lastname) as staff_name',
             'member.full_name',

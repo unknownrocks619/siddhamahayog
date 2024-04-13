@@ -51,7 +51,7 @@ class AddPeopleToGroup extends Command
                 $item['amount'] = $amount;
                 return $item;
             })->sortKeys();
-           dump($rules);
+
             $groupUsersQuery = ProgramStudentFee::where('program_id', $group->program_id)
                                                         ->where('student_batch_id',$group->batch_id)
                                                         ->where('total_amount' , $this->queryOperator($rules->first()['operator']), (int)trim($rules->first()['amount']))
@@ -73,6 +73,7 @@ class AddPeopleToGroup extends Command
                                                 ->where('member_id', $groupUser->student_id)
                                                 ->where('is_parent' , true)
                                                 ->first();
+                echo 'Importing User : '. $groupUser->full_name  . '('.$groupUser->student_id.')' . PHP_EOL;
 
                 /**
                  *  Already Added.
@@ -95,7 +96,6 @@ class AddPeopleToGroup extends Command
                     continue;
                 }
 
-                echo 'Importing User : '. $groupUser->full_name  . '('.$groupUser->student_id.')' . PHP_EOL;
 
                 $groupPeople = new ProgramGroupPeople();
                 $groupPeople->fill([

@@ -1,4 +1,4 @@
-<form method="post" class="ajax-form" action="">
+<form method="post" class="ajax-form" action="{{route('admin.program.admin_add_member_to_group',['program' => $program,'group' => $group])}}">
     <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel1">Select Member from Enrolled List</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -18,8 +18,47 @@
                 </div>
             </div>
         </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" name="full_name" id="full_name" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone_number">Phone Number</label>
+                            <input type="text" name="phone_number" id="phone_number" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="full_address">Full Address</label>
+                            <textarea name="full_address" id="full_address" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" name="email_address" id="email_address" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-primary">Save Member Information</button>
+                    </div>
+                </div>
+            </form>
         <div class="row">
-            <div class="col-md-12" id="search_result"></div>
+            <div class="col-md-12" id="search_result">
+                
+            </div>
         </div>
 
     </div>

@@ -19,7 +19,10 @@ use App\Models\Program;
 use App\Models\ProgramGrouping;
 use App\Models\ProgramGroupPeople;
 use App\Models\ProgramStudent;
+use App\Models\ProgramStudentFeeDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class AdminProgramGroupController extends Controller
@@ -169,7 +172,11 @@ class AdminProgramGroupController extends Controller
                 'personal_info_print_height'    => $request->post('personal_info_height'),
                 'personal_info_print_position_x'    => $request->post("personal_info_position_x"),
                 'personal_info_print_position_y'    => $request->post('personal_info_position_y'),
-                'print_primary_colour'              => $request->post('primary_colour')
+                'print_primary_colour'              => $request->post('primary_colour'),
+                'actual_print_width'                => $request->post('print_size_width'),
+                'actual_print_height'               => $request->post('print_size_height')
+                // 'is_scan'                  => $request->post('scan'),
+                // 'scan_type'                  => $request->post('max_scan')
             ]);
 
             if ( $parentGroup?->getKey() ) {
@@ -177,6 +184,7 @@ class AdminProgramGroupController extends Controller
                 $group->group_name = $group->group_name;
                 $group->enable_barcode = false;
                 $group->print_primary_colour = $parentGroup->print_primary_colour;
+
             } else {
                 $group->fill([
                     'program_id' => $program->getKey(),
@@ -202,6 +210,32 @@ class AdminProgramGroupController extends Controller
 
             }
 
+            if ($group->isDirty(['actual_print_width','actual_print_height'])) {
+                /**
+                 * Resize original Image
+                 */
+                $uploadedImage = Image::getImageAsSize($group->mediaSample->filepath,'org');
+                $originalFilename = pathinfo($uploadedImage,PATHINFO_BASENAME);
+                $resized = Image::resizeImage($uploadedImage,$group->actual_print_width,$group->actual_print_height);
+                // now save this as image
+                $newImage = $group->mediaSample->replicate();
+                $newImage->filepath = $resized;
+                unset($newImage->laravel_through_key);
+                $newImage->save();
+
+                /**
+                 * Also Update Image Relation.
+                 */
+                $imageRelation = new ImageRelation();
+                $imageRelation->fill([
+                    'relation'  => $group::class,
+                    'relation_id'   => $group->getKey(),
+                    'image_id'  => $newImage->getKey(),
+                    'type'  => $group::IMAGE_RESIZED,
+                ]);
+
+                $imageRelation->save();
+            }
 
             if (! $group->save() ) {
                 return $this->json(false,'Failed to create group');
@@ -511,32 +545,56 @@ class AdminProgramGroupController extends Controller
 
         $saveID = [];
         $member = Member::where('id',$people->member_id)->first();
+        if ( $member ) {
 
-        $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
+            $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
+            $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();    
+            foreach ($familyMembers as $familyMember)  {
+                $newFamily = new ProgramGroupPeople();
+    
+                $newFamily->fill([
+                    'member_id'     => $familyMember->getKey(),
+                    'program_id'    => $program->getKey(),
+                    'group_id'      => $group->getKey(),
+                    'full_name'     => $familyMember->contact_person,
+                    'phone_number'  => $familyMember->phone_number,
+                    'email'         => $familyMember->email,
+                    'id_parent'     => $people->getKey(),
+                    'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                    'is_card_generated' => false,
+                    'is_parent'     => false,
+                ]);
+    
+                $newFamily->save();
+    
+                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
+                $newFamily->save();
+            }
 
-        $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
-
-        foreach ($familyMembers as $familyMember)  {
-            $newFamily = new ProgramGroupPeople();
-
-            $newFamily->fill([
-                'member_id'     => $familyMember->getKey(),
-                'program_id'    => $program->getKey(),
-                'group_id'      => $group->getKey(),
-                'full_name'     => $familyMember->contact_person,
-                'phone_number'  => $familyMember->phone_number,
-                'email'         => $familyMember->email,
-                'id_parent'     => $people->getKey(),
-                'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
-                'is_card_generated' => false,
-                'is_parent'     => false,
-            ]);
-
-            $newFamily->save();
-
-            $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
-            $newFamily->save();
+        } else {
+            foreach ($request->post('full_name') as $index => $value) {
+                $newFamily = new ProgramGroupPeople();
+    
+                $newFamily->fill([
+                    'member_id'     => 0,
+                    'program_id'    => $program->getKey(),
+                    'group_id'      => $group->getKey(),
+                    'full_name'     => $value,
+                    'phone_number'  => $request->post('phone_number')[$index],
+                    'id_parent'     => $people->getKey(),
+                    'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                    'is_card_generated' => false,
+                    'is_parent'     => false,
+                ]);
+    
+                $newFamily->save();
+    
+                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid($newFamily);
+                $newFamily->save();
+            }
         }
+
+
 
         // remove other groups.
         if ($view == 'card') {
@@ -557,8 +615,11 @@ class AdminProgramGroupController extends Controller
     public function generateIDCard(Program $program, ProgramGrouping $group, ProgramGroupPeople $people, bool $resetCard = false)
     {
 
-        if (!$people->profile) {
-            return $this->json(false, 'User Do not have any profile image');
+        $noProfile = false;
+
+        if (! $people->profile ) {
+            $noProfile = true;
+            // return $this->json(false, 'User Do not have any profile image');
         }
 
         if (! $people->is_parent) {
@@ -576,16 +637,29 @@ class AdminProgramGroupController extends Controller
             $people->barcode_image = null;
             $people->is_card_generated = false;
             $people->generated_id_card = null;
+            $userResizedImage = null;
+
         }
 
         if (!$userResizedImage) {
             // get sample Image.
+            if (!  $noProfile ) {
 
-            $sampleImage = asset($group->resizedImage->filepath, false);
-
-            $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
-            $people->resized_image = $userResizedImage;
-            $people->save();
+                $sampleImage = asset($group->resizedImage->filepath, false);
+                if (Storage::disk('local')->exists('uploads/org/'.$people->profile->filepath)) {
+                    $userProfilePath = Image::getImageAsSize($people->profile->filepath, 'org');
+                } else if(Storage::disk('local')->exists('uploads/xl/'.$people->profile->filepath)) {
+                    $userProfilePath = Image::getImageAsSize($people->profile->filepath, 'xl');
+                } else{
+                    Log::error('Profile Picture Missing, '. $people->getKey(), $people->toArray());
+                    dump('User Profile Image  Not Found.');
+                }
+    
+                $userResizedImage = Image::resizeImage($userProfilePath, $group->id_card_print_width, $group->id_card_print_height);
+                $people->resized_image = $userResizedImage;
+                $people->save();
+    
+            }
         }
 
         // check if barcode is generated
@@ -602,18 +676,37 @@ class AdminProgramGroupController extends Controller
 
         if (!$idCard) {
             //
-            $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
+            $sampleImage = str_replace('uploads/resized/','',$group->resizedImage->filepath);
+            $sampleImage = Image::getImageAsSize($sampleImage, 'resized');
 
-            $params = [
-                Image::getImageAsSize($userResizedImage,'resized') => [
+            if ( ! $noProfile ) {
+                if (! Storage::disk('local')->exists('uploads/resized/'.$userResizedImage) ) {
+                    $sampleImage = asset($group->resizedImage->filepath, false);
+    
+                    $userResizedImage = Image::resizeImage(Image::getImageAsSize($people->profile->filepath, 'org'), $group->id_card_print_width, $group->id_card_print_height);
+                    $people->resized_image = $userResizedImage;
+                    $people->save();
+                }
+    
+            }
+
+            if (! Storage::disk('local')->exists('uploads/barcode/'.$barcodeImage) ) {
+                $barcodeImage = Image::generateBarcode($people->group_uuid, $group->barcode_print_width, $group->barcode_print_height);
+                $people->barcode_image = $barcodeImage;
+                $people->save();
+            }
+            $params = [Image::getImageAsSize($barcodeImage,'barcode') => [
+                'positionX' => $group->barcode_print_position_x - 10,
+                'positionY' => $group->barcode_print_position_y
+            ]];
+
+            if (isset($userResizedImage) && $userResizedImage) {
+                $params[Image::getImageAsSize($userResizedImage,'resized')] = [
                     'positionX' => $group->id_card_print_position_x-15,
                     'positionY' => $group->id_card_print_position_y,
-                ],
-                Image::getImageAsSize($barcodeImage,'barcode') => [
-                    'positionX' => $group->barcode_print_position_x - 10,
-                    'positionY' => $group->barcode_print_position_y
-                ]
-            ];
+                ];
+            }
+           
             $interventionImageInstance = InterventionImageHelper::insertImage($sampleImage, $params);
 
 
@@ -621,44 +714,51 @@ class AdminProgramGroupController extends Controller
                 $people->generated_id_card = $interventionImageInstance;
                 $people->save();
             }
-
-            $text = [
-                $people->full_name,
-                $people->address,
-                $people->phone_number
-            ];
-
-            if (! $people->is_parent ) {
-                $text[1] = $people->parentFamily?->address;
+            $text = [];
+            if ($people->full_name && $people->phone_number) {
+                $text = [
+                    strtoupper($people->full_name),
+                    $people->address,
+                    (strtolower($people->phone_number) == 'n/a' || strtolower($people->phone_number) == 'na') ? '**********' : str($people->phone_number)->mask('*',4)->value()
+                ];
+    
             }
 
-            if ($people->dharmasala_booking_id) {
-                $dharmsala = $people->dharmasala;
-                $text[] = $dharmsala->building_name . $dharmsala->room_number. "(".$dharmsala->floor_name.")";
+            if ( ! count($text) ) {
+                if (! $people->is_parent ) {
+                    $text[1] = $people->parentFamily?->address;
+                }
+    
+                if ($people->dharmasala_booking_id) {
+                    $dharmsala = $people->dharmasala;
+                    $text[] = $dharmsala->building_name .'-'. $dharmsala->room_number;
+                }else {
+                    $text[] = '';
+                }
+                $userInfo = InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
+                    $group->personal_info_print_width,
+                    $group->personal_info_print_height,
+                    $group->personal_info_print_position_x - 10,
+                    $group->personal_info_print_position_y,
+                    $group->print_primary_colour
+                );
+            
+                $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
+
+                // $params = [
+                //     Image::getImageAsSize($userInfo,'text') => [
+                //         'positionX' => $group->id_card_print_position_x-15,
+                //         'positionY' => $group->id_card_print_position_y,
+                //     ],
+                //     Image::getImageAsSize($barcodeImage,'barcode') => [
+                //         'positionX' => $group->barcode_print_position_x - 10,
+                //         'positionY' => $group->barcode_print_position_y
+                //     ]
+                // ];
+                $interventionImageInstance = InterventionImageHelper::insertImage(Image::getImageAsSize($people->generated_id_card,'cards'), Image::getImageAsSize($userInfo,'text'),$group->personal_info_print_position_x - 10,
+                $group->personal_info_print_position_y);
+        
             }
-
-            $userInfo = InterventionImageHelper::textToCanva(Image::getImageAsSize($interventionImageInstance,'cards'), $text,
-                $group->personal_info_print_width,
-                $group->personal_info_print_height,
-                $group->personal_info_print_position_x - 10,
-                $group->personal_info_print_position_y,
-                $group->print_primary_colour
-            );
-
-            $sampleImage = Image::getImageAsSize($group->resizedImage->filepath, 'resized');
-
-            // $params = [
-            //     Image::getImageAsSize($userInfo,'text') => [
-            //         'positionX' => $group->id_card_print_position_x-15,
-            //         'positionY' => $group->id_card_print_position_y,
-            //     ],
-            //     Image::getImageAsSize($barcodeImage,'barcode') => [
-            //         'positionX' => $group->barcode_print_position_x - 10,
-            //         'positionY' => $group->barcode_print_position_y
-            //     ]
-            // ];
-            $interventionImageInstance = InterventionImageHelper::insertImage(Image::getImageAsSize($people->generated_id_card,'cards'), Image::getImageAsSize($userInfo,'text'),$group->personal_info_print_position_x - 10,
-            $group->personal_info_print_position_y);
             
 
             if ($interventionImageInstance) {
@@ -667,9 +767,8 @@ class AdminProgramGroupController extends Controller
             }
         }
 
-        $people->is_card_generated = true;
-        $people->save();
-
+            $people->is_card_generated = true;
+            $people->save();
 
         /**
          * Also Generate ID Card For Family that is included.
@@ -996,10 +1095,34 @@ class AdminProgramGroupController extends Controller
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function addMemberToGroup(Request $request, Program $program, ProgramGrouping $group) {
+        
+        if( !$request->post('memberID') ) {
+            $groupMember = new ProgramGroupPeople();
 
+            $groupMember->fill([
+
+                'member_id' => 0,
+
+                'group_id'  => $group->getKey(),
+                'program_id'    => $program->getKey(),
+                'is_parent' => true,
+                'phone_number'  => $request->post('phone_number'),
+                'email' => $request->post('email'),
+                'full_name' => $request->post('full_name'),
+                'group_uuid' => \App\Classes\Helpers\Str::uuid()
+
+            ]);
+
+            $groupMember->save();
+            return;
+        }
         /**
          * Check if member is already available
          */
+        if ($request->post('groupID') ) {
+            $group = ProgramGrouping::where('id',$request->post('groupID'))->first();
+        }
+
         $groupMember = ProgramGroupPeople::where('group_id',$group->getKey())
                                             ->where('member_id', $request->post('memberID'))
                                             ->where('is_parent', true)
@@ -1016,7 +1139,8 @@ class AdminProgramGroupController extends Controller
                 'is_parent' => true,
                 'phone_number'  => $member->phone_number,
                 'email' => $member->email,
-                'full_name' => $member->full_name
+                'full_name' => $member->full_name,
+                'transaction_id'    => $request->post('transactionID')
             ]);
 
             $country = $member->countries?->name;
@@ -1044,7 +1168,20 @@ class AdminProgramGroupController extends Controller
             }
 
             $groupMember->save();
+        } else {
+            if ($member->memberIDMedia) {
+                $groupMember->member_id_card = $member->memberIDMedia->getKey();
+            }
+
+            if ($member->profileImage) {
+                $groupMember->profile_id = $member->profileImage->getKey();
+            }
+
+            if ($groupMember->isDirty() ) {
+                $groupMember->save();
+            }
         }
+        
 
         $families = $member->emergency_contact()->whereIn('id',$request->post('families') ?? [])->get();
 
@@ -1081,6 +1218,17 @@ class AdminProgramGroupController extends Controller
 
             }
         }
+
+        /**
+         * 
+         */
+
+        if ($request->post('transactionID') ) {
+            $studentFeeUpdate = ProgramStudentFeeDetail::where('id',$request->post('transactionID'))->first();
+            $studentFeeUpdate->is_marked_to_print = true;
+            $studentFeeUpdate->save();
+        }
+
         return response([
             "success" => true,
             "message" => "Member Enrolled.",
@@ -1111,5 +1259,18 @@ class AdminProgramGroupController extends Controller
             return $this->json(true,'Group Deleted.','redirect',['location' => route('admin.program.admin_program_grouping_list',['program' => $program])]);
         }
 
+    }
+
+    public function removeMemberFromGroup(Request $request, program $program, ProgramGrouping $group) {
+
+        if ( $request->post('source') == 'transaction') {
+            ProgramGroupPeople::where('transaction_id',$request->post('transactionID'))
+            ->where('member_id',$request->post('memberID'))
+            ->delete();
+
+            $transaction = ProgramStudentFeeDetail::where('id',$request->post('transactionID'))->first();
+            $transaction->is_marked_to_print = false;
+            $transaction->save();
+        }
     }
 }

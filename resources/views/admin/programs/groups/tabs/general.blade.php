@@ -50,6 +50,24 @@
             </div>
         </div>
     </div>
+    
+    <div class="row my-3 bg-light p-3">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="scan_area">Area Scanable</label>
+                <select name="scan" id="scan" class="form-control">
+                    <option value="0" selected>No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="max_scan">Max Scan Allowed</label>
+                <input type="text" name="max_scan" id="max_scan" class="form-control" />
+            </div>
+        </div>
+    </div>
 
     <div class="row mt-4 mb-4 rule-wrapper">
         <div class="col-md-12 mb-3">
@@ -141,7 +159,7 @@
                 <div id="personalInfoArea" style="position: absolute;min-width:{{$group->personal_info_print_width ?? 0}}px;min-height:{{$group->personal_info_print_height ?? 0}}px;left:{{$group->personal_info_print_position_x ?? 0}}px; top: {{$group->personal_info_print_position_y ?? 0}}px;border: 1px dashed green"></div>
             </div>
             <div class="col-md-4">
-
+                
                 <!-- Photo Position -->
                 <div class="row">
                     <div class="col-md-6">
@@ -311,7 +329,26 @@
                                         <div id="personalInfoAreaChild" style="position: absolute;min-width:{{$children->personal_info_print_width ?? 0}}px;min-height:{{$children->personal_info_print_height ?? 0}}px;left:{{$children->personal_info_print_position_x ?? 0}}px; top: {{$children->personal_info_print_position_y ?? 0}}px;border: 1px dashed green"></div>
                                     </div>
                                     <div class="col-md-4">
-                        
+                                        <div class="row my-3">
+                                            <div class="col-md-12 mt-4">
+                                                <div class="form-group">
+                                                    <label for="print_size_height">Actual Print Size In Height (in Pixel)
+                                                        <sup class="text-danger">*</sup>
+                                                    </label>
+                                                    <input type="number" value="{{$children->actual_print_height}}" name="print_size_height" id="print_size_height" class="form-control">
+                                    
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 mt-4">
+                                                <div class="form-group">
+                                                    <label for="print_size_width">
+                                                        Actual Print Size in Width (in Pixel)
+                                                        <sup class="text-danger">*</sup>
+                                                    </label>
+                                                    <input type="number" value="{{$children->actual_print_width}}" name="print_size_width" id="print_size_width" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
                                         <!-- Photo Position -->
                                         <div class="row">
                                             <div class="col-md-6">

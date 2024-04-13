@@ -19,6 +19,8 @@ class ProgramGrouping extends Model
         'batch_id',
         'group_name',
         'enable_auto_adding',
+//         'is_scan',
+//         'scan_type',
         'id_parent',
         'rules',
         'actual_print_width',

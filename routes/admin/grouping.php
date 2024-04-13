@@ -39,5 +39,7 @@ Route::prefix('grouping/{program}')
             
             Route::post('add-member-to-group/{group}',[AdminProgramGroupController::class,'addMemberToGroup'])
                 ->name('admin_add_member_to_group');
+            Route::post('remove-member-from-group/{group}',[AdminProgramGroupController::class,'removeMemberFromGroup'])
+                ->name('admin_remove_member_from_group');
 
     });

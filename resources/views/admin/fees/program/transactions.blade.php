@@ -38,7 +38,7 @@
                                     <select name="filter_center" id="filter_center" class="form-control">
                                         <option value="" disabled selected>Select Center</option>
                                         @foreach (\App\Models\Centers::get() as $center)
-                                        <option value="{{$center->getKey()}}">{{$center->center_name}}</option>
+                                            <option value="{{$center->getKey()}}">{{$center->center_name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -83,6 +83,7 @@
                     <table class="dt-responsive table" id="program_fee_overview">
                         <thead>
                         <tr>
+                            <th></th>
                             <th>Name</th>
                             @if(adminUser()->role()->isSuperAdmin() || adminUser()->role()->isAdmin())
                                 <th>
@@ -131,6 +132,7 @@
         </div>
     </div>
     <x-modal modal="imageFile"></x-modal>
+    <x-modal modal="transactionOptionModal"></x-modal>
 @endsection
 
 @push('page_script')
@@ -142,6 +144,10 @@
             aaSorting: [],
             pageLength: 250,
             columns: [
+                {
+                    data : 'printable',
+                    name : 'printable'
+                },
                 {
                     data: 'member_name',
                     name: "member_name"
@@ -185,5 +191,29 @@
             ]
         });
 
+        $(document).on('change','.printableTransaction',function (event) {
+            // event.preventDefault();
+            let postData = {
+                'memberID' : $(this).attr('data-member-id'),
+                'transactionID'   : $(this).attr('data-transaction-id'),
+                'source' : 'transaction'
+            }
+
+            if ( ! $(this).is(':checked') ) {
+                $(document).find('#transactionID_'+postData.transactionID).addClass('d-none')
+
+                $.ajax({
+                    type : 'post',
+                    url : "{{route('admin.program.admin_remove_member_from_group',['program' => $program,'group' => 1])}}",
+                    data : postData,
+                });
+                return 
+            }
+            $(document).find('#transactionID_'+postData.transactionID).trigger('click').removeClass('d-none')
+            // $('#transactionID_'+postData.transactionID).removeClass('d-none')
+            // $('#transactionID_'+postData.transactionID).('click')
+        });
     </script>
+
+
 @endpush
