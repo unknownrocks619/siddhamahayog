@@ -19,13 +19,18 @@
 
     <div class="modal-body">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <div class="mt-2">
                     <button type="button" onclick="window.memberRegistration.programFamilyMember()" class="btn btn-primary ">
                         <i class="fas fa-plus me-1"></i> Add Family Member
                     </button>
                 </div>
             </div>
+            <div class="col-md-2">
+                <input type="checkbox" name="empty_member" id="" value="1" class="me-2" />
+                <label for="">Empty Family</label>
+            </div>
+    
         </div>
         <div class="row" id="familyMembers">
             <div class='col-md-12 wrapper-clone'>

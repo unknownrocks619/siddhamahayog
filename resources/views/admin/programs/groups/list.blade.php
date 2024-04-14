@@ -23,7 +23,9 @@
 
             </div>
         </div>
-
+        <div class="row">
+            @include('admin.dashboard.groups.scan-group')
+        </div>
         <div class="row">
             <div class="col-md-12 col-sm-12">
                 <div class="card">

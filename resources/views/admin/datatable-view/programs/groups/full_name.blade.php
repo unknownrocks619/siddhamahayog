@@ -1,7 +1,7 @@
 @if($people->is_card_generated)
     <span class="fas fa-start"></span>
 @endif
-<span class="@if(! $people->profile_id) text-white @endif">
+<span class="@if(! $people->profile_id) text-dark @endif">
 {{$people->full_name}}
 </span>
 <br />

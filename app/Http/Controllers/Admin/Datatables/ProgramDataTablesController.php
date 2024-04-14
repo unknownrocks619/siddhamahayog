@@ -471,7 +471,7 @@ class ProgramDataTablesController extends Controller
                                         }
                                         
                                         if (count($missingFamilyProfile) >= 1 ) {
-                                            return 'bg-danger text-white';
+                                            return 'bg-label-danger text-white';
                                         } 
 
                                         return '';

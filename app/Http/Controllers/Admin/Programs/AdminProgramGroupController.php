@@ -547,29 +547,53 @@ class AdminProgramGroupController extends Controller
         $member = Member::where('id',$people->member_id)->first();
         if ( $member ) {
 
-            $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
-            $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
-            foreach ($familyMembers as $familyMember)  {
-                $newFamily = new ProgramGroupPeople();
-
-                $newFamily->fill([
-                    'member_id'     => $familyMember->getKey(),
-                    'program_id'    => $program->getKey(),
-                    'group_id'      => $group->getKey(),
-                    'full_name'     => $familyMember->contact_person,
-                    'phone_number'  => $familyMember->phone_number,
-                    'email'         => $familyMember->email,
-                    'id_parent'     => $people->getKey(),
-                    'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
-                    'is_card_generated' => false,
-                    'is_parent'     => false,
-                ]);
-
-                $newFamily->save();
-
-                $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid();
-                $newFamily->save();
+            if (  $request->post('empty_member') ) {
+                foreach ($request->post('full_name') as $index => $value) {
+                    $newFamily = new ProgramGroupPeople();
+    
+                    $newFamily->fill([
+                        'member_id'     => 0,
+                        'program_id'    => $program->getKey(),
+                        'group_id'      => $group->getKey(),
+                        'full_name'     => $value,
+                        'phone_number'  => $request->post('phone_number')[$index],
+                        'id_parent'     => $people->getKey(),
+                        'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                        'is_card_generated' => false,
+                        'is_parent'     => false,
+                    ]);
+    
+                    $newFamily->save();
+    
+                    $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid();
+                    $newFamily->save();
+                }
+            } else {
+                $addMembers = (new MemberEmergencyController())->bulkInsert($request,$member,true);
+                $familyMembers = MemberEmergencyMeta::whereIn('id',$addMembers)->get();
+                foreach ($familyMembers as $familyMember)  {
+                    $newFamily = new ProgramGroupPeople();
+    
+                    $newFamily->fill([
+                        'member_id'     => $familyMember->getKey(),
+                        'program_id'    => $program->getKey(),
+                        'group_id'      => $group->getKey(),
+                        'full_name'     => $familyMember->contact_person,
+                        'phone_number'  => $familyMember->phone_number,
+                        'email'         => $familyMember->email,
+                        'id_parent'     => $people->getKey(),
+                        'order'         => (ProgramGroupPeople::where('id_parent',$people->getKey())->max('order')  ??  0) + 1,
+                        'is_card_generated' => false,
+                        'is_parent'     => false,
+                    ]);
+    
+                    $newFamily->save();
+    
+                    $newFamily->group_uuid    =  \App\Classes\Helpers\Str::uuid();
+                    $newFamily->save();
+                }
             }
+
 
         } else {
             foreach ($request->post('full_name') as $index => $value) {
@@ -634,9 +658,10 @@ class AdminProgramGroupController extends Controller
         $userResizedImage = $people->resized_image;
 
         if ($resetCard == true) {
-            $people->barcode_image = null;
             $people->is_card_generated = false;
             $people->generated_id_card = null;
+            $people->resized_image = null;
+            $people->barcode_image;
             $userResizedImage = null;
 
         }
@@ -1097,6 +1122,7 @@ class AdminProgramGroupController extends Controller
     public function addMemberToGroup(Request $request, Program $program, ProgramGrouping $group) {
 
         if( !$request->post('memberID') ) {
+
             $groupMember = new ProgramGroupPeople();
 
             $groupMember->fill([
@@ -1120,6 +1146,7 @@ class AdminProgramGroupController extends Controller
          * Check if member is already available
          */
         if ($request->post('groupID') ) {
+
             $group = ProgramGrouping::where('id',$request->post('groupID'))->first();
         }
 
@@ -1129,8 +1156,9 @@ class AdminProgramGroupController extends Controller
                                             ->first();
 
         $member = Member::with(['emergency_contact','countries'])->find($request->post('memberID'));
-
+        
         if ( ! $groupMember ) {
+
             $groupMember = new ProgramGroupPeople();
             $groupMember->fill([
                 'member_id' => $member->getKey(),
@@ -1193,6 +1221,7 @@ class AdminProgramGroupController extends Controller
                                                 ->where('id_parent',$groupMember->getKey())
                                                 ->first();
             if ( ! $groupPeople ) {
+
                 $groupPeople = new ProgramGroupPeople;
                 $groupPeople->fill([
                     'member_id' => $family->getKey(),
@@ -1261,7 +1290,7 @@ class AdminProgramGroupController extends Controller
 
     }
 
-    public function removeMemberFromGroup(Request $request, program $program, ProgramGrouping $group) {
+    public function removeMemberFromGroup(Request $request, program $program, ProgramGrouping $group, ?ProgramGroupPeople $people) {
 
         if ( $request->post('source') == 'transaction') {
             ProgramGroupPeople::where('transaction_id',$request->post('transactionID'))
@@ -1271,6 +1300,38 @@ class AdminProgramGroupController extends Controller
             $transaction = ProgramStudentFeeDetail::where('id',$request->post('transactionID'))->first();
             $transaction->is_marked_to_print = false;
             $transaction->save();
+            return;
         }
+
+        if ($people) {
+            // delete all families first.
+            $people->families()->delete();
+            $people->delete();
+            dd('hgell world');
+            return $this->json(true,'Person Removed From group.','reload');
+        }
+
+    }
+
+    public function barcodeScanner(Request $request, Program $program, string $code) {
+
+        $groupPeople = ProgramGroupPeople::with(['group'])
+                                    ->where('group_uuid',$request->post('groupUUID'))
+                                    ->latest()->first();
+
+        if ( ! $groupPeople ) {
+            return $this->json(true,'Invalid !!','',['class'=>'bg-danger','confirmationText' => 'Invalid Barcode','confirmationText' => 'Invalid Barcode !!']);
+        }
+
+        // check if this has exceeeded number of allowe scane.
+        $group = $groupPeople->group;
+
+        if ($groupPeople->total_scanned >= $group->scan_type) {
+            return $this->json(true,'Already Used.','',['class' => 'bg-danger','confirmationText' => $group->group_name,'groupScanCount' => 'Total Scan: ' . $groupPeople->total_scanned]);
+        }
+        $groupPeople->total_scanned = $group->total_scanned + 1;
+        $groupPeople->save();
+
+        return $this->json(true,'Scan Sucess. :)' , '',['class' => 'bg-success','confirmationText' => $group->group_name,'groupScanCount' => 'Total Scan'.$groupPeople->total_scanned]);
     }
 }

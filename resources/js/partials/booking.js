@@ -39,8 +39,8 @@ export class Booking {
 
                 }
             });
-            
-            
+
+
         }
     }
 

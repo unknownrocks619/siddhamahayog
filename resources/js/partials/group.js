@@ -1,7 +1,40 @@
 export class ProgramGrouping {
 
     #currentCard;
-    
+    constructor() {
+        let _this = this;
+
+        if ($(document).find('#groupScanning').length) {
+
+            let scannedData = '';
+
+            $('input[id="groupScanning"]').on('keypress', function () {
+                _this.scanBarCode(this,5);
+            })
+            $(document).keydown( function(event) {
+                let key = event.key;
+
+                // Check if the pressed key is alphanumeric or Enter
+                if (/^[a-zA-Z0-9]$/.test(key) || key === 'Enter') {
+                    // Append the pressed key to the buffer
+
+                    scannedData += key;
+
+                    // Check if Enter key is pressed (end of scan)
+                    if (key === 'Enter') {
+                        // Process the scanned data (e.g., send to server, display on screen, etc.)
+                        // console.log('scannedData:', scannedData ,typeof(scannedData));
+                        $('#quickCheckIn').val(scannedData.replace('Enter','')).trigger('keypress');
+                        // _this.quickCheckIn($('#quickCheckIn'));
+                        // Clear the buffer for the next scan
+                        scannedData = '';
+                    }
+
+                }
+            });
+        }
+    }
+
     addRules(elm,params={}) {
 
     let _html =`
@@ -209,7 +242,50 @@ export class ProgramGrouping {
 
     }
 
+    scanBarCode(elm) {
+        console.log('valu: ', $(elm).val());
+        if ($(elm).val().length < 8) {
+            return ;
+        }
+
+        let _this = this;
+
+        let _displayDivWrapper = $('#group-scan-status');
+        let _errorWrapper = $('#scanErrorDisplay');
+
+        _errorWrapper.addClass('d-none')
+        _displayDivWrapper.addClass('d-none');
+
+
+        $.ajax({
+            type : 'post',
+            data : {groupUUID: $(elm).val()},
+            url : '/admin/programs/grouping/5/bar-code-scan/'+$(elm).val(),
+            success : function(response) {
+                let _data = response;
+                if (_data.params.class) {
+                    _displayDivWrapper.find('div.col-md-12').removeClass('bg-succes')
+                                                            .removeClass('bg-danger')
+                                                            .addClass(_data.params.class)
+                    
+                }
+
+                if (_data.params.confirmationText) {
+                    _displayDivWrapper.find('#groupConfirmationText').text(_data.params.confirmationText)
+                }
+
+                if (_data.params.groupScanCount) {
+                    _displayDivWrapper.find('#groupScanCount').text(_data.params.groupScanCount);
+                }
+                _displayDivWrapper.removeClass('d-none');
+
+                // $(elm).val('');
+            },
+            error : function(response) {
+                console.log('error response: ', res)
+            }
+        })
+    }
 }
 
-
-window.programGroup = new ProgramGrouping;
+window.programGroup = new ProgramGrouping();

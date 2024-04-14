@@ -76,6 +76,10 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="col-md-6 mb-4">
+                @include('admin.dashboard.groups.scan-group')
+            </div>
             <!--/ Website Analytics -->
             @include('admin.dashboard.program-list')
         @endif

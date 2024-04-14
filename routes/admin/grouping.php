@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\Programs\AdminProgramGroupController;
 use Illuminate\Support\Facades\Route;
 Route::prefix('grouping/{program}')
         ->group(function(){
+
             Route::get('list',[AdminProgramGroupController::class,'list'])->name('admin_program_grouping_list');
             Route::match(['get','post'],'create/{group?}',[AdminProgramGroupController::class,'create'])->name('admin_program_group_create');
             Route::match(['get','post'],'edit/{group}/{tab?}/{parentGroup?}',[AdminProgramGroupController::class,'edit'])->name('admin_program_group_edit');
@@ -39,7 +40,11 @@ Route::prefix('grouping/{program}')
             
             Route::post('add-member-to-group/{group}',[AdminProgramGroupController::class,'addMemberToGroup'])
                 ->name('admin_add_member_to_group');
-            Route::post('remove-member-from-group/{group}',[AdminProgramGroupController::class,'removeMemberFromGroup'])
+
+            Route::post('remove-member-from-group/{group}/{people?}',[AdminProgramGroupController::class,'removeMemberFromGroup'])
                 ->name('admin_remove_member_from_group');
+
+            Route::match(['get','post'],'bar-code-scan/{code}',[AdminProgramGroupController::class,'barcodeScanner'])
+                ->name('admin_barcode_scan_result');
 
     });

@@ -27,11 +27,20 @@
                         @if( ! $people->dharmasala_booking_id) Add Room @else Update Check In @endif
                 </a>
         @if($people->is_card_generated)
-            <button class="btn btn-danger btn-icon data-confirm ms-2 border-left border-1"
+            <a href="#" class="text-danger data-confirm ms-2 border-left border-1"
                     data-method="get"
                     data-confirm="Card Has already been generated. Do you wish to reset the card and generate new ?"
                     data-action="{{route('admin.program.admin_program_generate_card',['people' => $people,'program' => $people->program_id,'group' => $people->group_id,'reset' => true])}}" 
                     data-bs-original-titl="Re Generate Card">
                 <i class="fas fa-refresh"></i>
-            </button>
+                Regenerate
+            </a>
         @endif
+        <a href="#" class="text-danger data-confirm ms-2 border-left border-1"
+            data-method="post"
+            data-confirm="You are about to perform delete action. This will also remove all families associated with this user. Note: All generated card will be instantly invalid."
+            data-action="{{route('admin.program.admin_remove_member_from_group',['people' => $people,'program' => $people->program_id,'group' => $people->group_id,'reset' => true])}}" 
+            data-bs-original-titl="Re Generate Card">
+            <i class="fas fa-trash"></i>
+            Delete
+        </a>

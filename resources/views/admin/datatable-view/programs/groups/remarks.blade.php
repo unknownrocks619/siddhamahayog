@@ -6,7 +6,7 @@
 
 @if(count($missingFamilyProfile))
     <div class="row">
-        <div class="col-md-12 text-white">
+        <div class="col-md-12 text-danger">
             <ul>
                 @if( ! $people->profile_id )
                     <li>
