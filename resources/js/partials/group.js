@@ -7,8 +7,9 @@ export class ProgramGrouping {
         if ($(document).find('#groupScanning').length) {
 
             let scannedData = '';
-
             $('input[id="groupScanning"]').on('keypress', function () {
+                
+                $(this).focus();
                 _this.scanBarCode(this,5);
             })
             $(document).keydown( function(event) {
@@ -24,7 +25,7 @@ export class ProgramGrouping {
                     if (key === 'Enter') {
                         // Process the scanned data (e.g., send to server, display on screen, etc.)
                         // console.log('scannedData:', scannedData ,typeof(scannedData));
-                        $('#quickCheckIn').val(scannedData.replace('Enter','')).trigger('keypress');
+                        $('#groupScanning').val(scannedData.replace('Enter','')).trigger('keypress');
                         // _this.quickCheckIn($('#quickCheckIn'));
                         // Clear the buffer for the next scan
                         scannedData = '';
@@ -244,7 +245,7 @@ export class ProgramGrouping {
 
     scanBarCode(elm) {
         console.log('valu: ', $(elm).val());
-        if ($(elm).val().length < 8) {
+        if ($(elm).val().length < 10) {
             return ;
         }
 
@@ -279,7 +280,7 @@ export class ProgramGrouping {
                 }
                 _displayDivWrapper.removeClass('d-none');
 
-                // $(elm).val('');
+                $(elm).val('');
             },
             error : function(response) {
                 console.log('error response: ', res)

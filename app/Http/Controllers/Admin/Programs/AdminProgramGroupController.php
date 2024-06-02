@@ -384,6 +384,34 @@ class AdminProgramGroupController extends Controller
     }
 
     /**
+     * 
+     */
+    public function exportPeopleByGroup(Program $program) {
+        $request = Request::capture();
+
+        $sheet = ['all' => ''];
+        // now list all group 
+        $groupsByPeople = ProgramGrouping::with(['groupMember' => function($query) {
+            $query->where('is_parent',true)->with('families');
+        }])->get();
+        foreach ( $groupsByPeople as $group) {
+            if ( ! isset ($sheet[$group->group_name]) ) {
+                $sheet[$group->group_name] = [];
+            }
+            $params = [
+                'group' => $group
+            ];
+            $sheet[$group->group_name] = ['view' => 'admin.programs.groups.post-group.family',['params' => $params]];
+
+        }
+        dd($sheet);
+        $exportFromView =new ExcelMultipleSheet($sheet);
+        dd($exportFromView);
+        return $exportFromView->download('family-entry.xlsx');
+
+    }
+
+    /**
      * @param Program $program
      * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
@@ -410,6 +438,7 @@ class AdminProgramGroupController extends Controller
                 'view' => 'admin.programs.groups.family',
                 'params'    => ['data' => $country_record,'program' => $program]
             ];
+            
         }
 
         foreach ($byGender as $gender => $country_record) {
@@ -1314,9 +1343,19 @@ class AdminProgramGroupController extends Controller
     }
 
     public function barcodeScanner(Request $request, Program $program, string $code) {
+        
 
-        $groupPeople = ProgramGroupPeople::with(['group'])
-                                    ->where('group_uuid',$request->post('groupUUID'))
+        $groupUUID = $request->post('groupUUID');
+
+        if (strlen($groupUUID) > 12 ) {
+            $strGrouUUid = str();
+            $strGrouUUid = substr($request->post('groupUUID'),0,12);
+            $concatTerm = substr($request->post('groupUUID'),12);
+            $groupUUID = $strGrouUUid .'-'.$concatTerm;
+        }
+
+        $groupPeople = ProgramGroupPeople::with(['group','families'])
+                                    ->where('group_uuid',$groupUUID)
                                     ->latest()->first();
 
         if ( ! $groupPeople ) {
@@ -1329,9 +1368,25 @@ class AdminProgramGroupController extends Controller
         if ($groupPeople->total_scanned >= $group->scan_type) {
             return $this->json(true,'Already Used.','',['class' => 'bg-danger','confirmationText' => $group->group_name,'groupScanCount' => 'Total Scan: ' . $groupPeople->total_scanned]);
         }
-        $groupPeople->total_scanned = $group->total_scanned + 1;
+
+        $groupPeople->total_scanned = $groupPeople->total_scanned + 1;
         $groupPeople->save();
 
-        return $this->json(true,'Scan Sucess. :)' , '',['class' => 'bg-success','confirmationText' => $group->group_name,'groupScanCount' => 'Total Scan'.$groupPeople->total_scanned]);
+        $confirmationText = $group->group_name;
+
+        if ($groupPeople->is_parent ) {
+
+            $confirmationText .= " <br />";
+            $confirmationText .= "Total Family: " . $groupPeople->families()->count();
+
+        } else {
+            $confirmationText .= " Pariwar ";
+        }
+        return $this->json(true,'Scan Sucess. :)' , '',['class' => 'bg-success','confirmationText' => $confirmationText,'groupScanCount' => 'Total Scan'.$groupPeople->total_scanned]);
+    }
+
+
+    public function excelExport() {
+
     }
 }

@@ -32,8 +32,7 @@ trait CourseFeeCheck
 
     public function checkFeeDetail(Program $program, $fee_type = null)
     {
-
-        if (Role::ADMIN == user()->role_id) {
+        if (in_array(user()->role_id,[Role::ADMIN,Role::SUPER_ADMIN,Role::ACTING_ADMIN])) {
             return true;
         }
 

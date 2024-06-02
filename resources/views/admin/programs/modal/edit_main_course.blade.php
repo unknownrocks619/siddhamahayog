@@ -1,4 +1,4 @@
-<form name="course_form" id="update_course_content_{{ $course->getKey() }}" method="post"
+<form class="ajax-form" name="course_form" id="update_course_content_{{ $course->getKey() }}" method="post"
     action="{{ route('admin.program.courses.admin_program_course_update', [$course->id]) }}">
     @csrf
     <div class="modal-header">
@@ -34,14 +34,15 @@
                     <div class="radio">
                         <div class="row">
                             <div class="col-md-4">
-                                <input @if ($course->lock) checked @endif type="radio"
+
+                                <input @if($course->lock) checked @endif type="radio"
                                     name="lock_course" id="lock_course_yes_edit_modal" value="yes">
                                 <label for="lock_course_yes_edit_modal" class='text-success'>
                                     Yes, Lock Course
                                 </label>
                             </div>
                             <div class="col-md-6">
-                                <input @if (!$course->lock) checked @endif type="radio" checked
+                                <input @if(!$course->lock) checked @endif type="radio"
                                     name="lock_course" id="lock_course_no_edit_modal" value="no">
                                 <label for="lock_course_no_edit_modal" class='text-danger'>
                                     No, Don't Lock Course
@@ -67,7 +68,7 @@
                                 </label>
                             </div>
                             <div class="col-md-6">
-                                <input @if (!$course->enable_resource) checked @endif type="radio" checked
+                                <input @if (!$course->enable_resource) checked @endif type="radio"
                                     name="lock_resources" id="lock_resources_no_edit_modal" value="no">
                                 <label for="lock_resources_no_edit_modal" class='text-danger'>
                                     No, Don't Lock Resource
@@ -82,7 +83,7 @@
     </div>
     <div class="modal-footer d-flex justify-content-between">
         <button type="button" class="close-button btn btn-danger btn-simple btn-round waves-effect"
-            data-dismiss="modal">Close</button>
+            data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary btn-block btn-sm ">Update Course Detail</button>
     </div>
 </form>

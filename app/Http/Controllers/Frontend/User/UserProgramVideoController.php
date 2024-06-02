@@ -80,14 +80,13 @@ class UserProgramVideoController extends Controller
 
     public function allowedToWatch(VideoAllowedToWatchRequest $request, Program $program, ProgramChapterLession $lession)
     {
-
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 403);
-        }
-
+        }  
         if (!$this->checkFeeDetail($program, "admission_fee")) {
             return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
         }
+
         // get video
         if ($lession->course->lock) {
             // entire thing lock,

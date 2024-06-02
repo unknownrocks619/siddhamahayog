@@ -76,8 +76,9 @@ class AdminProgramCourseController extends Controller
             session()->flash("error", "Error: " . $th->getMessage());
             return back()->withInput();
         }
-        session()->flash("success", "New Course Created.");
-        return back();
+        return $this->returnResponse(true,'New Course Created','reload');
+        // session()->flash("success", "New Course Created.");
+        // return back();
     }
 
     public function delete_course(ProgramCourse $course)
