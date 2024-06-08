@@ -43,7 +43,6 @@ trait CourseFeeCheck
         if ($scholarship) {
             return true;
         }
-
         $this->studentFees($program);
 
         if (!$this->data) return  false;

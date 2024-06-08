@@ -12,6 +12,8 @@
                     Add New Member
                 </a>
 
+                <a href="#" data-bs-target="#quickAdd" data-bs-toggle="modal" class="btn btn-primary "><i class="fas fa-plus"></i> Quick New Registration</a>
+
             </div>
         </div>
     </div>

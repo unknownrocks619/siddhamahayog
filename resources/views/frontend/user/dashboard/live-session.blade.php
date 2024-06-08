@@ -28,12 +28,22 @@ use App\Models\Scholarship;
                 @if (
                     $program->active &&
                         $program->program &&
+                        $program->program->active_fees?->admission_fee &&
                         $program->program->program_type == 'paid' &&
-                        !$program->program->student_admission_fee)
+                        !$program->program->admission_fee)
                     <p class="text-danger w-100 text-end">
                         Your admission for `{{ $program->program->program_name }}` is pending. Please submit your
                         admission fee.
                     </p>
+                @elseif($program->active &&
+                            $program->program &&
+                            $program->program->active_fees?->admission_fee &&
+                            $program->program->program_type == 'paid' &&
+                            $program->program->admission_fee &&
+                            !$program->program->student_admission_fee)
+                        <p class="text-info w-100 text-end">
+                             We are processing your payment information.
+                        </p>
                 @endif
 
                 @if (\App\Models\Role::ACTING_ADMIN == user()->role_id || \App\Models\Role::SUPER_ADMIN == user()->role_id)

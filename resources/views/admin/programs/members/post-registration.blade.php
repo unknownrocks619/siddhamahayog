@@ -22,7 +22,7 @@
                             <sup class="text-danger">*</sup>
                         </label>
 
-                        <select name="program" id="program_name" class="form-control">
+                        <select name="program"  onchange="window.selectElementChange(this,'program')" id="program_name" class="form-control">
                             <option value="" disabled>Select Program</option>
                             @foreach (App\Models\Program::get() as $program)
                                 <option @if($program->getKey() == 5) selected @endif value="{{$program->getKey()}}">{{$program->program_name}}</option>
@@ -31,7 +31,15 @@
                     </div>
                 </div>
             </div>
-
+            <div class="row bg-danger-light my-4 program d-none @foreach (App\Models\Program::where('id','!=',5)->get() as $program) {{$program->getKey()}} @endforeach">
+                <div class="form-group">
+                    <label for="payment_info">Payment Description</label>
+                    <select name="amount_category" id="amount_category" class="form-control">
+                        <option value="admission_fee">Admission Fee</option>
+                        <option value="monthly_fee">Monthly Fee</option>
+                    </select>
+                </div>
+            </div>
             <div class="row mt-3">
                 <div class="col-md-6">
                     <div class="form-group">

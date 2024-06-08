@@ -384,6 +384,73 @@ class MemberController extends Controller
         return view("admin.members.create",['member' => $member]);
     }
 
+    public function quickStore(Request $request) {
+        $request->validate([
+            'first_name'    => 'required',
+            'email'         => 'required',
+            'password'      => 'required'
+        ]);
+
+        // check email with give username exists.
+        $member = Member::where('email',$request->post('email'))->first();
+        if ( ! $member ) {
+            $member = new Member();
+            $member->fill([
+                'first_name'    => $request->post('first_name'),
+                'middle_name'   => $request->post('middle_name'),
+                'last_name'     => $request->post('last_name'),
+                'email'         => $request->post('email') ?? 'random_email_'.time().'@dummyemail.com',
+                'password'      => Hash::make($request->post('password')),
+                'phone_number'  => $request->post('phone_number'),
+            ]);
+            $member->full_name = $member->full_name();
+            $member->role_id = Role::MEMBER;
+            $member->member_uuid = \App\Classes\Helpers\Str::uuid();
+            $member->source = 'admin_entry';
+            $member->sharing_code = Str::random(8);
+            $member->save();
+
+            /*
+             * Assign member to appropirate center.
+             */
+            if ( ! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN,])) {
+                $centerMember = CenterMember::where('member_id', $member->getKey(), adminUser()->center_id)->first();
+
+                if (!$centerMember) {
+                    $centerMember = new CenterMember();
+                    $centerMember->fill([
+                        'member_id' => $member->getKey(),
+                        'center_id' => adminUser()->center_id
+                    ]);
+                    $centerMember->save();
+                }
+            }
+
+                // if program is available enroll immmediately.
+                $program = Program::find($request->post('program'));
+                $programStudent = ProgramStudent::where('program_id', $program->getKey())
+                                                    ->where('student_id',$member->getKey())
+                                                    ->first();
+                if ( ! $programStudent) {
+                    $programStudent = new ProgramStudent();
+                    $programStudent->fill([
+                        'program_id' => $program->getKey(),
+                        'student_id' => $member->getKey(),
+                        'active' => true,
+                        'allow_all' => false,
+                        'program_section_id' => $request->post('program_'.$program->getKey().'_section'),
+                        'batch_id' => $request->post('program_'.$program->getKey().'_batch')
+                    ]);
+                }
+
+                $programStudent->active = true;
+                $programStudent->save();
+
+                return $this->json(true,'Member registration complete.','redirect',['location' => route('admin.members.show',['member' => $member,'tab' => 'programs'])]);
+
+
+        }
+    }
     public function memberVerification(Request $request) {
 
         $view = 'admin.members.partials.new-registration';

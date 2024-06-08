@@ -6,8 +6,12 @@
             <h4 class="py-3 mb-4">
                 <span class="text-muted fw-light">Members/</span> All
             </h4>
+            <div>
+                <a href="{{route('admin.members.create')}}" class="btn btn-primary me-2"><i class="fas fa-plus"></i> Create New Member</a>
+                <a href="{{route('admin.members.quick-add')}}" data-bs-target="#quickAdd" data-bs-toggle="modal" class="btn btn-primary "><i class="fas fa-plus"></i> Quick New Registration</a>
 
-            <a href="{{route('admin.members.create')}}" class="btn btn-primary btn-icon"><i class="fas fa-plus"></i></a>
+
+            </div>
         </div>
     </div>
     <!-- Responsive Datatable -->
@@ -63,6 +67,10 @@
     <x-modal modal="quickUserView">
         @include('admin.members.modal.user-quick-view')
     </x-modal>
+    <x-modal modal="quickAdd">
+        @include('admin.members.modal.user-quick-add')
+    </x-modal>
+
 @endsection
 
 @push('page_script')

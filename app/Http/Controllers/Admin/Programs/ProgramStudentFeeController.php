@@ -214,14 +214,13 @@ class ProgramStudentFeeController extends Controller
              * @todo Check if voucher no and center_id matches the transaction.
              * if so, prevent duplicate entry.
              */
-
             $programCourseFeeDetail->fill([
 
                 'program_id'  => $program->getKey(),
                 'program_student_fees_id' => $programCourseFee->getKey(),
                 'amount'    => $request->post('amount'),
-                'amount_category'   => $request->post('amount_category') ?? 'hanumand_yagya_amount',
-                'source'    => $request->post('voucher_type'),
+                'amount_category'   => ($program->getKey() != 5 && $request->post('amount_category')) ? $request->post('amount_category') : 'hanumand_yagya_amount',
+                'source'    => ($request->post('voucher_type') == 'voucher_entry') ? 'Voucher' : $request->post('voucher_type') ,
                 'source_detail' => ($request->post('voucher_type') == 'voucher_entry') ? 'Physical Voucher Entry' : 'Physical Bank Deposit',
                 'verified'  => true,
                 'rejected'  => false,

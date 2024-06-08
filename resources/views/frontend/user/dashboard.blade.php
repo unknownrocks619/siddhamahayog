@@ -408,7 +408,7 @@
             JoinLiveSession($(_this).data('method'), $(_this).data('action'));
             setTimeout(() => {
                 $(_this).prop('disabled', false).text(previousText);
-            }, 2000);
+            }, 10000);
 
         })
 

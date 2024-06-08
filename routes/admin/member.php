@@ -10,6 +10,7 @@ Route::prefix("members")
 
         Route::get("/all", "index")->name('all');
         Route::match(['get','post'],'create','create')->name('create');
+        Route::match(['get','post'],'quick-add','quickStore')->name('quick-add');
         Route::post('/partials-validate','memberVerification')->name('member_registration_partials_validate');
 
         Route::get('/member/detail/{member}/{tab?}', "show")->name("show");

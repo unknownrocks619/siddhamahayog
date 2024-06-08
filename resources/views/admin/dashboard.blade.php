@@ -76,7 +76,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6 mb-4">
                 @include('admin.dashboard.groups.scan-group')
             </div>
@@ -181,6 +181,9 @@
         @endif
     </div>
     <x-modal modal="liveSessionModal"></x-modal>
+    <x-modal modal="quickAdd">
+        @include('admin.members.modal.user-quick-add')
+    </x-modal>
 
 @endsection
 @include('admin.programs.partials.footer-script')
