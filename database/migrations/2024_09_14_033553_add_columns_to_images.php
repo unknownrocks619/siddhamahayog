@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('images', function (Blueprint $table) {
-            //
+        Schema::whenTableDoesntHaveColumn('images', 'bucket_type', function (Blueprint $table) {
             $table->string('bucket_type')
-                    ->after('access_type')
-                    ->default('local')
-                    ->comment('currently available: local,cloudinary');
+                ->after('access_type')
+                ->default('local')
+                ->comment('currently available: local,cloudinary');
 
             $table->string('public_id')->nullable()->after('bucket_type');
             $table->longText('bucket_upload_response')->after('public_id')->nullable();
