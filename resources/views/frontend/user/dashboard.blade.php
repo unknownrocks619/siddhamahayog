@@ -198,28 +198,6 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
-        @php
-            $hanumandYagyaInfo = \App\Models\Yagya\HanumandYagyaCounter::where('member_id',auth()->id())->first();
-        @endphp
-        @if( ! $hanumandYagyaInfo )
-            <script>
-                $.ajax({
-                    'method' : 'GET',
-                    'url' : '{{route("frontend.jaap.setting-pop-modal")}}',
-                    'success' : function (response){
-                        if (response.params.view) {
-                            let _params = {
-                                modalID : 'yagyaInformation',
-                                content : response.params.view
-                            }
-                            window.popModalWithHTML(_params)
-                            // $('#yagyaInformation').html(response.params.view);
-                            // $('#yagyaInformation').modal('show');
-                        }
-                    }
-                })
-            </script>
-        @endif
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');

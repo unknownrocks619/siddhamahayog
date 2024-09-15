@@ -33,7 +33,7 @@ class AdminProgramController extends Controller
     {
         if ($request->ajax() && $request->wantsJson()) {
 
-            return (new ProgramDataTablesController())->programList($request,$type);
+            return (new ProgramDataTablesController())->programList($request, $type);
             // return $datatable;
         }
         return view("admin.programs.index");
@@ -42,11 +42,11 @@ class AdminProgramController extends Controller
     public function new_program(Request $request, $type = null)
     {
 
-        if (! adminUser()->isSuperAdmin() || ! adminUser()->isAdmin() ) {
-            abort (401);
+        if (!adminUser()->role()->isSuperAdmin() && !adminUser()->role()->isAdmin()) {
+            abort(401);
         }
 
-        if ($request->post() ) {
+        if ($request->post()) {
 
             $request->validate(['program_name' => 'required']);
 
@@ -68,18 +68,18 @@ class AdminProgramController extends Controller
 
             ]);
 
-            if ( $request->post('start_date') && $request->post('end_date')) {
-                $carbonStartDate = Carbon::createFromFormat('Y-m-d',$request->post('program_start_date'));
-                $carbonEndDate = Carbon::createFromFormat('Y-m-d',$request->post('program_end_date'));
+            if ($request->post('start_date') && $request->post('end_date')) {
+                $carbonStartDate = Carbon::createFromFormat('Y-m-d', $request->post('program_start_date'));
+                $carbonEndDate = Carbon::createFromFormat('Y-m-d', $request->post('program_end_date'));
                 $program_diff = $carbonEndDate->diffInDays($carbonEndDate);
                 $program->program_duration = $program_diff;
             }
 
-            if ( ! $program->save() ) {
-                return $this->json(false,'Unable to create new Program.');
+            if (!$program->save()) {
+                return $this->json(false, 'Unable to create new Program.');
             }
 
-            return $this->json(true, 'New Program created.','redirect',['location' => route('admin.program.admin_program_edit',['program' => $program])]);
+            return $this->json(true, 'New Program created.', 'redirect', ['location' => route('admin.program.admin_program_edit', ['program' => $program])]);
         }
 
 
@@ -88,7 +88,7 @@ class AdminProgramController extends Controller
 
     public function edit_program(Request $request, Program $program)
     {
-        if ( $request->post() ) {
+        if ($request->post()) {
             $program->fill([
                 'program_name'  => $request->post('program_name'),
                 'program_type'  => $request->post('program_type'),
@@ -107,12 +107,12 @@ class AdminProgramController extends Controller
 
             // update batch
 
-            if ($request->post('batch') ) {
+            if ($request->post('batch')) {
 
-                $programBatch = ProgramBatch::where('batch_id',$request->post('batch'))
-                                            ->where('program_id',$program->getKey())
-                                            ->first();
-                if (! $programBatch ) {
+                $programBatch = ProgramBatch::where('batch_id', $request->post('batch'))
+                    ->where('program_id', $program->getKey())
+                    ->first();
+                if (!$programBatch) {
 
                     $programBatch = new ProgramBatch();
                     $programBatch->fill([
@@ -123,15 +123,14 @@ class AdminProgramController extends Controller
 
                 $programBatch->active = true;
                 $programBatch->save();
-
             }
 
-            if ( $request->post('section') ) {
-                $programSection = ProgramSection::where('id',$request->post('section'))->first();
-                $defaultProgramSection = ProgramSection::where('program_id',$program->getKey())
-                                                        ->where('default',true)
-                                                        ->first();
-                if ( $defaultProgramSection ) {
+            if ($request->post('section')) {
+                $programSection = ProgramSection::where('id', $request->post('section'))->first();
+                $defaultProgramSection = ProgramSection::where('program_id', $program->getKey())
+                    ->where('default', true)
+                    ->first();
+                if ($defaultProgramSection) {
                     $defaultProgramSection->default = false;
                     $defaultProgramSection->save();
                 }
@@ -140,7 +139,7 @@ class AdminProgramController extends Controller
                 $programSection->save();
             }
 
-            return $this->json(true,'Program Information Updated.');
+            return $this->json(true, 'Program Information Updated.');
         }
 
         $program->promote = ($program->promote) ? "yes" : "no";
@@ -231,25 +230,23 @@ class AdminProgramController extends Controller
                 ->addIndexColumn()
                 ->addColumn('roll_number', function ($row) use ($program) {
 
-                    if ( $program->getKey() == 5 ) {
+                    if ($program->getKey() == 5) {
 
-                        if ( ! $row->total_counter) {
+                        if (!$row->total_counter) {
                             return '<span class="label label-bg-dark px-1"> 0 </span>';
                         }
 
-                        return '<span class="label label-info px-1">'.$row->total_counter.'</span>';
-
+                        return '<span class="label label-info px-1">' . $row->total_counter . '</span>';
                     }
 
-                    if ( ! $row->roll_number) {
-                        if ( ! adminUser()->role()->isSuperAdmin() || ! adminUser()->role()->isAdmin() ) {
+                    if (!$row->roll_number) {
+                        if (!adminUser()->role()->isSuperAdmin() || !adminUser()->role()->isAdmin()) {
                             return '<span class="label label-bg-dark px-1"> -</span>';
                         }
                         return '<span class="label label-bg-dark px-1"><a href="" class="text-info"><i class="fas fa-plus"></i> Add Roll number</a></span>';
                     }
 
-                    return '<span class="label label-info px-1">'.$row->roll_number.'</span>';
-
+                    return '<span class="label label-info px-1">' . $row->roll_number . '</span>';
                 })
                 ->addColumn('full_name', function ($row) {
                     return htmlspecialchars(strip_tags($row->full_name));
@@ -260,67 +257,64 @@ class AdminProgramController extends Controller
                 ->addColumn('email', function ($row) {
                     $emailStr = str($row->email);
 
-                    if ($emailStr->contains('random_email_') ) {
+                    if ($emailStr->contains('random_email_')) {
                         return 'N/A';
-                    } 
+                    }
 
                     return strip_tags($row->email) ?? 'N/A';
                 })
                 ->addColumn('total_payment', function ($row) {
-                    if ( ! $row->member_payment ) {
-                        return '<span class="badge bg-label-danger">'.default_currency(0.0).'</span>';
+                    if (!$row->member_payment) {
+                        return '<span class="badge bg-label-danger">' . default_currency(0.0) . '</span>';
                     }
 
                     if ($row->scholarID) {
-                        return '<span class="badge bg-label-info"><b>Scholarshp</b><br />'.$row->remarks.'</span>';
+                        return '<span class="badge bg-label-info"><b>Scholarshp</b><br />' . $row->remarks . '</span>';
                     }
 
-                    return '<span class="badge bg-label-primary">'.default_currency($row->member_payment).'</span>';
+                    return '<span class="badge bg-label-primary">' . default_currency($row->member_payment) . '</span>';
                 })
                 ->addColumn('batch', function ($row) {
                     return $row->batch_name ?? 'Batch N/A';
                 })
                 ->addColumn('section', function ($row) {
-                   return $row->section_name ?? 'Section N/A';
+                    return $row->section_name ?? 'Section N/A';
                 })
-                ->addColumn('enrolled_date', function($row) {
-                   return date('Y-m-d',strtotime($row->enrolled_date));
+                ->addColumn('enrolled_date', function ($row) {
+                    return date('Y-m-d', strtotime($row->enrolled_date));
                 })
-                ->addColumn('country',function($row){
-                    if ( ! $row->member_country &&  ! $row->country_name) {
+                ->addColumn('country', function ($row) {
+                    if (!$row->member_country &&  !$row->country_name) {
                         return 'N/A';
                     }
-                    if ($row->member_country && ! (int) $row->member_country) {
+                    if ($row->member_country && !(int) $row->member_country) {
                         return $row->member_country;
                     }
 
                     return $row->country_name;
-
                 })
-                ->addColumn('full_address', function($row) {
-                    if ( ! $row->address) {
+                ->addColumn('full_address', function ($row) {
+                    if (!$row->address) {
                         return 'N/A';
                     }
 
                     $addressDecode = json_decode($row->address);
-                    if ( isset($addressDecode->street_address) ) {
+                    if (isset($addressDecode->street_address)) {
                         return strip_tags($addressDecode->street_address);
                     }
 
-                    if ( $row->personal_detail ) {
+                    if ($row->personal_detail) {
                         $detailDecode = json_decode($row->personal_detail);
 
-                        if (isset($detailDecode->street_address) ) {
+                        if (isset($detailDecode->street_address)) {
                             return strip_tags($detailDecode->street_address);
                         }
                     }
 
                     return 'N/A';
-
-
                 })
                 ->addColumn('action', function ($row) {
-                    $action ='<a href="'.route('admin.members.show',['member' => $row->member_id,'_ref' => 'program','_refID' => $row->program_id]).'"><i class="fas fa-eye"></i></a>';
+                    $action = '<a href="' . route('admin.members.show', ['member' => $row->member_id, '_ref' => 'program', '_refID' => $row->program_id]) . '"><i class="fas fa-eye"></i></a>';
                     return $action;
                 })
                 ->rawColumns(["total_payment", "action", "roll_number"])
@@ -333,7 +327,6 @@ class AdminProgramController extends Controller
         $students = ProgramStudent::all_program_student($program);
         $paymentDetail = ProgramStudent::studentPaymentDetail('admission_fee', array_keys(Arr::keyBy($students, 'user_id')));
         if ($program->program_type != 'open') {
-
         }
 
         return view("admin.programs.detail", compact("program", "sections", "students", "paymentDetail"));
@@ -355,9 +348,9 @@ class AdminProgramController extends Controller
         // check if program is already live or not.
         $liveProgram = Live::where('program_id', $program->id)->where('section_id', $request->section)->where('live', true)->exists();
         if ($liveProgram) {
-            return $this->returnResponse(false,'Session is already active. Please end current session or re-join the session.',null,[],200,route('admin.program.admin_program_list'));
-//            session()->flash("error", "Session is already active. Please end current session or re-join the session.");
-//            return redirect()->route('admin.program.admin_program_list');
+            return $this->returnResponse(false, 'Session is already active. Please end current session or re-join the session.', null, [], 200, route('admin.program.admin_program_list'));
+            //            session()->flash("error", "Session is already active. Please end current session or re-join the session.");
+            //            return redirect()->route('admin.program.admin_program_list');
         }
 
         $liveProgram = new Live;
@@ -389,10 +382,10 @@ class AdminProgramController extends Controller
         $meeting = create_zoom_meeting($zoom_account_detail, $program->program_name, $domain);
 
         if (!$meeting || isset($meeting->code)) {
-            return $this->returnResponse(false,'Unable to create Zoom Meeting at the moment',null,[],200,route('admin.program.admin_program_list'));
-//            // dd("unable to create meeting");
-//            session()->flash('error', "Unable to create zoom meeting at the moment.");
-//            return redirect()->route('admin.program.admin_program_list');
+            return $this->returnResponse(false, 'Unable to create Zoom Meeting at the moment', null, [], 200, route('admin.program.admin_program_list'));
+            //            // dd("unable to create meeting");
+            //            session()->flash('error', "Unable to create zoom meeting at the moment.");
+            //            return redirect()->route('admin.program.admin_program_list');
         }
 
         $liveProgram->domain = $domain;
@@ -403,12 +396,12 @@ class AdminProgramController extends Controller
         try {
             $liveProgram->save();
         } catch (\Throwable $th) {
-            return $this->returnResponse(false,'Error: '. $th->getMessage(),null,[],200,route('admin.program.admin_program_list'));
+            return $this->returnResponse(false, 'Error: ' . $th->getMessage(), null, [], 200, route('admin.program.admin_program_list'));
             //throw $th;
             dd($th->getMessage());
         }
-        return $this->returnResponse(true,'Meeting Started. Please wait redirecting you to zoom portal.','redirectTab',['location' => $liveProgram->admin_start_url,'reload' => true],200,$liveProgram->admin_start_url);
-//        return redirect()->to($liveProgram->admin_start_url);
+        return $this->returnResponse(true, 'Meeting Started. Please wait redirecting you to zoom portal.', 'redirectTab', ['location' => $liveProgram->admin_start_url, 'reload' => true], 200, $liveProgram->admin_start_url);
+        //        return redirect()->to($liveProgram->admin_start_url);
 
 
         // create zoom meeting id.
@@ -430,13 +423,13 @@ class AdminProgramController extends Controller
         try {
             $live->save();
         } catch (\Throwable $th) {
-            return $this->returnResponse(false,'Error : ' . $th->getMessage(),null,[],200,url()->previous());
+            return $this->returnResponse(false, 'Error : ' . $th->getMessage(), null, [], 200, url()->previous());
             //throw $th;
             session()->flash('error', "Error: " . $th->getMessage());
             return back();
         }
 
-        return $this->returnResponse(true,$program_message,'reload',[],200,url()->previous());
+        return $this->returnResponse(true, $program_message, 'reload', [], 200, url()->previous());
     }
 
     /**
@@ -448,16 +441,16 @@ class AdminProgramController extends Controller
         return view("admin.programs.modal.merge-session", compact("program", 'live'));
     }
 
-    public function mergeSessionStore(Request $request, Program $program, ?Live $live=null)
+    public function mergeSessionStore(Request $request, Program $program, ?Live $live = null)
     {
         // Check Live Merge Section
-        if ( ! $live ) {
+        if (!$live) {
 
             $request->validate(['active_section' => 'required']);
 
             $live = Live::where('program_id', $program->getKey())
-                            ->where('section_id',$request->post('active_section'))
-                            ->first();
+                ->where('section_id', $request->post('active_section'))
+                ->first();
         }
 
         $merge = ($live->merge) ?  array($live->merge) : [];
@@ -468,23 +461,23 @@ class AdminProgramController extends Controller
         try {
             $live->save();
         } catch (\Throwable $th) {
-            return $this->returnResponse(false,'Error : '. $th->getMessage(),null,[],200,route('admin.program.admin_program_list'));
+            return $this->returnResponse(false, 'Error : ' . $th->getMessage(), null, [], 200, route('admin.program.admin_program_list'));
             //throw $th;
-//            session()->flash('error', "Error:" . $th->getMessage());
-//            return redirect()->route('admin.program.admin_program_list');
+            //            session()->flash('error', "Error:" . $th->getMessage());
+            //            return redirect()->route('admin.program.admin_program_list');
         }
 
-        return $this->returnResponse(true,'Session has been merged.','reload',[],200,route('admin.program.admin_program_list'));
-//        session()->flash('success', "Session has been merged.");
-//        return redirect()->route('admin.program.admin_program_list');
+        return $this->returnResponse(true, 'Session has been merged.', 'reload', [], 200, route('admin.program.admin_program_list'));
+        //        session()->flash('success', "Session has been merged.");
+        //        return redirect()->route('admin.program.admin_program_list');
     }
 
     public function rejoinSession(Live $live)
     {
         if (!$live->live) {
-            return $this->returnResponse(false,'Program Already Closed',null,[],200,url()->current());
+            return $this->returnResponse(false, 'Program Already Closed', null, [], 200, url()->current());
         }
-        return $this->returnResponse(true,'Session available.','redirectTab',['location' => $live->admin_start_url],200,$live->admin_start_url);
+        return $this->returnResponse(true, 'Session available.', 'redirectTab', ['location' => $live->admin_start_url], 200, $live->admin_start_url);
     }
 
     public function liveProgram()
@@ -507,77 +500,77 @@ class AdminProgramController extends Controller
         return view('admin.programs.modal.program_batch_and_section_modal', compact('program'));
     }
 
-    public function registerMemberToProgram(Request $request, ?Member $member, ?Program $program=null) {
+    public function registerMemberToProgram(Request $request, ?Member $member, ?Program $program = null)
+    {
 
-        if (! $member ) {
+        if (!$member) {
             $request->validate(['member' => 'required']);
 
             $member = Member::find($request->post('member'));
         }
 
-        if (! $program ) {
+        if (!$program) {
             $request->validate(['program' => 'required']);
 
             $program = Program::find($request->post('program'));
         }
 
-        if ( ! $request->post('section') ) {
+        if (!$request->post('section')) {
             $programSection = $program->active_sections()->first();
         } else {
             $programSection = ProgramSection::find($request->post('section'));
         }
 
-        if ( ! $request->post('batch') ) {
+        if (!$request->post('batch')) {
             $programBatch = $program->active_batch()->first();
         } else {
-            $programBatch = $program->batches()->where('batch_id',$request->post('batch'))->first();
+            $programBatch = $program->batches()->where('batch_id', $request->post('batch'))->first();
         }
 
         // now check if this user is already in enrolled in the program.
 
-        $programStudent = ProgramStudent::where('program_id',$program->getKey())
-                                            ->where('student_id',$member->getKey())
-                                            ->first();
+        $programStudent = ProgramStudent::where('program_id', $program->getKey())
+            ->where('student_id', $member->getKey())
+            ->first();
 
         /**
          * @info If user is from Center just check if user exists or not, nothing more..
          */
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
 
             /**
              * If Center Force program to select from default one.
              */
-            if ( $request->post('section') ) {
+            if ($request->post('section')) {
                 $programSection = $program->active_sections()->first();
             }
 
             /**
              * If Center Froce batch to be from default.
              */
-            if ($request->post('batch') ) {
+            if ($request->post('batch')) {
                 $programBatch = $program->active_batch()->first();
             }
 
-            if ( $programStudent ) {
-                return $this->json(true,'Student Enrolled in program','reload');
-            }
-
-        }
-
-        if ( in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN]) && $programStudent) {
-
-            if ( $programStudent->batch_id = $programBatch->getKey() )  {
-
-                return $this->json(true,"Student Enrolled in program","reload");
+            if ($programStudent) {
+                return $this->json(true, 'Student Enrolled in program', 'reload');
             }
         }
 
-        if (! $programStudent ) {
+        if (in_array(adminUser()->role(), [Rule::ADMIN, Rule::SUPER_ADMIN]) && $programStudent) {
+
+            if ($programStudent->batch_id = $programBatch->getKey()) {
+
+                return $this->json(true, "Student Enrolled in program", "reload");
+            }
+        }
+
+        if (!$programStudent) {
 
             $programStudent = new ProgramStudent();
 
             $programStudent->fill([
-                'program_id'=>$program->getKey(),
+                'program_id' => $program->getKey(),
                 'student_id'    => $member->getKey(),
                 'batch_id'  => $programBatch->getKey(),
                 'program_section_id'    => $programSection->getKey(),
@@ -587,6 +580,6 @@ class AdminProgramController extends Controller
             $programStudent->save();
         }
 
-        return $this->json(true,'Enroleld Success','reload');
+        return $this->json(true, 'Enroleld Success', 'reload');
     }
 }

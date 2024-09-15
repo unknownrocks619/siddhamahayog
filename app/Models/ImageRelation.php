@@ -10,6 +10,14 @@ class ImageRelation extends Model
 {
     use HasFactory,SoftDeletes;
 
+    const PROTECTED_IMAGES = [
+        'id_card'
+    ];
+
+    const PUBLIC_IMAGES = [
+        'profile_picture'
+    ];
+
     protected  $fillable = [
         'image_id',
         'relation_id',

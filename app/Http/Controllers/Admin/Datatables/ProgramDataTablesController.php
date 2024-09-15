@@ -335,7 +335,7 @@ class ProgramDataTablesController extends Controller
             }]);
 
             if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
-                $programs->where('id','5');
+                // $programs->where('id','5');
             }
 
             if ($type) {

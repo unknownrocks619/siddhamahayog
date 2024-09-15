@@ -31,6 +31,7 @@ use App\Models\Role;
 use App\Models\Scholarship;
 use App\Models\SupportTicket;
 use App\Models\UnpaidAccess;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -1077,6 +1078,17 @@ class MemberController extends Controller
                 Scholarship::where('student_id', $member->getKey())->delete();
                 SupportTicket::where('member_id', $member->getKey())->delete();
                 UnpaidAccess::where('member_id', $member->getKey())->delete();
+
+                foreach ($member->media ?? [] as $mediaRelation) {
+
+                    if ($mediaRelation->image && $mediaRelation->image?->bucket_type == Images::BUCKET_CLOUDINARY) {
+                        $cloudinary = new Cloudinary();
+                        $cloudinary->adminApi()->deleteAssets($mediaRelation->image->public_id);
+                        $mediaRelation->image->delete();
+                        $mediaRelation->delete();
+                    }
+                }
+
                 $member->delete();
             });
         } catch (\Throwable $th) {

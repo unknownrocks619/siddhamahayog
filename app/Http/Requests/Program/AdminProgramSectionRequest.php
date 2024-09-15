@@ -13,7 +13,7 @@ class AdminProgramSectionRequest extends FormRequest
      */
     public function authorize()
     {
-        return (auth()->user()->role_id == 1) ? true : false;
+        return (adminUser()->role_id == 1) ? true : false;
     }
 
     /**

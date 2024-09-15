@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin\Members;
 use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Models\ImageRelation;
+use App\Models\Images;
 use App\Models\Member;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MemberMediaController extends Controller
 {
@@ -29,9 +32,19 @@ class MemberMediaController extends Controller
     }
 
     public function deleteImage( Member $member, ImageRelation $relation){
+        try {
+            DB::transaction(function () use ($member, $relation) {
+                if ($relation->image && $relation->image?->bucket_type == Images::BUCKET_CLOUDINARY) {
+                    $cloudinary = new Cloudinary();
+                    $cloudinary->adminApi()->deleteAssets($relation->image->public_id);
+                    $relation->image->delete();
+                }
 
-        if (! $relation->delete() ) {
+                $relation->delete();
+            });
+        } catch (\Exception $e) {
             return $this->json(false,'Unable to delete Image.');
+
         }
 
         return $this->json(true,'File Deleted.', 'reload');

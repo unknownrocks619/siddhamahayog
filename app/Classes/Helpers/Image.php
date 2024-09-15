@@ -4,10 +4,14 @@ namespace App\Classes\Helpers;
 use App\Models\ImageRelation as FileRelation;
 use App\Models\Images;
 use App\Models\Images as ModelsImage;
+use Cloudinary\Cloudinary;
+use Cloudinary\Tag\ImageTag;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\ImageManagerStatic as ImageManager;
+use Nette\Utils\ImageException;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 use Picqer\Barcode\BarcodeGeneratorJPG;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -15,8 +19,15 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 class Image
 {
 
+    /**
+     * @param mixed $images
+     * @param Model|null $model
+     * @param array $additionalRequest
+     * @return bool|array
+     */
     public static function uploadImage(mixed $images, Model $model = null, array $additionalRequest = []): bool|array
     {
+
         $settings = config('image-settings');
         $records = [];
         if (!is_array($images)) {
@@ -26,41 +37,49 @@ class Image
         foreach ($images as $image) {
 
             $generatedFilename = $image->hashName();
+            $uploadAPI = new Cloudinary();
+            $folder = date('Y/m');
+            try {
+                $apiResponse = $uploadAPI->uploadApi()->upload($image->getRealPath(),[
+                    'use_asset_folder_as_public_id_prefix'  => true,
+                    'asset_folder' => $folder,
+                    'display_name'  => $image->getClientOriginalName(),
+                    'faces' => true,
+                    'filename' => $image->getClientOriginalName(),
+                ])->getArrayCopy();
 
-            list($width, $height) = getimagesize($image->getRealPath());
+                $newImage = new ModelsImage();
+                $newImage->fill([
+                    'filename' => pathinfo($apiResponse['url'],PATHINFO_FILENAME).'.'.$apiResponse['format'],
+                    'filepath' => $apiResponse['public_id'],
+                    'information' => [
+                        'exif' => [],
+                        'folders' => date('Y') . '/' . date("m")
+                    ],
+                    'sizes' => [
+                        'width' => $apiResponse['width'] ?? 0,
+                        'height' => $apiResponse['height'] ?? 0,
+                    ],
+                    'original_filename' => $image->getClientOriginalName(),
+                    'bucket_type' => Images::BUCKET_CLOUDINARY,
+                    'bucket_upload_response' => $apiResponse,
+                    'public_id' => $apiResponse['public_id'],
+                    'upload_revision' => $apiResponse['version_id'],
+                    'bucket_filename' => pathinfo($apiResponse['url'],PATHINFO_FILENAME).'.'.$apiResponse['format'],
+                    'bucket_filepath'   => $apiResponse['public_id'],
+                    'bucket_signature'  => $apiResponse['signature'],
+                ]);
 
-            foreach ($settings['sizes'] as $folder => $option) {
+                if (!$newImage->save()) {
+                    return false;
+                }
 
-                $resizeImage = ImageManager::make($image->getRealPath());
-                $resizeImage->resize($option['height'], $option['width'], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-                $resizeImage->encode();
-                $baseDir = 'uploads/' . $folder . '/' . date("Y") . '/' . date('m');
+            } catch ( \Exception $e) {
+                $newImage = (new Image())->fallbackDefaultUpload($image);
 
-                Storage::put($baseDir . '/' . $generatedFilename, $resizeImage->__toString());
-            }
-
-            $image->store('uploads/org/' . date('Y') . '/' . date('m'));
-            $exif = ImageManager::make($image->getRealPath())->exif();
-            $newImage = new ModelsImage();
-            $newImage->fill([
-                'filename' => $generatedFilename,
-                'filepath' => date('Y') . '/' . date("m") . '/' . $generatedFilename,
-                'information' => [
-                    'exif' => $exif,
-                    'folders' => date('Y') . '/' . date("m")
-                ],
-                'sizes' => [
-                    'width' => $width ?? 0,
-                    'height' => $height ?? 0,
-                ],
-                'original_filename' => $image->getClientOriginalName(),
-            ]);
-
-            if (!$newImage->save()) {
-                return false;
+                if ( ! $newImage ) {
+                    return false;
+                }
             }
 
             if (!is_null($model)) {
@@ -83,6 +102,10 @@ class Image
     }
 
 
+    /**
+     * @param mixed $images
+     * @return bool|array
+     */
     public static function uploadOnly(mixed $images): bool|array
     {
         $settings = config('image-settings');
@@ -93,42 +116,25 @@ class Image
 
         foreach ($images as $image) {
 
-            $generatedFilename = $image->hashName();
+            $folder = date("Y/m");
+            $uploadAPI = new Cloudinary();
 
-            list($width, $height) = getimagesize($image->getRealPath());
+            try {
+                $apiResponse = $uploadAPI->uploadApi()->upload($image->getRealPath(),[
+                    'use_asset_folder_as_public_id_prefix'  => true,
+                    'asset_folder' => $folder,
+                    'display_name'  => $image->getClientOriginalName(),
+                    'faces' => true,
+                    'filename' => $image->getClientOriginalName(),
+                ])->getArrayCopy();
 
-            foreach ($settings['sizes'] as $folder => $option) {
-                $resizeImage = ImageManager::make($image->getRealPath());
-                $resizeImage->resize($option['height'], $option['width'], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-                $resizeImage->encode();
-                $baseDir = $folder . '/' . date("Y") . '/' . date('m');
-                Storage::disk('local')->put('uploads'.'/'.$baseDir . '/' . $generatedFilename, $resizeImage->__toString());
+            } catch (\Exception $exception) {
+                $newImage = (new self)->fallbackDefaultUpload($image);
+
+                if ( !$newImage ) {
+                    return false;
+                }
             }
-
-            $image->store('uploads/org/' . date('Y') . '/' . date('m'));
-            $exif = ImageManager::make($image->getRealPath())->exif();
-            $newImage = new ModelsImage();
-            $newImage->fill([
-                'filename' => $generatedFilename,
-                'filepath' => date('Y') . '/' . date("m") . '/' . $generatedFilename,
-                'information' => [
-                    'exif' => $exif,
-                    'folders' => date('Y') . '/' . date("m")
-                ],
-                'sizes' => [
-                    'width' => $width ?? 0,
-                    'height' => $height ?? 0,
-                ],
-                'original_filename' => $image->getClientOriginalName(),
-            ]);
-
-            if (!$newImage->save()) {
-                return false;
-            }
-
 
             $records[] = $newImage;
         }
@@ -138,6 +144,10 @@ class Image
 
     public static function getImageAsSize($filePath, $size = 'm')
     {
+        if ( $filePath instanceof \Cloudinary\Asset\Image) {
+            return $filePath->toUrl();
+        }
+
         if (gettype($filePath) == 'object') {
             $filePath = $filePath->filepath;
         }
@@ -253,5 +263,53 @@ class Image
     public static function dynamicBarCode(string $text) {
         $htmlGenerator = new BarcodeGeneratorHTML();
         return $htmlGenerator->getBarcode($text,$htmlGenerator::TYPE_CODE_128);
+    }
+
+    /**
+     * @param UploadedFile $file
+     * @return ModelsImage|null
+     */
+    public function fallbackDefaultUpload(UploadedFile $file): Images|null {
+        $generatedFilename = $file->hashName();
+        $settings = config('image-settings');
+
+        list($width, $height) = getimagesize($file->getRealPath());
+
+        foreach ($settings['sizes'] as $folder => $option) {
+
+            $resizeImage = ImageManager::make($file->getRealPath());
+            $resizeImage->resize($option['height'], $option['width'], function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $resizeImage->encode();
+            $baseDir = 'uploads/' . $folder . '/' . date("Y") . '/' . date('m');
+
+            Storage::put($baseDir . '/' . $generatedFilename, $resizeImage->__toString());
+        }
+
+        $file->store('uploads/org/' . date('Y') . '/' . date('m'));
+        $exif = ImageManager::make($file->getRealPath())->exif();
+        $newImage = new ModelsImage();
+        $newImage->fill([
+            'filename' => $generatedFilename,
+            'filepath' => date('Y') . '/' . date("m") . '/' . $generatedFilename,
+            'information' => [
+                'exif' => $exif,
+                'folders' => date('Y') . '/' . date("m")
+            ],
+            'sizes' => [
+                'width' => $width ?? 0,
+                'height' => $height ?? 0,
+            ],
+            'original_filename' => $file->getClientOriginalName(),
+            'bucket_type' => 'local'
+        ]);
+
+        if (!$newImage->save()) {
+            return null;
+        }
+
+        return $newImage;
     }
 }
