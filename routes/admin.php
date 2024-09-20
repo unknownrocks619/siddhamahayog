@@ -81,6 +81,7 @@ Route::prefix('admin')
 
         include __DIR__.'/admin/member.php';
         include __DIR__.'/admin/member-dikshya.php';
+    include __DIR__ . '/admin/member-sadhana.php';
         include __DIR__.'/admin/member-emergency.php';
 
         /**

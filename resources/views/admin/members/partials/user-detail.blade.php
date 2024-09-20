@@ -18,6 +18,10 @@
 {{--            <a class="nav-link  @if( $tab == 'support') active @endif" href="@if( $tab == 'support')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'support'])}}@endif"><i class="ti ti-bell ti-xs me-1"></i>Supports</a></li>--}}
         <li class="nav-item">
             <a class="nav-link  @if( $tab == 'dikshya-info') active @endif" href="@if( $tab == 'dikshya-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'dikshya-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Dikshya Info</a></li>
+
+        <li class="nav-item">
+            <a class="nav-link  @if( $tab == 'sadhana-info') active @endif" href="@if( $tab == 'sadhana-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'sadhana-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Sadhana Info</a></li>
+
         <li class="nav-item">
             <a class="nav-link  @if( $tab == 'emergency-info') active @endif" href="@if( $tab == 'emergency-info')javascript:void(0);@else{{route('admin.members.show',['member'=>$member->getKey(),'tab'=>'emergency-info'])}}@endif"><i class="ti ti-link ti-xs me-1"></i>Emergency Info</a></li>
 
