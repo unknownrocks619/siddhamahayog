@@ -49,7 +49,7 @@
 <h3 class="mt-3">Available Sadhana Level</h3>
     
 
-@foreach (App\Models\UserSadhanaLevel::get() as $sadhanaLevel)
+@foreach (App\Models\UserSadhanaLevel::where('user_id',$member->getKey())->get() as $sadhanaLevel)
 <div class="row bg-white py-2 mb-2 align-items-center">
     <div class="col-md-5">
         <span class="fs-3">Charan: {{$sadhanaLevel->charan_usl}}</span>
