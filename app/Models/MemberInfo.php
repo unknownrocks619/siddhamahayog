@@ -16,4 +16,12 @@ class MemberInfo extends Model
         "personal" => "object",
         'remarks' => 'object'
     ];
+
+    protected $fillable = [
+        'education',
+        'history',
+        'member_id',
+        'history',
+        'personal'
+    ];
 }

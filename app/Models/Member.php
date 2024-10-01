@@ -25,7 +25,8 @@ class Member extends Authenticatable
         "created_at" => "datetime",
         "profile" => "object",
         "remarks" => "object",
-//        'member_uuid'   => 'uuid'
+        'allow_username_login'  => 'bool'
+        //        'member_uuid'   => 'uuid'
     ];
 
     protected $fillable = [
@@ -39,6 +40,8 @@ class Member extends Authenticatable
         'address',
         'date_of_birth',
         'email',
+        'username',
+        'allow_username_login',
         'remember_token',
         'sharing_code',
         'phone_number',
@@ -48,7 +51,8 @@ class Member extends Authenticatable
         'gotra',
         'role_id',
         'source',
-        'password'
+        'password',
+        'created_at'
     ];
 
     protected $hidden = [
@@ -67,19 +71,18 @@ class Member extends Authenticatable
         'id_card'           => 'ID Card',
         'event_gallery'     => "Event Pictures",
         'private'           => 'Private',
-        'public'            => 'Public'
+        'public'            => 'Public',
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::saving( function ($model) {
+        static::saving(function ($model) {
 
-            if ( ! $model->member_uuid ) {
+            if (! $model->member_uuid) {
                 $model->member_uuid = Str::uuid();
             }
-
         });
     }
 
@@ -142,7 +145,7 @@ class Member extends Authenticatable
     {
         $transactions =  $this->hasMany(ProgramStudentFeeDetail::class, 'student_id');
 
-        if (auth('admin')->check() && ! in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN])) {
+        if (auth('admin')->check() && ! in_array(adminUser()->role(), [Rule::ADMIN, Rule::SUPER_ADMIN])) {
 
             $transactions->where('fee_added_by_center', adminUser()->center_id);
         }
@@ -158,7 +161,8 @@ class Member extends Authenticatable
     /**
      * @info List all members in datatable.
      */
-    public static function all_members($searchTerm = null) {
+    public static function all_members($searchTerm = null)
+    {
         $binds = [];
         $sql = "SELECT member.id as member_id,
                         member.full_name,
@@ -170,12 +174,11 @@ class Member extends Authenticatable
                         GROUP_CONCAT(program.program_name SEPARATOR ', ') AS 'program'
                 FROM members member ";
 
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
 
             $sql .= " JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id ";
             $sql .= " AND cen_mem.center_id = " . adminUser()->center_id;
-
         }
 
         $sql .= " LEFT JOIN countries country
@@ -187,72 +190,76 @@ class Member extends Authenticatable
                     LEFT JOIN programs program
                         ON program.id = pstd.program_id
                 WHERE pstd.deleted_at IS NULL ";
-        if ( ! empty($searchTerm) ) {
+        if (! empty($searchTerm)) {
 
             $sql .= " AND ( ";
-                $sql .= " member.full_name LIKE ?";
-                $sql .= " OR member.email LIKE ?";
-                $sql .= " OR member.phone_number LIKE ?";
+            $sql .= " member.full_name LIKE ?";
+            $sql .= " OR member.email LIKE ?";
+            $sql .= " OR member.phone_number LIKE ?";
             $sql .= " ) ";
-            $binds =[
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
+            $binds = [
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
             ];
         }
 
         $sql .= " AND member.deleted_at IS NULL
                                 GROUP BY member.id";
-
-        return DB::select($sql,$binds);
+        return DB::select($sql, $binds);
     }
 
     /**
      * Get Full name from member
      */
-    public function full_name(): string {
+    public function full_name(): string
+    {
 
 
         $full_name = ucwords($this->first_name);
 
         if ($this->middle_name) {
-            $full_name .= ' '.$this->middle_name;
+            $full_name .= ' ' . $this->middle_name;
         }
 
-        $full_name .= ' '.$this->last_name;
+        $full_name .= ' ' . $this->last_name;
 
         return $full_name;
     }
 
-    protected function Email(): Attribute {
+    protected function Email(): Attribute
+    {
         return Attribute::make(
-            get :fn(string|null $value) => str($value ?? '')->contains('random_email_') ? '' : $value,
+            get: fn(string|null $value) => str($value ?? '')->contains('random_email_') ? '' : $value,
         );
     }
     /**
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
      */
-    public function profileImage() : HasOneThrough {
+    public function profileImage(): HasOneThrough
+    {
 
-        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
-                    ->where('relation',self::class)
-                    ->where('type','profile_picture')
-                    ->latest();
+        return $this->hasOneThrough(Images::class, ImageRelation::class, 'relation_id', 'id', 'id', 'image_id')
+            ->where('relation', self::class)
+            ->where('type', 'profile_picture')
+            ->latest();
     }
 
     /**
      * @return HasOneThrough
      */
-    public function memberIDMedia(): HasOneThrough {
-        return $this->hasOneThrough(Images::class,ImageRelation::class,'relation_id','id','id','image_id')
-            ->where('relation',self::class)
-            ->where('type','id_card')
+    public function memberIDMedia(): HasOneThrough
+    {
+        return $this->hasOneThrough(Images::class, ImageRelation::class, 'relation_id', 'id', 'id', 'image_id')
+            ->where('relation', self::class)
+            ->where('type', 'id_card')
             ->latest();
     }
 
-    public function media() {
-        return $this->hasMany(ImageRelation::class,'relation_id')
-                    ->where('relation',self::class);
+    public function media()
+    {
+        return $this->hasMany(ImageRelation::class, 'relation_id')
+            ->where('relation', self::class);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Member;
+use App\Models\User;
 use App\Rules\GoogleCaptcha;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,7 +32,7 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email_user' => ['required', 'string'],
             'password' => ['required', 'string'],
             // "recaptcha_token" => ["required", new GoogleCaptcha()]
         ];
@@ -53,12 +55,43 @@ class LoginRequest extends FormRequest
     public function authenticate()
     {
         $this->ensureIsNotRateLimited();
+        $auth = [
+            'email' => $this->post('email_user'),
+            'password' => $this->post('password')
+        ];
 
-        if (!Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
+        if (!Auth::attempt($auth, $this->boolean('remember'))) {
+
+            // try with username.
+            $username  = [
+                'username' => $auth['email'],
+                'password'  => $auth['password']
+            ];
+
+            if (! Auth::attempt($username, $this->boolean('remember'))) {
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => __('auth.failed'),
+                ]);
+            } else {
+
+                if (! auth()->check()) {
+                    RateLimiter::hit($this->throttleKey());
+                    throw ValidationException::withMessages([
+                        'email' => __('auth.failed'),
+                    ]);
+                } else {
+                    $user = auth()->user();
+
+                    if ($user->allow_username_login !== true) {
+                        auth()->logout();
+                        RateLimiter::hit($this->throttleKey());
+                        throw ValidationException::withMessages([
+                            'email' => __('auth.failed'),
+                        ]);
+                    }
+                }
+            }
         }
         RateLimiter::clear($this->throttleKey());
     }

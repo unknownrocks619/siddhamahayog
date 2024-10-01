@@ -2,6 +2,8 @@
 
 namespace App\Classes\Helpers;
 
+use Exception;
+
 class NepaliDate
 {
 
@@ -631,7 +633,7 @@ class NepaliDate
         $chk = $this->_is_in_range_nep($yy, $mm, $dd);
 
         if ($chk !== TRUE) {
-            die($chk);
+            throw new Exception($chk);
         } else {
             // Count total days in-terms of year
             for ($i = 0; $i < ($yy - $def_nyy); $i++) {
