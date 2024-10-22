@@ -119,7 +119,7 @@ class ProgramController extends Controller
         //     'id'    => 'required|numeric',
         //     'meetingId' => 'required|numeric'
         // ]);
-        $this->authUser();
+        // $this->authUser();
         $liveID = $request->post('id') ?? 1396;
         $live = Live::where('id', $liveID)->firstOrFail();
         $program = $live->program;
