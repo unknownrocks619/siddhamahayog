@@ -69,26 +69,47 @@ class LoginRequest extends FormRequest
             ];
 
             if (! Auth::attempt($username, $this->boolean('remember'))) {
-                RateLimiter::hit($this->throttleKey());
-                throw ValidationException::withMessages([
-                    'email' => __('auth.failed'),
-                ]);
-            } else {
-
-                if (! auth()->check()) {
+                if ($this->expectsJson()) {
+                    RateLimiter::hit($this->throttleKey());
+                    throw ValidationException::withMessages([
+                        'email' => __('auth.failed'),
+                    ])->status(422);
+                } else {
                     RateLimiter::hit($this->throttleKey());
                     throw ValidationException::withMessages([
                         'email' => __('auth.failed'),
                     ]);
+                }
+            } else {
+
+                if (! auth()->check()) {
+                    if ($this->expectsJson()) {
+                        RateLimiter::hit($this->throttleKey());
+                        throw ValidationException::withMessages([
+                            'email' => __('auth.failed'),
+                        ])->status(422);
+                    } else {
+                        RateLimiter::hit($this->throttleKey());
+                        throw ValidationException::withMessages([
+                            'email' => __('auth.failed'),
+                        ]);
+                    }
                 } else {
                     $user = auth()->user();
 
                     if ($user->allow_username_login !== true) {
                         auth()->logout();
-                        RateLimiter::hit($this->throttleKey());
-                        throw ValidationException::withMessages([
-                            'email' => __('auth.failed'),
-                        ]);
+                        if ($this->expectsJson()) {
+                            RateLimiter::hit($this->throttleKey());
+                            throw ValidationException::withMessages([
+                                'email' => __('auth.failed'),
+                            ])->status(422);
+                        } else {
+                            RateLimiter::hit($this->throttleKey());
+                            throw ValidationException::withMessages([
+                                'email' => __('auth.failed'),
+                            ]);
+                        }
                     }
                 }
             }

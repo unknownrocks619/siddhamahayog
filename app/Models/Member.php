@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Classes\Helpers\Roles\Rule;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
@@ -18,6 +17,21 @@ use Laravel\Sanctum\HasApiTokens;
 class Member extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, Billable, SoftDeletes;
+
+    const LOGIN_TYPE = [
+        0 => 'email',
+        1 => 'username',
+        2 => 'phone', /// For the moment, only allow login if the user was registred using mobile. // also make sure phone number is verified.
+        3 => '*',
+        4 => 'password less',
+    ];
+
+    const LOGIN_TYPE_EMAIL = 0;
+    const LOGIN_TYPE_USERNAME = 1;
+    const LOGIN_TYPE_PHONE = 2;
+    const LOGIN_TYPE_ALL = 3;
+    const LOGIN_TYPE_PASSWORDLESS = 4; // only allowed for country Nepal
+
 
     protected $casts = [
         "profileUrl" => "object",
@@ -235,7 +249,7 @@ class Member extends Authenticatable
     }
     /**
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOneThrough
+     * @return HasOneThrough
      */
     public function profileImage(): HasOneThrough
     {

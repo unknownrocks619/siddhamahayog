@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\AdminUser;
 use App\Models\Menu;
 use App\Models\Program;
 use App\Models\Slider;
 use App\Models\SliderSetting;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -143,7 +145,7 @@ if (!function_exists("user")) {
 }
 
 if (!function_exists("adminUser")) {
-    function adminUser()
+    function adminUser(): AdminUser|null
     {
         static $user = null;
 
@@ -159,32 +161,31 @@ if (!function_exists("profile")) {
     function profile()
     {
 
-        if (user() ) {
-            if ( ! user()?->profileImage ) {
+        if (user()) {
+            if (! user()?->profileImage) {
                 $hash = md5(user()->email);
                 return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
             }
 
-            return \App\Classes\Helpers\Image::getImageAsSize(user()->profileImage?->filepath,'xs');
-
+            return \App\Classes\Helpers\Image::getImageAsSize(user()->profileImage?->filepath, 'xs');
         }
 
-        if (adminUser() ) {
-                $hash = md5(adminuser()->email);
-                return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
+        if (adminUser()) {
+            $hash = md5(adminuser()->email);
+            return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
         }
-//
-//        if (user()->profile && isset(user()->profile->full_path) ) {
-//            return user()->profile->full_path;
-//        }
-//
-//        if ( (user()->profile) && isset(user()->profile->path) ) {
-//            return asset(user()->profile->path);
-//        }
-//
-//        if (user()->profileUrl && isset(user()->profileUrl->avatar) ) {
-//            return user()->profileUrl->avatar;
-//        }
+        //
+        //        if (user()->profile && isset(user()->profile->full_path) ) {
+        //            return user()->profile->full_path;
+        //        }
+        //
+        //        if ( (user()->profile) && isset(user()->profile->path) ) {
+        //            return asset(user()->profile->path);
+        //        }
+        //
+        //        if (user()->profileUrl && isset(user()->profileUrl->avatar) ) {
+        //            return user()->profileUrl->avatar;
+        //        }
 
     }
 }

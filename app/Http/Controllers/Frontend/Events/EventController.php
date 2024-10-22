@@ -15,6 +15,7 @@ use App\Models\Program;
 use App\Models\ProgramSection;
 use App\Models\ProgramStudentAttendance;
 use App\Models\Ramdas;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\WebsiteEvents;
 use Illuminate\Http\Request;
@@ -82,20 +83,31 @@ class EventController extends Controller
         }
 
         $access = true;
-        if ($live->section_id) {
-            $user_section = user()->section->program_section_id;
-            $access = ($user_section == $live->section_id) ? true : false;
-            if (!$access) {
+        if (! in_array(user()->role_id, Role::ADMIN_DASHBOARD_ACCESS)) {
+            if ($live->section_id) {
+                $user_section = user()->section->program_section_id;
+                $access = ($user_section == $live->section_id) ? true : false;
+                if (!$access) {
+                    $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+                }
+            }
+            if (!$access && $live->merge) {
                 $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
             }
         }
-        if (!$access && $live->merge) {
-            $access =  ($live->merge && isset($live->merge->$user_section)) ? true : false;
+
+        if ($request->has('apiRequest')) {
+
+            if (! $access) {
+                return false;
+            }
         }
+
         if (!$access) {
             session()->flash('error', "You are not allowed to join this session. Please contact support or create a support ticket to address this issue.");
             return back();
         }
+
         return $this->markAttendance($program, $live);
     }
 
@@ -180,7 +192,7 @@ class EventController extends Controller
         return $this->markAttendance($program, $live, true);
     }
 
-    public function checkAndUpdateAttendance(Program $program, Live $live, bool $ajaxResponse = false, $userSection = null, Member $user=null)
+    public function checkAndUpdateAttendance(Program $program, Live $live, bool $ajaxResponse = false, $userSection = null, Member $user = null)
     {
         $attendance = ProgramStudentAttendance::where('live_id', $live->id)
             ->where('program_id', $program->id)

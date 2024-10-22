@@ -102,32 +102,32 @@ class Program extends AdminModel
     public const QUICK_NAVIGATION_ACCESS = [
         'syllabus_and_resources'    => [
             'label' => 'Syllabus / Resources',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ACTING_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ACTING_ADMIN, Rule::ADMIN]
         ],
         'program_daily_attendance'  => [
             'label' => 'Program Daily Attendance',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN]
         ],
         'account_and_management' => [
             'label' => 'Account Management',
-            'access'    => [Rule::SUPER_ADMIN,Rule::CENTER_ADMIN,Rule::CENTER]
+            'access'    => [Rule::SUPER_ADMIN, Rule::CENTER_ADMIN, Rule::CENTER]
         ],
 
         'assign_member_to_program'  => [
             'label' => 'Assign Member to Program',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN]
         ],
         'register_new_member_to_program'    => [
             'label' => 'Register Member',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN,Rule::CENTER_ADMIN,Rule::CENTER           ]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN, Rule::CENTER_ADMIN, Rule::CENTER]
         ],
         'scholarship_and_special_permission' => [
             'label' => 'Scholarship & Special Permission',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN]
         ],
         'vip_and_guest_list'    => [
             'label' => 'VIP / Guest Access List',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN]
         ],
         'grouping'  => [
             'label' => 'Group',
@@ -135,7 +135,7 @@ class Program extends AdminModel
         ],
         'volunteer' => [
             'label' => 'Volunteer For Program',
-            'access'    => [Rule::SUPER_ADMIN,Rule::ADMIN]
+            'access'    => [Rule::SUPER_ADMIN, Rule::ADMIN]
         ]
     ];
 
@@ -146,7 +146,9 @@ class Program extends AdminModel
 
     public function program_active_student()
     {
-        return $this->hasOne(ProgramStudent::class, $this->foreignKey)->where('student_id', user()->getKey())->where('active', true)->first();
+        return $this->hasOne(ProgramStudent::class, $this->foreignKey)
+            ->where('student_id', user()->getKey())
+            ->where('active', true)->first();
     }
 
     /**
@@ -257,11 +259,13 @@ class Program extends AdminModel
         return $this->hasMany(Live::class, "program_id")->where('live', true);
     }
 
-    public function defaultBatch() {
-        return $this->hasOne(Batch::class,'id','batch');
+    public function defaultBatch()
+    {
+        return $this->hasOne(Batch::class, 'id', 'batch');
     }
 
-    public function programStudentEnrolments($searchTerm = null) {
+    public function programStudentEnrolments($searchTerm = null)
+    {
         $selects = [
             'pro.program_name',
             'pro.id AS program_id',
@@ -294,7 +298,7 @@ class Program extends AdminModel
 
         $binds = [$this->getKey()];
 
-        if ( $this->getKey() == 5 ) {
+        if ($this->getKey() == 5) {
             $selects[] = 'yagya.total_counter';
         }
 
@@ -306,11 +310,11 @@ class Program extends AdminModel
         $sql .= ' ON prostu.program_id = pro.id';
         $sql .= ' AND prostu.deleted_at IS NULL';
 
-        $sql .=' INNER JOIN members member';
+        $sql .= ' INNER JOIN members member';
         $sql .= ' ON member.id = prostu.student_id';
         $sql .= " AND member.deleted_at IS NULL";
 
-        if ( ! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN])){
+        if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN, Rule::ADMIN])) {
 
             $sql .= " INNER JOIN center_members cen_mem ";
             $sql .= " ON cen_mem.member_id = member.id";
@@ -345,7 +349,7 @@ class Program extends AdminModel
         $sql .= " AND scholar.student_id = member.id";
         $sql .= " AND scholar.deleted_at IS NULL ";
 
-        if ( $this->getKey() == 5 ) {
+        if ($this->getKey() == 5) {
             $sql .= " LEFT JOIN hanumand_yagya_counters yagya";
             $sql .= " ON yagya.member_id = member.id";
             $sql .= " AND yagya.program_id = pro.id ";
@@ -353,7 +357,7 @@ class Program extends AdminModel
 
         $sql .= " WHERE pro.id = ?";
 
-        if ( $searchTerm ) {
+        if ($searchTerm) {
             $sql .=  " AND ( ";
             $sql .= " member.full_name LIKE ?";
             $sql .= " OR member.phone_number LIKE ?";
@@ -364,24 +368,24 @@ class Program extends AdminModel
             $sql .= " OR country.name LIKE ? ";
             $sql .= " ) ";
 
-            $binds= array_merge($binds, [
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
+            $binds = array_merge($binds, [
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
             ]);
-
         }
 
         $sql .= " GROUP BY member.id";
 
-        return DB::select($sql,$binds);
+        return DB::select($sql, $binds);
     }
 
-    public function totalAdmissionFee() {
+    public function totalAdmissionFee()
+    {
 
         $sql  = " SELECT SUM(amount) as total_amount, ";
         $sql .= "  COALESCE(amount_category, 'grand_total') AS total_by";
@@ -390,7 +394,7 @@ class Program extends AdminModel
         $sql .= " AND prostufee.program_id = ? ";
         $sql .= " AND prostufee.deleted_at IS NULL ";
 
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
             $sql .= " AND prostufee.fee_added_by_center = ";
             $sql .= adminUser()->center_id ? adminUser()->center_id : 0;
         }
@@ -401,16 +405,16 @@ class Program extends AdminModel
         return DB::select($sql, [$this->getKey()]);
     }
 
-    public function programBatches() {
-        return $this->hasManyThrough(Batch::class,ProgramBatch::class,'program_id','id','id','batch_id');
+    public function programBatches()
+    {
+        return $this->hasManyThrough(Batch::class, ProgramBatch::class, 'program_id', 'id', 'id', 'batch_id');
     }
 
-    public function totalRevenue() {
-
-    }
+    public function totalRevenue() {}
 
 
-    public function transactionOverview($term = null) {
+    public function transactionOverview($term = null)
+    {
         $selects = [
             'fees.student_id',
             'fees.id as fees_id',
@@ -423,7 +427,7 @@ class Program extends AdminModel
         $binds = [$this->getKey()];
 
         $sql = " SELECT ";
-        $sql .= implode (" , ", $selects);
+        $sql .= implode(" , ", $selects);
         $sql .= " FROM  program_student_fees fees";
         $sql .= " JOIN members member ";
         $sql .= " ON member.id = fees.student_id";
@@ -432,7 +436,7 @@ class Program extends AdminModel
         $sql .= " WHERE fees.program_id = ?";
         $sql .= " AND fees.deleted_at IS NULL ";
 
-        if ( $term ) {
+        if ($term) {
             $sql .= " AND ( ";
             $sql .= 'member.first_name LIKE ?';
             $sql .= " OR ";
@@ -445,17 +449,22 @@ class Program extends AdminModel
             $sql .= "fees.total_amount >= ?";
             $sql .= " ) ";
 
-            $binds = array_merge($binds,['%'.$term.'%',
-                    '%'.$term.'%',
-                    '%'.$term.'%',
-                    '%'.$term.'%',
-                    $term]
+            $binds = array_merge(
+                $binds,
+                [
+                    '%' . $term . '%',
+                    '%' . $term . '%',
+                    '%' . $term . '%',
+                    '%' . $term . '%',
+                    $term
+                ]
             );
         }
 
-        return DB::select($sql,$binds);
+        return DB::select($sql, $binds);
     }
-    public function transactionsDetail($searchTerm = null, array $filters=[]) {
+    public function transactionsDetail($searchTerm = null, array $filters = [])
+    {
         $selects = [
             'fee_detail.id as transaction_id',
             'fee_detail.program_student_fees_id as transaction_overview_id',
@@ -496,34 +505,32 @@ class Program extends AdminModel
         $sql .= " JOIN members member";
         $sql .= " ON member.id = fee_detail.student_id";
 
-        if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN,Rule::ADMIN]) ){
+        if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN, Rule::ADMIN])) {
             $sql .= ' JOIN center_members cen_mem ';
             $sql .= ' ON cen_mem.member_id = member.id ';
         } else {
-            if ( isset ($filters['admin']) ) {
+            if (isset($filters['admin'])) {
                 $sql .= " JOIN admin_users admin ";
                 $sql .= " ON admin.id = fee_detail.fee_added_by_user";
                 $sql .= " AND admin.id = " . $filters['admin'];
-
             } else {
                 $sql .= " LEFT JOIN admin_users admin ";
                 $sql .= " ON admin.id = fee_detail.fee_added_by_user";
             }
-            
-            if (isset($filters['center']) ) {
+
+            if (isset($filters['center'])) {
                 $sql .= " JOIN centers center ";
                 $sql .= " ON center.id = fee_detail.fee_added_by_center";
-                $sql .= " AND center.id = " .$filters['center'];
+                $sql .= " AND center.id = " . $filters['center'];
             } else {
                 $sql .= " LEFT JOIN centers center ";
                 $sql .= " ON center.id = fee_detail.fee_added_by_center";
-    
             }
         }
 
         $sql .= " LEFT JOIN permission_updates pu";
         $sql .= " ON pu.relation_id = fee_detail.id";
-        $sql .= " AND pu.status = ".PermissionUpdate::STATUS_PENDING;
+        $sql .= " AND pu.status = " . PermissionUpdate::STATUS_PENDING;
 
         $sql .= " LEFT JOIN image_relations imr ";
         $sql .= ' ON imr.relation_id = fee_detail.id';
@@ -537,80 +544,79 @@ class Program extends AdminModel
         $sql .= " WHERE fee_detail.program_id = ? ";
 
         if (isset($filters['amount']['value']) && isset($filters['amount']['operator'])) {
-            $sql .= ' AND amount ' . $filters['amount']['operator'] . ' '. $filters['amount']['value'];
+            $sql .= ' AND amount ' . $filters['amount']['operator'] . ' ' . $filters['amount']['value'];
         }
 
         if ($searchTerm) {
 
             $sql .= " AND ( ";
-                $sql .= " LOWER(member.full_name) LIKE ? ";
-                $sql .= " OR member.first_name LIKE ?";
-                $sql .= " OR member.last_name LIKE ?";
-                $sql .= " OR member.email LIKE ? ";
-                $sql .= " OR member.phone_number LIKE ? ";
-                $sql .= " OR fee_detail.created_at LIKE ? ";
-                $sql .= " OR fee_detail.source_detail LIKE ? ";
-                $sql .= " OR fee_detail.source LIKE ? ";
-                $sql .= " OR fee_detail.amount_category LIKE ? ";
-                $sql .= " OR fee_detail.amount LIKE ? ";
-                $sql .= ' OR fee_detail.voucher_number LIKE ? ';
-                if (in_array(adminUser()->role(), [Rule::SUPER_ADMIN,Rule::ADMIN])) {
-                        $sql .= " OR fee_detail.currency LIKE ? ";
-                        $sql .= " OR admin.firstname LIKE ? ";
-                        $sql .= " OR admin.lastname LIKE ? ";
-                        $sql .= " OR center.center_name LIKE ? ";
-                        $sql .= " OR fee_detail.student_id LIKE ?";
+            $sql .= " LOWER(member.full_name) LIKE ? ";
+            $sql .= " OR member.first_name LIKE ?";
+            $sql .= " OR member.last_name LIKE ?";
+            $sql .= " OR member.email LIKE ? ";
+            $sql .= " OR member.phone_number LIKE ? ";
+            $sql .= " OR fee_detail.created_at LIKE ? ";
+            $sql .= " OR fee_detail.source_detail LIKE ? ";
+            $sql .= " OR fee_detail.source LIKE ? ";
+            $sql .= " OR fee_detail.amount_category LIKE ? ";
+            $sql .= " OR fee_detail.amount LIKE ? ";
+            $sql .= ' OR fee_detail.voucher_number LIKE ? ';
+            if (in_array(adminUser()->role(), [Rule::SUPER_ADMIN, Rule::ADMIN])) {
+                $sql .= " OR fee_detail.currency LIKE ? ";
+                $sql .= " OR admin.firstname LIKE ? ";
+                $sql .= " OR admin.lastname LIKE ? ";
+                $sql .= " OR center.center_name LIKE ? ";
+                $sql .= " OR fee_detail.student_id LIKE ?";
 
-                        $binds[] = '%'.$searchTerm . '%';
-                        $binds[] = '%'.$searchTerm . '%';
-                        $binds[] = '%'.$searchTerm . '%';
-                        $binds[] = '%'.$searchTerm . '%';
-                        $binds[] = '%'.$searchTerm . '%';
-                }
+                $binds[] = '%' . $searchTerm . '%';
+                $binds[] = '%' . $searchTerm . '%';
+                $binds[] = '%' . $searchTerm . '%';
+                $binds[] = '%' . $searchTerm . '%';
+                $binds[] = '%' . $searchTerm . '%';
+            }
 
-                $sql .= " OR ( CASE WHEN 'verified' LIKE ? THEN verified = 1 ";
-                $sql .= "      WHEN 'pending' LIKE ? THEN verified = 0 AND rejected = 0";
-                $sql .= "      WHEN 'rejected' LIKE ? THEN rejected = 1 ";
-                $sql .= " END ";
-                $sql .= " ) ";
+            $sql .= " OR ( CASE WHEN 'verified' LIKE ? THEN verified = 1 ";
+            $sql .= "      WHEN 'pending' LIKE ? THEN verified = 0 AND rejected = 0";
+            $sql .= "      WHEN 'rejected' LIKE ? THEN rejected = 1 ";
+            $sql .= " END ";
+            $sql .= " ) ";
             $sql .= ") ";
-            
-            $binds = array_merge ($binds, [
-                '%'.strtolower($searchTerm).'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
-                '%'.$searchTerm.'%',
+
+            $binds = array_merge($binds, [
+                '%' . strtolower($searchTerm) . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
+                '%' . $searchTerm . '%',
             ]);
-
-
         }
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
-            $sql .= ' AND fee_detail.fee_added_by_center =  ' ;
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
+            $sql .= ' AND fee_detail.fee_added_by_center =  ';
             $sql .= adminUser()->center_id ? adminUser()->center_id : 0;
         }
 
         $sql .= " AND fee_detail.deleted_at IS NULL";
 
-        return DB::select($sql,$binds);
+        return DB::select($sql, $binds);
     }
 
-    public function nonPaidList(){
+    public function nonPaidList()
+    {
         $selects = [
             'member.*',
             'pro_mem.created_at as joined_date'
         ];
         $sql  = " SELECT ";
-        $sql .= implode (', ', $selects);
+        $sql .= implode(', ', $selects);
         $sql .= " FROM ";
         $sql .= " members member";
         $sql .= " JOIN program_students pro_mem ";
@@ -624,6 +630,6 @@ class Program extends AdminModel
         $sql .= " AND ( pro_fees.student_id  IS NULL ";
         $sql .= " OR pro_fees.total_amount <= 0 ) ";
 
-        return DB::select($sql,[$this->getKey()]);
+        return DB::select($sql, [$this->getKey()]);
     }
 }

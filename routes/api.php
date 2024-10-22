@@ -30,6 +30,10 @@ Route::prefix("v1")
             }
             return response(['results' => $cities]);
         })->name("cities-list");
+
+        Route::get('/countries', function () {
+            return response(['results' => \App\Models\Country::select(['id as countryID', 'name as country_name', 'code as country_code'])->get()]);
+        });
     });
 
 
