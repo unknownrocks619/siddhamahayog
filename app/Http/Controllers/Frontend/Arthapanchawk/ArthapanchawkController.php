@@ -331,8 +331,12 @@ class ArthapanchawkController extends Controller
         return view("frontend.page.vedanta.payment", compact("program"));
     }
 
-    public function paymentProcessor(Program $program)
+    public function paymentProcessor(Request $request, Program $program)
     {
+        $request->validate([
+            'amount'    => 'required|int'
+        ]);
+        $amount = (float) request()->post('amount');
         $url = config('services.esewa.redirect');
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
 
@@ -348,11 +352,11 @@ class ArthapanchawkController extends Controller
 
         $pid = (string) Str::uuid();
         $data = [
-            'amt' => $program->active_fees->$fee_type,
+            'amt' => $amount,
             'pdc' => 0,
             'psc' => 0,
             'txAmt' => 0,
-            'tAmt' => $program->active_fees->$fee_type,
+            'tAmt' => $amount,
             'pid' => $pid,
             'scd' => config("services.esewa.merchant_code"),
             'su' => route('vedanta.payment.success', $program->id),
@@ -435,19 +439,19 @@ class ArthapanchawkController extends Controller
         $fee_type = ($program->student_admission_fee) ? 'monthly_fee' : 'admission_fee';
 
         if ($program_student_fee) {
-            $program_student_fee->total_amount = $program_student_fee->total_amount + $program->active_fees->$fee_type;
+            $program_student_fee->total_amount = $program_student_fee->total_amount + $esewaController->get_configs()['amt'];
         } else {
             $program_student_fee = new ProgramStudentFee();
             $program_student_fee->program_id = $program->id;
             $program_student_fee->student_id = auth()->id();
-            $program_student_fee->total_amount = $program->active_fees->$fee_type;
+            $program_student_fee->total_amount = $esewaController->get_configs()['amt'];
         }
 
         // fee detail.
         $program_student_fee_detail = new ProgramStudentFeeDetail();
         $program_student_fee_detail->program_id = $program->id;
         $program_student_fee_detail->student_id = auth()->id();
-        $program_student_fee_detail->amount = $program->active_fees->$fee_type;
+        $program_student_fee_detail->amount = $esewaController->get_configs()['amt'];
         $program_student_fee_detail->amount_category = $fee_type;
         $program_student_fee_detail->source = "online";
         $program_student_fee_detail->source_detail = "E-sewa Transaction";
