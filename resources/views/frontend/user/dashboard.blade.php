@@ -131,90 +131,20 @@
             </div>
         </div>
 
-        <div class="row">
+        <div class="row d-none">
             @if (user()->role()->isTeacher())
                 <div class="col-md-12 mb-3" id="">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
                             <h4>Your Members</h4>
-                            <button class="btn btn-primary">Register New Member</button>
+                            <button class="btn btn-primary js-toggle-view" data-target="#memberRegistration"
+                                type="button">Register New Member</button>
                         </div>
                         <div class="card-body">
-                            <div id="memberRegistration">
-                                <form
-                                    onsubmit="event.preventDefault();window.registration.verifyRegistrationProcess(this,'{{ encrypt(auth()->guard('web')->id()) }}')"
-                                    action="{{ route('user.register-token') }}" method="post">
-                                    <div class="row">
-                                        <div class="col-md-6 mt-2">
-                                            <select onchange="changeCountry(this); window.registration.setAttribute(this)"
-                                                name="country" id="country" class="form-control">
-                                                @foreach (\App\Models\Country::get() as $country)
-                                                    <option @if ($country->code == 'NP') selected @endif
-                                                        value="{{ $country->getKey() }}" data-
-                                                        title="{{ strtoupper($country->code) }}">{{ $country->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <div class="col-md-6 country-verification country-nepal mt-2">
-                                            <div class="form-group">
-                                                <div class="input-group" style="height: 50px;">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text" style="height: 50px"
-                                                            id="basic-addon1">+977</span>
-                                                    </div>
-                                                    <input type="text" onchange="window.registration.setAttribute(this)"
-                                                        name="phone" id="phone" class="form-control"
-                                                        placeholder="98XXXXXXXX">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-6 country-verification country-other mt-2" style="display:none">
-                                            <div class="form-group">
-                                                <div class="input-group" style="height: 50px;">
-                                                    <span class="input-group-text" style="height: 50px"
-                                                        id="basic-addon1">Email</span>
-                                                    <input type="email"
-                                                        onchange="window.registration.setAttribute(this)" name="email"
-                                                        id="email" class="form-control"
-                                                        placeholder="youremail@gmail.com">
-                                                </div>
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4 country-verification country-nepal">
-                                            <div class="form-group">
-                                                <div class="form-check form-check-primary mt-4">
-                                                    <label class="form-check-label" for="email_option">Use Email
-                                                        Instead</label>
-                                                    <input class="form-check-input"
-                                                        onchange="changeCountry(this,'.country-other');window.registration.setAttribute(this)"
-                                                        type="checkbox" name="email_option" value="1"
-                                                        id="email_option" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-md-12 text-end">
-                                            <button class="btn btn-primary">
-                                                Proceed
-                                                <i class="menu-icon tf-icons bx bxs-right-arrow bx-tada-hover"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-
-                            </div>
+                            @include('frontend.user.members.partials.registration')
 
                             <div class="table-responsive">
-                                <table class="table table-hover table-bordered" id="underLinksMembersLists"
-                                    data-action="">
+                                <table class="table table-hover table-bordered" id="underLinksMembersLists" data-action="">
                                     <thead>
                                         <tr>
                                             <th>Full Name</th>
@@ -274,7 +204,7 @@
                 </div>
             @endif
             <!-- Total Revenue -->
-            <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
+            {{-- <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
                 <div class="card">
                     <div class="row row-bordered g-0">
                         <div class="col-md-12">
@@ -282,7 +212,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
             <!--/ Total Revenue -->
             {{-- @include('views.frontend.user.dashboard.donation') --}}
 
@@ -352,103 +282,6 @@
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" />
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                eventDidMount: function(info) {
-                    console.log('info: ', info.event.title)
-                    var tooltip = new bootstrap.Tooltip(info.el, {
-                        title: info.event.extendedProps.description ?? info.event.title,
-                        placement: 'top',
-                        trigger: 'hover',
-                        container: 'body'
-                    });
-                },
-                events: [{
-                        id: '01',
-                        groupId: 'ekadashi',
-                        title: 'Ekadashi',
-                        start: '2023-02-01',
-                        allDay: true,
-                        background: 'green'
-                    },
-                    {
-                        id: '05',
-                        groupId: 'purnima',
-                        title: 'Purnima',
-                        allDay: true,
-                        start: '2023-02-05'
-                    },
-                    {
-                        id: '06',
-                        groupId: 'pratipada',
-                        title: 'Pratipada',
-                        allDay: true,
-                        start: '2023-02-06'
-                    },
-                    {
-                        id: '12',
-                        groupID: 'gurudev-vardapan-mahtosav',
-                        title: 'Gurudev Vardapan Mahtosav (Tithi)',
-                        allDay: true,
-                        start: '2023-02-12'
-                    },
-                    {
-                        title: 'Astami/Sankranti',
-                        id: '13',
-                        groupID: 'astami-sankranti',
-                        start: '2023-02-13',
-                        allDay: true,
-                        resourceIds: ['a']
-                    },
-                    {
-                        id: '16',
-                        groupId: 'ekadashi',
-                        start: '2023-02-16',
-                        allDay: true,
-                        title: 'Ekadashi',
-                    },
-                    {
-                        id: '18',
-                        groupID: 'maha-shivaratri',
-                        start: '2023-02-18',
-                        allDay: true,
-                        title: 'Maha Shivaratri'
-                    },
-                    {
-                        id: '20',
-                        groupID: 'aaunsi',
-                        start: '2023-02-20',
-                        title: 'Aaunsi',
-                        allDay: true
-                    },
-                    {
-                        id: "21",
-                        groupId: 'pratipada',
-                        title: 'Pratipada',
-                        start: '2023-02-21',
-                        allDay: true
-                    },
-                    {
-                        id: '27',
-                        title: 'Astami',
-                        allDay: true,
-                        start: '2023-02-27',
-                        groupId: 'astami',
-                        resourceIds: ['a']
-                    }
-                ],
-
-                resources: [{
-                    id: 'a',
-                    title: "Astami"
-                }]
-
-            });
-            calendar.render();
-        });
-
         // document.getElementsByClassName('refresh-donation')[0].addEventListener("click", (event) => {
         //     event.preventDefault();
         //     donation();

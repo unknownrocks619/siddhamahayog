@@ -84,7 +84,7 @@
                                 <div class="row mt-3">
                                     <div class="col-md-6">
                                         <button type="submit" class="btn btn-success">
-                                            Confirm Payment
+                                            Confirm Donation
                                         </button>
                                     </div>
                                 </div>

@@ -34,8 +34,25 @@
         href="{{ asset('themes/app/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
     <link rel="stylesheet" href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
+    <style>
+        .select2-selection--single {
+            height: 50px !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 24px;
+        }
+
+        .select2-selection__arrow {
+            top: 30% !important;
+        }
+
+        .select2-container--default {
+            width: 100% !important;
+        }
+    </style>
     <!-- Page CSS -->
     @stack('custom_css')
+
     <!-- Helpers -->
     <script src="{{ asset('themes/app/assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('themes/app/assets/js/config.js') }}"></script>

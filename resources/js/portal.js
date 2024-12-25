@@ -4,6 +4,7 @@ import './partials/ajax-modal';
 import './partials/select2';
 import './portal/member-registration.js'
 import './portal/member-underlinks-table.js'
+
 $(function () {
     "use strict";
 
@@ -132,7 +133,16 @@ $(function () {
         });
     }
 
+    $(document).on('click', '.js-toggle-view', function (event) {
+        console.log('sfsf');
+        event.preventDefault();
+        let target = $($(this).data('target'));
 
+        if($(target).length) {
+            $(target).toggle();
+        }
+
+    });
     /**
      * Handle 429 Error
      * @param data

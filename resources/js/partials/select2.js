@@ -7,10 +7,16 @@ window.ajaxReinitalize = function (element, options = {}) {
 
             if ($(element).closest('[data-dropdown]').length) {
 
-                console.log('#'+$(element).closest('[data-dropdown]').attr('data-dropdown'));
                 options.dropdownParent = '#'+$(element).closest('[data-dropdown]').attr('data-dropdown')
             }
 
+            if ($(element).data('format-template') ) {
+                options.templateResult = function(item) {
+                    let _functionName = $(element).data('format-template');
+                    console.log('function name: ', _functionName);
+                    return window[_functionName](item);
+                };
+            }
             $(element).select2(options);
         } else {
 
@@ -110,3 +116,39 @@ $(document).on('change','#building_selection_to_room', function() {
     });
 
 })
+
+window.changeCountry = function(elm, targetElm = '') {
+    if (targetElm !== '') {
+        $(targetElm).toggle();
+        return;
+    }
+
+    $('.country-verification').hide();
+
+    if ($(elm).find(':selected').val() != '153') {
+        $('.country-other').show();
+        $('#email_option').removeAttr('checked');
+    } else {
+        $('.country-nepal').show();
+
+    }
+}
+
+
+window.formatCountry = function (item) {
+
+    let url = "https://flagsapi.com/" + item.title + "/flat/64.png";
+    let img = $("<img>", {
+        class: "img-flag me-2 py-1",
+        width: 45,
+        src: url
+    });
+
+    let span = $("<span>", {
+        text: " " + item.text,
+        class: "fs-4"
+    });
+    span.prepend(img);
+    return span;
+
+}

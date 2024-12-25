@@ -155,6 +155,10 @@ class UserController extends Controller
             'country' => 'required',
             'phone' => 'required_if:country,153',
             'email' => 'required_unless:country,153|email:rfc,dns'
+        ], [
+            'email.required_unless' => 'Email is required.',
+            'email.email' => 'Invalid email address.',
+            'phone.required_if' => 'Phone number is required.'
         ]);
 
         // check if user already exists.
@@ -202,6 +206,7 @@ class UserController extends Controller
         if (! site_settings('account_verification')) {
             return $this->json(true, 'Information validation success.', '', $validationToken);
         }
+
         $validationToken['validation'] = 'verification';
 
         if ($request->post('country') != '153') {

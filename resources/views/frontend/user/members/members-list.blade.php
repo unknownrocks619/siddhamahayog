@@ -20,10 +20,12 @@
                     <div class="card-body">
                         <div
                             class="card-headerps-0 d-flex justify-content-between align-items-center  border-1 border-bottom pb-3 mb-3">
-                            <h4>My Current Session</h4>
-                            <button class="btn btn-primary" data-bs-toggle='modal' data-bs-target='#newSession'>Create New
-                                Session</button>
+                            <h4>Members</h4>
+                            <button class="btn btn-primary js-toggle-view" type="button"
+                                data-target="#memberRegistration">New
+                                Member</button>
                         </div>
+                        @include('frontend.user.members.partials.registration')
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered" id="underLinksMembersLists" data-action="">
                                 <thead>
@@ -47,15 +49,15 @@
                                             </td>
                                             <td>
                                                 {{ $member->address?->street_address }} , {{ $member->city }},
-                                                {{ $member->countries->name }}
+                                                {{ $member->countries?->name }}
                                             </td>
                                             <td>
-                                                {{ $session->enrolledUsers->count() }}
+                                                {{ $member->phone_number }}
                                             </td>
                                             <td class="text-end">
-                                                <a href="" class="btn btn-primary">
+                                                {{-- <a href="" class="btn btn-primary">
                                                     View Members
-                                                </a>
+                                                </a> --}}
                                                 <a href="" class="btn  btn-primary"><i
                                                         class="menu-icon bx bx-pencil me-0"></i> Edit</a>
                                                 <a href="" class="btn  btn-danger"><i
