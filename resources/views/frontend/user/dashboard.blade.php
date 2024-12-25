@@ -131,7 +131,7 @@
             </div>
         </div>
 
-        <div class="row d-none">
+        <div class="row  @if ($_ENV['APP_ENV'] == 'production') d-none @endif ">
             @if (user()->role()->isTeacher())
                 <div class="col-md-12 mb-3" id="">
                     <div class="card">

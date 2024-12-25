@@ -19,7 +19,7 @@
             </div>
 
         </div>
-        <div class="row d-none">
+        <div class="row @if ($_ENV['APP_ENV'] == 'production') d-none @endif">
             <div class="col-md-12 mb-3" id="">
                 <div class="card alert alert-danger">
                     <div class="card-header mb-0 pb-0 alert-title">
