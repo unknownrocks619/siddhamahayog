@@ -10,7 +10,7 @@ use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
-class AdminSettingController extends Controller
+class SettingController extends Controller
 {
     //
 
@@ -96,6 +96,7 @@ class AdminSettingController extends Controller
         }
 
         Cache::put("web_settings", $settings);
+        return $this->json(true,'Setting Updated.');
         session()->flash('success', "Setting Updated.");
         return back();
     }

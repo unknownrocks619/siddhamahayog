@@ -33,8 +33,7 @@
     <link rel="stylesheet"
         href="{{ asset('themes/app/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
-    <link rel="stylesheet" href="{{ asset('themes/app/assets/vendor/libs/apex-charts/apex-charts.css') }}" />
-
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
     <!-- Page CSS -->
     @stack('custom_css')
     <!-- Helpers -->
@@ -110,9 +109,6 @@
     <script src="{{ asset('themes/app/assets/vendor/js/menu.js') }}"></script>
     <!-- endbuild -->
 
-    <!-- Vendors JS -->
-    <script src="{{ asset('themes/app/assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
-
     <!-- Main JS -->
     <script src="{{ asset('themes/app/assets/js/main.js') }}"></script>
 
@@ -121,7 +117,8 @@
 
     <!-- Page JS -->
     <script src="{{ asset('themes/app/assets/js/dashboards-analytics.js') }}"></script>
-
+    <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    <script src="{{ mix('js/portal.js') }}"></script>
 
 
 

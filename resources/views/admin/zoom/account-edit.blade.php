@@ -8,7 +8,7 @@
                 <span class="text-muted fw-light">Zoom/</span> Accounts / Edit
             </h4>
 
-            <a href="{{route('admin.admin_zoom_account_show')}}" class="btn btn-danger btn-icon text-white">
+            <a href="{{route('admin.zoom.admin_zoom_account_show')}}" class="btn btn-danger btn-icon text-white">
                 <i class="fas fa-arrow-left"></i>
             </a>
 

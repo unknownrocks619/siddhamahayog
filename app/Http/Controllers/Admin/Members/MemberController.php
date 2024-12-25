@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\Dharmasala\BookingController;
 use App\Http\Controllers\Admin\Programs\AdminProgramController;
 use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
 use App\Http\Controllers\Controller;
+use App\Jobs\EmailVerfication;
 use App\Models\CenterMember;
 use App\Models\Dharmasala\DharmasalaBooking;
 use App\Models\Dharmasala\DharmasalaBuildingRoom;
@@ -30,6 +31,7 @@ use App\Models\Reference;
 use App\Models\Role;
 use App\Models\Scholarship;
 use App\Models\SupportTicket;
+use App\Models\SystemSetting;
 use App\Models\UnpaidAccess;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
@@ -43,10 +45,11 @@ use Illuminate\Support\Str;
 
 class MemberController extends Controller
 {
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -111,6 +114,65 @@ class MemberController extends Controller
         return view('admin.members.index');
     }
 
+    public function mobileIndex() {
+        if (request()->ajax() && request()->wantsJson()) {
+
+            $searchTerm = (isset(request()->get('search')['value'])) ? request()->get('search')['value'] : '';
+
+            $datatable = DataTables::of(Member::all_members($searchTerm))
+                ->addIndexColumn()
+                ->addColumn('full_name', function ($row) {
+                    return htmlspecialchars(strip_tags($row->full_name));
+                })
+                ->addColumn('email', function ($row) {
+                    $stringEmail = str($row->email);
+                    if ($stringEmail->contains('random_email_') ) {
+                        return 'N/A';
+                    }
+
+                    return $row->email;
+                })
+                ->addColumn('country', function ($row) {
+                    // return $row->countries->country_name;
+                    return $row->country_name ?? "NaN";
+                })
+                ->addColumn('phone', function ($row) {
+                    $phone = "";
+                    if ($row->phone_number) {
+                        $phone .= "Mo: " . htmlspecialchars(strip_tags($row->phone_number));
+                    } else {
+                        $phone .= "NaN";
+                    }
+                    return $phone;
+                })
+                ->addColumn('program_involved', function ($row) {
+
+                    if (!$row->program) {
+                        return "NaN";
+                    }
+                    $allPrograms = explode(', ', $row->program);
+
+                    $program_involved = "";
+                    foreach ($allPrograms as $programs) {
+                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs ."</span>";
+                    }
+                    return $program_involved;
+                })
+                ->addColumn('registered_date', function ($row) {
+                    return date('Y-m-d',strtotime($row->created_at));
+                })
+                ->addColumn('action', function ($row) {
+                    // $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
+                    $action = "<a href='" . route('admin.members.show', $row->member_id) . "' class='text-danger'><i class='ti ti-edit ti-sm me-2'></a>";
+                    return $action;
+                })
+                ->rawColumns(["program_involved", "action"])
+                ->make(true);
+            return $datatable;
+        }
+
+        return view('admin.members.mobile-index');
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -152,6 +214,7 @@ class MemberController extends Controller
                 'date_of_birth' => $request->post('date_of_birth'),
                 'gender'        => $request->post('gender'),
                 'gotra'         => $request->post('gotra'),
+                'role'          => $request->post('role')
             ];
 
             $full_name = $fill['first_name'];
@@ -165,15 +228,18 @@ class MemberController extends Controller
             $fill['full_name']  = $full_name;
 
             $member = null;
-
-            if ( $request->post('exisiting_member') && $request->post('memberID') ) {
+            $memberExists = false;
+            if ( $request->post('existing_member') && $request->post('memberID') ) {
                 $member = Member::find($request->post('memberID'));
 
             } elseif ($request->post('email')) {
                 $member = Member::where('email',$request->post('email'))->first();
+            } elseif($request->post('phone_number')) {
+                $member = Member::where('phone_number',$request->post('phone_number'))->first();
             }
 
             if ($member ) {
+                $memberExists = true;
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
                 $member->country = $fill['country'] ?? $member->country;
                 $member->city = $fill['city'] ?? $member->city;
@@ -194,8 +260,12 @@ class MemberController extends Controller
                 $member = new Member();
                 $member->fill($fill);
                 $member->source = ($request->has('dharmasala') && $request->get('dharmasala') == true)  ? 'dharmasala' : 'admin_entry';
-                $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
-                $member->sharing_code = Str::random(8);
+
+                if ( ! $memberExists ) {
+                    $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
+                    $member->sharing_code = Str::random(8);
+                }
+
                 $member->email = $request->post('email') ?? 'random_email_'.Str::random(18).'_'.time().'@siddhamahayog.org';
             }
 
@@ -361,16 +431,16 @@ class MemberController extends Controller
              */
 
 
-            $view = 'admin.programs.members.post-registration';
+            $view = 'admin.members.partials.verify-registration-data';
             $params =['member' => $member];
 
-            if ($request->post('program_enroll') && $request->post('family_confirmation')) {
-                $view = 'admin.programs.members.post-enrollement-option';
-            } else if($request->post('program_enroll') && ! $request->post('family_confirmation')) {
-                $params['program'] = Program::find($request->post('program'));
-                $view ='admin.programs.members.family-confirmation';
-
-            }
+//            if ($request->post('program_enroll') && $request->post('family_confirmation')) {
+//                $view = 'admin.programs.members.post-enrollement-option';
+//            } else if($request->post('program_enroll') && ! $request->post('family_confirmation')) {
+//                $params['program'] = Program::find($request->post('program'));
+//                $view ='admin.programs.members.family-confirmation';
+//
+//            }
 
             return $this->json(true,'Member Registration Success.','validatePartials',[
                 'view'  => view($view,$params)->render()
@@ -497,9 +567,17 @@ class MemberController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function verification(Request $request, Member $member, String $source)
     {
-        //
+        if ($request->ajax() ) {
+
+        }
+        return view('admin.members.verification',['member' => $member,'source' => $source]);
+    }
+
+    public function sendVerificationEmail(Request $request, Member $member, String $source) {
+
+        EmailVerfication::dispatch($member);
     }
 
     /**
@@ -595,7 +673,7 @@ class MemberController extends Controller
 
         if(in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN] ) ) {
             $member->phone_number = $request->post('phone_number');
-            $member->email = $request->post('email');
+            $member->setAttribute('email', $request->post('email'));
             $member->role_id = $request->post('role');
         }
 
@@ -986,15 +1064,17 @@ class MemberController extends Controller
 
     public function reauthUser(Member $member)
     {
-        if ( ! adminUser()->role()->isSuperAdmin() ) {
+        if ( ! adminUser()->role()->isSuperAdmin() && ! adminUser()->role()->isAdmin()) {
             return $this->json(false,'You do not have permission to perform this action.');
+        }
+        $user = adminUser();
+
+        if (!Auth::guard('web')->loginUsingId($member->getKey())) {
+            return $this->returnResponse(false,'Oops ! Unable to use debug for this user.');
         }
 
         session()->put('adminAccount', true);
-
-        if (!Auth::loginUsingId($member->getKey())) {
-            return $this->returnResponse(false,'Oops ! Unable to use debug for this user.');
-        }
+        session()->put('admin', $user);
 
         return $this->returnResponse(true,'Debug is now enabled.','redirect',['location' => route('dashboard')]);
     }

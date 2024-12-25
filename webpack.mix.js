@@ -16,3 +16,5 @@ mix.js('resources/js/app.js', 'public/js').vue().postCss('resources/css/app.css'
     require('tailwindcss'),
     require('autoprefixer'),
 ]);
+
+mix.js('resources/js/portal.js', 'public/js').vue();

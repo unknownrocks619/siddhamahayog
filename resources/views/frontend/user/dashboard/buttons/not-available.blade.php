@@ -1,3 +1,3 @@
-<small class="fw-semibold btn btn-sm btn-secondary">
+<small class="mt-2 fw-semibold btn btn-sm btn-secondary">
     Not Available
 </small>

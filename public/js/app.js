@@ -5895,7 +5895,13 @@ $(document).on('click', '.ajax-modal', function (event) {
       // document.getElementById(ajaxIdName + '-modal-document').innerHTML = response;
 
       $(clickElement).removeAttr('disabled', false).removeClass('disabled');
-      window.modalElement = new Modal($(ajaxIdElement));
+
+      try {
+        window.modalElement = new Modal($(ajaxIdElement));
+      } catch (error) {
+        window.modalElement = new bootstrap.Modal($(ajaxIdElement));
+      }
+
       window.modalElement.show(); // // check for select 2 element.
 
       var select2Element = $('#' + ajaxIdName).find('select'); //

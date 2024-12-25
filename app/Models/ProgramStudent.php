@@ -8,6 +8,48 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\ProgramStudent
+ *
+ * @property int $id
+ * @property string $program_id
+ * @property string|null $program_section_id
+ * @property string $student_id
+ * @property string|null $batch_id
+ * @property int $active
+ * @property string|null $roll_number
+ * @property int $allow_all
+ * @property string|null $multiple_section
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramStudentAttendance> $attendance
+ * @property-read int|null $attendance_count
+ * @property-read \App\Models\ProgramBatch|null $batch
+ * @property-read \App\Models\Live|null $live
+ * @property-read \App\Models\Program|null $program
+ * @property-read \App\Models\ProgramSection|null $section
+ * @property-read \App\Models\Member|null $student
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereAllowAll($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereBatchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereMultipleSection($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereProgramId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereProgramSectionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereRollNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereStudentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudent withoutTrashed()
+ * @mixin \Eloquent
+ */
 class ProgramStudent extends Model
 {
     use HasFactory, SoftDeletes;

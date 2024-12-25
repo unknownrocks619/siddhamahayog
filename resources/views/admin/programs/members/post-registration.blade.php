@@ -11,7 +11,7 @@
             <div class="row d-none">
                 <div class="col-md-12">
                     <input type="hidden" name="memberID" value="{{$member->getKey()}}" class="form-control d-none" />
-                    <input type="hidden" name="exisiting_member" value="1" class="form-control d-none" />
+                    <input type="hidden" name="existing_member" value="1" class="form-control d-none" />
                     <input type="hidden" name="program_enroll" value="1" class="form-control d-none" />
                 </div>
             </div>

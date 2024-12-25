@@ -25,57 +25,100 @@ enum Rule : int {
         return $this == self::SUPER_ADMIN;
     }
 
+    /**
+     * @return bool
+     */
     public function isCenter(): bool{
         return $this == self::CENTER;
     }
 
+    /**
+     * @return bool
+     */
     public function isSadhak(): bool{
         return $this == self::SADHAK;
     }
 
+    /**
+     * @return bool
+     */
     public function isTeacher(): bool{
         return $this == self::TEACHER;
     }
 
+    /**
+     * @return bool
+     */
     public function isAdminTeacher(): bool{
         return $this == self::ADMIN_TEACHER;
     }
 
+    /**
+     * @return bool
+     */
     public function isMarketing(): bool{
         return $this == self::MARKETING;
     }
 
+    /**
+     * @return bool
+     */
     public function isMember(): bool{
         return $this == self::MEMBER;
     }
 
+    /**
+     * @return bool
+     */
     public function isSupport(): bool{
         return $this == self::SUPPORT;
     }
 
+    /**
+     * @return bool
+     */
     public function isCenterAdmin(): bool{
         return $this == self::CENTER_ADMIN;
     }
 
+    /**
+     * @return bool
+     */
     public function isDharmasala(): bool{
         return $this == self::DHARMASALA;
     }
+
+    /**
+     * @return bool
+     */
     public function isCohost(): bool{
         return $this == self::COHOST;
     }
 
+    /**
+     * @return bool
+     */
     public function isActingAdmin(): bool{
         return $this == self::ACTING_ADMIN;
     }
 
+    /**
+     * @return bool
+     */
     public function isAdmin(): bool{
         return $this == self::ADMIN;
     }
 
+    /**
+     * @return bool
+     */
     public function isGuest() : bool {
         return $this == self::GUEST;
     }
 
+    /**
+     * @return $this
+     */
     public function role() {
         return $this;
     }

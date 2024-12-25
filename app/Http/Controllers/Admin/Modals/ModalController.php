@@ -7,12 +7,15 @@ use Illuminate\Http\Request;
 
 class ModalController extends Controller
 {
-    public function displayModal(Request $request) {
-        if ( ! $request->view ) {
-            return $this->json(false,'Unable to find file.');
+    public function displayModal(Request $request)
+    {
+        if (! $request->view) {
+            return $this->json(false, 'Unable to find file.');
         }
-
-        return view('admin.modal.'.$request->view,$request->all());
-
+        $view = 'admin.modal.';
+        if (in_array('teacher', $request->route()->middleware())) {
+            $view = 'frontend.modal.';
+        }
+        return view($view . $request->view, $request->all());
     }
 }

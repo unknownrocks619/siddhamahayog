@@ -105,6 +105,18 @@
                             <input type="text" value="" name="gatra" id="gotra" class="form-control" />
                         </div>
                     </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="gotra">Role
+                                    <sup class="text-danger">*</sup>
+                                </label>
+                                @foreach(\App\Models\Role::$roles as $key => $role)
+                                    @continue(in_array($key,array_merge(\App\Models\Role::CENTER_USER_ADD_LIST,\App\Models\Role::ADMIN_DASHBOARD_ACCESS,[\App\Models\Role::CENTER])))
+                                    <option value="{{$key}}" @if($key == \App\Models\Role::MEMBER) selected @endif>{{$role}}</option>
+                                @endforeach
+                                <input type="text" value="" name="gatra" id="gotra" class="form-control" />
+                            </div>
+                        </div>
                 </div>
 
                 <div class="row my-4">

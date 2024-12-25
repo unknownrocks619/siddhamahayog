@@ -7,7 +7,6 @@ use App\Models\Member;
 class SMS
 {
 
-
     public function message()
     {
         $message = "https://us02web.zoom.us/j/81739883948?pwd=UFd1cjdCWmF5NWxhUjJWdi95a1l3QT09";
@@ -21,7 +20,6 @@ class SMS
 
         return $message;
     }
-
 
     public function sendSMS()
     {

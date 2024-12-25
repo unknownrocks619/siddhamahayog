@@ -1,13 +1,13 @@
 @php
-    $program = \App\Models\Program::where('id',request()->program)->first();
+    $program = \App\Models\Program::where('id', request()->program)->first();
 @endphp
 <div class="modal-header">
     <h3 class="modal-title">
-        Going Live for <span class="text-danger">`{{$program->program_name}}`</span>
+        Going Live for <span class="text-danger">`{{ $program->program_name }}`</span>
     </h3>
     <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form class="ajax-form" action="{{ route('admin.program.store_live',$program->getKey()) }}" method="post">
+<form class="ajax-form" action="{{ route('admin.program.store_live', $program->getKey()) }}" method="post">
     <div class="modal-body p-2">
         <div class="row mt-3">
             <div class="col-md-6">
@@ -20,7 +20,9 @@
                     </label>
                     <select name="zoom_account" id="zoom-selection" class="form-control">
                         @foreach (\App\Models\ZoomAccount::get() as $zoomAccount)
-                            <option value="{{$zoomAccount->getKey()}}" @if($program->zoom == $zoomAccount->getKey()) selected @endif>{{$zoomAccount->account_name}}</option>
+                            <option value="{{ $zoomAccount->getKey() }}"
+                                @if ($program->zoom == $zoomAccount->getKey()) selected @endif>{{ $zoomAccount->account_name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -34,7 +36,7 @@
                         <sup class="text-danger">*</sup>
                     </label>
                     <select class="form-control" name="section" id="section">
-                        <option value="">Select Section </option>
+                        <option value="">Open Section</option>
                         @foreach ($program->sections as $section)
                             <option value="{{ $section->id }}"> {{ $section->section_name }} </option>
                         @endforeach

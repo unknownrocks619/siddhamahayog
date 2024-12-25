@@ -21,6 +21,68 @@ use Illuminate\Support\Facades\DB;
  * @property float|int $overdue_allowed
  * @property int $batch
  * @property int $zoom
+ * @property int $id
+ * @property string $program_name
+ * @property string $slug
+ * @property string $program_type
+ * @property string|null $meeting_id
+ * @property string $status available options: pending, active, close, inactive, review
+ * @property array|null $admin_access_permission
+ * @property array|null $admin_detail_permission
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \App\Models\ProgramBatch|null $active_batch
+ * @property-read \App\Models\ProgramCourseFee|null $active_fees
+ * @property-read \App\Models\ProgramSection|null $active_sections
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Live> $allLivePrograms
+ * @property-read int|null $all_live_programs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramBatch> $batches
+ * @property-read int|null $batches_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramCourseResources> $courses
+ * @property-read int|null $courses_count
+ * @property-read \App\Models\Batch|null $defaultBatch
+ * @property-read \App\Models\LessionWatchHistory|null $last_video_history
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Live> $liveProgram
+ * @property-read int|null $live_program_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Batch> $programBatches
+ * @property-read int|null $program_batches_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramChapterLession> $program_videos
+ * @property-read int|null $program_videos_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramSection> $sections
+ * @property-read int|null $sections_count
+ * @property-read \App\Models\ProgramStudentFeeDetail|null $student_admission_fee
+ * @property-read \App\Models\ProgramStudentFee|null $student_fee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramStudent> $students
+ * @property-read int|null $students_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramCourse> $videoCourses
+ * @property-read int|null $video_courses_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Program newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Program newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Program query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereAdminAccessPermission($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereAdminDetailPermission($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereAdmissionFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereBatch($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereMeetingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereMonthlyFee($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereOverdueAllowed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramAccess($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramDuration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramEndDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramStartDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereProgramType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program wherePromote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Program whereZoom($value)
+ * @mixin \Eloquent
  */
 class Program extends AdminModel
 {

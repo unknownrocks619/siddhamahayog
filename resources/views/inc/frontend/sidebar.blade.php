@@ -85,6 +85,14 @@
                 <div data-i18n="Notifications"> Guru Dakshina</div>
             </a>
         </li>
+        @if (auth()->guard('web')->user()->role()->isTeacher())
+            <li class="menu-item  {{ active_routes(['donations.list']) }}">
+                <a href="{{ route('user.my-member') }}" class="menu-link">
+                    <i class='menu-icon bx bx-user'></i>
+                    <div data-i18n="Notifications"> My Members</div>
+                </a>
+            </li>
+        @endif
         <!-- Components -->
         <li class="menu-header small text-uppercase"><span class="menu-header-text">Components</span></li>
         <!-- Cards -->

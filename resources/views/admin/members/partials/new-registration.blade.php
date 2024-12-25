@@ -8,7 +8,7 @@
 
         @if($member)
             <input type="hidden" name="memberID" value="{{$member->getKey()}}" class="form-control d-none" />
-            <input type="hidden" name="exisiting_member" value="1" class="form-control d-none" />
+            <input type="hidden" name="existing_member" value="1" class="form-control d-none" />
         @endif
 
         <div class="card">
@@ -90,7 +90,19 @@
                             <input type="text" value="{{$member?->gotra}}" name="gotra" id="gotra" class="form-control" />
                         </div>
                     </div>
-
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="role">Role
+                                <sup class="text-danger">*</sup>
+                            </label>
+                            <select name="role" id="role" class="form-control select2">
+                                @foreach(\App\Models\Role::$roles as $key => $role)
+                                    @continue(in_array($key,array_merge(\App\Models\Role::CENTER_USER_ADD_LIST,\App\Models\Role::ADMIN_DASHBOARD_ACCESS,[\App\Models\Role::CENTER])))
+                                    <option value="{{$key}}" @if($member?->role_id == $key || $key == \App\Models\Role::MEMBER ) selected @endif>{{$role}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 <div class="row g-3 m-3">
                     <div class="col-md-6">

@@ -8,6 +8,47 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\SupportTicket
+ *
+ * @property int $id
+ * @property int $member_id
+ * @property int|null $parent_id
+ * @property string $category
+ * @property string $title
+ * @property string $priority
+ * @property string $status Available Options: pending, Completed, Rejected, Waiting Response, Replied
+ * @property string|null $issue
+ * @property object|null $media
+ * @property int|null $total_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property int|null $replied_by
+ * @property-read \App\Models\Member|null $staff
+ * @property-read \App\Models\Member $user
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereIssue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereMedia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereMemberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereRepliedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereTotalCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|SupportTicket withoutTrashed()
+ * @mixin \Eloquent
+ */
 class SupportTicket extends Model
 {
     

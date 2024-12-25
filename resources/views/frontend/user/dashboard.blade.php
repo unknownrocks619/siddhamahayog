@@ -132,7 +132,147 @@
         </div>
 
         <div class="row">
+            @if (user()->role()->isTeacher())
+                <div class="col-md-12 mb-3" id="">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>Your Members</h4>
+                            <button class="btn btn-primary">Register New Member</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="memberRegistration">
+                                <form
+                                    onsubmit="event.preventDefault();window.registration.verifyRegistrationProcess(this,'{{ encrypt(auth()->guard('web')->id()) }}')"
+                                    action="{{ route('user.register-token') }}" method="post">
+                                    <div class="row">
+                                        <div class="col-md-6 mt-2">
+                                            <select onchange="changeCountry(this); window.registration.setAttribute(this)"
+                                                name="country" id="country" class="form-control">
+                                                @foreach (\App\Models\Country::get() as $country)
+                                                    <option @if ($country->code == 'NP') selected @endif
+                                                        value="{{ $country->getKey() }}" data-
+                                                        title="{{ strtoupper($country->code) }}">{{ $country->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
 
+                                        <div class="col-md-6 country-verification country-nepal mt-2">
+                                            <div class="form-group">
+                                                <div class="input-group" style="height: 50px;">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text" style="height: 50px"
+                                                            id="basic-addon1">+977</span>
+                                                    </div>
+                                                    <input type="text" onchange="window.registration.setAttribute(this)"
+                                                        name="phone" id="phone" class="form-control"
+                                                        placeholder="98XXXXXXXX">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 country-verification country-other mt-2" style="display:none">
+                                            <div class="form-group">
+                                                <div class="input-group" style="height: 50px;">
+                                                    <span class="input-group-text" style="height: 50px"
+                                                        id="basic-addon1">Email</span>
+                                                    <input type="email"
+                                                        onchange="window.registration.setAttribute(this)" name="email"
+                                                        id="email" class="form-control"
+                                                        placeholder="youremail@gmail.com">
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 country-verification country-nepal">
+                                            <div class="form-group">
+                                                <div class="form-check form-check-primary mt-4">
+                                                    <label class="form-check-label" for="email_option">Use Email
+                                                        Instead</label>
+                                                    <input class="form-check-input"
+                                                        onchange="changeCountry(this,'.country-other');window.registration.setAttribute(this)"
+                                                        type="checkbox" name="email_option" value="1"
+                                                        id="email_option" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-12 text-end">
+                                            <button class="btn btn-primary">
+                                                Proceed
+                                                <i class="menu-icon tf-icons bx bxs-right-arrow bx-tada-hover"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-bordered" id="underLinksMembersLists"
+                                    data-action="">
+                                    <thead>
+                                        <tr>
+                                            <th>Full Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Email</th>
+                                            <th>Registration Date</th>
+                                            <th>Training</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (user()->mySession()->get() as $memberSession)
+                                            @foreach ($memberSession->enrolledUsers ?? [] as $member)
+                                                <tr>
+
+                                                    <td>
+                                                        {{ !empty($member->full_name) ? $member->full_name : $member->full_name() }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $member->phone_number ?? 'Add Phone Number' }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $member->email ? $member->email : 'Add Email' }}
+                                                    </td>
+                                                    <td class="text-end">
+                                                        {{ $member->created_at->format('Y,M d') }}
+                                                    </td>
+                                                    <td>
+                                                        <Strong>
+                                                            {{ $memberSession->course_group_name }}
+                                                        </Strong>
+                                                        <br />
+                                                        {{ $memberSession->training_location }}
+                                                    </td>
+                                                    <td>
+                                                        <a href="" class="btn btn-icon btn-primary"><i
+                                                                class="menu-icon bx bx-pencil me-0"></i></a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endforeach
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+                </div>
+            @endif
             <!-- Total Revenue -->
             <div class="col-12 col-lg-12 order-2 order-md-3 order-lg-2 mb-4">
                 <div class="card">
@@ -191,13 +331,26 @@
             color: #fff !important;
             font-size: 15px;
         }
+
+        .select2-selection--single {
+            height: 50px !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 24px;
+        }
+
+        .select2-selection__arrow {
+            top: 30% !important;
+        }
     </style>
 @endpush
 
 @push('custom_script')
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
     <script src="{{ asset('assets/plugins/bootstrap-notify/bootstrap-notify.min.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" />
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
@@ -320,7 +473,7 @@
                 event.preventDefault();
                 $("#userPopOption").modal('show');
                 let formAction = $(this).attr('action');
-                console.log(formAction);
+
                 $("#userPopOption").find('form').attr('action', formAction);
             });
         </script>
@@ -484,12 +637,59 @@
     <script>
         function cancelParticipants() {
             $.ajax({
-                method : 'POST',
-                headers : {
-                    'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url : '{{route("frontend.jaap.cancel-jap-info")}}',
+                url: '{{ route('frontend.jaap.cancel-jap-info') }}',
             })
         }
     </script>
+
+    @if (user()->role()->isTeacher())
+        <script>
+            $(() => {
+                $('#country').select2({
+                    templateResult: function(item) {
+                        return format(item);
+                    }
+                });
+
+                function format(item) {
+
+                    let url = "https://flagsapi.com/" + item.title + "/flat/64.png";
+                    let img = $("<img>", {
+                        class: "img-flag me-2 py-1",
+                        width: 45,
+                        src: url
+                    });
+
+                    let span = $("<span>", {
+                        text: " " + item.text,
+                        class: "fs-4"
+                    });
+                    span.prepend(img);
+                    return span;
+
+                }
+            });
+
+            function changeCountry(elm, targetElm = '') {
+                if (targetElm !== '') {
+                    $(targetElm).toggle();
+                    return;
+                }
+
+                $('.country-verification').hide();
+
+                if ($(elm).find(':selected').val() != '153') {
+                    $('.country-other').show();
+                    $('#email_option').removeAttr('checked');
+                } else {
+                    $('.country-nepal').show();
+
+                }
+            }
+        </script>
+    @endif
 @endpush

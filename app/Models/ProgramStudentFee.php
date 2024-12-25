@@ -8,11 +8,45 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * App\Models\ProgramStudentFee
+ *
  * @property string $full_name
  * @property int $program_id
  * @property int $student_id
  * @property string $full_address
  * @property string $phone_number
+ * @property int $id
+ * @property int|null $program_student_id
+ * @property int|null $student_batch_id
+ * @property string $total_amount
+ * @property int $marked_to_print
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Member|null $member
+ * @property-read \App\Models\Program|null $program
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramStudentFeeDetail> $transactions
+ * @property-read int|null $transactions_count
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereFullAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereMarkedToPrint($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee wherePhoneNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereProgramId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereProgramStudentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereStudentBatchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereStudentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereTotalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProgramStudentFee withoutTrashed()
+ * @mixin \Eloquent
  */
 
 class ProgramStudentFee extends Model

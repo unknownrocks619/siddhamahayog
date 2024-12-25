@@ -136,15 +136,12 @@ class ProfileController extends Controller
         if (!session()->has('adminAccount')) {
             abort(404);
         }
-
-        $adminUser = Member::findOrFail(session()->get('adminAccount'));
         $user = user();
-        Auth::logout();
+        Auth::guard('web')->logout();
 
-        Auth::loginUsingId($adminUser->getKey());
-
+        Auth::guard('admin')->loginUsingId(session()->get('admin')->getKey());
         session()->flash('success', 'Debug Mode Ended.');
-        return redirect()->route('admin.members.show', $user->id);
+        return redirect()->route('admin.members.show', $user->getKey());
     }
 
     public function deleteConnection(MemberRefers $connection) {

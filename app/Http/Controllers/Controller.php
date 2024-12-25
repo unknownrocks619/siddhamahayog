@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -39,5 +41,29 @@ class Controller extends BaseController
     public function adminThemes($view,$data)
     {
 
+    }
+
+    /**
+     *  Force generate validation error
+     * @param mixed $name
+     * @param string|null $message
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function generateValidationError(mixed $name = [], string $message = null): Application|ResponseFactory|\Illuminate\Http\Response
+    {
+        $error = [];
+        if (is_array($name)) {
+            foreach ($name as $key => $value) {
+                $error['errors'][$key][] = $value;
+            }
+            $error['message'] = $message ?? 'Invalid form information.';
+        } else {
+            $error = [
+                'message' => $message,
+                'errors'    => [$name => [$message]]
+            ];
+        }
+
+        return response($error, 422);
     }
 }

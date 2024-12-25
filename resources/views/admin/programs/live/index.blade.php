@@ -4,7 +4,7 @@
     </h4>
 </div>
 <div class="modal-body">
-    <form action="{{ route('admin.program.store_live',$program->id) }}" method="post">
+    <form action="{{ route('admin.program.store_live', $program->id) }}" method="post">
         @csrf
 
         <div class="row">
@@ -16,7 +16,7 @@
                     ?>
                     <select name="zoom_account" id="zoom_account" class="form-control">
                         @foreach ($accounts as $account)
-                        <option value="{{ $account->id }}">{{ $account->account_name }}</option>
+                            <option value="{{ $account->id }}">{{ $account->account_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -28,9 +28,9 @@
                 <div class="form-group">
                     <label for="">Select Section</label>
                     <select class="form-control" name="section" id="section">
-                        <option value="">Select Section </option>
+                        <option value="">Open Section </option>
                         @foreach ($program->sections as $section)
-                        <option value="{{ $section->id }}"> {{ $section->section_name }} </option>
+                            <option value="{{ $section->id }}"> {{ $section->section_name }} </option>
                         @endforeach
                     </select>
                 </div>

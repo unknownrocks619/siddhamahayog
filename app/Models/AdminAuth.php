@@ -12,6 +12,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * App\Models\AdminAuth
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminAuth newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminAuth newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminAuth query()
+ * @mixin \Eloquent
+ */
 class AdminAuth extends Authenticatable
 {
     protected static Rule $rule;
@@ -19,10 +27,14 @@ class AdminAuth extends Authenticatable
     public function __construct(array $attributes = [] )
     {
         parent::__construct($attributes);
-        
+
     }
 
-    public static function Role() {
+    /**
+     * Return User Role
+     * @return Rule|null
+     */
+    public static function Role(): Rule|null {
         self::$rule = Rule::tryFrom(adminUser()->role_id);
         return self::$rule->role();
 

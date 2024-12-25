@@ -47,7 +47,7 @@
                             <td>
                                 @if($live->started_by)
                                     <span class="label label-bg-success">
-                                        {{ $live->programCordinate->full_name }}
+                                        {{ $live->programCordinate?->full_name }}
                                     </span>
                                 @else
                                     <span class="label label-bg-danger">ADMIN</span>

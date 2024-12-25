@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')
     ->group(function () {
         Route::prefix('user')
-            ->name('user.')
-            ->controller(UserController::class)
             ->group(function () {
-                Route::post('login', 'autheticate');
-                Route::post("register", 'register');
+                Route::post('login', [UserController::class, 'authenticate'])->name('user.login');
+                Route::post("register", [UserController::class, 'register'])->name('user.register');
+                Route::post('register/{process}', [UserController::class, 'registerAccount'])->name('user.registration-process');
+                Route::post('registration-token', [UserController::class, 'registrationToken'])->name('user.register-token');
+                Route::post('resend-otp', [UserController::class, 'resendOTP'])->name('user.resend-otp');
+                Route::post('verify-otp', [UserController::class, 'verifyOTP'])->name('user.verify-otp');
             });
 
         Route::middleware(['auth:sanctum'])

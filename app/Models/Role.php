@@ -7,6 +7,28 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\Role
+ *
+ * @property int $id
+ * @property string $role_name
+ * @property string $role_slug
+ * @property string|null $modules
+ * @property array $role_category
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Role newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereModules($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereRoleCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereRoleName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereRoleSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Role whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Role extends Model
 {
     use HasFactory;
@@ -34,7 +56,7 @@ class Role extends Model
     public const SUPPORT=8;
     public const CENTER = 2;
     public const MEMBER = 7;
-    
+
     protected $casts = [
         'role_category' => 'array'
     ];
@@ -46,15 +68,15 @@ class Role extends Model
     ];
 
     public const CENTER_USER_ADD_LIST = [
-        2
+        self::CENTER
     ];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        
+
     }
-    
+
 
     /**
      * Return Authorized Center for user

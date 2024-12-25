@@ -2,25 +2,32 @@
 
 namespace App\Http\Controllers\Frontend\User;
 
+use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Frontend\User\UserStoreRequest;
 use App\Models\Member;
+use App\Models\Program;
 use App\Models\Reference;
+use App\Models\UserTrainingCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Psr\Container\NotFoundExceptionInterface;
 
 class UserController extends Controller
 {
     //
 
-    public function store(UserStoreRequest $request)
-    {
-    }
+    public function store(UserStoreRequest $request) {}
 
-    public function facebook()
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface|NotFoundExceptionInterface
+     */
+    public function facebook(): RedirectResponse
     {
         $fb_user = Socialite::driver("facebook")->user();
         // check if user exists.
@@ -41,7 +48,7 @@ class UserController extends Controller
         $member->source = "facebook";
         $member->external_source_id = $fb_user->id;
         $member->profileUrl = ["avatar" => $fb_user->avatar];
-        $member->email = $fb_user->email;
+        $member->setAttribute('email', $fb_user->email);
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
         $member->is_email_verified = true;
@@ -74,7 +81,11 @@ class UserController extends Controller
         return redirect()->intended();
     }
 
-    public function google()
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Psr\Container\ContainerExceptionInterface|NotFoundExceptionInterface
+     */
+    public function google(): RedirectResponse
     {
         $google_usr = Socialite::driver("google")->user();
         $user_exists = Member::where('email', $google_usr->user["email"])->first();
@@ -93,7 +104,7 @@ class UserController extends Controller
         $member->external_source_id = $google_usr->user["sub"];
         $member->profileUrl = ["avatar" => $google_usr->user["picture"]];
         $member->is_email_verified = true;
-        $member->email = $google_usr->user["email"];
+        $member->setAttribute('email', $google_usr->user["email"]);
         $member->password =  Hash::make(Str::random());
         $member->role_id = 7;
 
@@ -123,5 +134,46 @@ class UserController extends Controller
         Auth::login($member);
 
         return redirect()->intended();
+    }
+
+
+    public function myMembers(Request $request, string $view = 'my-members', ?UserTrainingCourse $teacherCourse = null)
+    {
+
+        if (! in_array($view, ['my-members', 'members-list'])) {
+            $view = 'my-members';
+        }
+
+        if ($view == 'members-list' && ! $teacherCourse?->getKey()) {
+            abort(404);
+        }
+
+        if ($request->post() && $request->ajax()) {
+            $sadhanaSession = $request->all();
+            $sadhanaSession['training_type'] = 'Sadhana';
+            $sadhanaSession['training_location'] = $sadhanaSession['training_location'] ?? '';
+            if (! $sadhanaSession['training_location']) {
+
+                $sadhanaSession['training_location'] = user()->address?->street_address ?? '-';
+
+                if ($sadhanaSession['training_location'] != '-') {
+                    $sadhanaSession['training_location'] = $sadhanaSession['training_location'] . ',' . user()->city;
+                } else {
+                    $sadhanaSession['training_location'] = user()->city;
+                }
+            }
+            $sadhanaSession['group_name'] = $sadhanaSession['session_name'];
+            $sadhanaSession['status'] = $sadhanaSession['session_status'];
+            $sadhanaSession['event_id'] = Program::where('program_type', 'sadhana')->first()?->getKey();
+            $sadhanaSession['training_type'] = 'Sadhana';
+            $newSessionRequest = new Request($sadhanaSession, $sadhanaSession);
+            return (new UserTeacherController())->teacherSession($newSessionRequest, user());
+        }
+
+        return view('frontend.user.members.' . $view, [
+            // 'members' => user()?->myMembers()->get(),
+            'sessions'   => user()?->mySession()->get(),
+            'members' => $teacherCourse?->enrolledUsers()->get()
+        ]);
     }
 }

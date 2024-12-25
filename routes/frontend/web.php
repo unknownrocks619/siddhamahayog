@@ -32,8 +32,8 @@ Route::get('/events/atirudri', function () {
 
 Route::name('legal.')
     ->group(function () {
-        Route::get("/terms-and-conditions", fn () => view("frontend.page.legal.terms"))->name('terms');
-        Route::get("/privacy", fn () => view("frontend.page.legal.privacy"))->name('privacy');
+        Route::get("/terms-and-conditions", fn() => view("frontend.page.legal.terms"))->name('terms');
+        Route::get("/privacy", fn() => view("frontend.page.legal.privacy"))->name('privacy');
     });
 
 
@@ -43,8 +43,8 @@ Route::prefix("account")
     ->group(function () {
 
         Route::get("/user", [ProfileController::class, "account"])->name("list");
-        Route::match(['get','post'],"/user/connections", [ProfileController::class, "connections"])->name("connections");
-        Route::post('user/connection/delete/{connection}',[ProfileController::class,'deleteConnection'])->name('connection.delete');
+        Route::match(['get', 'post'], "/user/connections", [ProfileController::class, "connections"])->name("connections");
+        Route::post('user/connection/delete/{connection}', [ProfileController::class, 'deleteConnection'])->name('connection.delete');
         Route::get("/user/notifications", [ProfileController::class, "notifications"])->name("notifications");
         Route::post("/profile", [ProfileController::class, "storeProfile"])->name("store.profile");
         Route::post("/profile/detail", [ProfileController::class, "storeDetail"])->name("store.personal");
@@ -171,3 +171,8 @@ include __DIR__ . "/sadhak.php";
 include __DIR__ . "/dikshya.php";
 
 include __DIR__ . "/jaap.php";
+
+Route::middleware(['teacher', 'web', 'auth'])
+    ->group(function () {
+        include __DIR__ . '/../admin/modal.php';
+    });

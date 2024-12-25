@@ -10,6 +10,71 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Images;
 use App\Models\ImageRelation;
 
+/**
+ * App\Models\Dharmasala\DharmasalaBooking
+ *
+ * @property int $id
+ * @property int|null $id_parent
+ * @property int|null $building_id
+ * @property int|null $floor_id
+ * @property int $room_id
+ * @property int|null $member_id
+ * @property int|null $member_emergency_meta_id
+ * @property string $room_number
+ * @property string|null $building_name
+ * @property string|null $floor_name
+ * @property string|null $full_name
+ * @property string|null $email
+ * @property string|null $phone_number
+ * @property string|null $check_in
+ * @property string|null $check_in_time
+ * @property string|null $check_out
+ * @property string|null $check_out_time
+ * @property Images|null $profile
+ * @property string|null $id_card
+ * @property int $status 1 : reserved, 2: In, 3 : Out, 4: Canceled, 5: booking, 6: processing, 7: Legacy
+ * @property string|null $relation_with_parent
+ * @property string|null $uuid
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read Images|null $IDImage
+ * @property-read Images|null $idCardImage
+ * @property-read DharmasalaBooking|null $parentBooking
+ * @property-read Images|null $profileImage
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereBuildingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereBuildingName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereCheckIn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereCheckInTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereCheckOut($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereCheckOutTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereFloorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereFloorName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereFullName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereIdCard($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereIdParent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereMemberEmergencyMetaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereMemberId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking wherePhoneNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereProfile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereRelationWithParent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereRoomId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereRoomNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DharmasalaBooking withoutTrashed()
+ * @mixin \Eloquent
+ */
 class DharmasalaBooking extends Model
 {
     use HasFactory, SoftDeletes;

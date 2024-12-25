@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Members\MemberController;
+use App\Http\Controllers\Admin\Members\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix("members")
@@ -9,9 +10,12 @@ Route::prefix("members")
     ->group(function () {
 
         Route::get("/all", "index")->name('all');
+        Route::get('/mobile-index','mobileIndex')->name('mobile');
         Route::match(['get','post'],'create','create')->name('create');
         Route::match(['get','post'],'quick-add','quickStore')->name('quick-add');
         Route::post('/partials-validate','memberVerification')->name('member_registration_partials_validate');
+        Route::match(['get','post'],'verification/{member}/{source}',[MemberController::class,'verification'])->name('verification');
+
 
         Route::get('/member/detail/{member}/{tab?}', "show")->name("show");
         Route::get("/add/{program?}", "add_member_to_program")->name('admin_add_member_to_program');
@@ -25,6 +29,7 @@ Route::prefix("members")
         Route::post("/update/member/meta/{member}/{memberInfo?}", "updatePersonal")->name("admin_update_member_meta_info");
         Route::post("/reauth-as-user/{member}", "reauthUser")->name("admin_login_as_user");
         Route::delete('/delete/{member}', 'deleteUser')->name('admin_user_delete');
+
         Route::prefix('subscription')
             ->name('subscription.')
             ->controller(MemberController::class)
@@ -38,5 +43,17 @@ Route::prefix("members")
                             ->name('media.upload');
                     Route::post('delete/{relation}',[\App\Http\Controllers\Admin\Members\MemberMediaController::class,'deleteImage'])
                         ->name('media.delete');
+                });
+
+        /** Teachers */
+        Route::prefix('teachers')
+                ->group(function(){
+                Route::get('/index',[TeacherController::class,'index'])->name('teacher.index');
+            });
+
+
+        Route::prefix('verification')
+                ->group(function() {
+                    Route::match(['post','get'],'send-verification-email/{member}/{source}', [MemberController::class,'sendVerificationEmail'])->name('verification.send-verification-email');
                 });
     });

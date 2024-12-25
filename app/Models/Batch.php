@@ -6,6 +6,32 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * App\Models\Batch
+ *
+ * @property int $id
+ * @property string $batch_name
+ * @property string $slug
+ * @property string|null $batch_year
+ * @property string|null $batch_month
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ProgramBatch> $batch_program
+ * @property-read int|null $batch_program_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereBatchMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereBatchName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereBatchYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Batch whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Batch extends Model
 {
     protected $fillable = [

@@ -12,6 +12,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * App\Models\AdminModel
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminModel newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminModel newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminModel query()
+ * @mixin \Eloquent
+ */
 class AdminModel extends Model
 {
     protected static Rule $rule;

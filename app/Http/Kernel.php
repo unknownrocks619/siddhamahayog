@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\Frontend\CurrencyExchangeMiddleware;
+use App\Http\Middleware\Frontend\TeacherMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -39,6 +40,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             CurrencyExchangeMiddleware::class,
+
         ],
 
         'api' => [
@@ -69,6 +71,7 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\Admin::class,
         'auth.support' => \App\Http\Middleware\SupportStaffMiddleware::class,
         'center' => \App\Http\Middleware\Center\CenterMiddleware::class,
-        'centerAdmin' => \App\Http\Middleware\Center\CenterAdminMiddleware::class
+        'centerAdmin' => \App\Http\Middleware\Center\CenterAdminMiddleware::class,
+        'teacher'   => TeacherMiddleware::class,
     ];
 }

@@ -15,11 +15,11 @@ if (!function_exists("site_settings")) {
     function site_settings($key = null)
     {
 
-        if (Cache::has("web_settings")) {
-            $settings = Cache::get("web_settings");
-        } else {
+        $settings = Cache::get("web_settings");
+        if ( ! $settings || $_ENV['APP_ENV'] != 'production') {
             $settings = \App\Models\WebSetting::get();
         }
+
 
         return ($key && $settings->where("name", $key)->first()) ? $settings->where('name', $key)->first()->value : null;
     }
@@ -133,13 +133,13 @@ if (!function_exists("active_routes")) {
 
 
 if (!function_exists("user")) {
-    function user()
+    function user() : \App\Models\Member|null
     {
         static $user = null;
 
         if ($user) return $user;
 
-        $user = auth()->user();
+        $user = auth()->guard('web')->user();
         return $user;
     }
 }

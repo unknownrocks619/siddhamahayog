@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\Programs\ProgramStudentFeeController;
 use App\Http\Controllers\Admin\Scholarship\StudentProgramScholarShipController;
 use App\Http\Controllers\Admin\Website\Events\WebsiteEventController;
 use App\Http\Controllers\Admin\Website\Menus\MenuController;
-use App\Http\Controllers\Admin\Website\Settings\AdminSettingController;
+use App\Http\Controllers\Admin\Website\Settings\SettingController;
 use App\Http\Controllers\Admin\Website\Slider\SliderController;
 use App\Http\Controllers\Admin\Widget\WidgetController;
 use App\Http\Controllers\Admin\Zoom\AdminZoomAccountController;
@@ -45,7 +45,7 @@ Route::prefix('admin')
     ->group(function () {
         Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {
-
+            abort(404);
             $members = Member::select(['first_name', 'last_name', 'middle_name', 'id'])->cursor();
 
             foreach ($members as $member) {
@@ -81,7 +81,7 @@ Route::prefix('admin')
 
         include __DIR__.'/admin/member.php';
         include __DIR__.'/admin/member-dikshya.php';
-    include __DIR__ . '/admin/member-sadhana.php';
+        include __DIR__ . '/admin/member-sadhana.php';
         include __DIR__.'/admin/member-emergency.php';
 
         /**
@@ -160,6 +160,17 @@ Route::prefix('admin')
         include __DIR__ .'/admin/modal.php';
 
         /**
+         * Settings
+         */
+        Route::prefix('settings')
+            ->name('settings.')
+            ->group(function () {
+                Route::get("/list", [SettingController::class, "index"])->name("index");
+                Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
+            });
+
+
+        /**
          * Website
          */
         Route::prefix('website')
@@ -172,8 +183,8 @@ Route::prefix('admin')
                 Route::prefix('settings')
                     ->name('settings.')
                     ->group(function () {
-                        Route::get("/list", [AdminSettingController::class, "index"])->name("admin_website_settings");
-                        Route::post('/update', [AdminSettingController::class, "update"])->name('admin_website_update_settings');
+                        Route::get("/list", [SettingController::class, "index"])->name("index");
+                        Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
                     });
 
                 /**
