@@ -176,16 +176,17 @@ $(function () {
     }
 
     window.popModalWithHTML = function(params) {
-        let _targetID = params.modalID;
-        if (!$('#' + _targetID).length) {
+        let _targetID = params.params.modalID;
+
+        if (!$(document).find('#' + _targetID).length) {
             messageBox(false, 'Unable to complete your action.');
             return;
         }
 
-        let _modalElement = $('#' + _targetID);
-        $(_modalElement).find('#modal-content').empty().html(params.content);
+        let _modalElement = $(document).find('#' + _targetID).first();
+        $(_modalElement).find('#modal-content').empty().html(params.params.content);
         // now trigger modal pop.
-        $("#" + _targetID).modal('toggle');
+        $(document).find('#' + _targetID).first().modal('toggle');
 
         if (params.clearButton) {
             $('.' + params.clearButton).prop('disable', false).text(params.label ?? 'Join Now');

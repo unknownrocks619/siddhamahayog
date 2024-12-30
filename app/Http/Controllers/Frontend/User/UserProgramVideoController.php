@@ -36,9 +36,7 @@ class UserProgramVideoController extends Controller
         return view("frontend.user.program.videos.folder-view", compact("program"));
     }
 
-    public function continueWatch()
-    {
-    }
+    public function continueWatch() {}
 
     public function videos(ProgramVideoLessionWatchRequest $request, Program $program, ProgramCourse $course, ProgramChapterLession $lession)
     {
@@ -82,7 +80,8 @@ class UserProgramVideoController extends Controller
     {
         if (!$request->header('X-CSRF-TOKEN')) {
             return response(['message' => "Bearer Token Missing."], 403);
-        }  
+        }
+
         if (!$this->checkFeeDetail($program, "admission_fee")) {
             return view('frontend.user.program.videos.partials.video-lock', compact('lession', 'lession'));
         }
