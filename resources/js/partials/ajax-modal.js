@@ -4,8 +4,14 @@ $(document).on('click', '.ajax-modal', function (event) {
 
     let ajaxIdElement = $(this).data('bs-target');
     let ajaxIdName = ajaxIdElement.substring(1, ajaxIdElement.length);
+    let actionUrl = null;
 
-    let actionUrl = $(this).data('action') ?? event.relatedTarget.href;
+    if ($(this).data('action') !== undefined) {
+        actionUrl = $(this).data('action');
+    } else {
+        actionUrl = event.relatedTarget.href;
+    }
+
     let ajaxMethod = $(this).data('method') ?? 'get';
 
     $(clickElement).prop('disabled', true).addClass('disabled');

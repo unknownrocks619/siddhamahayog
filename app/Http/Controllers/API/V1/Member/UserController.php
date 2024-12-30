@@ -6,7 +6,10 @@ use App\Classes\Helpers\Image;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Jobs\EmailVerfication;
+use App\Models\CenterMember;
+use App\Models\Centers;
 use App\Models\Member;
+use App\Models\MemberInfo;
 use App\Models\MemberUnderLink;
 use App\Models\MemberVerification;
 use App\Models\Program;
@@ -303,27 +306,25 @@ class UserController extends Controller
 
         // if member exists and is already exists, show registration error.
 
-        // if ($member) {
-        //     return $this->json(false, 'Failed to register user. Please check your information again.');
-        // }
-
-        if (! $member) {
-            $member = new Member();
-            $member->fill([
-                'first_name' => $request->post('first_name'),
-                'last_name' => $request->post('last_name'),
-                'email' => $registration['email'],
-                'password'  => Hash::make($request->post('password')),
-                'phone_number'  => $request->post('phone'),
-                'city'  => $request->post('city'),
-                'address'    => ['street_address' => $request->post('street_address')],
-                'date_of_birth'     => $request->post('date_of_birth'),
-                'source'    => $request->post('source'),
-                'gender'    => $request->post('gender'),
-                'role_id'   => $request->post('role') ?? Role::MEMBER,
-
-            ]);
+        if ($member) {
+            return $this->json(false, 'Failed to register user. Please check your information again.');
         }
+
+        $member = new Member();
+        $member->fill([
+            'first_name' => $request->post('first_name'),
+            'last_name' => $request->post('last_name'),
+            'email' => $registration['email'],
+            'password'  => Hash::make($request->post('password')),
+            'phone_number'  => $request->post('phone'),
+            'city'  => $request->post('city'),
+            'address'    => ['street_address' => $request->post('street_address')],
+            'date_of_birth'     => $request->post('date_of_birth'),
+            'source'    => $request->post('source'),
+            'gender'    => $request->post('gender'),
+            'role_id'   => $request->post('role') ?? Role::MEMBER,
+            'country'   => (int) $registration['country'] ?? 153
+        ]);
 
         if ($request->post('validation') == 'validated') {
 
@@ -337,10 +338,14 @@ class UserController extends Controller
         }
 
         if (! $member->email) {
-            $member->email = 'random_email_' . \Illuminate\Support\Str::random(8) . '@siddhamahayog.org';
+            $member->fill(['email' => 'random_email_' . \Illuminate\Support\Str::random(8) . '@siddhamahayog.org']) ;
         }
+        $member->full_name = $member->getFullName();
+        $member->country = (int) $registration['country'] ?? 153;
 
-        $member->save();
+        if (! $member->save()) {
+            return $this->json(false, 'Failed to register member.');
+        }
 
         if (isset($registration['under']) && $member?->getKey()) {
 
@@ -396,9 +401,64 @@ class UserController extends Controller
             $memberUnderLink->save();
         }
 
-        if (! $member?->getKey()) {
-            return $this->json(false, 'Failed to register member.');
+        if ($request->post('center')) {
+            // get center and save it.
+            $center = Centers::find($request->post('center'));
+
+            if (! $center) {
+                // check if user exists for center.
+                $centerMember = CenterMember::where('member_id', $member->getKey())->first();
+
+                if (! $centerMember) {
+                    $centerMember = new CenterMember();
+                    $centerMember->fill([
+                        'member_id' => $member->getKey(),
+                        'center_id' => $center->getKey(),
+                    ]);
+                    $centerMember->save();
+                }
+            }
         }
+
+        $memberMeta = MemberInfo::where('member_id', $member->getKey())->first();
+        if (! $memberMeta) {
+            $memberMeta = new MemberInfo();
+            $memberMeta->personal = [
+                'place_of_birth' => $request->post('place_of_birth'),
+                'date_of_birth' => $request->post('date_of_birth'),
+                'gender'    => $request->post('gender'),
+                'street_address'    => $request->post('street_address'),
+            ];
+            $memberMeta->history = [
+                'medicine_history'  => null,
+                'mental_health_history' => null,
+                'regular_medicine_history_detail' => null,
+                'mental_health_detail_problem'  => null,
+                'practiced_info'    => null,
+                'support_in_need'   => null,
+                'terms_and_condition'   => 0,
+                'sadhak'    => null
+            ];
+            $memberMeta->member_id = $member->getKey();
+            $memberMeta->education = [
+                'education' => null,
+                'education_major'   => null,
+                'profession'    => null
+            ];
+
+            $memberMeta->save();
+        } else {
+
+            $personal = [
+                'place_of_birth' => $request->post('place_of_birth'),
+                'date_of_birth' => $request->post('date_of_birth'),
+                'gender'    => $request->post('gender'),
+                'street_address'    => $request->post('street_address'),
+            ];
+            $memberMeta->personal = $personal;
+            $memberMeta->save();
+        }
+
         $message = 'Registration was successfull. Please wait while we refresh your page.';
 
         return $this->json(true, $message, 'reload', ['validation' => 'completed']);
@@ -482,7 +542,7 @@ class UserController extends Controller
         ];
 
 
-        // # now return 
+        // # now return
         if (strtolower($request->post('source')) == 'web') {
             $returnData['view'] = view('generic.registration-personal-info')->render();
         }

@@ -18,6 +18,7 @@
         rel="stylesheet" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ asset('themes/app/assets/vendor/fonts/boxicons.css') }}" />
@@ -27,7 +28,6 @@
         class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{ asset('themes/app/assets/vendor/css/theme-default.css') }}"
         class="template-customizer-theme-css" />
-    <!-- <link rel="stylesheet" href="../assets/css/demo.css" /> -->
 
     <!-- Vendors CSS -->
     <link rel="stylesheet"
@@ -117,6 +117,7 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
+
     <script src="{{ asset('themes/app/assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('themes/app/assets/vendor/libs/popper/popper.js') }}"></script>
     {{-- <script src='https://unpkg.com/tooltip.js/dist/umd/tooltip.min.js'></script> --}}

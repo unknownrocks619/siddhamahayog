@@ -54,18 +54,40 @@ class MemberController extends Controller
     public function index()
     {
         //
-        if (request()->ajax() && request()->wantsJson()) {
+        $filters = ['date' => now()->format('m/d/Y') . ' - ' . now()->format('m/d/Y'), 'programs' => [],'roles' => []];
+        if (request()->get('filter_date') ) {
+            $filters['date'] = request()->get('filter_date');
+        }
 
+        if (request()->get('filter_program') ) {
+            $filters['programs'] = request()->get('filter_program');
+        }
+
+        if (request()->get('filter_roles') ) {
+            $filters['roles'] = request()->get('filter_roles');
+        }
+
+        if (request()->ajax() && request()->wantsJson()) {
+            if (request()->get('filter_date') ) {
+                $filters['date'] = request()->get('filter_date');
+            }
+            if (request()->get('amp;filter_program') ) {
+                $filters['programs'] = str_replace('amp;','',request()->get('amp;filter_program'));
+            }
+
+            if (request()->get('amp;filter_roles') ) {
+                $filters['roles'] = str_replace('amp;', '',request()->get('amp;filter_roles'));
+            }
             $searchTerm = (isset(request()->get('search')['value'])) ? request()->get('search')['value'] : '';
 
-            $datatable = DataTables::of(Member::all_members($searchTerm))
+            $datatable = DataTables::of(Member::all_members($searchTerm, $filters))
                 ->addIndexColumn()
                 ->addColumn('full_name', function ($row) {
-                   return htmlspecialchars(strip_tags($row->full_name));
+                    return htmlspecialchars(strip_tags($row->full_name));
                 })
                 ->addColumn('email', function ($row) {
                     $stringEmail = str($row->email);
-                    if ($stringEmail->contains('random_email_') ) {
+                    if ($stringEmail->contains('random_email_')) {
                         return 'N/A';
                     }
 
@@ -93,12 +115,12 @@ class MemberController extends Controller
 
                     $program_involved = "";
                     foreach ($allPrograms as $programs) {
-                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs ."</span>";
+                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs . "</span>";
                     }
                     return $program_involved;
                 })
                 ->addColumn('registered_date', function ($row) {
-                    return date('Y-m-d',strtotime($row->created_at));
+                    return date('Y-m-d', strtotime($row->created_at));
                 })
                 ->addColumn('action', function ($row) {
                     // $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
@@ -110,11 +132,11 @@ class MemberController extends Controller
             return $datatable;
         }
 
-
-        return view('admin.members.index');
+        return view('admin.members.index',['filters' => $filters]);
     }
 
-    public function mobileIndex() {
+    public function mobileIndex()
+    {
         if (request()->ajax() && request()->wantsJson()) {
 
             $searchTerm = (isset(request()->get('search')['value'])) ? request()->get('search')['value'] : '';
@@ -126,7 +148,7 @@ class MemberController extends Controller
                 })
                 ->addColumn('email', function ($row) {
                     $stringEmail = str($row->email);
-                    if ($stringEmail->contains('random_email_') ) {
+                    if ($stringEmail->contains('random_email_')) {
                         return 'N/A';
                     }
 
@@ -154,12 +176,12 @@ class MemberController extends Controller
 
                     $program_involved = "";
                     foreach ($allPrograms as $programs) {
-                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs ."</span>";
+                        $program_involved .= "<span class='bg-danger text-white px-2 mx-1'>" . $programs . "</span>";
                     }
                     return $program_involved;
                 })
                 ->addColumn('registered_date', function ($row) {
-                    return date('Y-m-d',strtotime($row->created_at));
+                    return date('Y-m-d', strtotime($row->created_at));
                 })
                 ->addColumn('action', function ($row) {
                     // $action ='<a href="" data-bs-target="#quickUserView" data-bs-toggle="modal" data-bs-original-title="Quick Preview" class="text-primary"><i class="ti ti-eye mx-2 ti-sm"></i></a>';
@@ -180,27 +202,28 @@ class MemberController extends Controller
      */
     public function create(Request $request, $source = null)
     {
-        if ( $request->post() )  {
+        if ($request->post()) {
 
             // first create member
-            if (! $request->post('memberID') ) {
+            if (! $request->post('memberID')) {
 
-                $request->validate([
-                    'first_name' => 'required',
-                    'last_name' => 'required',
-                    'date_of_birth' => 'required',
-                    'gender' => 'required',
-                    'phone_number' => 'required',
-                    'city' => 'required',
-                    'address' => 'required',
-                    'country' => 'required',
-                    'email' => 'required_if:enable_login,1',
-                    'password' => 'required_if:enable_login,1|confirmed'
-                ],
-                    ['email.required_if' => 'Email Address is required.', 'password.required_if' => 'Password field is required.']);
+                $request->validate(
+                    [
+                        'first_name' => 'required',
+                        'last_name' => 'required',
+                        'date_of_birth' => 'required',
+                        'gender' => 'required',
+                        'phone_number' => 'required',
+                        'city' => 'required',
+                        'address' => 'required',
+                        'country' => 'required',
+                        'email' => 'required_if:enable_login,1',
+                        'password' => 'required_if:enable_login,1|confirmed'
+                    ],
+                    ['email.required_if' => 'Email Address is required.', 'password.required_if' => 'Password field is required.']
+                );
 
                 $request->validate(['gotra' => 'required']);
-
             }
 
             $fill = [
@@ -219,7 +242,7 @@ class MemberController extends Controller
 
             $full_name = $fill['first_name'];
 
-            if ( $fill['middle_name'] ) {
+            if ($fill['middle_name']) {
                 $full_name .= " " . $fill['middle_name'];
             }
 
@@ -229,16 +252,15 @@ class MemberController extends Controller
 
             $member = null;
             $memberExists = false;
-            if ( $request->post('existing_member') && $request->post('memberID') ) {
+            if ($request->post('existing_member') && $request->post('memberID')) {
                 $member = Member::find($request->post('memberID'));
-
             } elseif ($request->post('email')) {
-                $member = Member::where('email',$request->post('email'))->first();
-            } elseif($request->post('phone_number')) {
-                $member = Member::where('phone_number',$request->post('phone_number'))->first();
+                $member = Member::where('email', $request->post('email'))->first();
+            } elseif ($request->post('phone_number')) {
+                $member = Member::where('phone_number', $request->post('phone_number'))->first();
             }
 
-            if ($member ) {
+            if ($member) {
                 $memberExists = true;
                 $member->date_of_birth = $fill['date_of_birth'] ?? $member->date_of_birth;
                 $member->country = $fill['country'] ?? $member->country;
@@ -248,43 +270,42 @@ class MemberController extends Controller
                 $member->last_name = $fill['last_name'] ?? $member->last_name;
                 $member->middle_name = $fill['middle_name'] ?? $member->middle_name;
 
-                if ( ! $member->gotra ) {
+                if (! $member->gotra) {
                     $member->gotra = $fill['gotra'];
                 }
 
-                if ( ! $member->phone_number && $fill['phone_number']) {
+                if (! $member->phone_number && $fill['phone_number']) {
                     $member->phone_number = $fill['phone_number'];
                 }
-
             } else {
                 $member = new Member();
                 $member->fill($fill);
                 $member->source = ($request->has('dharmasala') && $request->get('dharmasala') == true)  ? 'dharmasala' : 'admin_entry';
 
-                if ( ! $memberExists ) {
-                    $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8).time());
+                if (! $memberExists) {
+                    $member->password = $request->post('password') ? Hash::make($request->post('password')) : Hash::make(Str::random(8) . time());
                     $member->sharing_code = Str::random(8);
                 }
 
-                $member->email = $request->post('email') ?? 'random_email_'.Str::random(18).'_'.time().'@siddhamahayog.org';
+                $member->email = $request->post('email') ?? 'random_email_' . Str::random(18) . '_' . time() . '@siddhamahayog.org';
             }
 
-            if ( ! $member->phone_number ) {
+            if (! $member->phone_number) {
                 $request->validate(['phone_number' => 'required']);
             }
 
-            if ( ! $member->gotra ) {
+            if (! $member->gotra) {
                 $request->validate(['gotra' => 'required']);
             }
 
             try {
                 $dharmasalaResponse = null;
 
-                DB::transaction(function() use ($member,$request, $source, &$dharmasalaResponse) {
+                DB::transaction(function () use ($member, $request, $source, &$dharmasalaResponse) {
                     /**
                      * Save only if required.
                      */
-                    if ($member->isDirty() ) {
+                    if ($member->isDirty()) {
 
                         $member->full_name = $member->full_name();
                         $member->save();
@@ -294,85 +315,81 @@ class MemberController extends Controller
                      * Upload ID Card Image
                      */
 
-                    if ($request->file('id_card') ) {
+                    if ($request->file('id_card')) {
 
-                        $memberIDCard = Image::uploadImage($request->file('id_card'),$member);
+                        $memberIDCard = Image::uploadImage($request->file('id_card'), $member);
 
-                        if (isset ($memberIDCard[0]['relation'])) {
+                        if (isset($memberIDCard[0]['relation'])) {
                             $memberCardType = $memberIDCard[0]['relation'];
                             $memberCardType->type = 'id_card';
                             $memberCardType->save();
                         }
-
-                    } elseif (! $request->file('id_card') && $request->post('id_card_image') ) {
+                    } elseif (! $request->file('id_card') && $request->post('id_card_image')) {
 
                         $isUrl = str($request->post('id_card_image'))->contains('http');
 
-                        if ( $isUrl) {
+                        if ($isUrl) {
 
                             $idMediaImage = $request->post('id_card_image');
                         } else {
-                            $idMediaImage = (new BookingController())->uploadMemberMedia($request,$request->post('id_card_image'),'path');
+                            $idMediaImage = (new BookingController())->uploadMemberMedia($request, $request->post('id_card_image'), 'path');
                         }
-                        $uploadImageFromUrl = Image::urlToImage($idMediaImage,'dharmasala-processing');
+                        $uploadImageFromUrl = Image::urlToImage($idMediaImage, 'dharmasala-processing');
 
-                        if (! $uploadImageFromUrl instanceof  Images)  {
+                        if (! $uploadImageFromUrl instanceof  Images) {
                             throw new \Error('Unable to verify ID Card. Please try again or try uploading image.');
                         }
 
-                        $imageRelation = (new ImageRelation())->storeRelation($member,$uploadImageFromUrl);
+                        $imageRelation = (new ImageRelation())->storeRelation($member, $uploadImageFromUrl);
                         $imageRelation->type = 'id_card';
                         $imageRelation->saveQuietly();
-
                     }
 
                     /**
                      * Upload Profile Picture.
                      */
 
-                     if ($request->file('profile_image') ) {
+                    if ($request->file('profile_image')) {
 
-                        $memberIDCard = Image::uploadImage($request->file('profile_image'),$member);
+                        $memberIDCard = Image::uploadImage($request->file('profile_image'), $member);
 
-                        if (isset ($memberIDCard[0]['relation'])) {
+                        if (isset($memberIDCard[0]['relation'])) {
                             $memberCardType = $memberIDCard[0]['relation'];
                             $memberCardType->type = 'profile_picture';
                             $memberCardType->save();
                         }
-
-                    } elseif (! $request->file('profile_image') && $request->post('live_webcam_image') ) {
+                    } elseif (! $request->file('profile_image') && $request->post('live_webcam_image')) {
 
                         $isUrl = str($request->post('live_webcam_image'))->contains('http');
 
-                        if ( $isUrl) {
+                        if ($isUrl) {
                             $idMediaImage = $request->post('live_webcam_image');
                         } else {
-                            $idMediaImage = (new BookingController())->uploadMemberMedia($request,$request->post('live_webcam_image'),'path');
+                            $idMediaImage = (new BookingController())->uploadMemberMedia($request, $request->post('live_webcam_image'), 'path');
                         }
 
-                        $uploadImageFromUrl = Image::urlToImage($idMediaImage,'dharmasala-processing');
+                        $uploadImageFromUrl = Image::urlToImage($idMediaImage, 'dharmasala-processing');
 
-                        if (! $uploadImageFromUrl instanceof  Images)  {
+                        if (! $uploadImageFromUrl instanceof  Images) {
                             throw new \Error('Unable to verify Profile Image. Please try again or try uploading image.');
                         }
 
-                        $imageRelation = (new ImageRelation())->storeRelation($member,$uploadImageFromUrl);
+                        $imageRelation = (new ImageRelation())->storeRelation($member, $uploadImageFromUrl);
                         $imageRelation->type = 'profile_picture';
                         $imageRelation->saveQuietly();
-
                     }
 
                     /**
                      * Insert record into dharmasal booking.
                      */
-                    if ( $request->has('dharmasala') && $request->get('dharmasala') == true) {
-                        $dharmasalaResponse = (new BookingController())->createNewUserBooking($request,$member);
+                    if ($request->has('dharmasala') && $request->get('dharmasala') == true) {
+                        $dharmasalaResponse = (new BookingController())->createNewUserBooking($request, $member);
                     }
 
                     /**
                      * Insert member into this center.
                      */
-                    if ( ( adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) && ! CenterMember::where('member_id',$member->getKey())->where('center_id',adminUser()->center_id)->exists()){
+                    if ((adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) && ! CenterMember::where('member_id', $member->getKey())->where('center_id', adminUser()->center_id)->exists()) {
 
                         $centerMember = new CenterMember();
                         $centerMember->fill([
@@ -386,37 +403,33 @@ class MemberController extends Controller
 
                     if ($request->post('program_enroll') && ! $request->post('family_confirmation')) {
 
-                        $programControll = (new AdminProgramController())->registerMemberToProgram($request,$member);
+                        $programControll = (new AdminProgramController())->registerMemberToProgram($request, $member);
 
                         if (isset($programControll->original['state']) && ! $programControll->original['state']) {
                             throw new Error($programControll->original['msg']);
                         }
-
                     }
 
                     #Course Fee Entry
                     if ($request->has('amount') || $request->has('voucher_type')) {
 
-                        $courseFeeEntry = (new ProgramStudentFeeController())->add_fee_to_student_by_program($request,null,$member);
+                        $courseFeeEntry = (new ProgramStudentFeeController())->add_fee_to_student_by_program($request, null, $member);
 
                         if (isset($courseFeeEntry->original['state']) && ! $courseFeeEntry->original['state']) {
                             throw new Error($courseFeeEntry->original['msg']);
                         }
-
                     }
 
-                    if ($request->has('family_confirmation') ) {
-                        (new MemberEmergencyController())->bulkInsert($request,$member);
+                    if ($request->has('family_confirmation')) {
+                        (new MemberEmergencyController())->bulkInsert($request, $member);
                     }
-
                 });
+            } catch (\Error $error) {
 
-            } catch (\Error $error ) {
-
-                return $this->json(false,'Failed to create. Error: '. $error->getMessage(),'',['alert' =>'swal']);
+                return $this->json(false, 'Failed to create. Error: ' . $error->getMessage(), '', ['alert' => 'swal']);
             }
 
-            if ($dharmasalaResponse){
+            if ($dharmasalaResponse) {
 
                 return $dharmasalaResponse;
             }
@@ -432,30 +445,31 @@ class MemberController extends Controller
 
 
             $view = 'admin.members.partials.verify-registration-data';
-            $params =['member' => $member];
+            $params = ['member' => $member];
 
-//            if ($request->post('program_enroll') && $request->post('family_confirmation')) {
-//                $view = 'admin.programs.members.post-enrollement-option';
-//            } else if($request->post('program_enroll') && ! $request->post('family_confirmation')) {
-//                $params['program'] = Program::find($request->post('program'));
-//                $view ='admin.programs.members.family-confirmation';
-//
-//            }
+            //            if ($request->post('program_enroll') && $request->post('family_confirmation')) {
+            //                $view = 'admin.programs.members.post-enrollement-option';
+            //            } else if($request->post('program_enroll') && ! $request->post('family_confirmation')) {
+            //                $params['program'] = Program::find($request->post('program'));
+            //                $view ='admin.programs.members.family-confirmation';
+            //
+            //            }
 
-            return $this->json(true,'Member Registration Success.','validatePartials',[
-                'view'  => view($view,$params)->render()
+            return $this->json(true, 'Member Registration Success.', 'validatePartials', [
+                'view'  => view($view, $params)->render()
             ]);
         }
 
         $member = null;
-        if ($request->get('member') ) {
+        if ($request->get('member')) {
             $member = Member::find($request->get('member'));
         }
 
-        return view("admin.members.create",['member' => $member]);
+        return view("admin.members.create", ['member' => $member]);
     }
 
-    public function quickStore(Request $request) {
+    public function quickStore(Request $request)
+    {
         $request->validate([
             'first_name'    => 'required',
             'email'         => 'required',
@@ -463,14 +477,14 @@ class MemberController extends Controller
         ]);
 
         // check email with give username exists.
-        $member = Member::where('email',$request->post('email'))->first();
-        if ( ! $member ) {
+        $member = Member::where('email', $request->post('email'))->first();
+        if (! $member) {
             $member = new Member();
             $member->fill([
                 'first_name'    => $request->post('first_name'),
                 'middle_name'   => $request->post('middle_name'),
                 'last_name'     => $request->post('last_name'),
-                'email'         => $request->post('email') ?? 'random_email_'.time().'@dummyemail.com',
+                'email'         => $request->post('email') ?? 'random_email_' . time() . '@dummyemail.com',
                 'password'      => Hash::make($request->post('password')),
                 'phone_number'  => $request->post('phone_number'),
             ]);
@@ -484,7 +498,7 @@ class MemberController extends Controller
             /*
              * Assign member to appropirate center.
              */
-            if ( ! in_array(adminUser()->role(),[Rule::SUPER_ADMIN,Rule::ADMIN,])) {
+            if (! in_array(adminUser()->role(), [Rule::SUPER_ADMIN, Rule::ADMIN,])) {
                 $centerMember = CenterMember::where('member_id', $member->getKey(), adminUser()->center_id)->first();
 
                 if (!$centerMember) {
@@ -497,68 +511,68 @@ class MemberController extends Controller
                 }
             }
 
-                // if program is available enroll immmediately.
-                $program = Program::find($request->post('program'));
-                $programStudent = ProgramStudent::where('program_id', $program->getKey())
-                                                    ->where('student_id',$member->getKey())
-                                                    ->first();
-                if ( ! $programStudent) {
-                    $programStudent = new ProgramStudent();
-                    $programStudent->fill([
-                        'program_id' => $program->getKey(),
-                        'student_id' => $member->getKey(),
-                        'active' => true,
-                        'allow_all' => false,
-                        'program_section_id' => $request->post('program_'.$program->getKey().'_section'),
-                        'batch_id' => $request->post('program_'.$program->getKey().'_batch')
-                    ]);
-                }
+            // if program is available enroll immmediately.
+            $program = Program::find($request->post('program'));
+            $programStudent = ProgramStudent::where('program_id', $program->getKey())
+                ->where('student_id', $member->getKey())
+                ->first();
+            if (! $programStudent) {
+                $programStudent = new ProgramStudent();
+                $programStudent->fill([
+                    'program_id' => $program->getKey(),
+                    'student_id' => $member->getKey(),
+                    'active' => true,
+                    'allow_all' => false,
+                    'program_section_id' => $request->post('program_' . $program->getKey() . '_section'),
+                    'batch_id' => $request->post('program_' . $program->getKey() . '_batch')
+                ]);
+            }
 
-                $programStudent->active = true;
-                $programStudent->save();
+            $programStudent->active = true;
+            $programStudent->save();
 
-                return $this->json(true,'Member registration complete.','redirect',['location' => route('admin.members.show',['member' => $member,'tab' => 'programs'])]);
-
-
+            return $this->json(true, 'Member registration complete.', 'redirect', ['location' => route('admin.members.show', ['member' => $member, 'tab' => 'programs'])]);
         }
     }
-    public function memberVerification(Request $request) {
+    public function memberVerification(Request $request)
+    {
 
         $view = 'admin.members.partials.new-registration';
         $memberSearch = collect([]);
         $params = [];
 
         if (! $request->get('new-registration') && ! $request->get('member')) {
-            $memberSearch = Member::where('email',$request->post('userKeyword'))
-                ->orWhere('phone_number','LIKE','%'.$request->post('userKeyword').'%')
-                ->orWhere('full_name','LIKE','%'.$request->post('userKeyword').'%')
+            $memberSearch = Member::where('email', $request->post('userKeyword'))
+                ->orWhere('phone_number', 'LIKE', '%' . $request->post('userKeyword') . '%')
+                ->orWhere('full_name', 'LIKE', '%' . $request->post('userKeyword') . '%')
                 ->limit(20)
                 ->with(['profileImage'])
                 ->get();
 
-            if (! $memberSearch->count() ) {
+            if (! $memberSearch->count()) {
                 $searchTerm = str($request->post('userKeyword'));
-                if ($searchTerm->contains(':') ) {
-                    $registrationCode = explode(':',$request->post('userKeyword'));
-                    $memberSearch = Member::where('id',(int) $registrationCode[1])->with(['profileImage'])->get();
+                if ($searchTerm->contains(':')) {
+                    $registrationCode = explode(':', $request->post('userKeyword'));
+                    $memberSearch = Member::where('id', (int) $registrationCode[1])->with(['profileImage'])->get();
                 }
             }
 
-            if ($memberSearch->count() ) {
+            if ($memberSearch->count()) {
                 $view = 'admin.members.partials.member-selection';
                 $params['members'] = $memberSearch;
-            } else {}
+            } else {
+            }
         }
 
-        if ( $request->get('member') ) {
+        if ($request->get('member')) {
             $params['member'] = Member::find($request->get('member'));
         }
 
-        $email = filter_var($request->post('userKeyword'),FILTER_VALIDATE_EMAIL);
+        $email = filter_var($request->post('userKeyword'), FILTER_VALIDATE_EMAIL);
         $params['email'] = $email;
         $params['dharmasala'] = $request->post('dharmasala');
 
-        return $this->json(true,'','validatePartials',['view' => view($view,$params)->render()]);
+        return $this->json(true, '', 'validatePartials', ['view' => view($view, $params)->render()]);
     }
 
     /**
@@ -569,13 +583,13 @@ class MemberController extends Controller
      */
     public function verification(Request $request, Member $member, String $source)
     {
-        if ($request->ajax() ) {
-
+        if ($request->ajax()) {
         }
-        return view('admin.members.verification',['member' => $member,'source' => $source]);
+        return view('admin.members.verification', ['member' => $member, 'source' => $source]);
     }
 
-    public function sendVerificationEmail(Request $request, Member $member, String $source) {
+    public function sendVerificationEmail(Request $request, Member $member, String $source)
+    {
 
         EmailVerfication::dispatch($member);
     }
@@ -586,14 +600,14 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function show(Member $member,$tab = 'user-detail')
+    public function show(Member $member, $tab = 'user-detail')
     {
         ini_set('allow_url_fopen', 1);
-        ini_set('memory_limit',-1);
+        ini_set('memory_limit', -1);
 
         $superAdmin = ['billing'];
-        if ( in_array($tab,$superAdmin) && ! adminUser()->role()->isSuperAdmin() ) {
-            return redirect()->route('admin.members.show',['member' => $member,'tab' => 'user-detail']);
+        if (in_array($tab, $superAdmin) && ! adminUser()->role()->isSuperAdmin()) {
+            return redirect()->route('admin.members.show', ['member' => $member, 'tab' => 'user-detail']);
         }
         //
         session()->forget('adminAccount');
@@ -604,30 +618,29 @@ class MemberController extends Controller
 
         $setNull = false;
 
-        if(config('app.env') != 'local')  {
+        if (config('app.env') != 'local') {
 
-            if ($member->profile && isset ($member->profile->full_path)) {
+            if ($member->profile && isset($member->profile->full_path)) {
 
-            // $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
-            // $originalFilename = pathinfo($url,PATHINFO_FILENAME);
-            // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
-            // $setNull = true;
-        }
+                // $url = str_replace('uploads/m','uploads/cus', $member->profile->full_path);
+                // $originalFilename = pathinfo($url,PATHINFO_FILENAME);
+                // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+                // $setNull = true;
+            }
 
-        if ($member->profile && isset($member->profile->id_card) ) {
-            // $url = str_replace('uploads/m','uploads/cus', $member->profile->id_card);
-            // $originalFilename = pathinfo($url,PATHINFO_FILENAME);
-            // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'id_card');
-            // $setNull = true;
-        }
+            if ($member->profile && isset($member->profile->id_card)) {
+                // $url = str_replace('uploads/m','uploads/cus', $member->profile->id_card);
+                // $originalFilename = pathinfo($url,PATHINFO_FILENAME);
+                // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'id_card');
+                // $setNull = true;
+            }
 
-        if ( $member->profile &&  isset($member->profile->path) ) {
-            // $originalFilename = $member->profile->original_filename;
-            // $url = asset($member->profile->path);
-            // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
-            // $setNull = true;
-        }
-
+            if ($member->profile &&  isset($member->profile->path)) {
+                // $originalFilename = $member->profile->original_filename;
+                // $url = asset($member->profile->path);
+                // (new ImageToTable())->downloadAndSaveImage($url,$member,$originalFilename,'profile_picture');
+                // $setNull = true;
+            }
         }
 
         if ($setNull === true) {
@@ -636,7 +649,7 @@ class MemberController extends Controller
             // $member->save();
         }
 
-        return view('admin.members.show', compact("member","tab"));
+        return view('admin.members.show', compact("member", "tab"));
     }
 
 
@@ -671,17 +684,18 @@ class MemberController extends Controller
         $member->middle_name = $request->post('middle_name');
         $member->last_name = $request->post('last_name');
 
-        if(in_array(adminUser()->role(),[Rule::ADMIN,Rule::SUPER_ADMIN] ) ) {
+        if (in_array(adminUser()->role(), [Rule::ADMIN, Rule::SUPER_ADMIN])) {
             $member->phone_number = $request->post('phone_number');
             $member->setAttribute('email', $request->post('email'));
             $member->role_id = $request->post('role');
         }
 
         if ($member->isDirty('email') && Member::where('email', $request->post('email'))
-                ->where('id', '!=', $member->getKey())
-                ->whereNotNull('email')
-                ->exists()) {
-            return $this->json(false,'Email Already Exists. Unable to save Record.');
+            ->where('id', '!=', $member->getKey())
+            ->whereNotNull('email')
+            ->exists()
+        ) {
+            return $this->json(false, 'Email Already Exists. Unable to save Record.');
         }
 
         $member->country = $request->post('country');
@@ -691,17 +705,16 @@ class MemberController extends Controller
 
         try {
             $member->save();
-            $this->updatePersonal($request,$member,$member->meta);
-
+            $this->updatePersonal($request, $member, $member->meta);
         } catch (\Throwable $th) {
             //throw $th;
-            return $this->json(false,'Error: '. $th->getMessage());
+            return $this->json(false, 'Error: ' . $th->getMessage());
             session()->flash('error', $th->getMessage());
             return back();
         }
 
         // update
-        return $this->json(true,'Information updated.');
+        return $this->json(true, 'Information updated.');
         session()->flash('success', "Personal Information updated.");
         return back();
     }
@@ -739,7 +752,7 @@ class MemberController extends Controller
     /**
      * add member to program.
      */
-    public function add_member_to_program(Request $request, ?Program $program=null)
+    public function add_member_to_program(Request $request, ?Program $program = null)
     {
 
         $data = [
@@ -768,7 +781,7 @@ class MemberController extends Controller
             "phone" => "nullable|min:10",
             "profile" => "nullable|mimes:pdf,jpg,png",
             "password" => "nullable|min:7",
-//            "student_type" => "required|in:general,scholar,scholar_month,scholar_admission",
+            //            "student_type" => "required|in:general,scholar,scholar_month,scholar_admission",
             "current_batch" => "required",
             "sections" => "required",
             "fee_voucher" => "nullable|mimes:pdf,jpg,png"
@@ -776,10 +789,10 @@ class MemberController extends Controller
 
         // check email or password match.
         $check_previous_record = Member::where("email", $request->post('email'))
-                                        ->first();
+            ->first();
 
         if ($check_previous_record) {
-            return $this->returnResponse(false,'User Already exists.',null,[],200,route('admin.members.admin_add_member_to_program',['program' => $program->getKey()]));
+            return $this->returnResponse(false, 'User Already exists.', null, [], 200, route('admin.members.admin_add_member_to_program', ['program' => $program->getKey()]));
         }
 
         $member = new Member;
@@ -801,13 +814,13 @@ class MemberController extends Controller
             'gotra'             => $request->post('gotra'),
         ]);
 
-        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin() ) {
+        if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
             $member->role_id = Role::MEMBER;
         }
 
         // get program batch
-        $programBatch = ProgramBatch::where('batch_id',$request->post('current_batch'))
-            ->where('program_id',$program->getKey())
+        $programBatch = ProgramBatch::where('batch_id', $request->post('current_batch'))
+            ->where('program_id', $program->getKey())
             ->first();
 
 
@@ -833,34 +846,32 @@ class MemberController extends Controller
 
 
 
-                if ( $request->post('place_of_birth') ) {
+                if ($request->post('place_of_birth')) {
                     $memberInfo = new MemberInfo();
                     $memberInfo->fill([
-                        'personal' => ['date_of_birth' => $request->post('date_of_birth'),'place_of_birth' => $request->post('place_of_birth')],
+                        'personal' => ['date_of_birth' => $request->post('date_of_birth'), 'place_of_birth' => $request->post('place_of_birth')],
                         'education' => [],
                         'member_id' => $member->getKey()
                     ]);
 
                     $memberInfo->save();
-
                 }
 
-//                $programEnroll = ProgramStudentEnroll::where('student_id',$member->getKey())
-//                                                        ->where('program_section_id', $program_batch->section_id)
-//                                                        ->where('batch_id',$program_batch->batch_id)
-//                                                        ->first();
-//                if (! $programEnroll ) {
-//                    $programEnroll->fill([
-//                        ''
-//                    ]);
-//                }
+                //                $programEnroll = ProgramStudentEnroll::where('student_id',$member->getKey())
+                //                                                        ->where('program_section_id', $program_batch->section_id)
+                //                                                        ->where('batch_id',$program_batch->batch_id)
+                //                                                        ->first();
+                //                if (! $programEnroll ) {
+                //                    $programEnroll->fill([
+                //                        ''
+                //                    ]);
+                //                }
             });
-
         } catch (\Throwable $th) {
-            return $this->returnResponse(false,'Unable to save Record',null,['error : ' . $th->getMessage()],200,route('admin.members.admin_add_member_to_program',['program' => $program->getKey()]));
+            return $this->returnResponse(false, 'Unable to save Record', null, ['error : ' . $th->getMessage()], 200, route('admin.members.admin_add_member_to_program', ['program' => $program->getKey()]));
         }
         //
-        return $this->returnResponse(true,'New Record Created.','redirect',['location' => route('admin.program.admin_program_detail',['program' => $program->getKey()])],200,route('admin.program.admin_program_detail',['program' => $program->getKey()]));
+        return $this->returnResponse(true, 'New Record Created.', 'redirect', ['location' => route('admin.program.admin_program_detail', ['program' => $program->getKey()])], 200, route('admin.program.admin_program_detail', ['program' => $program->getKey()]));
     }
 
     public function assign_member_to_program(Request $request, Program $program)
@@ -872,23 +883,22 @@ class MemberController extends Controller
                 return $query->where('program_id', $program->id)
                     ->with(["program", "section", "batch"]);
             }])
-            ->where('email', $request->member)
-            ->orWhere('phone_number', 'like', '%' . $request->member . '%')
-                ->orWhere('first_name','LIKE','%'.$request->member.'%')
-                ->orWhere('last_name','LIKE','%'.$request->member.'%')
-                ->orWhere('full_name','LIKE','%'.$request->member.'%')
-            ->limit(30)->get();
+                ->where('email', $request->member)
+                ->orWhere('phone_number', 'like', '%' . $request->member . '%')
+                ->orWhere('first_name', 'LIKE', '%' . $request->member . '%')
+                ->orWhere('last_name', 'LIKE', '%' . $request->member . '%')
+                ->orWhere('full_name', 'LIKE', '%' . $request->member . '%')
+                ->limit(30)->get();
 
             $batches = ProgramBatch::with(["batch"])->where('program_id', $program->getKey())->latest()->get();
             $sectionQuery = ProgramSection::where('program_id', $program->getKey());
 
-            if ($request->get('section') ) {
-                $sectionQuery->where('id',$request->get('section'));
+            if ($request->get('section')) {
+                $sectionQuery->where('id', $request->get('section'));
             }
             $sections = $sectionQuery->latest()->get();
 
             return view('admin.programs.members.partials.search_result', compact('members', 'program', 'batches', 'sections'));
-
         }
 
         return view('admin.programs.members.assign_student_to_program', compact('program'));
@@ -1051,32 +1061,32 @@ class MemberController extends Controller
         try {
             $member->save();
         } catch (\Throwable $th) {
-            return $this->returnResponse(false,'Error: '. $th->getMessage());
+            return $this->returnResponse(false, 'Error: ' . $th->getMessage());
             //throw $th;
-//            session()->flash('error', 'Unable to update User password');
-//            return back()->withInput();
+            //            session()->flash('error', 'Unable to update User password');
+            //            return back()->withInput();
         }
 
-        return $this->json(true,'Password updated.');
-//        session()->flash('success', "Password Updated for User.");
-//        return back();
+        return $this->json(true, 'Password updated.');
+        //        session()->flash('success', "Password Updated for User.");
+        //        return back();
     }
 
     public function reauthUser(Member $member)
     {
-        if ( ! adminUser()->role()->isSuperAdmin() && ! adminUser()->role()->isAdmin()) {
-            return $this->json(false,'You do not have permission to perform this action.');
+        if (! adminUser()->role()->isSuperAdmin() && ! adminUser()->role()->isAdmin()) {
+            return $this->json(false, 'You do not have permission to perform this action.');
         }
         $user = adminUser();
 
         if (!Auth::guard('web')->loginUsingId($member->getKey())) {
-            return $this->returnResponse(false,'Oops ! Unable to use debug for this user.');
+            return $this->returnResponse(false, 'Oops ! Unable to use debug for this user.');
         }
 
         session()->put('adminAccount', true);
         session()->put('admin', $user);
 
-        return $this->returnResponse(true,'Debug is now enabled.','redirect',['location' => route('dashboard')]);
+        return $this->returnResponse(true, 'Debug is now enabled.', 'redirect', ['location' => route('dashboard')]);
     }
 
     public function calcel_subscription(Program $program, Member $member)
@@ -1132,8 +1142,8 @@ class MemberController extends Controller
     public function deleteUser(Member $member)
     {
 
-        if ( ! adminUser()->role()->isSuperAdmin() ) {
-            return $this->json(false,'You do not have permission to perform this action.');
+        if (! adminUser()->role()->isSuperAdmin()) {
+            return $this->json(false, 'You do not have permission to perform this action.');
         }
 
         if (Role::ADMIN != user()->role_id) {
@@ -1172,9 +1182,9 @@ class MemberController extends Controller
                 $member->delete();
             });
         } catch (\Throwable $th) {
-            return $this->json(false,'Unable to to remove user. '. $th->getMessage());
+            return $this->json(false, 'Unable to to remove user. ' . $th->getMessage());
         }
 
-        return $this->json(true,'User information deleted.','reload');
+        return $this->json(true, 'User information deleted.', 'reload');
     }
 }

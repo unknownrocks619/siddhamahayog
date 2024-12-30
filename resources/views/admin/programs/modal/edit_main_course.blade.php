@@ -23,7 +23,7 @@
                     <b>
                         Description
                     </b>
-                    <textarea class='form-control course_description' name='description' id="course_description">{{ $course->description }}</textarea>
+                    <textarea class='form-control course_description tiny-mce' name='description' id="course_description">{{ $course->description }}</textarea>
                 </div>
             </div>
             <div class="col-md-6">
@@ -35,14 +35,14 @@
                         <div class="row">
                             <div class="col-md-4">
 
-                                <input @if($course->lock) checked @endif type="radio"
+                                <input @if ($course->lock) checked @endif type="radio"
                                     name="lock_course" id="lock_course_yes_edit_modal" value="yes">
                                 <label for="lock_course_yes_edit_modal" class='text-success'>
                                     Yes, Lock Course
                                 </label>
                             </div>
                             <div class="col-md-6">
-                                <input @if(!$course->lock) checked @endif type="radio"
+                                <input @if (!$course->lock) checked @endif type="radio"
                                     name="lock_course" id="lock_course_no_edit_modal" value="no">
                                 <label for="lock_course_no_edit_modal" class='text-danger'>
                                     No, Don't Lock Course

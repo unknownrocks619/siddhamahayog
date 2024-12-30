@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Billable;
@@ -223,6 +224,10 @@ class Member extends Authenticatable
         });
     }
 
+    public function getRoleAttribute(): Rule|null
+    {
+        return $this->role = Rule::tryFrom($this->role_id);
+    }
     public function diskshya()
     {
         return $this->hasMany(MemberDikshya::class);
@@ -295,10 +300,15 @@ class Member extends Authenticatable
         return $this->hasOne(ProgramStudentFee::class, "student_id", 'id');
     }
 
+    public function centers()
+    {
+        return $this->hasMany(CenterMember::class, 'member_id');
+    }
+
     /**
      * @info List all members in datatable.
      */
-    public static function all_members($searchTerm = null)
+    public static function all_members($searchTerm = null, array $filters= [])
     {
         $binds = [];
         $sql = "SELECT member.id as member_id,
@@ -327,6 +337,37 @@ class Member extends Authenticatable
                     LEFT JOIN programs program
                         ON program.id = pstd.program_id
                 WHERE pstd.deleted_at IS NULL ";
+
+        $connector = ' OR ';
+
+        if ( ! empty ($filters ) ) {
+
+            if (isset($filters['date']) &&  $filters['date'] != '') {
+                $connector = ' AND ';
+                $arrayDates  = explode(' - ' , $filters['date'] );
+
+                $carbonStartDate = Carbon::createFromFormat('m/d/Y', $arrayDates[0]);
+                $carbonEndDate = Carbon::createFromFormat('m/d/Y', $arrayDates[1]);
+                if ( ! $carbonEndDate->equalTo($carbonEndDate) ) {
+                    $sql .= " AND  DATE(member.created_at) >=  ? ";
+                    $binds[] = $carbonStartDate;
+                    $sql .= " AND DATE(member.created_at) <= ? ";
+                    $binds[] = $carbonEndDate;
+
+                }
+            }
+
+            if ( isset($filters['programs']) &&   ! empty ($filters['programs'])) {
+                $connector = ' AND ';
+                $sql .= $connector . ' program.id IN ( ' . implode(',',$filters['programs']). ' ) ';
+            }
+
+            if (isset($filters['roles']) && ! empty ($filters['roles'])) {
+                $connector = ' AND ';
+                $sql .=  $connector . ' member.role_id IN ( ' . implode(',', $filters['roles']) . ' ) ';
+            }
+        }
+
         if (! empty($searchTerm)) {
 
             $sql .= " AND ( ";
@@ -343,6 +384,8 @@ class Member extends Authenticatable
 
         $sql .= " AND member.deleted_at IS NULL
                                 GROUP BY member.id";
+
+
         return DB::select($sql, $binds);
     }
 
@@ -415,7 +458,7 @@ class Member extends Authenticatable
             $full_name .= ' ' . $this->middle_name;
         }
 
-        $full_name .= ' ' . $this->last_name;
+        $full_name .= ' ' . ucwords($this->last_name);
 
 
         $this->full_name = $full_name;

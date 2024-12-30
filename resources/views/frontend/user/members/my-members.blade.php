@@ -6,20 +6,8 @@
             <x-alert></x-alert>
             @include('frontend.user.dashboard.incomplete')
         </div>
-        <div class="row">
-            <div class="col-md-12 mb-3" id="">
-                <div class="card alert alert-danger">
-                    <div class="card-header mb-0 pb-0 alert-title">
-                        <h4>Coming Soon !</h4>
-                    </div>
-                    <div class="card-body alert-body">
-                        New Training session will be available soon. Stay tuned.
-                    </div>
-                </div>
-            </div>
 
-        </div>
-        <div class="row @if ($_ENV['APP_ENV'] == 'production') d-none @endif">
+        <div class="row">
             <div class="col-md-12 mb-3" id="">
                 <div class="card alert alert-danger">
                     <div class="card-header mb-0 pb-0 alert-title">
@@ -35,7 +23,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div
-                            class="card-headerps-0 d-flex justify-content-between align-items-center  border-1 border-bottom pb-3 mb-3">
+                            class="card-header ps-0 d-flex justify-content-between align-items-center  border-1 border-bottom pb-3 mb-3">
                             <h4>My Current Session</h4>
                             <button class="btn btn-primary" data-bs-toggle='modal' data-bs-target='#newSession'>Create New
                                 Session</button>

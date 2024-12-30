@@ -22,7 +22,7 @@
                     <b>
                         Description
                     </b>
-                    <textarea class='form-control' name='description' id="description"></textarea>
+                    <textarea class='form-control tiny-mce' name='description' id="description"></textarea>
                 </div>
             </div>
             <div class="col-md-6 mt-4">
@@ -98,4 +98,5 @@
             }
         })
     })
+    window.setupTinyMce();
 </script>

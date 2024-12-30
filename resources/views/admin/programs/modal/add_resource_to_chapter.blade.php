@@ -1,7 +1,7 @@
 <form enctype="multipart/form-data" class="add_course_resource_form" name="course_form" id="new_resource" method="post"
     action="{{ route('admin.program.courses.admin_program_course_store_resource_modal', [$course->id]) }}">
     @csrf
-    <div class="modal-header bg-dark text-white">
+    <div class="modal-header">
         <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small>Add Resource</small></h4>
     </div>
     <div class="modal-body">
@@ -78,7 +78,7 @@
     </div>
     <div class="modal-footer d-flex justify-content-between">
         <button type="button" class="close-button btn btn-danger btn-simple btn-round waves-effect"
-            data-dismiss="modal">Close</button>
+            data-bs-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary btn-block ">Create New Course</button>
     </div>
 </form>

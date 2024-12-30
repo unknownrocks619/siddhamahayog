@@ -33,6 +33,5 @@ class AppServiceProvider extends ServiceProvider
             return "<input type='hidden' name='recaptcha_token' id='recaptcha_token' class='g-captcha' />";
         });
         Paginator::useBootstrapFive();
-
     }
 }

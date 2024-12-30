@@ -10,8 +10,10 @@ import './partials/room.js';
 import './partials/member';
 import './partials/transaction';
 import './partials/booking';
+import './partials/datatable.js';
 import {Booking} from "./partials/booking";
 import './partials/group.js'
+import './portal/member-registration.js'
 
 $(function () {
     "use strict";
@@ -99,6 +101,38 @@ $(function () {
 
         $($(this).attr('data-bs-target')).trigger('click');
     })
+
+    $(document).on('click', '.js-toggle-view', function (event) {
+        
+        event.preventDefault();
+        let target = $($(this).data('target'));
+
+        if ($(this).data('multiple') == false) {
+
+            $('.js-toggle-view').each(function (index, element) {
+                let _target = $($(element).data('target'));
+                
+                if ($(_target).attr('id') != $(target).attr('id')) {
+                    if (_target.length) {
+                        _target.hide();
+                    }
+                }
+                
+            });
+        }
+
+        if($(target).length) {
+            $(target).toggle();
+
+            if ($(this).data('ajax-trigger') ) {
+                let _ele = $(this).data('ajax-trigger');
+                $(target).find(_ele).first().trigger('click');
+            }
+        }
+
+
+
+    });
 
     $(document).on('click','.js-close-element',function(event) {
 
@@ -276,6 +310,43 @@ $(function () {
                 }
             })
         });
+    }
+
+        window.setLoading = function(type = 'add', element = '', hide=true) {
+
+        if (typeof element === 'string') {
+            element = $(element);
+        }
+        
+        let loader = `<div class="spinner-border spinner-border-lg text-primary" role="status" style=""> <span class="visually-hidden">Loading...</span> </div>`;
+        let _appendElement = `<div class='elementLoader' style="
+                            position: absolute;
+                            width: 100%;
+                            height: 100%;
+                            background: #fff;
+                            z-index: 99;
+                            opacity: 0.4;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;"
+                        >
+            ${loader}        
+        </div>`;
+
+        if (hide === true) {
+            $(element).children().hide();
+        }
+
+        if (type === 'remove') {
+            console.log('sfsf');
+            $(element).find('.elementLoader').remove();
+            $(element).children().show();
+        } else {
+            $(element).css({'position':'relative'});
+            $(element).prepend(_appendElement);
+
+        }
+        
     }
 
     window.memberSearchFunction;

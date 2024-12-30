@@ -21,9 +21,12 @@
                         <div
                             class="card-headerps-0 d-flex justify-content-between align-items-center  border-1 border-bottom pb-3 mb-3">
                             <h4>Members</h4>
-                            <button class="btn btn-primary js-toggle-view" type="button"
-                                data-target="#memberRegistration">New
-                                Member</button>
+                            <div>
+                                <a href="{{route('user.my-member')}}" class="btn btn-primary btn-icon"><i class="menu-icon bx bx-arrow-from-right ms-1"></i></a>
+                                <button class="btn btn-primary js-toggle-view" type="button"
+                                    data-target="#memberRegistration">New
+                                    Member</button>
+                            </div>
                         </div>
                         @include('frontend.user.members.partials.registration')
                         <div class="table-responsive">
@@ -58,7 +61,7 @@
                                                 {{-- <a href="" class="btn btn-primary">
                                                     View Members
                                                 </a> --}}
-                                                <a href="" class="btn  btn-primary"><i
+                                                <a href="{{route('user.account.list',['member'=> $member])}}" class="btn  btn-primary"><i
                                                         class="menu-icon bx bx-pencil me-0"></i> Edit</a>
                                                 <a href="" class="btn  btn-danger"><i
                                                         class="menu-icon bx bx-trash me-0"></i> Delete</a>

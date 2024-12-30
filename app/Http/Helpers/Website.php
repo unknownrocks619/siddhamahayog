@@ -158,9 +158,20 @@ if (!function_exists("adminUser")) {
 
 
 if (!function_exists("profile")) {
-    function profile()
+    function profile(?\App\Models\Member $member = null)
     {
+        if ( $member ) {
+            $memberAccessible = user()->myMembers()->where('student_id', $member->getKey())->first();
 
+            if ( $memberAccessible ) {
+                if ( ! $member?->profileImage) {
+                    $hash = md5($member->email);
+                    return "https://www.gravatar.com/avatar/" . $hash . "/?d=robohash";
+                }
+                return \App\Classes\Helpers\Image::getImageAsSize($member->profileImage?->filepath, 'xs');
+
+            }
+        }
         if (user()) {
             if (! user()?->profileImage) {
                 $hash = md5(user()->email);

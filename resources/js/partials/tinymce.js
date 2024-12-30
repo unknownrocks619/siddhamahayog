@@ -1,5 +1,5 @@
 $(function () {
-    console.log( 'hello world');
+
     if ($('.tiny-mce').length) {
         window.setupTinyMce();
     }
@@ -22,3 +22,4 @@ window.setupTinyMceAll = function () {
         menubar : false,
     })
 }
+

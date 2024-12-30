@@ -25,7 +25,7 @@
                                     <span class="input-group-text">NRs</span>
                                     <input name="amount" type="text" require class="form-control" placeholder="Amount" aria-label="Amount (to the nearest dollar)">
                                     <span class="input-group-text">.00</span>
-                                    <button type="submit" class=" ms-4 btn btn-success ">E-sewa Dakshina</button>
+                                    <button type="submit" class=" ms-4 btn btn-success ">E-Daan</button>
                                     <a href="{{-- route('donations.donate_get',['stripe']) --}}" class="btn btn-primary ms-2 disabled">Other Payment (Coming soon)</a>
 
                                 </div>

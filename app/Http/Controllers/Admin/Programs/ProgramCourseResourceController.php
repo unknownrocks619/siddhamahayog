@@ -137,6 +137,7 @@ class ProgramCourseResourceController extends Controller
 
     public function list_resource_modal_admin(Request $request, Program $program, ProgramCourse $course)
     {
+
         if ($request->ajax() && $request->wantsJson()) {
             $all_resources = $course->load(["resources"]);
             return DataTables::of($all_resources->resources)

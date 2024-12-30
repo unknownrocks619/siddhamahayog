@@ -42,12 +42,12 @@ Route::prefix("account")
     ->middleware(["auth"])
     ->group(function () {
 
-        Route::get("/user", [ProfileController::class, "account"])->name("list");
+        Route::get("/user/notifications", [ProfileController::class, "notifications"])->name("notifications");
         Route::match(['get', 'post'], "/user/connections", [ProfileController::class, "connections"])->name("connections");
         Route::post('user/connection/delete/{connection}', [ProfileController::class, 'deleteConnection'])->name('connection.delete');
-        Route::get("/user/notifications", [ProfileController::class, "notifications"])->name("notifications");
+        Route::get("/user/{member?}", [ProfileController::class, "account"])->name("list");
         Route::post("/profile", [ProfileController::class, "storeProfile"])->name("store.profile");
-        Route::post("/profile/detail", [ProfileController::class, "storeDetail"])->name("store.personal");
+        Route::post("/profile/detail/{member?}", [ProfileController::class, "storeDetail"])->name("store.personal");
         Route::post('/user/notifications/{notification}', [ProfileController::class, "singleNotification"])->name('notification-body');
         Route::post('/user/notifications/{notification}/update', [ProfileController::class, "markNotification"])->name('notification-update');
         Route::post('/user/end/', [ProfileController::class, 'removeAdminAccess'])->name('end_debug_session');

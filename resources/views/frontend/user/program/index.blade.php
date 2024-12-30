@@ -8,74 +8,42 @@
 
         <div class="row">
             <div class="col-md-12">
-                <div class="card mb-4">
-                    <h5 class="card-header text-danger">Enrolled Programs</h5>
-                    <!-- Account -->
-                    <div class="card-body">
-                        @forelse ($programs as $program)
-                            <div class="card accordion-item mb-2">
-                                <h2 class="accordion-header fs-3" id="{{ $program->program->slug }}Heading">
-                                    <button type="button"
-                                        class="accordion-button fs-3 {{ $loop->iteration == 1 ? '' : 'collapsed' }}"
-                                        data-bs-toggle="collapse" data-bs-target="#{{ $program->program->slug }}"
-                                        aria-expanded="true" aria-controls="{{ $program->program->slug }}">
-                                        {{ $program->program->program_name }}
-                                    </button>
-                                </h2>
-                                <div id="{{ $program->program->slug }}"
-                                    class="accordion-collapse {{ $loop->iteration == 1 ? 'show' : 'collapse' }} "
-                                    data-bs-parent="#accordionExample">
-                                    <div class="accordion-body">
-                                        <div class="row">
-                                            <div class="col-sm-12 col-md-2 mt-2 ">
-                                                <button
-                                                    class="btn btn-primary mx-3 @if ($program->active) clickable @else disabled @endif"
-                                                    @if ($program->active) data-href="{{ route('user.account.programs.resources.index', $program->program->id) }} @endif">Reading
-                                                    Material</button>
-                                            </div>
-                                            <div class="col-sm-12 col-md-2 mt-2">
-                                                <button
-                                                    class="btn btn-info mx-2 @if ($program->active) clickable @else disabled @endif"
-                                                    @if ($program->active) data-href="{{ route('user.account.programs.videos.index', $program->program->id) }}" @endif>Offline
-                                                    Videos</button>
-
-                                            </div>
-                                            <div class="col-sm-12 col-md-2 mt-2">
-                                                <button
-                                                    @if ($program->active) data-href="{{ route('user.account.programs.program.request.index', $program->program->id) }}" @endif
-                                                    class="@if ($program->active) clickable @else disabled @endif btn btn-info mx-2">Absent
-                                                    Form</button>
-
-                                            </div>
-                                            <div class="col-sm-12 col-md-2 mt-2">
-                                                <button
-                                                    data-href="{{ route('user.account.programs.courses.fee.list', $program->program->id) }}"
-                                                    class="clickable btn btn-primary mx-2">My Payment</button>
-
-                                            </div>
-                                            <div class="col-sm-12 col-md-2 mt-2">
-                                                <button
-                                                    data-href="{{ route('frontend.jaap.index', $program->program->id) }}"
-                                                    class="clickable btn btn-primary mx-2">My Mantra Count</button>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="alert alert-info">
-                                You don't have any subscribed program.
-                            </div>
-                        @endforelse
-                    </div>
-                    <hr class="my-0" />
-
-                    <!-- /Account -->
-                </div>
+                <h4>
+                    My Enrolled Programs
+                </h4>
             </div>
         </div>
+        @forelse($programs as $program)
+            <div class="row mb-1">
+                <div class="col-md-12  bg-white py-2 d-flex justify-content-between align-content-center">
+                    <h5 class="mb-0 mt-2">{{ $program->program->program_name }}</h5>
+                    <div>
+                        <button
+                            class="btn btn-primary @if ($program->active) clickable @else disabled @endif"
+                            @if ($program->active) data-href="{{ route('user.account.programs.resources.index', $program->program->id) }} @endif">Reading
+                            Material</button>
+                        <button
+                            class="btn btn-info @if ($program->active) clickable @else disabled @endif"
+                            @if ($program->active) data-href="{{ route('user.account.programs.videos.index', $program->program->id) }}" @endif>Offline
+                            Videos</button>
+                        <button
+                            @if ($program->active) data-href="{{ route('user.account.programs.program.request.index', $program->program->id) }}" @endif
+                        class="@if ($program->active) clickable @else disabled @endif btn btn-info">Absent
+                            Form</button>
+                        <button
+                            data-href="{{ route('user.account.programs.courses.fee.list', $program->program->id) }}"
+                            class="clickable btn btn-primary">My Payment</button>
+                        <button
+                            data-href="{{ route('frontend.jaap.index', $program->program->id) }}"
+                            class="clickable btn btn-primary">My Mantra Count</button>
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="alert alert-info">
+                You don't have any subscribed program.
+            </div>
+        @endforelse
     </div>
     <!-- / Content -->
 @endsection

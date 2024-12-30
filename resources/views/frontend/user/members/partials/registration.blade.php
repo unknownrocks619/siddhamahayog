@@ -1,6 +1,13 @@
+@php
+    if (auth()->guard('web')->check()) {
+        $user = auth()->guard('web')->id();
+    } elseif (isset($member) && auth('admin')->check()) {
+        $user = $member->getKey();
+    }
+    $userID = encrypt($user);
+@endphp
 <div class="" id="memberRegistration" style="display: none">
-    <form
-        onsubmit="event.preventDefault();window.registration.verifyRegistrationProcess(this,'{{ encrypt(auth()->guard('web')->id()) }}')"
+    <form onsubmit="event.preventDefault();window.registration.verifyRegistrationProcess(this,'{{ $userID }}')"
         action="{{ route('user.register-token') }}" method="post">
         <div class="row">
             <div class="col-md-6 mt-2">

@@ -1,3 +1,9 @@
+@php
+    if (!isset($member)) {
+        $member = auth('web')->user();
+    }
+
+@endphp
 <div class="card">
     <div class="card-body">
         <div class="row my-4">
@@ -7,7 +13,7 @@
                         First Name
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input type="text" name="first_name" id="first_name" value="" class="form-control" />
+                    <input type="text" value="{{ $member->first_name }}" name="first_name" id="first_name" class="form-control" />
                 </div>
             </div>
 
@@ -16,7 +22,8 @@
                     <label for="middle_name">
                         Middle Name
                     </label>
-                    <input type="text" name="middle_name" id="middle_name" value="" class="form-control" />
+                    <input type="text" value="{{ $member->middle_name }}" name="middle_name" id="middle_name"
+                        class="form-control" />
                 </div>
             </div>
 
@@ -26,7 +33,8 @@
                         Last Name
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input type="text" name="last_name" id="last_name" value="" class="form-control" />
+                    <input type="text" value="{{ $member->last_name }}" name="last_name" id="last_name"
+                        class="form-control" />
                 </div>
             </div>
         </div>
@@ -39,8 +47,8 @@
                         Email
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input type="email" value="" name="email" id="email" class="form-control"
-                        value="" />
+                    <input type="email" value="{{ $member->email }}" @if ($member->is_email_verified) disabled @endif
+                        name="email" id="email" class="form-control" />
                 </div>
             </div>
 
@@ -50,7 +58,8 @@
                         Phone Number
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input value="" type="text" name="phone" id="phone_number" class="form-control">
+                    <input value="{{ $member->phone_number }}" @if ($member->is_phone_verified) disabled @endif
+                        type="text" name="phone" id="phone_number" class="form-control">
                 </div>
             </div>
         </div>
@@ -64,7 +73,8 @@
                     </label>
                     <select name="country" id="country" class="form-control">
                         @foreach (\App\Models\Country::cursor() as $country)
-                            <option value="{{ $country->getKey() }}" @if ($country->getKey() == 153) selected @endif>
+                            <option @if ($member->country == $country->getKey()) selected @endif value="{{ $country->getKey() }}"
+                                @if ($country->getKey() == 153) selected @endif>
                                 {{ $country->name }}</option>
                         @endforeach
                     </select>
@@ -77,7 +87,8 @@
                         City / State
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input type="text" name="city" value="" id="city" class="form-control" />
+                    <input type="text" value="{{ $member->city }}" name="city" id="city"
+                        class="form-control" />
                 </div>
             </div>
         </div>
@@ -89,7 +100,7 @@
                         Street Address
                         <sup class="text-danger">*</sup>
                     </label>
-                    <textarea name="street_address" id="street_address" class="form-control"></textarea>
+                    <textarea name="street_address" id="street_address" class="form-control">{{ $member->address?->street_address }}</textarea>
                 </div>
             </div>
         </div>
@@ -101,7 +112,8 @@
                         Date of Birth
                         <sup class="text-danger">*</sup>
                     </label>
-                    <input type="date" name="date_of_birth" id="date_of_birth" class="form-control" />
+                    <input type="date" value="{{ $member->date_of_birth }}" name="date_of_birth" id="date_of_birth"
+                        class="form-control" />
                 </div>
             </div>
             <div class="col-md-6">
@@ -109,7 +121,8 @@
                     <label for="place_of_birth">
                         Place of Birth
                     </label>
-                    <input type="text" name="place_of_birth" id="place_of_birth" class="form-control" />
+                    <input type="text" name="place_of_birth" id="place_of_birth"
+                        value="{{ $member->meta?->personal['place_of_birth'] ?? '' }}" class="form-control" />
                 </div>
             </div>
         </div>
@@ -121,38 +134,24 @@
                         <sup class="text-danger">*</sup>
                     </label>
                     <select name="gender" id="gender" class="form-control">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
+                        <option @if ($member->meta?->personal['gender'] ?? 'male' == 'male') selected @endif value="male">Male</option>
+                        <option @if ($member->meta?->personal['gender'] ?? 'male' == 'female') selected @endif value="female">Female</option>
+                        <option @if ($member->meta?->personal['gender'] ?? 'other' == 'male') selected @endif value="other">Other</option>
                     </select>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="center">Select Nearest Center</label>
-                    <select name="center" id="center" class="form-control">
-                        @foreach (\App\Models\Centers::cursor() as $center)
-                            <option value="{{ $center->getKey() }}">{{ $center->name_name }}</option>
-                        @endforeach
-                    </select>
+            @if (!$member->centers?->count())
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="center">Select Nearest Center</label>
+                        <select name="center" id="center" class="form-control">
+                            @foreach (\App\Models\Centers::cursor() as $center)
+                                <option value="{{ $center->getKey() }}">{{ $center->name_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="row my-4">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" />
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password</label>
-                    <input type="password" name="password_confirmation" id="confirm_password"
-                        class="form-control" />
-                </div>
-            </div>
+            @endif
         </div>
 
     </div>
@@ -160,8 +159,7 @@
     <div class="card-footer">
         <div class="row">
             <div class="col-md-12">
-                <button class="btn btn-primary">Create New Account</button>
-                <a href="" class="btn btn-text btn-primary">Restart Process</a>
+                <button class="btn btn-primary">Update Information</button>
             </div>
         </div>
     </div>

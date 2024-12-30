@@ -23,7 +23,7 @@
                     <b>
                         Description
                     </b>
-                    <textarea class='form-control' name='description' id="description">{{ $video->video_description }}</textarea>
+                    <textarea class='form-control tiny-mce' name='description' id="description">{{ $video->video_description }}</textarea>
                 </div>
             </div>
             <div class="col-md-6">

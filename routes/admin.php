@@ -41,7 +41,7 @@ Route::get("/zoom", function () {
 
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(['web',"admin"])
+    ->middleware(['web', "admin"])
     ->group(function () {
         Route::get('/codetestzone', [CodeTestZoneController::class, 'getAllRegisteredSadhak']);
         Route::get('/re-run/full-name', function () {
@@ -79,15 +79,15 @@ Route::prefix('admin')
          * Users
          */
 
-        include __DIR__.'/admin/member.php';
-        include __DIR__.'/admin/member-dikshya.php';
+        include __DIR__ . '/admin/member.php';
+        include __DIR__ . '/admin/member-dikshya.php';
         include __DIR__ . '/admin/member-sadhana.php';
-        include __DIR__.'/admin/member-emergency.php';
+        include __DIR__ . '/admin/member-emergency.php';
 
         /**
          * Zoom & Meetings
          */
-       include __DIR__.'/admin/zoom.php';
+        include __DIR__ . '/admin/zoom.php';
 
         Route::prefix("meeting")
             ->name("meeting.")
@@ -122,7 +122,7 @@ Route::prefix('admin')
          * Programs
          */
 
-        include __DIR__.'/admin/program.php';
+        include __DIR__ . '/admin/program.php';
 
         /**
          * Finance
@@ -147,7 +147,7 @@ Route::prefix('admin')
         /**
          * Centers
          */
-        include __DIR__.'/admin/centers.php';
+        include __DIR__ . '/admin/centers.php';
 
         /**
          * Exams
@@ -157,7 +157,7 @@ Route::prefix('admin')
         /**
          *  Modal
          */
-        include __DIR__ .'/admin/modal.php';
+        include __DIR__ . '/admin/modal.php';
 
         /**
          * Settings
@@ -180,12 +180,12 @@ Route::prefix('admin')
                 /**
                  * Settings
                  */
-                Route::prefix('settings')
-                    ->name('settings.')
-                    ->group(function () {
-                        Route::get("/list", [SettingController::class, "index"])->name("index");
-                        Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
-                    });
+                // Route::prefix('settings')
+                //     ->name('settings.')
+                //     ->group(function () {
+                //         Route::get("/list", [SettingController::class, "index"])->name("index");
+                //         Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
+                //     });
 
                 /**
                  * Menus
@@ -242,20 +242,21 @@ Route::prefix('admin')
             });
 
 
-            /**
+        /**
          * Notices
          */
-        include __DIR__.'/admin/notices.php';
+        include __DIR__ . '/admin/notices.php';
 
         /**
          * Settings
          */
+        include('admin/settings.php');
 
         /**
          * Resources
          */
 
-         include __DIR__.'/admin/resources.php';
+        include __DIR__ . '/admin/resources.php';
         /**
          * Calender
          */
@@ -282,7 +283,7 @@ Route::prefix('admin')
          * Support Tickets
          *
          * */
-        include __DIR__.'/admin/support.php';
+        include __DIR__ . '/admin/support.php';
 
         /**
          * Holidays
@@ -337,10 +338,10 @@ Route::prefix('admin')
          */
         Route::resource("widget", WidgetController::class);
 
-        include __DIR__.'/admin/select2.php';
+        include __DIR__ . '/admin/select2.php';
 
         /**
          * Permission Request
          */
-        include __DIR__.'/admin/permissions-request.php';
+        include __DIR__ . '/admin/permissions-request.php';
     });

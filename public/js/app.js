@@ -5378,8 +5378,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./partials/transaction */ "./resources/js/partials/transaction.js");
 /* harmony import */ var _partials_transaction__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_partials_transaction__WEBPACK_IMPORTED_MODULE_9__);
 /* harmony import */ var _partials_booking__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./partials/booking */ "./resources/js/partials/booking.js");
-/* harmony import */ var _partials_group_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./partials/group.js */ "./resources/js/partials/group.js");
+/* harmony import */ var _partials_datatable_js__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./partials/datatable.js */ "./resources/js/partials/datatable.js");
+/* harmony import */ var _partials_datatable_js__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_partials_datatable_js__WEBPACK_IMPORTED_MODULE_11__);
+/* harmony import */ var _partials_group_js__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./partials/group.js */ "./resources/js/partials/group.js");
+/* harmony import */ var _portal_member_registration_js__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./portal/member-registration.js */ "./resources/js/portal/member-registration.js");
  //================== partials ======================//
+
+
 
 
 
@@ -5476,6 +5481,32 @@ $(function () {
 
     event.preventDefault();
     $($(this).attr('data-bs-target')).trigger('click');
+  });
+  $(document).on('click', '.js-toggle-view', function (event) {
+    event.preventDefault();
+    var target = $($(this).data('target'));
+
+    if ($(this).data('multiple') == false) {
+      $('.js-toggle-view').each(function (index, element) {
+        var _target = $($(element).data('target'));
+
+        if ($(_target).attr('id') != $(target).attr('id')) {
+          if (_target.length) {
+            _target.hide();
+          }
+        }
+      });
+    }
+
+    if ($(target).length) {
+      $(target).toggle();
+
+      if ($(this).data('ajax-trigger')) {
+        var _ele = $(this).data('ajax-trigger');
+
+        $(target).find(_ele).first().trigger('click');
+      }
+    }
   });
   $(document).on('click', '.js-close-element', function (event) {
     if (!$($(this).data('bs-target')).length) {
@@ -5662,6 +5693,35 @@ $(function () {
         }
       });
     });
+  };
+
+  window.setLoading = function () {
+    var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'add';
+    var element = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    var hide = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+    if (typeof element === 'string') {
+      element = $(element);
+    }
+
+    var loader = "<div class=\"spinner-border spinner-border-lg text-primary\" role=\"status\" style=\"\"> <span class=\"visually-hidden\">Loading...</span> </div>";
+
+    var _appendElement = "<div class='elementLoader' style=\"\n                            position: absolute;\n                            width: 100%;\n                            height: 100%;\n                            background: #fff;\n                            z-index: 99;\n                            opacity: 0.4;\n                            display: flex;\n                            justify-content: center;\n                            align-items: center;\"\n                        >\n            ".concat(loader, "        \n        </div>");
+
+    if (hide === true) {
+      $(element).children().hide();
+    }
+
+    if (type === 'remove') {
+      console.log('sfsf');
+      $(element).find('.elementLoader').remove();
+      $(element).children().show();
+    } else {
+      $(element).css({
+        'position': 'relative'
+      });
+      $(element).prepend(_appendElement);
+    }
   };
 
   window.memberSearchFunction;
@@ -5876,13 +5936,20 @@ window.ajaxDataTableReload = function (params) {
 /***/ (() => {
 
 $(document).on('click', '.ajax-modal', function (event) {
-  var _$$data, _$$data2;
+  var _$$data;
 
   var clickElement = this;
   var ajaxIdElement = $(this).data('bs-target');
   var ajaxIdName = ajaxIdElement.substring(1, ajaxIdElement.length);
-  var actionUrl = (_$$data = $(this).data('action')) !== null && _$$data !== void 0 ? _$$data : event.relatedTarget.href;
-  var ajaxMethod = (_$$data2 = $(this).data('method')) !== null && _$$data2 !== void 0 ? _$$data2 : 'get';
+  var actionUrl = null;
+
+  if ($(this).data('action') !== undefined) {
+    actionUrl = $(this).data('action');
+  } else {
+    actionUrl = event.relatedTarget.href;
+  }
+
+  var ajaxMethod = (_$$data = $(this).data('method')) !== null && _$$data !== void 0 ? _$$data : 'get';
   $(clickElement).prop('disabled', true).addClass('disabled');
   $.ajax({
     method: ajaxMethod,
@@ -6377,6 +6444,23 @@ function _getRequest2(_url) {
     }
   });
 }
+
+/***/ }),
+
+/***/ "./resources/js/partials/datatable.js":
+/*!********************************************!*\
+  !*** ./resources/js/partials/datatable.js ***!
+  \********************************************/
+/***/ (() => {
+
+$(function () {
+  if ($('.dataTable').length) {
+    $('.dataTable').each(function (index, item) {
+      var table = $(item).DataTable();
+      $(item).attr('data-table', table);
+    });
+  }
+});
 
 /***/ }),
 
@@ -7025,8 +7109,16 @@ window.ajaxReinitalize = function (element) {
   if (!$(element).hasClass('no-select-2')) {
     if (!$(element).hasClass('ajax-select-2')) {
       if ($(element).closest('[data-dropdown]').length) {
-        console.log('#' + $(element).closest('[data-dropdown]').attr('data-dropdown'));
         options.dropdownParent = '#' + $(element).closest('[data-dropdown]').attr('data-dropdown');
+      }
+
+      if ($(element).data('format-template')) {
+        options.templateResult = function (item) {
+          var _functionName = $(element).data('format-template');
+
+          console.log('function name: ', _functionName);
+          return window[_functionName](item);
+        };
       }
 
       $(element).select2(options);
@@ -7130,6 +7222,39 @@ $(document).on('change', '#building_selection_to_room', function () {
   });
 });
 
+window.changeCountry = function (elm) {
+  var targetElm = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  if (targetElm !== '') {
+    $(targetElm).toggle();
+    return;
+  }
+
+  $('.country-verification').hide();
+
+  if ($(elm).find(':selected').val() != '153') {
+    $('.country-other').show();
+    $('#email_option').removeAttr('checked');
+  } else {
+    $('.country-nepal').show();
+  }
+};
+
+window.formatCountry = function (item) {
+  var url = "https://flagsapi.com/" + item.title + "/flat/64.png";
+  var img = $("<img>", {
+    "class": "img-flag me-2 py-1",
+    width: 45,
+    src: url
+  });
+  var span = $("<span>", {
+    text: " " + item.text,
+    "class": "fs-4"
+  });
+  span.prepend(img);
+  return span;
+};
+
 /***/ }),
 
 /***/ "./resources/js/partials/tinymce.js":
@@ -7139,8 +7264,6 @@ $(document).on('change', '#building_selection_to_room', function () {
 /***/ (() => {
 
 $(function () {
-  console.log('hello world');
-
   if ($('.tiny-mce').length) {
     window.setupTinyMce();
   }
@@ -7248,6 +7371,278 @@ window.selectElementChange = function (elm, target_class) {
   $('.' + target_class).addClass('d-none');
   $('.' + _selectedMode).removeClass('d-none');
 };
+
+/***/ }),
+
+/***/ "./resources/js/portal/member-registration.js":
+/*!****************************************************!*\
+  !*** ./resources/js/portal/member-registration.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ membershipRegistration)
+/* harmony export */ });
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
+/* harmony import */ var sweetalert2__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(sweetalert2__WEBPACK_IMPORTED_MODULE_0__);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+var membershipRegistration = /*#__PURE__*/function () {
+  function membershipRegistration() {
+    var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'user';
+
+    _classCallCheck(this, membershipRegistration);
+
+    _defineProperty(this, "registrationType", 'user');
+
+    _defineProperty(this, "registrationToken", null);
+
+    _defineProperty(this, "registrationVerified", false);
+
+    _defineProperty(this, "registrationURL", '');
+
+    _defineProperty(this, "readonlyValue", ['country', 'source', 'email_option', 'phone', 'email']);
+
+    _defineProperty(this, "configs", {
+      'country': '153',
+      'source': 'web',
+      'email_option': 0,
+      'gender': 'male'
+    });
+
+    this.registrationType = type;
+
+    if ($(document).find('#memberRegistration').is('form')) {
+      this.registrationURL = $(document).find('#memberRegistration').attr('action');
+    } else {
+      var _parentWrapper = $(document).find('#memberRegistration');
+
+      this.registrationURL = $(_parentWrapper).find('form').attr('action');
+    }
+  }
+
+  _createClass(membershipRegistration, [{
+    key: "verifyRegistrationProcess",
+    value: function verifyRegistrationProcess(elm) {
+      var membership = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      var _this = this;
+
+      window.setLoading('add', elm, false);
+      $.ajax({
+        url: _this.registrationURL,
+        data: _this.configs,
+        method: 'post',
+        headers: {
+          'X-REGISTRATION-TOKEN': _this.registrationToken,
+          'X-MEMBERSHIP-TOKEN': membership !== null && membership !== void 0 ? membership : 'NO-REGISTRATION'
+        },
+        success: function success(response) {
+          // display OTP display form.
+          if (response.params.validation == 'verification' && response.params.view) {
+            $(elm).empty();
+            $(elm).append(response.params.view);
+          } else if (response.params.view) {
+            $(elm).empty().append(response.params.view);
+          }
+
+          _this.configs['verificationType'] = response.params.verificationType;
+
+          if (response.params.validationToken != undefined) {
+            _this.registrationToken = response.params.validationToken;
+          }
+
+          _this.configs['verificationValue'] = response.params.verificationValue;
+          _this.registrationURL = response.params.verificationURL;
+
+          if (response.params.validation != 'undefined') {
+            _this.validation = response.params.validation;
+            _this.configs['validation'] = response.params.validation;
+          }
+
+          _this.autoFillForms();
+
+          window.setLoading('remove', elm);
+
+          if (response.params.validation == 'completed') {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire(response.msg);
+            setTimeout(function () {
+              window.handleOKResponse(response);
+            }, 2000);
+          }
+        },
+        error: function error(response) {
+          if (response.status == 429) {
+            $(elm).find('input').addClass('tooManyAttempts').attr('disabled', 'diabled');
+            setTimeout(function () {
+              $('.tooManyAttempts').removeClass('tooManyAttempts').removeAttr('disabled');
+            }, 60 * 100);
+          }
+
+          window.setLoading('remove', elm);
+          window.handleBadResponse(response);
+        }
+      });
+    }
+  }, {
+    key: "autoFillForms",
+    value: function autoFillForms() {
+      var _this = this;
+
+      $.each(window.registration.configs, function (index, item) {
+        var _element = $('#memberRegistration').find('[name="' + index + '"]');
+
+        if (!_element.length) {
+          return;
+        }
+
+        if ($(_element).is('input')) {
+          $(_element).val(window.registration.configs[index]);
+          $(_element).attr('onClick', 'window.registration.setAttribute(this)');
+        } else if ($(_element).is('select')) {
+          $(_element).find('option[value="' + window.registration.configs[index] + '"]').prop('selected');
+          $(_element).attr('onClick', 'window.registration.setAttribute(this)');
+        }
+
+        if (_this.readonlyValue.includes(index) && _this.validation == 'validated' && _this.configs[index] != '') {
+          $(_element).attr('disabled', 'disabled');
+        }
+      });
+
+      var _getElement = $('#memberRegistration').find('input, select, textarea');
+
+      _getElement.each(function (index, item) {
+        if ($(item).is(':disabled')) {
+          return;
+        }
+
+        if ($(item).is('input') || $(item).is('select') || $(item).is('textarea')) {
+          $(item).attr('onchange', 'window.registration.setAttribute(this)');
+        }
+      });
+    }
+  }, {
+    key: "verifyOTP",
+    value: function verifyOTP(elm) {
+      var _form = $(elm).closest('form');
+
+      window.setLoading('add', _form, false);
+
+      if (this.configs['otp'] == undefined || this.configs['otp'].length !== 8) {
+        sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire('Invalid OTP Code.');
+        window.setLoading('add', _form, false);
+        return;
+      }
+
+      var _this = this;
+
+      $.ajax({
+        type: 'post',
+        url: _this.registrationURL,
+        data: _this.configs,
+        headers: {
+          'X-REGISTRATION-TOKEN': _this.registrationToken
+        },
+        success: function success(response) {
+          $(_form).empty().append(response.params.view);
+        },
+        error: function error(_error) {}
+      });
+    }
+  }, {
+    key: "resendOTP",
+    value: function resendOTP(elm) {
+      var _this = this;
+
+      var _form = $(elm).closest('form');
+
+      window.setLoading('add', _form, false);
+      $.ajax({
+        url: $(elm).attr('href'),
+        type: 'post',
+        headers: {
+          'X-REGISTRATION-TOKEN': _this.registrationToken
+        },
+        data: _this.configs,
+        success: function success(response) {
+          var _url = $(elm).attr('href');
+
+          $(elm).text(response.params.msg).addClass('text-success').removeAttr('href').removeAttr('onclick');
+          setTimeout(function () {
+            $(elm).attr('onclick', 'event.preventDefault(); window.registration.resendOTP(this)').attr('href', _url);
+            removeClass('text-success');
+          }, 120000);
+          window.setLoading('remove', _form, false);
+        },
+        error: function error(_error2) {
+          if (_error2.status == 422 && _error2.responseJSON.status == 403) {
+            sweetalert2__WEBPACK_IMPORTED_MODULE_0___default().fire(_error2.responseJSON.msg);
+            $(elm).removeAttr('href').removeAttr('onclick').addClass('text-danger');
+            setTimeout(function () {
+              $(elm).attr('onclick', 'event.preventDefault(); window.registration.resendOTP(this)').attr('href', _url);
+              removeClass('text-danger');
+            }, 120000);
+            window.setLoading('remove', _form, false);
+          } else {
+            window.handleBadResponse(_error2);
+            window.setLoading('remove', _form, false);
+          }
+        }
+      });
+    }
+  }, {
+    key: "setAttribute",
+    value: function setAttribute(elm) {
+      if (this.configs['validation'] != 'undefined' && this.configs['validation'] == 'validated') {
+        if (this.readonlyValue.includes($(elm).attr('name'))) {
+          var _fieldName = $(elm).attr('name');
+
+          if (this.configs[_fieldName] != undefined && this.configs[_fieldName] != '') {
+            return;
+          }
+        }
+      }
+
+      window.setLoading('add', $(elm).closest('#memberRegistration'), false);
+
+      if ($(elm).hasClass('disable-attribute')) {
+        return;
+      }
+
+      var name = $(elm).attr('name');
+      var value = $(elm).val();
+
+      if ($(elm).attr('type') === 'checkbox') {
+        value = $(elm).is(':checked') ? 1 : 0;
+      }
+
+      if ($(elm).is('select')) {
+        value = $(elm).find(':selected').val();
+      }
+
+      this.configs[name] = value;
+      window.setLoading('remove', $(elm).closest('#memberRegistration'), false);
+    }
+  }]);
+
+  return membershipRegistration;
+}();
+
+
+
+if ($(document).find('#memberRegistration').length) {
+  window.registration = new membershipRegistration();
+}
 
 /***/ }),
 

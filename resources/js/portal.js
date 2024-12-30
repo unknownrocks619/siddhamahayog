@@ -11,7 +11,7 @@ $(function () {
     /**
      * If too many attempts prevent submission for 3 seconds.
      */
-    
+
     /**
      * Ajax Setup
      */
@@ -25,12 +25,20 @@ $(function () {
         $(this).append(`<input type='hidden' name='_token' value='${$('meta[name=csrf-token]').attr('content')}' />`);
     })
 
+    $('.dropdown-toggle').click(function(event){
+        event.preventDefault();
+        let _parentCollapse = $(this).closest('.dropdown');
+        let _dropDownMenu = $(_parentCollapse).find('.dropdown-menu');
+        // $(_dropDownMenu).css({'margin-left':'-114px'});
+        $(_dropDownMenu).toggle();
+    });
+
     window.setLoading = function(type = 'add', element = '', hide=true) {
 
         if (typeof element === 'string') {
             element = $(element);
         }
-        
+
         let loader = `<div class="spinner-border spinner-border-lg text-primary" role="status" style=""> <span class="visually-hidden">Loading...</span> </div>`;
         let _appendElement = `<div class='elementLoader' style="
                             position: absolute;
@@ -43,7 +51,7 @@ $(function () {
                             justify-content: center;
                             align-items: center;"
                         >
-            ${loader}        
+            ${loader}
         </div>`;
 
         if (hide === true) {
@@ -59,7 +67,7 @@ $(function () {
             $(element).prepend(_appendElement);
 
         }
-        
+
     }
 
 
@@ -167,7 +175,22 @@ $(function () {
         }
     }
 
+    window.popModalWithHTML = function(params) {
+        let _targetID = params.modalID;
+        if (!$('#' + _targetID).length) {
+            messageBox(false, 'Unable to complete your action.');
+            return;
+        }
 
+        let _modalElement = $('#' + _targetID);
+        $(_modalElement).find('#modal-content').empty().html(params.content);
+        // now trigger modal pop.
+        $("#" + _targetID).modal('toggle');
+
+        if (params.clearButton) {
+            $('.' + params.clearButton).prop('disable', false).text(params.label ?? 'Join Now');
+        }
+    }
 
     window.reload = function () {
         window.location.reload();

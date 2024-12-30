@@ -173,7 +173,8 @@ class UserController extends Controller
         return view('frontend.user.members.' . $view, [
             // 'members' => user()?->myMembers()->get(),
             'sessions'   => user()?->mySession()->get(),
-            'members' => $teacherCourse?->enrolledUsers()->get()
+            'members' => $teacherCourse?->enrolledUsers()->get(),
+            'userTrainingSession'   =>$teacherCourse
         ]);
     }
 }

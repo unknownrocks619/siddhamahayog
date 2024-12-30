@@ -1,6 +1,6 @@
 <div class="card-header d-flex justify-content-between align-items-center">
-    <div>        
-        <h4 class="title" id="largeModalLabel">{{ $course->course_name }}  (Videos)
+    <div>
+        <h4 class="title" id="largeModalLabel">{{ $course->course_name }} (Videos)
         </h4>
     </div>
 
@@ -38,7 +38,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="newCourse" tabindex="-1" role="dialog">
+{{-- <div class="modal fade" id="newCourse" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" id="modal_content">
             <form name="course_form" id="new_course_form" method="post"
@@ -132,13 +132,13 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
 
 <script>
     window.dataTableList = $('#lession_ajax_{{ $course->id }}').DataTable({
         processing: true,
         serverSide: true,
-        ajax: "{{ route('admin.program.courses.admin_program_video_list_lession_modal',['program' => $course->program_id,'course'=>$course->getKey()]) }}",
+        ajax: "{{ route('admin.program.courses.admin_program_video_list_lession_modal', ['program' => $course->program_id, 'course' => $course->getKey()]) }}",
         columns: [{
                 data: 'status',
                 name: "status"

@@ -1,9 +1,9 @@
-<div class="modal-header bg-dark text-white d-flex justify-content-between">
-    <h4 class="title" id="largeModalLabel">{{ $course->course_name }} - <small> Resources</small>
+<div class="modal-header  d-flex justify-content-between align-items-center">
+    <h4 class="title mb-0" id="largeModalLabel">{{ $course->course_name }} - <small> Resources</small>
     </h4>
-    <div class="row mt-3">
+    <div class="row">
         <div class="col-md-12">
-            <a class="btn btn-warning " data-target="#addNewLession" data-toggle="modal"
+            <a class="btn btn-warning " data-bs-target="#addNewLession" data-bs-toggle="modal"
                 href="{{ route('admin.program.courses.admin_program_course_add_resource_modal', [$course->id]) }}">
                 Add New Resource
             </a>
@@ -12,7 +12,7 @@
 </div>
 <div class="modal-body">
     <div class="table-responsive">
-        <table class="table m-b-0 table-hover" id="lession_ajax_{{ $course->id }}">
+        <table class="table m-b-0 table-hover" id="lession_resource__ajax_{{ $course->id }}">
             <thead>
                 <tr>
                     <th>Resource Name</th>
@@ -26,7 +26,7 @@
     </div>
 </div>
 <script>
-    window.resouceDataTableList = $('#lession_ajax_{{ $course->id }}').DataTable({
+    window.resouceDataTableList = $('#lession_resource__ajax_{{ $course->id }}').DataTable({
         processing: true,
         serverSide: true,
         ajax: '{{ url()->full() }}',

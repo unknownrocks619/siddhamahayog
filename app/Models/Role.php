@@ -53,9 +53,10 @@ class Role extends Model
     public const SUPER_ADMIN = 1;
     public const ADMIN = 13;
     public const CENTER_ADMIN = 9;
-    public const SUPPORT=8;
+    public const SUPPORT = 8;
     public const CENTER = 2;
     public const MEMBER = 7;
+    public const TEACHER = 4;
 
     protected $casts = [
         'role_category' => 'array'
@@ -74,7 +75,6 @@ class Role extends Model
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-
     }
 
 

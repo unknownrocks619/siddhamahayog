@@ -1,3 +1,4 @@
+@php /** @var  \App\Models\Member $member */ @endphp
 @extends("frontend.theme.portal")
 
 @section("content")
@@ -23,7 +24,7 @@
                 <!-- Account -->
                 <div class="card-body">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <img src="{{ profile() }}" alt="user-avatar" class="d-block rounded border border-2" height="100" width="100" id="uploadedAvatar" />
+                        <img src="{{ profile($member) }}" alt="user-avatar" class="d-block rounded border border-2" height="100" width="100" id="uploadedAvatar" />
                         <div class="button-wrapper">
                             <form class="ajax-form" action="{{ route('user.account.store.profile') }}" enctype="multipart/form-data" id="profileForm" method="post">
                                 @csrf
@@ -47,7 +48,7 @@
                 </div>
                 <hr class="my-0" />
                 <div class="card-body">
-                    <form id="formAccountSettings" method="POST" action="{{ route('user.account.store.personal') }}">
+                    <form id="formAccountSettings" method="POST" action="{{ route('user.account.store.personal',['member' => $member]) }}">
                         @csrf
                         <div class="row">
                             <div class="col-md-12">
@@ -59,21 +60,21 @@
                                 <label for="first_name" class="form-label">First Name
                                     <sup class="text-danger">*</sup>
                                 </label>
-                                <input class="form-control @error('first_name') border border-danger @enderror" type="text" id="first_name" name="first_name" value="{{ old('first_name',user()->first_name) }}" autofocus />
+                                <input class="form-control @error('first_name') border border-danger @enderror" type="text" id="first_name" name="first_name" value="{{ old('first_name',$member->first_name) }}" autofocus />
                                 @error("first_name")
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="middle_name" class="form-label">Middle Name</label>
-                                <input class="form-control @error('middle_name') border border-danger @enderror" type="text" name="middle_name" id="middle_name" value="{{ old('middle_name',user()->middle_name) }}" />
+                                <input class="form-control @error('middle_name') border border-danger @enderror" type="text" name="middle_name" id="middle_name" value="{{ old('middle_name',$member->middle_name) }}" />
                                 @error("middle_name")
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3 col-md-4">
                                 <label for="last_name" class="form-label">Last Name</label>
-                                <input class="form-control @error('last_name') border border-danger @enderror" type="text" name="last_name" id="last_name" value="{{ old('last_name',user()->last_name) }}" />
+                                <input class="form-control @error('last_name') border border-danger @enderror" type="text" name="last_name" id="last_name" value="{{ old('last_name',$member->last_name) }}" />
                                 @error("last_name")
                                 <div class="text-danger">{{$message}}</div>
                                 @enderror
@@ -82,13 +83,13 @@
                         <div class="row">
                             <div class="mb-3 col-md-6">
                                 <label for="email" class="form-label">E-mail</label>
-                                <input class="form-control" readonly type="text" id="email" name="email" value="{{ user()->email }}" placeholder="john.doe@example.com" />
+                                <input class="form-control" @if( $member->email ) readonly  @endif type="text" id="email" name="email" value="{{ old('email',$member->email) }}" placeholder="john.doe@example.com" />
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="gender" class="form-label">Gender</label>
                                 <select name="gender" id="gender" class="form-control">
-                                    <option value="male" @if(old('gender',user()->gender) == "male") selected @endif> Male </option>
-                                    <option value="female" @if(old('gender',user()->gender) == "female") selected @endif> Female </option>
+                                    <option value="male" @if(old('gender',$member->gender) == "male") selected @endif> Male </option>
+                                    <option value="female" @if(old('gender',$member->gender) == "female") selected @endif> Female </option>
                                 </select>
                             </div>
                             <div class="mb-3 col-md-6">
@@ -97,7 +98,7 @@
                                 </label>
                                 <div class="input-group input-group-merge">
                                     <!-- <span class="input-group-text">US (+1)</span> -->
-                                    <input value="{{ old('phone_number',user()->phone_number) }}" type="text" id="phone_number" name="phone_number" class="form-control @error('phone_number') border border-danger @enderror" placeholder="985XXXXXXX" />
+                                    <input value="{{ old('phone_number',$member->phone_number) }}" type="text" id="phone_number" name="phone_number" class="form-control @error('phone_number') border border-danger @enderror" placeholder="985XXXXXXX" />
                                     @error('phone_number')
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -105,14 +106,14 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="address" class="form-label">Address</label>
-                                <textarea class="form-control @error('address') border border-danger @enderror" id="address" name="address" placeholder="Address">{{ old('address',(user()->address && user()->address->street_address) ? user()->address->street_address : null) }}</textarea>
+                                <textarea class="form-control @error('address') border border-danger @enderror" id="address" name="address" placeholder="Address">{{ old('address',($member->address && $member->address->street_address) ? $member->address->street_address : null) }}</textarea>
                                 @error("address")
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="state" class="form-label">State</label>
-                                <input class="form-control @error('state') border border-danger @enderror" type="text" id="state" value="{{ old('state',user()->city) }}" name="state" placeholder="California" />
+                                <input class="form-control @error('state') border border-danger @enderror" type="text" id="state" value="{{ old('state',$member->city) }}" name="state" placeholder="California" />
                                 @error("state")
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -125,7 +126,7 @@
 
                                     foreach ($countries as $country) {
                                         echo "<option value='{$country->id}'";
-                                        if ($country->id == old('country', user()->country)) {
+                                        if ($country->id == old('country', $member->country)) {
                                             echo " selected ";
                                         }
                                         echo ">";
@@ -139,7 +140,11 @@
                         </div>
                         <div class="mt-2">
                             <button type="submit" class="btn btn-primary me-2">Update </button>
-                            <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                            @if($member->getKey() != user()->getKey())
+                                <a href="#" onclick="history.go(-1)" class="btn btn-outline-secondary">Cancel</a>
+                            @else
+                                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                            @endif
                         </div>
                     </form>
                 </div>

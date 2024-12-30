@@ -339,10 +339,10 @@ class ProgramDataTablesController extends Controller
         if (adminUser()->role()->isCenter() || adminUser()->role()->isCenterAdmin()) {
             // $programs->where('id','5');
         }
+
         if ($type) {
             $programs->where("program_type", $type)->get();
         }
-
 
 
         $datatable = DataTables::of($programs)
