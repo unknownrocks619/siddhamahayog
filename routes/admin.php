@@ -180,12 +180,12 @@ Route::prefix('admin')
                 /**
                  * Settings
                  */
-                // Route::prefix('settings')
-                //     ->name('settings.')
-                //     ->group(function () {
-                //         Route::get("/list", [SettingController::class, "index"])->name("index");
-                //         Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
-                //     });
+                Route::prefix('settings')
+                    ->name('settings.')
+                    ->group(function () {
+                        Route::get("/list", [SettingController::class, "index"])->name("index");
+                        Route::post('/update', [SettingController::class, "update"])->name('admin_website_update_settings');
+                    });
 
                 /**
                  * Menus
